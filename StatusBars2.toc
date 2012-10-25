@@ -1,0 +1,9 @@
+## Interface: 50500
+## Version: 2.00b
+## Title: Status Bars 2
+## Notes:
+## Dependencies:
+## OptionalDeps:
+## SavedVariablesPerCharacter: StatusBars2_Settings
+StatusBars2.lua
+StatusBars2.xml
