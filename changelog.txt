@@ -1,3 +1,18 @@
+﻿2.00.02b
+========
+Main Frame position added to save/load
+Range checking for scale on load
+
+2.00.01b
+========
+Fixed some copy/paste errors that were causing the settings to become corrupted.
+Fixed and re-enabled sunder armor bar.
+
+2.00b
+=====
+Imported functionality changes made to the project by 堂吉先生 on WoW Interterface (with author's permission) while retaining the original look and configurability.  
+Fixed issue where bars become stuck to the mouse cursor if they fade out while moving them.
+
 1.21
 ----
 Updated to work with 4.2
