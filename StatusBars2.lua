@@ -2552,7 +2552,7 @@ end
 --
 function StatusBars2_AuraButton_OnMouseDown( self, button )
 
-    if( StatusBars2_Settings.locked ~= true ) then
+    if( StatusBars2_Settings.locked ~= true or StatusBars2_Options.moveBars == true ) then
         StatusBars2_StatusBar_OnMouseDown( self.parentBar, button );
     end
 
@@ -3080,6 +3080,8 @@ function StatusBars2_OnMouseUp( self, button )
         StatusBars2_Settings.position = {};
         StatusBars2_Settings.position.x = self:GetLeft( ) + self:GetWidth( ) / 2;
         StatusBars2_Settings.position.y = self:GetTop( ) + self:GetHeight( ) / 2;
+
+        print("x = "..StatusBars2_Settings.position.x.." y = "..StatusBars2_Settings.position.y);
     end
 
 end
@@ -3751,10 +3753,16 @@ function StatusBars2_Options_ToggleMoveBars_OnClick( self )
     -- Set a flag and reset the positions if the OK button is clicked
 	if(StatusBars2_Options.moveBars == nil or StatusBars2_Options.moveBars == false) then
         StatusBars2_Options.moveBars = true;
+        StatusBars2_Options.saveLocked = StatusBars2_Settings.locked;
+        StatusBars2_Settings.locked = false;
 	else
         StatusBars2_Options.moveBars = false;
+        StatusBars2_Settings.locked = StatusBars2_Options.saveLocked;
 	end
 
+    StatusBars2_UpdateBars( );
+
+    print("moveBars = "..printBool( StatusBars2_Options.moveBars ).." locked = "..printBool( StatusBars2_Settings.locked ));
 end
 
 -------------------------------------------------------------------------------
@@ -3853,6 +3861,22 @@ end
 --
 function StatusBars2_Trace( message )
     DEFAULT_CHAT_FRAME:AddMessage( message );
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:
+--
+--  Description:    Trace a message to the console
+--
+-------------------------------------------------------------------------------
+--
+function printBool( boolVal )
+    if boolVal then
+        return "true";
+    else
+        return "false";
+    end
 end
 
 -------------------------------------------------------------------------------
