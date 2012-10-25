@@ -3749,7 +3749,7 @@ end
 function StatusBars2_Options_ToggleMoveBars_OnClick( self )
 
     -- Set a flag and reset the positions if the OK button is clicked
-	if(StatusBars2_Options.moveBars == nil or StatusBars2_Options.moveBars = false) then
+	if(StatusBars2_Options.moveBars == nil or StatusBars2_Options.moveBars == false) then
         StatusBars2_Options.moveBars = true;
 	else
         StatusBars2_Options.moveBars = false;
