@@ -1,5 +1,5 @@
-## Interface: 40200
-## Version: 1.21
+## Interface: 50500
+## Version: 2.00b
 ## Title: Status Bars 2
 ## Notes:
 ## Dependencies:

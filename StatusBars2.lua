@@ -168,18 +168,18 @@ function StatusBars2_CreateBars( )
 
     -- Specialty bars
     StatusBars2_CreateComboBar( "StatusBars2_ComboBar", "Combo Points", "combo" );
-	StatusBars2_CreateAuraStackBar( "StatusBars2_AnticipationBar", GetSpellInfo( 115189 ), "buff", "player", 5, 1, 0, 1, "Anticipation", "anticipation" );
+    StatusBars2_CreateAuraStackBar( "StatusBars2_AnticipationBar", GetSpellInfo( 115189 ), "buff", "player", 5, 1, 0, 1, "Anticipation", "anticipation" );
     StatusBars2_CreateRuneBar( "StatusBars2_RuneBar", "Runes", "rune" );
-    StatusBars2_CreateAuraStackBar( "StatusBars2_ArcaneChargesBar", GetSpellInfo( 36032 ), "debuff", "player", 6, 95/255, 182/255, 255/255, StatusBars2_Arcane_Charges, "arcaneCharges" );
+    StatusBars2_CreateAuraStackBar( "StatusBars2_SunderBar", GetSpellInfo( 113746 ), "debuff", "target", 3, 1, 0.5, 0, "Sunder Armor", "sunder" );
+    StatusBars2_CreateAuraStackBar( "StatusBars2_ArcaneChargesBar", GetSpellInfo( 36032 ), "debuff", "player", 6, 95/255, 182/255, 255/255, "Arcane Charges", "arcaneCharges" );
     StatusBars2_CreateAuraStackBar( "StatusBars2_MaelstromWeaponBar", GetSpellInfo( 51528 ), "buff", "player", 5, 1, 0, 1, "Maelstrom Weapon", "maelstromWeapon" );
 	StatusBars2_CreateShardBar( "StatusBars2_ShardBar", "Soul Shards", "shard" );
 	StatusBars2_CreateHolyPowerBar( "StatusBars2_HolyPowerBar", "Holy Power", "holyPower" );
 	StatusBars2_CreateEclipseBar( "StatusBars2_EclipseBar", "Eclipse", "eclipse" );
-   	StatusBars2_CreatePowerBar( "StatusBars2_FuryBar", "player", SPELL_POWER_DEMONIC_FURY, StatusBars2_Demonic_Fury, "fury", kFury );
+   	StatusBars2_CreatePowerBar( "StatusBars2_FuryBar", "player", SPELL_POWER_DEMONIC_FURY, "Demonic Fury", "fury", kFury );
 	StatusBars2_CreateChiBar( "StatusBars2_ChiBar", "Chi", "chi" );
 	StatusBars2_CreateOrbsBar( "StatusBars2_OrbsBar", "Orbs", "orbs" );
 	StatusBars2_CreateEmbersBar( "StatusBars2_EmbersBar", "Embers", "embers" );
-    -- StatusBars2_CreateAuraStackBar( "StatusBars2_SunderBar", GetSpellInfo( 7386 ), "debuff", "target", 3, 1, 0.5, 0, "Sunder Armor", "sunder" );
     -- StatusBars2_CreateAuraStackBar( "StatusBars2_DeadlyPoisonBar", GetSpellInfo( 2823 ), "debuff", "target", 5, 0, 1, 0, "Deadly Poison", "deadlyPoison" );
 
 
@@ -222,7 +222,10 @@ function StatusBars2_UpdateBars( )
         StatusBars2_EnableBar( StatusBars2_ComboBar, 1, 4 );
     elseif( englishClass == "ROGUE" ) then
         StatusBars2_EnableBar( StatusBars2_ComboBar, 1, 4 );
-		StatusBars2_EnableBar( StatusBars2_AnticipationBar, 1, 16 );
+
+        if (IsUsableSpell( 115189 )) then
+            StatusBars2_EnableBar( StatusBars2_AnticipationBar, 1, 16 );
+        end
     end
 
 	-- Shards
@@ -272,14 +275,14 @@ function StatusBars2_UpdateBars( )
     end
 
     -- Sunder armor
-    -- StatusBars2_EnableBar( StatusBars2_SunderBar, 1, 10 );
+    StatusBars2_EnableBar( StatusBars2_SunderBar, 1, 10 );
 
     -- Deadly poison
     -- StatusBars2_EnableBar( StatusBars2_DeadlyPoisonBar, 1, 11 );
 
     -- Player auras
     if( StatusBars2_Settings.bars.playerAura.showBuffs == true or StatusBars2_Settings.bars.playerAura.showDebuffs == true ) then
-        StatusBars2_EnableBar( StatusBars2_AuraBar, 1, 12 );
+        StatusBars2_EnableBar( StatusBars2_AuraBar, 1, 17 );
     end
 
     -- Target health
@@ -321,6 +324,10 @@ function StatusBars2_UpdateBars( )
     else
         StatusBars2:EnableMouse( false );
     end
+
+    -- Set Main Frame Position
+    StatusBars2:ClearAllPoints( );
+    StatusBars2:SetPoint( "CENTER", UIPARENT, "CENTER", StatusBars2_Settings.position.x, StatusBars2_Settings.position.y );
 
     -- Set the global scale
     StatusBars2:SetScale( StatusBars2_Settings.scale );
@@ -3068,6 +3075,11 @@ function StatusBars2_OnMouseUp( self, button )
     if( button == "LeftButton" and self.isMoving ) then
         self:StopMovingOrSizing();
         self.isMoving = false;
+
+        -- Save the position in the settings
+        StatusBars2_Settings.position = {};
+        StatusBars2_Settings.position.x = self:GetLeft( ) + self:GetWidth( ) / 2;
+        StatusBars2_Settings.position.y = self:GetTop( ) + self:GetHeight( ) / 2;
     end
 
 end
@@ -3326,6 +3338,18 @@ function StatusBars2_SetDefaultSettings( )
     -- Set defaults for the bars
     for i, bar in ipairs( bars ) do
 
+	-- print("Bar "..i);
+
+	-- if( bar.displayName == nil ) then
+	--	print(" Name <unknown>");
+	-- else
+	--	print(" Name "..bar.displayName);
+	-- end
+
+	-- print(" Key "..bar.key);
+	-- print(" Unit "..bar.unit);
+	-- print(" Type "..bar.type);
+
         -- Enable all bars by default
         if( StatusBars2_Settings.bars[ bar.key ].enabled == nil ) then
             StatusBars2_Settings.bars[ bar.key ].enabled = bar.defaultEnabled;
@@ -3376,7 +3400,7 @@ function StatusBars2_SetDefaultSettings( )
         end
 
         -- Set scale to 1.0
-        if( StatusBars2_Settings.bars[ bar.key ].scale == nil ) then
+        if( StatusBars2_Settings.bars[ bar.key ].scale == nil or StatusBars2_Settings.bars[ bar.key ].scale <= 0 ) then
             StatusBars2_Settings.bars[ bar.key ].scale = 1.0;
         end
 
@@ -3407,8 +3431,15 @@ function StatusBars2_SetDefaultSettings( )
         StatusBars2_Settings.grouped = true;
     end
 
+    -- Main Frame Position
+    if( StatusBars2_Settings.position == nil ) then
+        StatusBars2_Settings.position = {};
+	StatusBars2_Settings.position.x = 0;
+        StatusBars2_Settings.position.y = -282;
+    end
+
     -- Scale
-    if( StatusBars2_Settings.scale == nil ) then
+    if( StatusBars2_Settings.scale == nil or StatusBars2_Settings.scale <= 0 ) then
         StatusBars2_Settings.scale = 1.0;
     end
 
@@ -3464,8 +3495,8 @@ function StatusBars2_Options_OnOK( )
     -- If the reset position button was pressed null out the position data
     if( StatusBars2_Options.resetBarPositions == true ) then
 
-        StatusBars2:ClearAllPoints( );
-        StatusBars2:SetPoint( "CENTER", UIPARENT, "CENTER", 0, 0 );
+	StatusBars2_Settings.position.x = 0;
+	StatusBars2_Settings.position.y = -282;
 
         for i, bar in ipairs( bars ) do
             StatusBars2_Settings.bars[ bar.key ].position = nil;

@@ -202,7 +202,7 @@
         </Frames>
     </Frame>
 
-	    <!-- Discrete box template for bars with 6 boxes -->
+    <!-- Discrete box template for bars with 6 boxes -->
     <Frame name="StatusBars2_DiscreteBoxTemplate_6" movable="true" virtual="true" >
 
         <Size x="28.3" y="20" />
@@ -273,7 +273,7 @@
         </Frames>
     </Frame>
 
-	<!-- Discrete bar template for 4 boxes -->
+    <!-- Discrete bar template for 4 boxes -->
     <Frame name="StatusBars2_DiscreteBarTemplate_4" movable="true" virtual="true" >
 
         <Size x="170" y="20" />
