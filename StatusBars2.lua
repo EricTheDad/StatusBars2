@@ -486,7 +486,7 @@ function StatusBars2_UpdateLayout( )
     for i, bar in ipairs( bars ) do
 
         -- If the bar has a group and index set include it in the layout
-        if( bar.group ~= nil and bar.index ~= nil and ( bar.removeWhenHidden == nil or bar.visible == true ) ) then
+        if( bar.group ~= nil and bar.index ~= nil and ( bar.removeWhenHidden == nil or bar.visible == true or StatusBars2_Options.moveBars == true ) ) then
             table.insert( layoutBars, bar );
         end
     end
@@ -3735,6 +3735,25 @@ function StatusBars2_Options_ResetBarPositionButton_OnClick( self )
 
     -- Set a flag and reset the positions if the OK button is clicked
     StatusBars2_Options.resetBarPositions = true;
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_Options_ToggleMoveBars_OnClick
+--
+--  Description:    Called when the reset bar position button is clicked
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_Options_ToggleMoveBars_OnClick( self )
+
+    -- Set a flag and reset the positions if the OK button is clicked
+	if(StatusBars2_Options.moveBars == nil or StatusBars2_Options.moveBars == false) then
+        StatusBars2_Options.moveBars = true;
+	else
+        StatusBars2_Options.moveBars = false;
+	end
 
 end
 

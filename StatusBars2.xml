@@ -1090,7 +1090,7 @@
                     </OnLoad>
                 </Scripts>
             </CheckButton>
-            <Button name="$parent_ResetBarPositionButton" inherits="OptionsButtonTemplate" text="Reset Bar Positions"> >
+            <Button name="$parent_ResetBarPositionButton" inherits="OptionsButtonTemplate" text="Reset Bar Positions">
                 <Size x="150" y="21"/>
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeto="$parent_GroupedButton" >
@@ -1103,7 +1103,20 @@
                     </OnClick>
                 </Scripts>
             </Button>
-            <Slider name="$parent_ScaleSlider" inherits="OptionsSliderTemplate" minValue="0.25" maxValue="3.0" valueStep="0.05" >
+			<Button name="$parent_MoveBarsButton" inherits="OptionsButtonTemplate" text="Move Bars">
+				<Size x="150" y="21"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeto="$parent_ResetBarPositionButton" >
+						<Offset x="0" y="-24" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						StatusBars2_Options_ToggleMoveBars_OnClick( self );
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Slider name="$parent_ScaleSlider" inherits="OptionsSliderTemplate" minValue="0.25" maxValue="3.0" valueStep="0.05" >
                 <Size x="200" y="17"/>
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeTo="$Parent" >
