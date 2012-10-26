@@ -325,19 +325,18 @@ function StatusBars2_UpdateBars( )
         StatusBars2:EnableMouse( false );
     end
 
+    -- Set the global scale
+    StatusBars2:SetScale( StatusBars2_Settings.scale );
+ 
     -- Set Main Frame Position
     StatusBars2:ClearAllPoints( );
-    StatusBars2:SetPoint( "CENTER", UIPARENT, "CENTER", StatusBars2_Settings.position.x / StatusBars2:GetScale( ), StatusBars2_Settings.position.y / StatusBars2:GetScale( ) );
+    StatusBars2:SetPoint( "CENTER", UIPARENT, "CENTER", StatusBars2_Settings.position.x * StatusBars2:GetScale( ), StatusBars2_Settings.position.y * StatusBars2:GetScale( ) );
 
     print("update: frame x = "..StatusBars2:GetLeft( ).." frame y = "..StatusBars2:GetTop( ).." scale = "..StatusBars2:GetScale( ));
     print("update: parent width = "..StatusBars2:GetParent( ):GetWidth( ).." parent height = "..StatusBars2:GetParent( ):GetHeight( ));
     print("update: x = "..StatusBars2_Settings.position.x.." y = "..StatusBars2_Settings.position.y);
 
-
-    -- Set the global scale
-    StatusBars2:SetScale( StatusBars2_Settings.scale );
-
-    -- Update the layout
+	-- Update the layout
     StatusBars2_UpdateLayout( );
 
 end
@@ -3084,12 +3083,13 @@ function StatusBars2_OnMouseUp( self, button )
         -- Save the position in the settings
         StatusBars2_Settings.position = {};
 
-		local xOffset = self:GetLeft( ) + self:GetWidth( ) / 2 - self:GetParent( ):GetWidth( ) / 2;
-		local yOffset = self:GetTop( ) - self:GetHeight( ) / 2 - self:GetParent( ):GetHeight( ) / 2;
-        StatusBars2_Settings.position.x = xOffset / self:GetScale( );
-        StatusBars2_Settings.position.y = yOffset / self:GetScale( );
+		local xOffset = self:GetLeft( ) + self:GetWidth( ) / 2;
+		local yOffset = self:GetTop( ) - self:GetHeight( ) / 2;
+        StatusBars2_Settings.position.x = xOffset / self:GetScale( ) - self:GetParent( ):GetWidth( ) / 2;
+        StatusBars2_Settings.position.y = yOffset / self:GetScale( ) - self:GetParent( ):GetHeight( ) / 2;
 
         print("frame x = "..self:GetLeft( ).." frame y = "..self:GetTop( ).." scale = "..self:GetScale( ));
+        print("xOffset = "..xOffset.." yOffset = "..yOffset);
         print("parent width = "..self:GetParent( ):GetWidth( ).." parent height = "..self:GetParent( ):GetHeight( ));
         print("x = "..StatusBars2_Settings.position.x.." y = "..StatusBars2_Settings.position.y);
     end
@@ -3507,8 +3507,8 @@ function StatusBars2_Options_OnOK( )
     -- If the reset position button was pressed null out the position data
     if( StatusBars2_Options.resetBarPositions == true ) then
 
-	StatusBars2_Settings.position.x = 0;
-	StatusBars2_Settings.position.y = -282 / StatusBars2_Settings.scale;
+		StatusBars2_Settings.position.x = 0;
+		StatusBars2_Settings.position.y = -282 / StatusBars2_Settings.scale;
 
         for i, bar in ipairs( bars ) do
             StatusBars2_Settings.bars[ bar.key ].position = nil;
