@@ -330,9 +330,11 @@ function StatusBars2_UpdateBars( )
  
     -- Set Main Frame Position
     StatusBars2:ClearAllPoints( );
-    StatusBars2:SetPoint( "CENTER", UIPARENT, "CENTER", StatusBars2_Settings.position.x * StatusBars2:GetScale( ), StatusBars2_Settings.position.y * StatusBars2:GetScale( ) );
+    StatusBars2:SetPoint( "CENTER", UIPARENT, "CENTER", StatusBars2_Settings.position.x / StatusBars2:GetScale( ), StatusBars2_Settings.position.y / StatusBars2:GetScale( ) );
 
     print("update: frame x = "..StatusBars2:GetLeft( ).." frame y = "..StatusBars2:GetTop( ).." scale = "..StatusBars2:GetScale( ));
+    print("update: frame width = "..StatusBars2:GetWidth( ).." frame height = "..StatusBars2:GetHeight( ));
+    print("update: mid x = "..StatusBars2:GetLeft( ) + StatusBars2:GetWidth( ) / 2 .." mid y = "..StatusBars2:GetTop( ) - StatusBars2:GetHeight( ) / 2);
     print("update: parent width = "..StatusBars2:GetParent( ):GetWidth( ).." parent height = "..StatusBars2:GetParent( ):GetHeight( ));
     print("update: x = "..StatusBars2_Settings.position.x.." y = "..StatusBars2_Settings.position.y);
 
@@ -3085,8 +3087,8 @@ function StatusBars2_OnMouseUp( self, button )
 
 		local xOffset = self:GetLeft( ) + self:GetWidth( ) / 2;
 		local yOffset = self:GetTop( ) - self:GetHeight( ) / 2;
-        StatusBars2_Settings.position.x = xOffset / self:GetScale( ) - self:GetParent( ):GetWidth( ) / 2;
-        StatusBars2_Settings.position.y = yOffset / self:GetScale( ) - self:GetParent( ):GetHeight( ) / 2;
+        StatusBars2_Settings.position.x = xOffset * self:GetScale( ) - self:GetParent( ):GetWidth( ) / 2;
+        StatusBars2_Settings.position.y = yOffset * self:GetScale( ) - self:GetParent( ):GetHeight( ) / 2;
 
         print("frame x = "..self:GetLeft( ).." frame y = "..self:GetTop( ).." scale = "..self:GetScale( ));
         print("xOffset = "..xOffset.." yOffset = "..yOffset);
@@ -3452,7 +3454,7 @@ function StatusBars2_SetDefaultSettings( )
     if( StatusBars2_Settings.position == nil ) then
         StatusBars2_Settings.position = {};
 		StatusBars2_Settings.position.x = 0;
-        StatusBars2_Settings.position.y = -282 / StatusBars2_Settings.scale;
+        StatusBars2_Settings.position.y = -282;
     end
 
 end;
@@ -3508,7 +3510,7 @@ function StatusBars2_Options_OnOK( )
     if( StatusBars2_Options.resetBarPositions == true ) then
 
 		StatusBars2_Settings.position.x = 0;
-		StatusBars2_Settings.position.y = -282 / StatusBars2_Settings.scale;
+		StatusBars2_Settings.position.y = -282;
 
         for i, bar in ipairs( bars ) do
             StatusBars2_Settings.bars[ bar.key ].position = nil;
