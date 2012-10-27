@@ -52,6 +52,8 @@ function StatusBars2_OnLoad( self )
     -- Create bars
     StatusBars2_CreateBars( );
 
+	StatusBars2:SetAlpha(1.0);
+
     -- Set scripts
     self:SetScript( "OnEvent", StatusBars2_OnEvent );
     self:SetScript( "OnUpdate", StatusBars2_OnUpdate );
@@ -330,7 +332,7 @@ function StatusBars2_UpdateBars( )
  
     -- Set Main Frame Position
     StatusBars2:ClearAllPoints( );
-    StatusBars2:SetPoint( "CENTER", UIPARENT, "CENTER", StatusBars2_Settings.position.x / StatusBars2:GetScale( ), StatusBars2_Settings.position.y / StatusBars2:GetScale( ) );
+    StatusBars2:SetPoint( "TOP", UIPARENT, "CENTER", StatusBars2_Settings.position.x / StatusBars2:GetScale( ), StatusBars2_Settings.position.y / StatusBars2:GetScale( ) );
 
     print("update: frame x = "..StatusBars2:GetLeft( ).." frame y = "..StatusBars2:GetTop( ).." scale = "..StatusBars2:GetScale( ));
     print("update: frame width = "..StatusBars2:GetWidth( ).." frame height = "..StatusBars2:GetHeight( ));
@@ -3086,7 +3088,7 @@ function StatusBars2_OnMouseUp( self, button )
         StatusBars2_Settings.position = {};
 
 		local xOffset = self:GetLeft( ) + self:GetWidth( ) / 2;
-		local yOffset = self:GetTop( ) - self:GetHeight( ) / 2;
+		local yOffset = self:GetTop( );
         StatusBars2_Settings.position.x = xOffset * self:GetScale( ) - self:GetParent( ):GetWidth( ) / 2;
         StatusBars2_Settings.position.y = yOffset * self:GetScale( ) - self:GetParent( ):GetHeight( ) / 2;
 
