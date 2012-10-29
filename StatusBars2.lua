@@ -52,7 +52,8 @@ function StatusBars2_OnLoad( self )
     -- Create bars
     StatusBars2_CreateBars( );
 
-	StatusBars2:SetAlpha(1.0);
+	StatusBars2:SetBackdropColor(0.0, 0.0, 0.0, 0.5);
+	StatusBars2:Show( );
 
     -- Set scripts
     self:SetScript( "OnEvent", StatusBars2_OnEvent );
@@ -3456,7 +3457,7 @@ function StatusBars2_SetDefaultSettings( )
     if( StatusBars2_Settings.position == nil ) then
         StatusBars2_Settings.position = {};
 		StatusBars2_Settings.position.x = 0;
-        StatusBars2_Settings.position.y = -282;
+        StatusBars2_Settings.position.y = -200;
     end
 
 end;
@@ -3512,7 +3513,7 @@ function StatusBars2_Options_OnOK( )
     if( StatusBars2_Options.resetBarPositions == true ) then
 
 		StatusBars2_Settings.position.x = 0;
-		StatusBars2_Settings.position.y = -282;
+		StatusBars2_Settings.position.y = -200;
 
         for i, bar in ipairs( bars ) do
             StatusBars2_Settings.bars[ bar.key ].position = nil;
