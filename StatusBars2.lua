@@ -51,10 +51,7 @@ function StatusBars2_OnLoad( self )
 
     -- Create bars
     StatusBars2_CreateBars( );
-
-	StatusBars2:SetBackdropColor(0.0, 0.0, 0.0, 0.5);
-	StatusBars2:Show( );
-
+	
     -- Set scripts
     self:SetScript( "OnEvent", StatusBars2_OnEvent );
     self:SetScript( "OnUpdate", StatusBars2_OnUpdate );
@@ -168,7 +165,7 @@ function StatusBars2_CreateBars( )
     StatusBars2_CreateHealthBar( "StatusBars2_PetHealthBar", "pet", "Pet Health", "petHealth" );
     StatusBars2_CreatePowerBar( "StatusBars2_PetPowerBar", "pet", nil, "Pet Power", "petPower" );
     StatusBars2_CreateAuraBar( "StatusBars2_PetAuraBar", "pet", "Pet Auras", "petAura" );
-	StatusBars2_CreateAuraStackBar( "StatusBars2_FremzyBar", GetSpellInfo( 19623 ), "buff", "player", 5, 1, 0, 1, "Frenzy", "frenzy" );
+	StatusBars2_CreateAuraStackBar( "StatusBars2_FrenzyBar", GetSpellInfo( 19623 ), "buff", "player", 5, 1, 0, 1, "Frenzy", "frenzy" );
 
     -- Specialty bars
     StatusBars2_CreateComboBar( "StatusBars2_ComboBar", "Combo Points", "combo" );
@@ -2734,16 +2731,6 @@ end
 -------------------------------------------------------------------------------
 --
 function StatusBars2_CreateDiscreteBar( name, unit, count, r, g, b, displayName, key, barType )
-
-    -- Figure out how many discrete chunks the bar should have
-    local localizedClass, englishClass = UnitClass( "player" );
-
-	if (englishClass == "PRIEST"  ) then count = 3;
-	elseif ( englishClass == "WARLOCK" ) then count = 4;
-	elseif ( englishClass == "MAGE" ) then count = 6;
-	elseif ( englishClass == "WARRIOR" ) then count = 3;
-    elseif ( englishClass == "MONK" ) then count = 4;
-    else count = 5; end
 
     -- Create the bar
     local bar = StatusBars2_CreateBar( name, unit, "StatusBars2_DiscreteBarTemplate_" .. count, displayName, key, barType );
