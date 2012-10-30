@@ -3453,7 +3453,7 @@ function StatusBars2_SetDefaultSettings( )
     if( StatusBars2_Settings.position == nil ) then
         StatusBars2_Settings.position = {};
 		StatusBars2_Settings.position.x = 0;
-        StatusBars2_Settings.position.y = -200;
+        StatusBars2_Settings.position.y = -100;
     end
 
 end;
