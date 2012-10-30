@@ -176,6 +176,8 @@ function StatusBars2_CreateBars( )
     StatusBars2_CreateAuraStackBar( "StatusBars2_SunderBar", GetSpellInfo( 113746 ), "debuff", "target", 3, 1, 0.5, 0, "Sunder Armor", "sunder" );
     StatusBars2_CreateAuraStackBar( "StatusBars2_ArcaneChargesBar", GetSpellInfo( 36032 ), "debuff", "player", 6, 95/255, 182/255, 255/255, "Arcane Charges", "arcaneCharges" );
     StatusBars2_CreateAuraStackBar( "StatusBars2_MaelstromWeaponBar", GetSpellInfo( 51528 ), "buff", "player", 5, 1, 0, 1, "Maelstrom Weapon", "maelstromWeapon" );
+	StatusBars2_CreateAuraStackBar( "StatusBars2_FremzyBar", GetSpellInfo( 19615 ), "buff", "player", 5, 1, 0, 1, "Frenzy", "frenzy" );
+	StatusBars2_CreateAuraStackBar( "StatusBars2_RenewingMistBar", GetSpellInfo( 119607 ), "buff", "player", 3, 1, 0, 1, "Renewing Mist", "renewingMist" );
 	StatusBars2_CreateShardBar( "StatusBars2_ShardBar", "Soul Shards", "shard" );
 	StatusBars2_CreateHolyPowerBar( "StatusBars2_HolyPowerBar", "Holy Power", "holyPower" );
 	StatusBars2_CreateEclipseBar( "StatusBars2_EclipseBar", "Eclipse", "eclipse" );
@@ -270,8 +272,15 @@ function StatusBars2_UpdateBars( )
 	-- monk's chi
     if( englishClass == "MONK" ) then
         StatusBars2_EnableBar( StatusBars2_ChiBar, 1, 11 );
+		if GetSpecialization() == 2 then
+		StatusBars2_EnableBar( StatusBars2_RenewingMistBar, 1, 18 );
+		end
     end
 
+    if( englishClass == "HUNTER" ) then
+        StatusBars2_EnableBar( StatusBars2_FrenzyBar, 1, 19 );
+    end
+   
     -- priest's orbs
     if( englishClass == "PRIEST"  and GetSpecialization() == 3 )then
 		StatusBars2_EnableBar( StatusBars2_OrbsBar, 1, 12 );
