@@ -165,7 +165,7 @@ function StatusBars2_CreateBars( )
     StatusBars2_CreateHealthBar( "StatusBars2_PetHealthBar", "pet", "Pet Health", "petHealth" );
     StatusBars2_CreatePowerBar( "StatusBars2_PetPowerBar", "pet", nil, "Pet Power", "petPower" );
     StatusBars2_CreateAuraBar( "StatusBars2_PetAuraBar", "pet", "Pet Auras", "petAura" );
-	StatusBars2_CreateAuraStackBar( "StatusBars2_FrenzyBar", GetSpellInfo( 19623 ), "buff", "player", 5, 1, 0, 1, "Frenzy", "frenzy" );
+	StatusBars2_CreateAuraStackBar( "StatusBars2_FrenzyBar", GetSpellInfo( 19623 ), "buff", "pet", 5, 1, 0, 1, "Frenzy", "frenzy" );
 
     -- Specialty bars
     StatusBars2_CreateComboBar( "StatusBars2_ComboBar", "Combo Points", "combo" );
