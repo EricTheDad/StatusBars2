@@ -1220,7 +1220,8 @@ end
 -------------------------------------------------------------------------------
 --
 function StatusBars2_CreateShardBar( name, displayName, key )
-
+	local SHARD_BAR_NUM_SHARDS = 4;
+	
     -- Create the bar
     local bar = StatusBars2_CreateDiscreteBar( name, "player", SHARD_BAR_NUM_SHARDS, 0.50, 0.32, 0.55, displayName, key, kShard );
 
@@ -1315,6 +1316,7 @@ end
 -------------------------------------------------------------------------------
 --
 function StatusBars2_CreateHolyPowerBar( name, displayName, key )
+	local MAX_HOLY_POWER = 5;
 
     -- Create the bar
     local bar = StatusBars2_CreateDiscreteBar( name, "player", MAX_HOLY_POWER, 0.95, 0.90, 0.60, displayName, key, kHolyPower );
@@ -1609,7 +1611,7 @@ function StatusBars2_CreateEmbersBar( name, displayName, key )
     local maxPower = UnitPowerMax("player", SPELL_POWER_BURNING_EMBERS, true);
 	local power = UnitPower("player", SPELL_POWER_BURNING_EMBERS, true);
 	local numEmbers = floor(maxPower / MAX_POWER_PER_EMBER);
-
+	
     -- Create the bar
     local bar = StatusBars2_CreateDiscreteBar( name, "player", numEmbers, 0.57, 0.12, 1, displayName, key, kEmbers );
 
@@ -2731,6 +2733,16 @@ end
 -------------------------------------------------------------------------------
 --
 function StatusBars2_CreateDiscreteBar( name, unit, count, r, g, b, displayName, key, barType )
+	
+	-- Check range, we only have templates for 3 - 6 discrete chunks and it can come in as less if we're creating a bar on a class that doesn't use it.
+	-- In future, maybe we shouldn't create a bar unless the class can actually use it.
+	if count < 3 then
+		count = 3;
+	end
+
+	if count > 6 then
+		count = 6;
+	end
 
     -- Create the bar
     local bar = StatusBars2_CreateBar( name, unit, "StatusBars2_DiscreteBarTemplate_" .. count, displayName, key, barType );
@@ -3347,28 +3359,30 @@ end
 -------------------------------------------------------------------------------
 --
 function StatusBars2_SetDefaultSettings( )
-
+	
     -- Set defaults for the bars
     for i, bar in ipairs( bars ) do
 
-	-- print("Bar "..i);
+		-- print("Bar "..i);
 
-	-- if( bar.displayName == nil ) then
-	--	print(" Name <unknown>");
-	-- else
-	--	print(" Name "..bar.displayName);
-	-- end
+		-- if( bar.displayName == nil ) then
+			-- print(" Name <unknown>");
+		-- else
+			-- print(" Name "..bar.displayName);
+		-- end
 
-	-- print(" Key "..bar.key);
-	-- print(" Unit "..bar.unit);
-	-- print(" Type "..bar.type);
+		-- print(" Key "..bar.key);
+		-- print(" Unit "..bar.unit);
+		-- print(" Type "..bar.type);
 
         -- Enable all bars by default
         if( StatusBars2_Settings.bars[ bar.key ].enabled == nil ) then
             StatusBars2_Settings.bars[ bar.key ].enabled = bar.defaultEnabled;
         end
 
-        -- Flash player and pet health and mana bars
+		-- print(" enabled "..StatusBars2_Settings.bars[ bar.key ].enabled);
+		
+		-- Flash player and pet health and mana bars
         if( StatusBars2_Settings.bars[ bar.key ].flash == nil and ( bar.optionsTemplate == "StatusBars2_ContinuousBarOptionsTemplate" or bar.optionsTemplate == "StatusBars2_DruidManaBarOptionsTemplate" ) ) then
             if( ( bar.unit == "player" or bar.unit == "pet" ) and bar.type == kHealth ) then
                 StatusBars2_Settings.bars[ bar.key ].flash = true;
@@ -3416,6 +3430,8 @@ function StatusBars2_SetDefaultSettings( )
         if( StatusBars2_Settings.bars[ bar.key ].scale == nil or StatusBars2_Settings.bars[ bar.key ].scale <= 0 ) then
             StatusBars2_Settings.bars[ bar.key ].scale = 1.0;
         end
+
+		-- print(" scale "..StatusBars2_Settings.bars[ bar.key ].scale);
 
         -- Show target spell
         if( bar.type == kPower and bar.unit == "target" and StatusBars2_Settings.bars[ bar.key ].showSpell == nil ) then
