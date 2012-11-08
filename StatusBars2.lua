@@ -499,9 +499,10 @@ function StatusBars2_UpdateLayout( )
 
     -- Build a list of bars to layout
     for i, bar in ipairs( bars ) do
-
+		print(bar:GetName().." moveBars "..printBool(StatusBars2_Options.moveBars));
         -- If the bar has a group and index set include it in the layout
         if( bar.group ~= nil and bar.index ~= nil and ( bar.removeWhenHidden == nil or bar.visible == true or StatusBars2_Options.moveBars == true ) ) then
+			print(bar:GetName().." added to layout");
             table.insert( layoutBars, bar );
         end
     end
@@ -3042,20 +3043,25 @@ function StatusBars2_StatusBar_IsVisible( self )
     -- Get the enable type
     local enabled = StatusBars2_Settings.bars[ self.key ].enabled;
 
-    -- Auto
     local visible = false;
-    if( enabled == "Auto" ) then
-        visible = self.inCombat or self:IsDefault( ) == false;
+	
+	if ( StatusBars2_Options.moveBars == true ) then
+		visible = true;
+	else
+		-- Auto
+		if( enabled == "Auto" ) then
+			visible = self.inCombat or self:IsDefault( ) == false;
 
-    -- Combat
-    elseif( enabled == "Combat" ) then
-        visible = self.inCombat;
+		-- Combat
+		elseif( enabled == "Combat" ) then
+			visible = self.inCombat;
 
-    -- Always
-    elseif( enabled == "Always" ) then
-        visible = true;
-    end
-
+		-- Always
+		elseif( enabled == "Always" ) then
+			visible = true;
+		end
+	end
+	
     return visible;
 
 end
@@ -3789,7 +3795,7 @@ function StatusBars2_Options_ToggleMoveBars_OnClick( self )
 
     StatusBars2_UpdateBars( );
 
-    -- print("moveBars = "..printBool( StatusBars2_Options.moveBars ).." locked = "..printBool( StatusBars2_Settings.locked ));
+    print("moveBars = "..printBool( StatusBars2_Options.moveBars ).." locked = "..printBool( StatusBars2_Settings.locked ));
 end
 
 -------------------------------------------------------------------------------
