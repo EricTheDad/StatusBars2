@@ -1,3 +1,6 @@
+-- Rewritten by GopherYerguns from the original Status Bars by Wesslen. Mist of Pandaria updates by ???? on Wow Interface (integrated with permission) and EricTheDad
+
+
 -- Settings
 StatusBars2_Settings = { };
 
