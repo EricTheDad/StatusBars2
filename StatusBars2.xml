@@ -1103,7 +1103,7 @@
                     </OnClick>
                 </Scripts>
             </Button>
-			<Button name="$parent_MoveBarsButton" inherits="OptionsButtonTemplate" text="Move Bars">
+			<!-- <Button name="$parent_MoveBarsButton" inherits="OptionsButtonTemplate" text="Move Bars">
 				<Size x="150" y="21"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeto="$parent_ResetBarPositionButton" >
@@ -1115,7 +1115,7 @@
 						StatusBars2_Options_ToggleMoveBars_OnClick( self );
 					</OnClick>
 				</Scripts>
-			</Button>
+			</Button> -->
 			<Slider name="$parent_ScaleSlider" inherits="OptionsSliderTemplate" minValue="0.25" maxValue="3.0" valueStep="0.05" >
                 <Size x="200" y="17"/>
                 <Anchors>

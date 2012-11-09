@@ -1,4 +1,9 @@
-﻿2.00.02b
+﻿2.00.03b
+========
+Integrated Frenzy and Renewing Mist in from WOW Interface version.  
+Fixed some things that look wrong with Frenzy, but untested, as I have no hunter.  I'll have to try it out on PTR.
+
+2.00.02b
 ========
 Main Frame position added to save/load
 Range checking for scale on load

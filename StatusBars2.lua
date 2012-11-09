@@ -633,25 +633,28 @@ function StatusBars2_UpdateHealthBar( self )
     local maxHealth = UnitHealthMax( self.unit );
 
     -- Update the bar
-    StatusBars2_UpdateContinuousBar( self, health, maxHealth );
+    if ( StatusBars2_Options.moveBars == true ) then
+        StatusBars2_UpdateContinuousBar( self, 100, 100 );
+    else
+        StatusBars2_UpdateContinuousBar( self, health, maxHealth );
 
-    -- If the bar is still visible update its color
-    if( self.visible == true ) then
+        -- If the bar is still visible update its color
+        if( self.visible == true ) then
 
-        -- Determine the percentage of health remaining
-        local percent = health / maxHealth;
+            -- Determine the percentage of health remaining
+            local percent = health / maxHealth;
 
-        -- Set the bar color based on the percentage of remaining health
-        if( percent >= 0.75 ) then
-            self.status:SetStatusBarColor( 0, 1, 0 );
-        elseif( percent >= 0.50 ) then
-            self.status:SetStatusBarColor( 1, 1, 0 );
-        elseif( percent >= 0.25 ) then
-            self.status:SetStatusBarColor( 1, 0.5, 0 );
-        else
-            self.status:SetStatusBarColor( 1, 0, 0 );
+            -- Set the bar color based on the percentage of remaining health
+            if( percent >= 0.75 ) then
+                self.status:SetStatusBarColor( 0, 1, 0 );
+            elseif( percent >= 0.50 ) then
+                self.status:SetStatusBarColor( 1, 1, 0 );
+            elseif( percent >= 0.25 ) then
+                self.status:SetStatusBarColor( 1, 0.5, 0 );
+            else
+                self.status:SetStatusBarColor( 1, 0, 0 );
+            end
         end
-
     end
 end
 
@@ -998,7 +1001,7 @@ end
 --
 function StatusBars2_PowerBar_IsVisible( self )
 
-    return StatusBars2_ContinuousBar_IsVisible( self ) and ( UnitPowerMax( self.unit, StatusBars2_GetPowerType( self ) ) > 0  or ( self.casting == true or self.channeling == true ) );
+    return StatusBars2_ContinuousBar_IsVisible( self ) and ( UnitPowerMax( self.unit, StatusBars2_GetPowerType( self ) ) > 0  or ( self.casting == true or self.channeling == true ) or StatusBars2_Options.moveBars == true);
 
 end
 
@@ -1055,7 +1058,11 @@ function StatusBars2_UpdatePowerBar( self )
     local maxPower = UnitPowerMax( self.unit, StatusBars2_GetPowerType( self ) );
 
     -- Update the bar
-    StatusBars2_UpdateContinuousBar( self, power, maxPower );
+    if ( StatusBars2_Options.moveBars == true ) then
+        StatusBars2_UpdateContinuousBar( self, 100, 100 );
+    else
+        StatusBars2_UpdateContinuousBar( self, power, maxPower );
+    end
 
 end
 
@@ -2328,7 +2335,7 @@ end
 --
 function StatusBars2_AuraBar_IsVisible( self )
 
-    return StatusBars2_StatusBar_IsVisible( self ) and UnitExists( self.unit ) == 1 and UnitIsDeadOrGhost( self.unit ) == nil;
+    return StatusBars2_StatusBar_IsVisible( self ) and (( UnitExists( self.unit ) == 1 and UnitIsDeadOrGhost( self.unit ) == nil ) or StatusBars2_Options.moveBars == true );
 
 end
 
@@ -2719,7 +2726,7 @@ end
 --
 function StatusBars2_ContinuousBar_IsVisible( self )
 
-    return StatusBars2_StatusBar_IsVisible( self ) and UnitExists( self.unit ) == 1 and UnitIsDeadOrGhost( self.unit ) == nil;
+    return StatusBars2_StatusBar_IsVisible( self ) and (( UnitExists( self.unit ) == 1 and UnitIsDeadOrGhost( self.unit ) == nil ) or StatusBars2_Options.moveBars == true );
 
 end
 
@@ -3044,7 +3051,7 @@ function StatusBars2_StatusBar_IsVisible( self )
     local visible = false;
 	
 	if ( StatusBars2_Options.moveBars == true ) then
-		visible = true;
+		visible = enabled ~= "Never";
 	else
 		-- Auto
 		if( enabled == "Auto" ) then
@@ -3793,7 +3800,7 @@ function StatusBars2_Options_ToggleMoveBars_OnClick( self )
 
     StatusBars2_UpdateBars( );
 
-    print("moveBars = "..printBool( StatusBars2_Options.moveBars ).." locked = "..printBool( StatusBars2_Settings.locked ));
+    -- print("moveBars = "..printBool( StatusBars2_Options.moveBars ).." locked = "..printBool( StatusBars2_Settings.locked ));
 end
 
 -------------------------------------------------------------------------------
