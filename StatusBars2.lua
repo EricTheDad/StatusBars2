@@ -270,7 +270,7 @@ function StatusBars2_UpdateBars( )
     if( englishClass == "MONK" ) then
         StatusBars2_EnableBar( StatusBars2_ChiBar, 1, 11 );
 		if GetSpecialization() == 2 then
-		StatusBars2_EnableBar( StatusBars2_RenewingMistBar, 1, 18 );
+			StatusBars2_EnableBar( StatusBars2_RenewingMistBar, 1, 18 );
 		end
     end
 
@@ -499,10 +499,8 @@ function StatusBars2_UpdateLayout( )
 
     -- Build a list of bars to layout
     for i, bar in ipairs( bars ) do
-		print(bar:GetName().." moveBars "..printBool(StatusBars2_Options.moveBars));
         -- If the bar has a group and index set include it in the layout
-        if( bar.group ~= nil and bar.index ~= nil and ( bar.removeWhenHidden == nil or bar.visible == true or StatusBars2_Options.moveBars == true ) ) then
-			print(bar:GetName().." added to layout");
+        if( bar.group ~= nil and bar.index ~= nil and ( bar.removeWhenHidden == nil or bar.visible == true ) ) then
             table.insert( layoutBars, bar );
         end
     end

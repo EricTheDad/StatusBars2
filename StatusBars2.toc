@@ -1,7 +1,8 @@
-## Interface: 50500
+﻿## Interface: 50500
 ## Version: 2.00b
 ## Title: Status Bars 2
-## Notes:
+## Author: GopherYerguns, Wesslen, 堂吉先生, EricTheDad
+## Notes: Rewritten by GopherYerguns from the original Status Bars by Wesslen. Mist of Pandaria updates by 堂吉先生 on Wow Interface (integrated with permission) and EricTheDad
 ## Dependencies:
 ## OptionalDeps:
 ## SavedVariablesPerCharacter: StatusBars2_Settings
