@@ -1,0 +1,10 @@
+﻿## Interface: 50500
+## Version: 2.00b
+## Title: Status Bars 2
+## Author: GopherYerguns, Wesslen, 堂吉先生, EricTheDad
+## Notes: Movable status bars for health, power and a variety of class-ability-specific displays.
+## Dependencies:
+## OptionalDeps:
+## SavedVariablesPerCharacter: StatusBars2_Settings
+StatusBars2.lua
+StatusBars2.xml
