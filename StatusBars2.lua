@@ -168,7 +168,6 @@ function StatusBars2_CreateBars( )
     StatusBars2_CreateHealthBar( "StatusBars2_PetHealthBar", "pet", "Pet Health", "petHealth" );
     StatusBars2_CreatePowerBar( "StatusBars2_PetPowerBar", "pet", nil, "Pet Power", "petPower" );
     StatusBars2_CreateAuraBar( "StatusBars2_PetAuraBar", "pet", "Pet Auras", "petAura" );
-	StatusBars2_CreateAuraStackBar( "StatusBars2_FrenzyBar", GetSpellInfo( 19623 ), "buff", "pet", 5, 1, 0, 1, "Frenzy", "frenzy" );
 
     -- Specialty bars
     StatusBars2_CreateComboBar( "StatusBars2_ComboBar", "Combo Points", "combo" );
@@ -177,6 +176,7 @@ function StatusBars2_CreateBars( )
     StatusBars2_CreateAuraStackBar( "StatusBars2_SunderBar", GetSpellInfo( 113746 ), "debuff", "target", 3, 1, 0.5, 0, "Sunder Armor", "sunder" );
     StatusBars2_CreateAuraStackBar( "StatusBars2_ArcaneChargesBar", GetSpellInfo( 36032 ), "debuff", "player", 6, 95/255, 182/255, 255/255, "Arcane Charges", "arcaneCharges" );
     StatusBars2_CreateAuraStackBar( "StatusBars2_MaelstromWeaponBar", GetSpellInfo( 51528 ), "buff", "player", 5, 1, 0, 1, "Maelstrom Weapon", "maelstromWeapon" );
+	StatusBars2_CreateAuraStackBar( "StatusBars2_FrenzyBar", GetSpellInfo( 19615 ), "buff", "player", 5, 1, 0, 1, "Frenzy", "frenzy" );
 	StatusBars2_CreateAuraStackBar( "StatusBars2_RenewingMistBar", GetSpellInfo( 119607 ), "buff", "player", 3, 1, 0, 1, "Renewing Mist", "renewingMist" );
 	StatusBars2_CreateShardBar( "StatusBars2_ShardBar", "Soul Shards", "shard" );
 	StatusBars2_CreateHolyPowerBar( "StatusBars2_HolyPowerBar", "Holy Power", "holyPower" );
@@ -273,10 +273,15 @@ function StatusBars2_UpdateBars( )
     if( englishClass == "MONK" ) then
         StatusBars2_EnableBar( StatusBars2_ChiBar, 1, 11 );
 		if GetSpecialization() == 2 then
-			StatusBars2_EnableBar( StatusBars2_RenewingMistBar, 1, 18 );
+			StatusBars2_EnableBar( StatusBars2_RenewingMistBar, 1, 17 );
 		end
     end
 
+    -- Frenzy
+    if( englishClass == "HUNTER" ) then
+        StatusBars2_EnableBar( StatusBars2_FrenzyBar, 1, 18 );
+    end
+   
     -- priest's orbs
     if( englishClass == "PRIEST"  and GetSpecialization() == 3 )then
 		StatusBars2_EnableBar( StatusBars2_OrbsBar, 1, 12 );
@@ -290,7 +295,7 @@ function StatusBars2_UpdateBars( )
 
     -- Player auras
     if( StatusBars2_Settings.bars.playerAura.showBuffs == true or StatusBars2_Settings.bars.playerAura.showDebuffs == true ) then
-        StatusBars2_EnableBar( StatusBars2_AuraBar, 1, 17 );
+        StatusBars2_EnableBar( StatusBars2_AuraBar, 1, 19 );
     end
 
     -- Target health
@@ -326,10 +331,6 @@ function StatusBars2_UpdateBars( )
         StatusBars2_EnableBar( StatusBars2_PetAuraBar, 4, 3 );
     end
 
-    if( englishClass == "HUNTER" ) then
-        StatusBars2_EnableBar( StatusBars2_FrenzyBar, 4, 4 );
-    end
-   
     -- If grouped and not locked enable the mouse for moving
     if( StatusBars2_Settings.grouped == true and StatusBars2_Settings.locked ~= true ) then
         StatusBars2:EnableMouse( true );
