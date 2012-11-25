@@ -65,7 +65,7 @@ function StatusBars2_OnLoad( self )
     -- Register for events
     self:RegisterEvent( "PLAYER_ENTERING_WORLD" );
     self:RegisterEvent( "UNIT_DISPLAYPOWER" );
-    self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+    self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED");
 
     -- Print a status message
     StatusBars2_Trace( 'StatusBars 2 initialized' );
@@ -171,7 +171,7 @@ function StatusBars2_CreateBars( )
 
     -- Specialty bars
     StatusBars2_CreateComboBar( "StatusBars2_ComboBar", "Combo Points", "combo" );
-    StatusBars2_CreateAuraStackBar( "StatusBars2_AnticipationBar", GetSpellInfo( 115189 ), "buff", "player", 5, 1, 0, 1, "Anticipation", "anticipation" );
+    StatusBars2_CreateAuraStackBar( "StatusBars2_AnticipationBar", GetSpellInfo( 115189 ), "buff", "player", 6, 1, 0, 1, "Anticipation", "anticipation" );
     StatusBars2_CreateRuneBar( "StatusBars2_RuneBar", "Runes", "rune" );
     StatusBars2_CreateAuraStackBar( "StatusBars2_SunderBar", GetSpellInfo( 113746 ), "debuff", "target", 3, 1, 0.5, 0, "Sunder Armor", "sunder" );
     StatusBars2_CreateAuraStackBar( "StatusBars2_ArcaneChargesBar", GetSpellInfo( 36032 ), "debuff", "player", 6, 95/255, 182/255, 255/255, "Arcane Charges", "arcaneCharges" );
@@ -228,8 +228,9 @@ function StatusBars2_UpdateBars( )
     elseif( englishClass == "ROGUE" ) then
         StatusBars2_EnableBar( StatusBars2_ComboBar, 1, 4 );
 
-        if (IsUsableSpell( 115189 )) then
+        if (IsSpellKnown( 114015 )) then
             StatusBars2_EnableBar( StatusBars2_AnticipationBar, 1, 16 );
+            StatusBars2_SetDiscreteBarBoxCount( StatusBars2_AnticipationBar, 5 );
         end
     end
 
@@ -2742,38 +2743,73 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateDiscreteBar( name, unit, count, r, g, b, displayName, key, barType )
+function StatusBars2_CreateDiscreteBar( name, unit, maxCount, r, g, b, displayName, key, barType )
 	
 	-- Check range, we only have templates for 3 - 6 discrete chunks and it can come in as less if we're creating a bar on a class that doesn't use it.
 	-- In future, maybe we shouldn't create a bar unless the class can actually use it.
-	if count < 3 then
-		count = 3;
+	if maxCount < 3 then
+		maxCount = 3;
 	end
 
-	if count > 6 then
-		count = 6;
+	if maxCount > 6 then
+		maxCount = 6;
 	end
 
     -- Create the bar
-    local bar = StatusBars2_CreateBar( name, unit, "StatusBars2_DiscreteBarTemplate_" .. count, displayName, key, barType );
+    local bar = StatusBars2_CreateBar( name, unit, "StatusBars2_AuraBarTemplate", displayName, key, barType );
 
     -- Save the box count
-    bar.boxCount = count;
+    bar.maxBoxCount = maxCount;
 
     -- Initialize the boxes
     local i;
-    for i = 1, count do
+    for i = 1, maxCount do
         local boxName = name .. '_Box' .. i;
         local statusName = name .. '_Box' .. i .. '_Status';
-        local box = _G[ boxName ];
-        local status = _G[ statusName ];
+        local box = CreateFrame( "Frame", boxName, bar, "StatusBars2_DiscreteBoxTemplate_3" );
+        local status = box:GetChildren( );
         box:SetBackdropColor( 0, 0, 0, 0.0 );
         status:SetStatusBarColor( r, g, b );
         status:SetValue( 0 );
     end
 
+    StatusBars2_SetDiscreteBarBoxCount( bar, maxCount );
     return bar;
 
+end;
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_CreateDiscreteBar
+--
+--  Description:    Create a bar to track a discrete number of values.
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_SetDiscreteBarBoxCount( self, boxCount )
+
+    if ( self.boxCount == nil or self.boxCount ~= boxCount ) then
+        self.boxCount = boxCount;
+        local boxWidth = self:GetWidth( ) / boxCount;
+        local boxLeft = 0;
+        
+        boxes = { self:GetChildren( ) };
+        
+        -- Initialize the boxes
+        for i, box in ipairs(boxes) do
+        
+            if ( i <= self.boxCount ) then
+                local status = box:GetChildren( );
+                box:SetWidth( boxWidth );
+                status:SetWidth( boxWidth - 8 );
+                box:SetPoint( "TOPLEFT", self, "TOPLEFT", boxLeft , 0 );
+                boxLeft = boxLeft + boxWidth;
+                box:Show( );
+            else
+                box:Hide( );
+            end
+        end
+    end
 end;
 
 -------------------------------------------------------------------------------
@@ -2787,14 +2823,14 @@ end;
 function StatusBars2_UpdateDiscreteBar( self, current )
 
     -- Update the boxes
-    for i = 1, self.boxCount do
-
-        -- Get the status bar
-        local statusName = self:GetName( ) .. '_Box' .. i .. '_Status';
-        local status = _G[ statusName ];
-
-        -- If the point exists show it
-        if i <= current then
+    boxes = { self:GetChildren( ) };
+    
+    -- Initialize the boxes
+    for i, box in ipairs(boxes) do
+    
+       local status = box:GetChildren( );
+       
+       if i <= current then
             status:SetValue( 1 );
         else
             status:SetValue( 0 );

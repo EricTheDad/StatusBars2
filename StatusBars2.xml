@@ -244,6 +244,43 @@
 
 
     <!-- Discrete bar template for 3 boxes -->
+    <Frame name="StatusBars2_DiscreteBarTemplate" movable="true" virtual="true" >
+
+        <Size x="170" y="20" />
+
+    </Frame>
+
+    <!-- Discrete bar template for 3 boxes -->
+    <Frame name="StatusBars2_DiscreteBarTemplate_3" movable="true" virtual="true" >
+
+        <Size x="170" y="20" />
+
+        <Frames>
+            <Frame name="$parent_Box1" inherits="StatusBars2_DiscreteBoxTemplate_3" >
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeto="$Parent" >
+                        <Offset x="0" y="0" />
+                    </Anchor>
+                </Anchors>
+            </Frame>
+            <Frame name="$parent_Box2" inherits="StatusBars2_DiscreteBoxTemplate_3" >
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeto="$Parent" >
+                        <Offset x="56.75" y="0" />
+                    </Anchor>
+                </Anchors>
+            </Frame>
+            <Frame name="$parent_Box3" inherits="StatusBars2_DiscreteBoxTemplate_3" >
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeto="$Parent" >
+                       <Offset x="112" y="0" />
+                    </Anchor>
+                </Anchors>
+            </Frame>
+        </Frames>
+    </Frame>
+
+    <!-- Discrete bar template for 3 boxes -->
     <Frame name="StatusBars2_DiscreteBarTemplate_3" movable="true" virtual="true" >
 
         <Size x="170" y="20" />

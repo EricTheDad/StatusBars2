@@ -1,4 +1,13 @@
-﻿2.00.03b
+﻿2.00.05b
+========
+Constructing discrete bars directly now rather than from a template.  This allows me to change the number of boxes for embers, holy power etc. 
+if something changes that changes the number of boxes in the bar, e.g. the player changes spec or glyphs
+
+2.00.04b
+========
+I was wrong about the Frenzy, changed it back and it works now.
+
+2.00.03b
 ========
 Integrated Frenzy and Renewing Mist in from WOW Interface version.  
 Fixed some things that look wrong with Frenzy, but untested, as I have no hunter.  I'll have to try it out on PTR.
