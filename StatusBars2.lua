@@ -230,7 +230,6 @@ function StatusBars2_UpdateBars( )
 
         if (IsSpellKnown( 114015 )) then
             StatusBars2_EnableBar( StatusBars2_AnticipationBar, 1, 16 );
-            StatusBars2_SetDiscreteBarBoxCount( StatusBars2_AnticipationBar, 5 );
         end
     end
 
@@ -1231,10 +1230,11 @@ end
 -------------------------------------------------------------------------------
 --
 function StatusBars2_CreateShardBar( name, displayName, key )
-	local SHARD_BAR_NUM_SHARDS = 4;
+
+	local MAX_SHARD_BAR_NUM_SHARDS = 4;
 	
     -- Create the bar
-    local bar = StatusBars2_CreateDiscreteBar( name, "player", SHARD_BAR_NUM_SHARDS, 0.50, 0.32, 0.55, displayName, key, kShard );
+    local bar = StatusBars2_CreateDiscreteBar( name, "player", MAX_SHARD_BAR_NUM_SHARDS, 0.50, 0.32, 0.55, displayName, key, kShard );
 
     -- Set the event handlers
     bar.OnEvent = StatusBars2_ShardBar_OnEvent;
@@ -1296,6 +1296,9 @@ end
 --
 function StatusBars2_ShardBar_OnEnable( self )
 
+    -- Set the number of boxes we should be seeing
+    StatusBars2_SetDiscreteBarBoxCount( self, UnitPowerMax( self.unit, SPELL_POWER_SOUL_SHARDS ) );
+
     -- Update
     StatusBars2_UpdateDiscreteBar( self, UnitPower( self.unit, SPELL_POWER_SOUL_SHARDS ) );
 
@@ -1327,7 +1330,8 @@ end
 -------------------------------------------------------------------------------
 --
 function StatusBars2_CreateHolyPowerBar( name, displayName, key )
-	local MAX_HOLY_POWER = 5;
+
+	local MAX_HOLY_POWER = 5; -- with Boundless Conviction, otherwise 3
 
     -- Create the bar
     local bar = StatusBars2_CreateDiscreteBar( name, "player", MAX_HOLY_POWER, 0.95, 0.90, 0.60, displayName, key, kHolyPower );
@@ -1392,6 +1396,9 @@ end
 --
 function StatusBars2_HolyPowerBar_OnEnable( self )
 
+    -- Set the number of boxes we should be seeing
+    StatusBars2_SetDiscreteBarBoxCount( self, UnitPowerMax( self.unit, SPELL_POWER_HOLY_POWER ) );
+
     -- Update
     StatusBars2_UpdateDiscreteBar( self, UnitPower( self.unit, SPELL_POWER_HOLY_POWER ) );
 
@@ -1425,8 +1432,10 @@ end
 --
 function StatusBars2_CreateChiBar( name, displayName, key )
 
+    MAX_CHI_ORBS = 6; -- with Ascendance selected (default 4)
+
     -- Create the bar
-    local bar = StatusBars2_CreateDiscreteBar( name, "player", 4, 0, 1, 0.59, displayName, key, kChi );
+    local bar = StatusBars2_CreateDiscreteBar( name, "player", MAX_CHI_ORBS, 0, 1, 0.59, displayName, key, kChi );
 
     -- Set the event handlers
     bar.OnEvent = StatusBars2_ChiBar_OnEvent;
@@ -1457,7 +1466,7 @@ function StatusBars2_ChiBar_OnEvent( self, event, ... )
         local unit, powerToken = ...;
 
         if( unit == self.unit and powerToken == "LIGHT_FORCE" ) then
-            StatusBars2_UpdateDiscreteBar( self, UnitPower( self.unit, 12 ) );
+            StatusBars2_UpdateDiscreteBar( self, UnitPower( self.unit, SPELL_POWER_LIGHT_FORCE ) );
         end
 
     -- Entering combat
@@ -1490,8 +1499,11 @@ end
 --
 function StatusBars2_ChiBar_OnEnable( self )
 
+    -- Set the number of boxes we should be seeing
+    StatusBars2_SetDiscreteBarBoxCount( self, UnitPowerMax( self.unit, SPELL_POWER_LIGHT_FORCE ) );
+
     -- Update
-    StatusBars2_UpdateDiscreteBar( self, UnitPower( self.unit, 12 ) );
+    StatusBars2_UpdateDiscreteBar( self, UnitPower( self.unit, SPELL_POWER_LIGHT_FORCE ) );
 
     -- Call the base method
     StatusBars2_StatusBar_OnEnable( self );
@@ -1508,7 +1520,7 @@ end
 --
 function StatusBars2_ChiBar_IsDefault( self )
 
-    return UnitPower( self.unit, 12 ) == 0;
+    return UnitPower( self.unit, SPELL_POWER_LIGHT_FORCE ) == 0;
 
 end
 
@@ -1596,7 +1608,7 @@ end
 
 -------------------------------------------------------------------------------
 --
---  Name:           StatusBars2_ChiBar_IsDefault
+--  Name:           StatusBars2_OrbsBar_IsDefault
 --
 --  Description:    Determine if a Orbs bar is at its default state
 --
@@ -1618,13 +1630,10 @@ end
 --
 function StatusBars2_CreateEmbersBar( name, displayName, key )
 
-    -- Calculate the number of embers
-    local maxPower = UnitPowerMax("player", SPELL_POWER_BURNING_EMBERS, true);
-	local power = UnitPower("player", SPELL_POWER_BURNING_EMBERS, true);
-	local numEmbers = floor(maxPower / MAX_POWER_PER_EMBER);
+	local maxEmbers = 4;
 	
     -- Create the bar
-    local bar = StatusBars2_CreateDiscreteBar( name, "player", numEmbers, 0.57, 0.12, 1, displayName, key, kEmbers );
+    local bar = StatusBars2_CreateDiscreteBar( name, "player", maxEmbers, 0.57, 0.12, 1, displayName, key, kEmbers );
 
     -- Set the event handlers
     bar.OnEvent = StatusBars2_EmbersBar_OnEvent;
@@ -1687,7 +1696,11 @@ end
 --
 function StatusBars2_EmbersBar_OnEnable( self )
 
+    -- Set the number of boxes we should be seeing
+    StatusBars2_SetDiscreteBarBoxCount( self, UnitPowerMax( self.unit, SPELL_POWER_BURNING_EMBERS ) );
+
     -- Update
+	-- undocumented parameter "true" in Unitpower delivers the Emberparticles
     StatusBars2_UpdateDiscreteBar( self, UnitPower( self.unit, SPELL_POWER_BURNING_EMBERS ) );
 
     -- Call the base method
@@ -2692,6 +2705,7 @@ function StatusBars2_UpdateContinuousBar( self, current, max )
             StatusBars2_EndFlash( self );
         end
     end
+    
 end
 
 -------------------------------------------------------------------------------
@@ -2744,19 +2758,9 @@ end
 -------------------------------------------------------------------------------
 --
 function StatusBars2_CreateDiscreteBar( name, unit, maxCount, r, g, b, displayName, key, barType )
-	
-	-- Check range, we only have templates for 3 - 6 discrete chunks and it can come in as less if we're creating a bar on a class that doesn't use it.
-	-- In future, maybe we shouldn't create a bar unless the class can actually use it.
-	if maxCount < 3 then
-		maxCount = 3;
-	end
-
-	if maxCount > 6 then
-		maxCount = 6;
-	end
 
     -- Create the bar
-    local bar = StatusBars2_CreateBar( name, unit, "StatusBars2_AuraBarTemplate", displayName, key, barType );
+    local bar = StatusBars2_CreateBar( name, unit, "StatusBars2_DiscreteBarTemplate", displayName, key, barType );
 
     -- Save the box count
     bar.maxBoxCount = maxCount;
@@ -2766,9 +2770,9 @@ function StatusBars2_CreateDiscreteBar( name, unit, maxCount, r, g, b, displayNa
     for i = 1, maxCount do
         local boxName = name .. '_Box' .. i;
         local statusName = name .. '_Box' .. i .. '_Status';
-        local box = CreateFrame( "Frame", boxName, bar, "StatusBars2_DiscreteBoxTemplate_3" );
+        local box = CreateFrame( "Frame", boxName, bar, "StatusBars2_DiscreteBoxTemplate" );
         local status = box:GetChildren( );
-        box:SetBackdropColor( 0, 0, 0, 0.0 );
+        box:SetBackdropColor( 0, 0, 0, 0.35 );
         status:SetStatusBarColor( r, g, b );
         status:SetValue( 0 );
     end
@@ -2790,11 +2794,14 @@ function StatusBars2_SetDiscreteBarBoxCount( self, boxCount )
 
     if ( self.boxCount == nil or self.boxCount ~= boxCount ) then
         self.boxCount = boxCount;
-        local boxWidth = self:GetWidth( ) / boxCount;
+        
+        local overlap = 3;
+        local combinedBoxWidth = self:GetWidth( ) + ( boxCount - 1 ) * overlap;
+        local boxWidth = combinedBoxWidth / boxCount;
         local boxLeft = 0;
         
         boxes = { self:GetChildren( ) };
-        
+
         -- Initialize the boxes
         for i, box in ipairs(boxes) do
         
@@ -2803,13 +2810,14 @@ function StatusBars2_SetDiscreteBarBoxCount( self, boxCount )
                 box:SetWidth( boxWidth );
                 status:SetWidth( boxWidth - 8 );
                 box:SetPoint( "TOPLEFT", self, "TOPLEFT", boxLeft , 0 );
-                boxLeft = boxLeft + boxWidth;
+                boxLeft = boxLeft + boxWidth - overlap;
                 box:Show( );
             else
                 box:Hide( );
             end
         end
     end
+    
 end;
 
 -------------------------------------------------------------------------------
