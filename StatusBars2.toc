@@ -1,4 +1,4 @@
-﻿## Interface: 50500
+## Interface: 50500
 ## Version: 2.00b
 ## Title: Status Bars 2
 ## Author: GopherYerguns, Wesslen, 堂吉先生, EricTheDad

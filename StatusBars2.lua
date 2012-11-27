@@ -2801,48 +2801,96 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateDiscreteBar( name, unit, maxCount, r, g, b, displayName, key, barType )
+function StatusBars2_CreateDiscreteBar( name, unit, boxCount, r, g, b, displayName, key, barType )
 
     -- Create the bar
     local bar = StatusBars2_CreateBar( name, unit, "StatusBars2_DiscreteBarTemplate", displayName, key, barType );
 
-    -- Save the box count
-    bar.maxBoxCount = maxCount;
+	-- Save the color in the settings.  I'll make this editable in the future.
+	bar.color = {};
+	bar.color.r = r;
+	bar.color.g = g;
+	bar.color.b = b;
 
-    -- Initialize the boxes
-    local i;
-    for i = 1, maxCount do
-        local boxName = name .. '_Box' .. i;
-        local statusName = name .. '_Box' .. i .. '_Status';
-        local box = CreateFrame( "Frame", boxName, bar, "StatusBars2_DiscreteBoxTemplate" );
-        local status = box:GetChildren( );
-        status:SetStatusBarColor( r, g, b );
-        status:SetValue( 0 );
-    end
-
-    StatusBars2_SetDiscreteBarBoxCount( bar, maxCount );
+	-- Now create the number of boxes initially requested.  We may create more or hide 
+	-- some in the future, depending on spec/glyph/talent changes.
+	bar.boxCount = 0;
+	StatusBars2_SetDiscreteBarBoxCount( bar, boxCount );
     return bar;
 
 end;
 
 -------------------------------------------------------------------------------
 --
---  Name:           StatusBars2_CreateDiscreteBar
+--  Name:           StatusBars2_SetDiscreteBarBoxCount
 --
---  Description:    Create a bar to track a discrete number of values.
+--  Description:    Adjusts the number of boxes on a discrete bar.
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_SetDiscreteBarBoxCount( self, boxCount )
+function StatusBars2_SetDiscreteBarBoxCount( bar, boxCount )
 
-    if ( self.boxCount == nil or self.boxCount ~= boxCount ) then
-        self.boxCount = boxCount;
+    if ( bar.boxCount ~= boxCount ) then
+		StatusBars2_CreateDiscreteBarBoxes( bar, boxCount );
+		StatusBars2_AdjustDiscreteBarBoxes( bar, boxCount );
+    end
+    
+end;
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_CreateDiscreteBarBoxes
+--
+--  Description:    Creates boxes on a discrete bar.
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_CreateDiscreteBarBoxes( bar, desiredBoxCount )
+
+    local boxes = { bar:GetChildren( ) };
+	boxesAvailableCount = #boxes;
+
+	if ( boxesAvailableCount < desiredBoxCount ) then
+		
+		local r = bar.color.r;
+		local g = bar.color.g;
+		local b = bar.color.b;
+		local name = bar:GetName( );
+
+		-- Initialize the boxes
+		local i;
+		for i = boxesAvailableCount, desiredBoxCount do
+			local boxName = name .. '_Box' .. i;
+			local statusName = name .. '_Box' .. i .. '_Status';
+			local box = CreateFrame( "Frame", boxName, bar, "StatusBars2_DiscreteBoxTemplate" );
+			local status = box:GetChildren( );
+			status:SetStatusBarColor( r, g, b );
+			status:SetValue( 0 );
+		end
+    end
+	
+end;
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_AdjustDiscreteBarBoxes
+--
+--  Description:    Adjusts the number and size of boxes visible on a discrete bar.
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_AdjustDiscreteBarBoxes( bar, boxCount )
+
+	bar.boxCount = boxCount;
+	
+    if ( bar.boxCount == nil or bar.boxCount ~= boxCount ) then
+        bar.boxCount = boxCount;
         
         -- The boxes look too far apart if you put them side by side because the frame
         -- has a pretty wide shadow on it.  Let them overlap a bit to snuggle them to
         -- a more aesthetically pleasing spacing
         local overlap = 3;
-        local combinedBoxWidth = self:GetWidth( ) + ( boxCount - 1 ) * overlap;
+        local combinedBoxWidth = bar:GetWidth( ) + ( boxCount - 1 ) * overlap;
         local boxWidth = combinedBoxWidth / boxCount;
         local boxLeft = 0;
         
@@ -2854,11 +2902,12 @@ function StatusBars2_SetDiscreteBarBoxCount( self, boxCount )
         -- If the box size gets below 32, the edge elements within a box start to overlap and it looks crappy.
         -- So if that happens, scale the edge size down just enough that the elements don't overlap.
         if ( boxWidth < 32 ) then
+        
             -- With the edge smaller, we also want less overlap
             overlap = 3 * boxWidth / 32;
             
             -- Recalculate box size to go with the new overlap.
-            combinedBoxWidth = self:GetWidth( ) + ( boxCount - 1 ) * overlap;
+            combinedBoxWidth = bar:GetWidth( ) + ( boxCount - 1 ) * overlap;
             boxWidth = combinedBoxWidth / boxCount;
             
             -- Now we're ready to calculate tne new edge size
@@ -2868,9 +2917,10 @@ function StatusBars2_SetDiscreteBarBoxCount( self, boxCount )
             backdropInfo.insets.right = inset;
             backdropInfo.insets.top = inset;
             backdropInfo.insets.bottom = inset;
+            
         end
                 
-        boxes = { self:GetChildren( ) };
+        boxes = { bar:GetChildren( ) };
 
         -- Initialize the boxes
         for i, box in ipairs(boxes) do
@@ -2878,11 +2928,11 @@ function StatusBars2_SetDiscreteBarBoxCount( self, boxCount )
             box:SetBackdrop( backdropInfo );
             box:SetBackdropColor( 0, 0, 0, 0.35 );
             
-            if ( i <= self.boxCount ) then
+            if ( i <= bar.boxCount ) then
                 local status = box:GetChildren( );
                 box:SetWidth( boxWidth );
                 status:SetWidth( boxWidth - 8 );
-                box:SetPoint( "TOPLEFT", self, "TOPLEFT", boxLeft , 0 );
+                box:SetPoint( "TOPLEFT", bar, "TOPLEFT", boxLeft , 0 );
                 boxLeft = boxLeft + boxWidth - overlap;
                 box:Show( );
             else
@@ -2902,10 +2952,10 @@ end;
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_UpdateDiscreteBar( self, current )
+function StatusBars2_UpdateDiscreteBar( bar, current )
 
     -- Update the boxes
-    boxes = { self:GetChildren( ) };
+    boxes = { bar:GetChildren( ) };
     
     -- Initialize the boxes
     for i, box in ipairs(boxes) do
