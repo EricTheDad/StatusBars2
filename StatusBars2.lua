@@ -2848,7 +2848,7 @@ end;
 function StatusBars2_CreateDiscreteBarBoxes( bar, desiredBoxCount )
 
     local boxes = { bar:GetChildren( ) };
-	boxesAvailableCount = #boxes;
+	local boxesAvailableCount = #boxes;
 
 	if ( boxesAvailableCount < desiredBoxCount ) then
 		
@@ -2881,65 +2881,61 @@ end;
 --
 function StatusBars2_AdjustDiscreteBarBoxes( bar, boxCount )
 
-	bar.boxCount = boxCount;
-	
-    if ( bar.boxCount == nil or bar.boxCount ~= boxCount ) then
-        bar.boxCount = boxCount;
+    bar.boxCount = boxCount;
+    
+    -- The boxes look too far apart if you put them side by side because the frame
+    -- has a pretty wide shadow on it.  Let them overlap a bit to snuggle them to
+    -- a more aesthetically pleasing spacing
+    local overlap = 3;
+    local combinedBoxWidth = bar:GetWidth( ) + ( boxCount - 1 ) * overlap;
+    local boxWidth = combinedBoxWidth / boxCount;
+    local boxLeft = 0;
+    
+    local backdropInfo = {  bgFile = "Interface/Tooltips/UI-Tooltip-Background", 
+                            edgeFile = "Interface/Tooltips/UI-Tooltip-Border", 
+                            tile = true, tileSize = 16, edgeSize = 16, 
+                            insets = { left = 5, right = 5, top = 5, bottom = 5 }};
+    
+    -- If the box size gets below 32, the edge elements within a box start to overlap and it looks crappy.
+    -- So if that happens, scale the edge size down just enough that the elements don't overlap.
+    if ( boxWidth < 32 ) then
+    
+        -- With the edge smaller, we also want less overlap
+        overlap = 3 * boxWidth / 32;
         
-        -- The boxes look too far apart if you put them side by side because the frame
-        -- has a pretty wide shadow on it.  Let them overlap a bit to snuggle them to
-        -- a more aesthetically pleasing spacing
-        local overlap = 3;
-        local combinedBoxWidth = bar:GetWidth( ) + ( boxCount - 1 ) * overlap;
-        local boxWidth = combinedBoxWidth / boxCount;
-        local boxLeft = 0;
+        -- Recalculate box size to go with the new overlap.
+        combinedBoxWidth = bar:GetWidth( ) + ( boxCount - 1 ) * overlap;
+        boxWidth = combinedBoxWidth / boxCount;
         
-        local backdropInfo = {  bgFile = "Interface/Tooltips/UI-Tooltip-Background", 
-                                edgeFile = "Interface/Tooltips/UI-Tooltip-Border", 
-                                tile = true, tileSize = 16, edgeSize = 16, 
-                                insets = { left = 5, right = 5, top = 5, bottom = 5 }};
+        -- Now we're ready to calculate tne new edge size
+        backdropInfo.edgeSize = 16 * boxWidth / 32;
+        local inset = 5 * boxWidth / 32;
+        backdropInfo.insets.left = inset;
+        backdropInfo.insets.right = inset;
+        backdropInfo.insets.top = inset;
+        backdropInfo.insets.bottom = inset;
         
-        -- If the box size gets below 32, the edge elements within a box start to overlap and it looks crappy.
-        -- So if that happens, scale the edge size down just enough that the elements don't overlap.
-        if ( boxWidth < 32 ) then
-        
-            -- With the edge smaller, we also want less overlap
-            overlap = 3 * boxWidth / 32;
+    end
             
-            -- Recalculate box size to go with the new overlap.
-            combinedBoxWidth = bar:GetWidth( ) + ( boxCount - 1 ) * overlap;
-            boxWidth = combinedBoxWidth / boxCount;
-            
-            -- Now we're ready to calculate tne new edge size
-            backdropInfo.edgeSize = 16 * boxWidth / 32;
-            local inset = 5 * boxWidth / 32;
-            backdropInfo.insets.left = inset;
-            backdropInfo.insets.right = inset;
-            backdropInfo.insets.top = inset;
-            backdropInfo.insets.bottom = inset;
-            
-        end
-                
-        boxes = { bar:GetChildren( ) };
+    local boxes = { bar:GetChildren( ) };
 
-        -- Initialize the boxes
-        for i, box in ipairs(boxes) do
+    -- Initialize the boxes
+    for i, box in ipairs(boxes) do
+    
+        box:SetBackdrop( backdropInfo );
+        box:SetBackdropColor( 0, 0, 0, 0.35 );
         
-            box:SetBackdrop( backdropInfo );
-            box:SetBackdropColor( 0, 0, 0, 0.35 );
-            
-            if ( i <= bar.boxCount ) then
-                local status = box:GetChildren( );
-                box:SetWidth( boxWidth );
-                status:SetWidth( boxWidth - 8 );
-                box:SetPoint( "TOPLEFT", bar, "TOPLEFT", boxLeft , 0 );
-                boxLeft = boxLeft + boxWidth - overlap;
-                box:Show( );
-            else
-                box:Hide( );
-            end
-            
+        if ( i <= bar.boxCount ) then
+            local status = box:GetChildren( );
+            box:SetWidth( boxWidth );
+            status:SetWidth( boxWidth - 8 );
+            box:SetPoint( "TOPLEFT", bar, "TOPLEFT", boxLeft , 0 );
+            boxLeft = boxLeft + boxWidth - overlap;
+            box:Show( );
+        else
+            box:Hide( );
         end
+        
     end
     
 end;
