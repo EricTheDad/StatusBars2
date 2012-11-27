@@ -27,7 +27,7 @@ local kEclipse = 9;
 local kChi = 10;
 local kOrbs = 11;
 local kEmbers = 12;
-local kFury = 13;
+local kDemonicFury = 13;
 local kAnticipation = 14;
 -- Number of runes
 local kMaxRunes = 6;
@@ -65,7 +65,8 @@ function StatusBars2_OnLoad( self )
     -- Register for events
     self:RegisterEvent( "PLAYER_ENTERING_WORLD" );
     self:RegisterEvent( "UNIT_DISPLAYPOWER" );
-    self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED");
+    self:RegisterEvent( "PLAYER_TALENT_UPDATE" );
+    self:RegisterEvent( "GLYPH_UPDATED" );
 
     -- Print a status message
     StatusBars2_Trace( 'StatusBars 2 initialized' );
@@ -101,7 +102,7 @@ function StatusBars2_OnEvent( self, event, ... )
         if( englishClass == "DRUID" ) then
             StatusBars2_UpdateBars( );
         end
-    elseif (event == "ACTIVE_TALENT_GROUP_CHANGED")	then
+    elseif ( event == "PLAYER_TALENT_UPDATE" or event == "GLYPH_UPDATED" )	then
         StatusBars2_UpdateBars( );
     end
 end
@@ -171,7 +172,7 @@ function StatusBars2_CreateBars( )
 
     -- Specialty bars
     StatusBars2_CreateComboBar( "StatusBars2_ComboBar", "Combo Points", "combo" );
-    StatusBars2_CreateAuraStackBar( "StatusBars2_AnticipationBar", GetSpellInfo( 115189 ), "buff", "player", 6, 1, 0, 1, "Anticipation", "anticipation" );
+    StatusBars2_CreateAuraStackBar( "StatusBars2_AnticipationBar", GetSpellInfo( 115189 ), "buff", "player", 5, 1, 0, 1, "Anticipation", "anticipation" );
     StatusBars2_CreateRuneBar( "StatusBars2_RuneBar", "Runes", "rune" );
     StatusBars2_CreateAuraStackBar( "StatusBars2_SunderBar", GetSpellInfo( 113746 ), "debuff", "target", 3, 1, 0.5, 0, "Sunder Armor", "sunder" );
     StatusBars2_CreateAuraStackBar( "StatusBars2_ArcaneChargesBar", GetSpellInfo( 36032 ), "debuff", "player", 6, 95/255, 182/255, 255/255, "Arcane Charges", "arcaneCharges" );
@@ -181,7 +182,7 @@ function StatusBars2_CreateBars( )
 	StatusBars2_CreateShardBar( "StatusBars2_ShardBar", "Soul Shards", "shard" );
 	StatusBars2_CreateHolyPowerBar( "StatusBars2_HolyPowerBar", "Holy Power", "holyPower" );
 	StatusBars2_CreateEclipseBar( "StatusBars2_EclipseBar", "Eclipse", "eclipse" );
-   	StatusBars2_CreatePowerBar( "StatusBars2_FuryBar", "player", SPELL_POWER_DEMONIC_FURY, "Demonic Fury", "fury", kFury );
+   	StatusBars2_CreatePowerBar( "StatusBars2_FuryBar", "player", SPELL_POWER_DEMONIC_FURY, "Demonic Fury", "fury", kDemonicFury );
 	StatusBars2_CreateChiBar( "StatusBars2_ChiBar", "Chi", "chi" );
 	StatusBars2_CreateOrbsBar( "StatusBars2_OrbsBar", "Orbs", "orbs" );
 	StatusBars2_CreateEmbersBar( "StatusBars2_EmbersBar", "Embers", "embers" );
@@ -1231,10 +1232,10 @@ end
 --
 function StatusBars2_CreateShardBar( name, displayName, key )
 
-	local MAX_SHARD_BAR_NUM_SHARDS = 4;
+	local numShards = UnitPower( "player", SPELL_POWER_SOUL_SHARDS );
 	
     -- Create the bar
-    local bar = StatusBars2_CreateDiscreteBar( name, "player", MAX_SHARD_BAR_NUM_SHARDS, 0.50, 0.32, 0.55, displayName, key, kShard );
+    local bar = StatusBars2_CreateDiscreteBar( name, "player", numShards, 0.50, 0.32, 0.55, displayName, key, kShard );
 
     -- Set the event handlers
     bar.OnEvent = StatusBars2_ShardBar_OnEvent;
@@ -1331,10 +1332,10 @@ end
 --
 function StatusBars2_CreateHolyPowerBar( name, displayName, key )
 
-	local MAX_HOLY_POWER = 5; -- with Boundless Conviction, otherwise 3
+	local maxHolyPower = UnitPower( "player", SPELL_POWER_HOLY_POWER ); -- 5 with Boundless Conviction, otherwise 3
 
     -- Create the bar
-    local bar = StatusBars2_CreateDiscreteBar( name, "player", MAX_HOLY_POWER, 0.95, 0.90, 0.60, displayName, key, kHolyPower );
+    local bar = StatusBars2_CreateDiscreteBar( name, "player", maxHolyPower, 0.95, 0.90, 0.60, displayName, key, kHolyPower );
 
     -- Set the event handlers
     bar.OnEvent = StatusBars2_HolyPowerBar_OnEvent;
@@ -1432,10 +1433,10 @@ end
 --
 function StatusBars2_CreateChiBar( name, displayName, key )
 
-    MAX_CHI_ORBS = 6; -- with Ascendance selected (default 4)
+    local maxChiOrbs = UnitPower( "player", SPELL_POWER_LIGHT_FORCE ); -- 6 with Ascendance selected (default 4)
 
     -- Create the bar
-    local bar = StatusBars2_CreateDiscreteBar( name, "player", MAX_CHI_ORBS, 0, 1, 0.59, displayName, key, kChi );
+    local bar = StatusBars2_CreateDiscreteBar( name, "player", maxChiOrbs, 0, 1, 0.59, displayName, key, kChi );
 
     -- Set the event handlers
     bar.OnEvent = StatusBars2_ChiBar_OnEvent;
@@ -1534,6 +1535,8 @@ end
 --
 function StatusBars2_CreateOrbsBar( name, displayName, key )
 
+    local numOrbs = UnitPowerMax( "player", SPELL_POWER_SHADOW_ORBS );
+
     -- Create the bar
     local bar = StatusBars2_CreateDiscreteBar( name, "player", 3, 0.57, 0.12, 1, displayName, key, kOrbs );
 
@@ -1561,7 +1564,7 @@ end
 --
 function StatusBars2_OrbsBar_OnEvent( self, event, ... )
 
-    -- Number of shards changed
+    -- Number of orbs changed
     if( event == "UNIT_POWER" ) then
         local unit, powerToken = ...;
 
@@ -1630,10 +1633,21 @@ end
 --
 function StatusBars2_CreateEmbersBar( name, displayName, key )
 
-	local maxEmbers = 4;
+	local numEmbers = UnitPowerMax( "player", SPELL_POWER_BURNING_EMBERS );
 	
     -- Create the bar
-    local bar = StatusBars2_CreateDiscreteBar( name, "player", maxEmbers, 0.57, 0.12, 1, displayName, key, kEmbers );
+    local bar = StatusBars2_CreateDiscreteBar( name, "player", numEmbers, 0.57, 0.12, 1, displayName, key, kEmbers );
+
+    -- Modify the boxes to display ember particles
+    boxes = { bar:GetChildren( ) };
+    
+    -- MAX_POWER_PER_EMBER defined in Blizzard constants
+    for i, box in ipairs(boxes) do
+    
+       local status = box:GetChildren( );
+       status:SetMinMaxValues( 0, MAX_POWER_PER_EMBER );
+
+    end
 
     -- Set the event handlers
     bar.OnEvent = StatusBars2_EmbersBar_OnEvent;
@@ -1664,7 +1678,8 @@ function StatusBars2_EmbersBar_OnEvent( self, event, ... )
         local unit, powerToken = ...;
 
         if( unit == self.unit and powerToken == "BURNING_EMBERS" ) then
-            StatusBars2_UpdateDiscreteBar( self, UnitPower( self.unit, SPELL_POWER_BURNING_EMBERS ) );
+            -- undocumented parameter "true" in Unitpower delivers the Emberparticles
+            StatusBars2_UpdateEmbersBar( self, UnitPower( self.unit, SPELL_POWER_BURNING_EMBERS, true ) );
         end
 
     -- Entering combat
@@ -1685,6 +1700,35 @@ function StatusBars2_EmbersBar_OnEvent( self, event, ... )
 
 end
 
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_UpdateEmbersBar
+--
+--  Description:    Custom update for the semi-discrete embers bar
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_UpdateEmbersBar( self, current )
+
+    local current = current;
+    
+    -- Update the boxes
+    boxes = { self:GetChildren( ) };
+    
+    -- Initialize the boxes
+    for i, box in ipairs(boxes) do
+    
+       local status = box:GetChildren( );
+       
+        if current < MAX_POWER_PER_EMBER then
+            status:SetValue( current );
+            current = 0;
+        else
+            status:SetValue( MAX_POWER_PER_EMBER );
+            current = current - MAX_POWER_PER_EMBER;
+        end
+    end
+end
 
 -------------------------------------------------------------------------------
 --
@@ -1701,7 +1745,7 @@ function StatusBars2_EmbersBar_OnEnable( self )
 
     -- Update
 	-- undocumented parameter "true" in Unitpower delivers the Emberparticles
-    StatusBars2_UpdateDiscreteBar( self, UnitPower( self.unit, SPELL_POWER_BURNING_EMBERS ) );
+    StatusBars2_UpdateEmbersBar( self, UnitPower( self.unit, SPELL_POWER_BURNING_EMBERS, true ) );
 
     -- Call the base method
     StatusBars2_StatusBar_OnEnable( self );
@@ -2772,7 +2816,6 @@ function StatusBars2_CreateDiscreteBar( name, unit, maxCount, r, g, b, displayNa
         local statusName = name .. '_Box' .. i .. '_Status';
         local box = CreateFrame( "Frame", boxName, bar, "StatusBars2_DiscreteBoxTemplate" );
         local status = box:GetChildren( );
-        box:SetBackdropColor( 0, 0, 0, 0.35 );
         status:SetStatusBarColor( r, g, b );
         status:SetValue( 0 );
     end
@@ -2795,16 +2838,46 @@ function StatusBars2_SetDiscreteBarBoxCount( self, boxCount )
     if ( self.boxCount == nil or self.boxCount ~= boxCount ) then
         self.boxCount = boxCount;
         
+        -- The boxes look too far apart if you put them side by side because the frame
+        -- has a pretty wide shadow on it.  Let them overlap a bit to snuggle them to
+        -- a more aesthetically pleasing spacing
         local overlap = 3;
         local combinedBoxWidth = self:GetWidth( ) + ( boxCount - 1 ) * overlap;
         local boxWidth = combinedBoxWidth / boxCount;
         local boxLeft = 0;
         
+        local backdropInfo = {  bgFile = "Interface/Tooltips/UI-Tooltip-Background", 
+                                edgeFile = "Interface/Tooltips/UI-Tooltip-Border", 
+                                tile = true, tileSize = 16, edgeSize = 16, 
+                                insets = { left = 5, right = 5, top = 5, bottom = 5 }};
+        
+        -- If the box size gets below 32, the edge elements within a box start to overlap and it looks crappy.
+        -- So if that happens, scale the edge size down just enough that the elements don't overlap.
+        if ( boxWidth < 32 ) then
+            -- With the edge smaller, we also want less overlap
+            overlap = 3 * boxWidth / 32;
+            
+            -- Recalculate box size to go with the new overlap.
+            combinedBoxWidth = self:GetWidth( ) + ( boxCount - 1 ) * overlap;
+            boxWidth = combinedBoxWidth / boxCount;
+            
+            -- Now we're ready to calculate tne new edge size
+            backdropInfo.edgeSize = 16 * boxWidth / 32;
+            local inset = 5 * boxWidth / 32;
+            backdropInfo.insets.left = inset;
+            backdropInfo.insets.right = inset;
+            backdropInfo.insets.top = inset;
+            backdropInfo.insets.bottom = inset;
+        end
+                
         boxes = { self:GetChildren( ) };
 
         -- Initialize the boxes
         for i, box in ipairs(boxes) do
         
+            box:SetBackdrop( backdropInfo );
+            box:SetBackdropColor( 0, 0, 0, 0.35 );
+            
             if ( i <= self.boxCount ) then
                 local status = box:GetChildren( );
                 box:SetWidth( boxWidth );
@@ -2815,6 +2888,7 @@ function StatusBars2_SetDiscreteBarBoxCount( self, boxCount )
             else
                 box:Hide( );
             end
+            
         end
     end
     
@@ -2838,7 +2912,7 @@ function StatusBars2_UpdateDiscreteBar( self, current )
     
        local status = box:GetChildren( );
        
-       if i <= current then
+        if i <= current then
             status:SetValue( 1 );
         else
             status:SetValue( 0 );
