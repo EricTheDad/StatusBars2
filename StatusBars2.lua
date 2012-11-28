@@ -182,7 +182,7 @@ function StatusBars2_CreateBars( )
 	StatusBars2_CreateShardBar( "StatusBars2_ShardBar", "Soul Shards", "shard" );
 	StatusBars2_CreateHolyPowerBar( "StatusBars2_HolyPowerBar", "Holy Power", "holyPower" );
 	StatusBars2_CreateEclipseBar( "StatusBars2_EclipseBar", "Eclipse", "eclipse" );
-   	StatusBars2_CreatePowerBar( "StatusBars2_FuryBar", "player", SPELL_POWER_DEMONIC_FURY, "Demonic Fury", "fury", kDemonicFury );
+   	StatusBars2_CreatePowerBar( "StatusBars2_DemonicFuryBar", "player", SPELL_POWER_DEMONIC_FURY, "Demonic Fury", "fury", kDemonicFury );
 	StatusBars2_CreateChiBar( "StatusBars2_ChiBar", "Chi", "chi" );
 	StatusBars2_CreateOrbsBar( "StatusBars2_OrbsBar", "Orbs", "orbs" );
 	StatusBars2_CreateEmbersBar( "StatusBars2_EmbersBar", "Embers", "embers" );
@@ -240,7 +240,7 @@ function StatusBars2_UpdateBars( )
 	elseif ( englishClass == "WARLOCK" and GetSpecialization() == 3 ) then
 		StatusBars2_EnableBar( StatusBars2_EmbersBar, 1, 13 );
 	elseif ( englishClass == "WARLOCK" and GetSpecialization() == 2 ) then
-		StatusBars2_EnableBar( StatusBars2_FuryBar, 1, 14 );
+		StatusBars2_EnableBar( StatusBars2_DemonicFuryBar, 1, 14 );
 	end
 
 	-- Holy Power
@@ -2887,6 +2887,7 @@ function StatusBars2_AdjustDiscreteBarBoxes( bar, boxCount )
     -- has a pretty wide shadow on it.  Let them overlap a bit to snuggle them to
     -- a more aesthetically pleasing spacing
     local overlap = 3;
+	local statusWidthDiff = 8;
     local combinedBoxWidth = bar:GetWidth( ) + ( boxCount - 1 ) * overlap;
     local boxWidth = combinedBoxWidth / boxCount;
     local boxLeft = 0;
@@ -2901,8 +2902,9 @@ function StatusBars2_AdjustDiscreteBarBoxes( bar, boxCount )
     if ( boxWidth < 32 ) then
     
         -- With the edge smaller, we also want less overlap
-        overlap = 3 * boxWidth / 32;
-        
+        overlap = overlap * boxWidth / 32;
+        statusWidthDiff = statusWidthDiff * boxWidth / 32;
+		
         -- Recalculate box size to go with the new overlap.
         combinedBoxWidth = bar:GetWidth( ) + ( boxCount - 1 ) * overlap;
         boxWidth = combinedBoxWidth / boxCount;
@@ -2928,7 +2930,7 @@ function StatusBars2_AdjustDiscreteBarBoxes( bar, boxCount )
         if ( i <= bar.boxCount ) then
             local status = box:GetChildren( );
             box:SetWidth( boxWidth );
-            status:SetWidth( boxWidth - 8 );
+            status:SetWidth( boxWidth - statusWidthDiff );
             box:SetPoint( "TOPLEFT", bar, "TOPLEFT", boxLeft , 0 );
             boxLeft = boxLeft + boxWidth - overlap;
             box:Show( );
@@ -3567,7 +3569,7 @@ function StatusBars2_SetDefaultSettings( )
                 StatusBars2_Settings.bars[ bar.key ].flash = true;
             elseif( ( bar.unit == "player" or bar.unit == "pet" ) and bar.type == kPower ) then
                 local localizedClass, englishClass = UnitClass( "player" );
-                StatusBars2_Settings.bars[ bar.key ].flash = ( bar.unit == "player" and englishClass ~= "ROGUE" and englishClass ~= "WARRIOR" and englishClass ~= "DEATHKNIGHT" and englishClass ~= "DRUID" ) or ( bar.unit == "pet" and englishClass == "WARLOCK" );
+                StatusBars2_Settings.bars[ bar.key ].flash = ( bar.unit == "player" and englishClass ~= "ROGUE" and englishClass ~= "WARRIOR" and englishClass ~= "DEATHKNIGHT" and englishClass ~= "MONK" and englishClass ~= "DRUID" ) or ( bar.unit == "pet" and englishClass == "WARLOCK" );
             elseif( bar.type == kDruidMana ) then
                 StatusBars2_Settings.bars[ bar.key ].flash = true;
             else
