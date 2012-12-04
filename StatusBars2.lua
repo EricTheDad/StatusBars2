@@ -698,18 +698,7 @@ function StatusBars2_CreatePowerBar( name, unit, powerType, displayName, key, ba
     if( unit == "target" ) then
         bar.optionsTemplate = "StatusBars2_TargetPowerBarOptionsTemplate";
     end
-
-    -- If its the druid mana bar use a special options template
-    if( bar.type == kDruidMana ) then
-        bar.optionsTemplate = "StatusBars2_DruidManaBarOptionsTemplate";
-    end
-
-    -- Save the power type
-    bar.powerType = powerType;
-
-    -- Set the color
-    StatusBars2_SetPowerBarColor( bar );
-
+	
     -- Set the event handlers
     bar.OnEvent = StatusBars2_PowerBar_OnEvent;
     bar.OnUpdate = StatusBars2_PowerBar_OnUpdate;
@@ -736,12 +725,41 @@ function StatusBars2_CreatePowerBar( name, unit, powerType, displayName, key, ba
     elseif( unit == "pet" ) then
         bar:RegisterEvent( "UNIT_PET" );
     end
-    if( powerType == nil ) then
-        bar:RegisterEvent( "UNIT_DISPLAYPOWER" );
-    end
+
+	StatusBars2_ConfigurePowerBar( bar, powerType, displayName, key, barType or kPower );
 
     return bar;
 
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_ConfigurePowerBar
+--
+--  Description:    Change the characteristics of a power bar
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_ConfigurePowerBar( bar, powerType, displayName, key, barType )
+
+	StatusBars2_ConfigureContinuousBar( bar, displayName, key, barType );
+	
+    -- If its the druid mana bar use a special options template
+    if( barType == kDruidMana ) then
+        bar.optionsTemplate = "StatusBars2_DruidManaBarOptionsTemplate";
+    end
+
+    bar.powerType = powerType;
+
+    -- Set the color
+    StatusBars2_SetPowerBarColor( bar );
+
+    if( powerType == nil ) then
+        bar:RegisterEvent( "UNIT_DISPLAYPOWER" );
+	else if bar:IsEventRegistered( "UNIT_DISPLAYPOWER" ) then
+		bar:UnregisterEvent( "UNIT_DISPLAYPOWER" );
+    end
+	
 end
 
 -------------------------------------------------------------------------------
@@ -2714,6 +2732,23 @@ end
 
 -------------------------------------------------------------------------------
 --
+--  Name:           StatusBars2_ConfigureContinuousBar
+--
+--  Description:    Change the characteristics of a power bar
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_ConfigureContinuousBar( bar, displayName, key, barType )
+
+	StatusBars2_ConfigureBar( bar, displayName, key, barType );
+	
+	-- Set the options template
+	bar.optionsTemplate = "StatusBars2_ContinuousBarOptionsTemplate";
+
+end
+
+-------------------------------------------------------------------------------
+--
 --  Name:           StatusBars2_UpdateContinuousBar
 --
 --  Description:    Update a continuous bar
@@ -2805,6 +2840,25 @@ function StatusBars2_CreateDiscreteBar( name, unit, boxCount, r, g, b, displayNa
 
     -- Create the bar
     local bar = StatusBars2_CreateBar( name, unit, "StatusBars2_DiscreteBarTemplate", displayName, key, barType );
+	
+	-- Bar starts off with no boxes created.
+	bar.boxCount = 0;
+	
+	StatusBars2_ConfigureDiscreteBar( bar, boxCount, r, g, b, displayName, key, barType )
+	
+    return bar;
+
+end;
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_ConfigureDiscreteBar
+--
+--  Description:    Create a bar to track a discrete number of values.
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_ConfigureDiscreteBar( bar, boxCount, r, g, b, displayName, key, barType )
 
 	-- Save the color in the settings.  I'll make this editable in the future.
 	bar.color = {};
@@ -2814,8 +2868,8 @@ function StatusBars2_CreateDiscreteBar( name, unit, boxCount, r, g, b, displayNa
 
 	-- Now create the number of boxes initially requested.  We may create more or hide 
 	-- some in the future, depending on spec/glyph/talent changes.
-	bar.boxCount = 0;
 	StatusBars2_SetDiscreteBarBoxCount( bar, boxCount );
+	
     return bar;
 
 end;
@@ -3015,6 +3069,22 @@ function StatusBars2_CreateBar( name, unit, template, displayName, key, barType 
     table.insert( bars, bar );
 
     return bar;
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_ConfigureBar
+--
+--  Description:    Change the characteristics of a bar after is has been created.
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_ConfigureBar( bar, displayName, key, barType )
+
+    bar.displayName = displayName;
+    bar.key = key;
+    bar.type = barType;
 
 end
 
