@@ -1,5 +1,2 @@
 package-as: StatusBars2
-
-ignore:
-    - .pkgmeta
     
