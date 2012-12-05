@@ -13,6 +13,23 @@ local lastFlashTime = 0;
 -- Bar group spacing
 local kGroupSpacing = 18;
 
+-- Bar ids
+local kPlayerHealth				= 0;
+local kPlayerPower				= 1;
+local kPlayerSecondaryPower		= 2;
+local kPlayerSpecialty			= 3;
+local kPlayerSecondarySpecialty	= 4;
+local kPlayerAuras				= 5;
+local kTargetHealth				= 6;
+local kTargetPower				= 7;
+local kTargetAuras				= 8;
+local kFocusHealth				= 9;
+local kFocusPower				= 10;
+local kFocusAuras				= 11;
+local kPetHealth				= 12;
+local kPetPower					= 13;
+local kPetAuras					= 14;
+
 -- Bar types
 local kHealth = 0;
 local kPower = 1;
@@ -29,6 +46,8 @@ local kOrbs = 11;
 local kEmbers = 12;
 local kDemonicFury = 13;
 local kAnticipation = 14;
+
+
 -- Number of runes
 local kMaxRunes = 6;
 
