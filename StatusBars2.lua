@@ -5,6 +5,7 @@
 StatusBars2_Settings = { };
 
 -- Bars
+local groups = {};
 local bars = {};
 
 -- Last flash time
@@ -61,6 +62,8 @@ local kFlashDuration = 0.5;
 -- Max flash alpha
 local kFlashAlpha = 0.8;
 
+local kDefaultFramePosition = { x = 0, y = -100 };
+
 -------------------------------------------------------------------------------
 --
 --  Name:           StatusBars2_OnLoad
@@ -71,7 +74,7 @@ local kFlashAlpha = 0.8;
 --
 function StatusBars2_OnLoad( self )
 
-    -- Create bars
+    StatusBars2_CreateGroups( );
     StatusBars2_CreateBars( );
 	
     -- Set scripts
@@ -156,6 +159,29 @@ function StatusBars2_OnUpdate( self )
         StatusBars2_UpdateFlash( bar, level );
     end
 
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_Groups
+--
+--  Description:    Create frames for each bar group
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_CreateGroups( )
+    -- We'll use the main frame for the player group
+    table.insert( groups, StatusBars2 );
+    
+    -- Now we'll create frames for the target, focus and pet groups.
+    local targetGroup = CreateFrame( "Frame", "StatusBars2_TargetGroup", StatusBars2, StatusBars2_GroupFrameTemplate );
+    local focusGroup = CreateFrame( "Frame", "StatusBars2_FocusGroup", StatusBars2, StatusBars2_GroupFrameTemplate );
+    local petGroup = CreateFrame( "Frame", "StatusBars2_PetGroup", StatusBars2, StatusBars2_GroupFrameTemplate );
+    
+    -- And insert them into the groups table for later reference.
+    table.insert( groups, targetGroup );
+    table.insert( groups, focusGroup );
+    table.insert( groups, petGroup );
 end
 
 -------------------------------------------------------------------------------
@@ -362,8 +388,16 @@ function StatusBars2_UpdateBars( )
     StatusBars2:SetScale( StatusBars2_Settings.scale );
  
     -- Set Main Frame Position
+	local x = kDefaultFramePosition.x;
+	local y = kDefaultFramePosition.y;
+	
+	if ( StatusBars2_Settings.position ~= nil ) then
+        x = StatusBars2_Settings.position.x;
+        y = StatusBars2_Settings.position.y;
+    end
+	
     StatusBars2:ClearAllPoints( );
-    StatusBars2:SetPoint( "TOP", UIPARENT, "CENTER", StatusBars2_Settings.position.x / StatusBars2:GetScale( ), StatusBars2_Settings.position.y / StatusBars2:GetScale( ) );
+    StatusBars2:SetPoint( "TOP", UIPARENT, "CENTER", x / StatusBars2:GetScale( ), y / StatusBars2:GetScale( ) );
 
     -- print("update: frame x = "..StatusBars2:GetLeft( ).." frame y = "..StatusBars2:GetTop( ).." scale = "..StatusBars2:GetScale( ));
     -- print("update: frame width = "..StatusBars2:GetWidth( ).." frame height = "..StatusBars2:GetHeight( ));

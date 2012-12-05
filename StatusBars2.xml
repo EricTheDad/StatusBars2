@@ -473,8 +473,12 @@
 		</Scripts>
 	</Frame>
 
+    <Frame name="StatusBars2_GroupFrameTemplate" movable="true" hidden="false" frameStrata="LOW" virtual = "true" >
+        <Size x="170" y="200" />
+    </Frame>
+
     <!-- Main frame -->
-    <Frame name="StatusBars2" toplevel="true" parent="UIParent" movable="true" hidden="false" frameStrata="LOW" >
+    <Frame name="StatusBars2" toplevel="true" parent="UIParent" inherits="StatusBars2_GroupFrameTemplate" >
 
         <Size x="170" y="200" />
 
