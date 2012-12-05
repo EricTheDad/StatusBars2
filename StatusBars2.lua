@@ -756,7 +756,7 @@ function StatusBars2_ConfigurePowerBar( bar, powerType, displayName, key, barTyp
 
     if( powerType == nil ) then
         bar:RegisterEvent( "UNIT_DISPLAYPOWER" );
-	else if bar:IsEventRegistered( "UNIT_DISPLAYPOWER" ) then
+	elseif( bar:IsEventRegistered( "UNIT_DISPLAYPOWER" ) ) then
 		bar:UnregisterEvent( "UNIT_DISPLAYPOWER" );
     end
 	
@@ -2707,9 +2707,6 @@ function StatusBars2_CreateContinuousBar( name, unit, r, g, b, displayName, key,
     -- Set the options template
     bar.optionsTemplate = "StatusBars2_ContinuousBarOptionsTemplate";
 
-    -- Set the background color
-    bar:SetBackdropColor( 0, 0, 0, 0.35 );
-
     -- Get the status and text frames
     bar.status = _G[ name .. "_Status" ];
     bar.text = _G[ name .. "_Text" ];
@@ -2723,6 +2720,14 @@ function StatusBars2_CreateContinuousBar( name, unit, r, g, b, displayName, key,
     -- Set the status bar color
     bar.status:SetStatusBarColor( r, g, b );
 
+    -- Set the background color
+    bar.status:SetBackdropColor( 0, 0, 0, 0.35 );
+    
+    -- Set the status bar to draw behind the edge frame so it doesn't overlap.  
+    -- This should be possible with XML, but I can't figure it out with the documentation available.
+    -- Would probably work if the statusbar was the parent frame to the edge frame, but that would entail a large rewrite.
+    bar.status:SetFrameLevel( bar:GetFrameLevel( ) - 1 );
+    
     -- Set the text color
     bar.text:SetTextColor( 1, 1, 1 );
 
@@ -2844,7 +2849,7 @@ function StatusBars2_CreateDiscreteBar( name, unit, boxCount, r, g, b, displayNa
 	-- Bar starts off with no boxes created.
 	bar.boxCount = 0;
 	
-	StatusBars2_ConfigureDiscreteBar( bar, boxCount, r, g, b, displayName, key, barType )
+	StatusBars2_ConfigureDiscreteBar( bar, boxCount, r, g, b, displayName, key, barType );
 	
     return bar;
 
@@ -2946,10 +2951,7 @@ function StatusBars2_AdjustDiscreteBarBoxes( bar, boxCount )
     local boxWidth = combinedBoxWidth / boxCount;
     local boxLeft = 0;
     
-    local backdropInfo = {  bgFile = "Interface/Tooltips/UI-Tooltip-Background", 
-                            edgeFile = "Interface/Tooltips/UI-Tooltip-Border", 
-                            tile = true, tileSize = 16, edgeSize = 16, 
-                            insets = { left = 5, right = 5, top = 5, bottom = 5 }};
+    local backdropInfo = { edgeFile = "Interface/Tooltips/UI-Tooltip-Border", edgeSize = 16 };
     
     -- If the box size gets below 32, the edge elements within a box start to overlap and it looks crappy.
     -- So if that happens, scale the edge size down just enough that the elements don't overlap.
@@ -2965,12 +2967,7 @@ function StatusBars2_AdjustDiscreteBarBoxes( bar, boxCount )
         
         -- Now we're ready to calculate tne new edge size
         backdropInfo.edgeSize = 16 * boxWidth / 32;
-        local inset = 5 * boxWidth / 32;
-        backdropInfo.insets.left = inset;
-        backdropInfo.insets.right = inset;
-        backdropInfo.insets.top = inset;
-        backdropInfo.insets.bottom = inset;
-        
+       
     end
             
     local boxes = { bar:GetChildren( ) };
@@ -2979,12 +2976,17 @@ function StatusBars2_AdjustDiscreteBarBoxes( bar, boxCount )
     for i, box in ipairs(boxes) do
     
         box:SetBackdrop( backdropInfo );
-        box:SetBackdropColor( 0, 0, 0, 0.35 );
         
         if ( i <= bar.boxCount ) then
             local status = box:GetChildren( );
             box:SetWidth( boxWidth );
             status:SetWidth( boxWidth - statusWidthDiff );
+            
+            -- Set the status bar to draw behind the edge frame so it doesn't overlap.
+            -- This should be possible in XML, but the documentation is too sketchy for me to figure it out.
+            status:SetFrameLevel( box:GetFrameLevel( ) - 1 );
+            status:SetBackdropColor( 0, 0, 0, 0.35 );
+            
             box:SetPoint( "TOPLEFT", bar, "TOPLEFT", boxLeft , 0 );
             boxLeft = boxLeft + boxWidth - overlap;
             box:Show( );

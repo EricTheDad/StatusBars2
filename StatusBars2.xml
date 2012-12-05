@@ -19,16 +19,13 @@
 
         <Size x="170" y="20" />
 
-        <Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" bgFile="Interface\Tooltips\UI-Tooltip-Background" tile="true">
+        <Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
             <EdgeSize>
                 <AbsValue val="16" />
             </EdgeSize>
             <TileSize>
                 <AbsValue val="16" />
             </TileSize>
-            <BackgroundInsets>
-                <AbsInset left="5" right="5" top="5" bottom="5" />
-            </BackgroundInsets>
         </Backdrop>
 
         <Frames>
@@ -38,9 +35,6 @@
                         <FontString name="$parent_Text" inherits="GameFontNormalSmall" >
                             <Anchors>
                                 <Anchor point="CENTER" relativeto="$Parent">
-                                    <Offset>
-                                        <AbsDimension x="0" y="1" />
-                                    </Offset>
                                 </Anchor>
                             </Anchors>
                             <Size>
@@ -66,9 +60,9 @@
                     </Layer>
                 </Layers>
             </Frame>
-            <StatusBar name="$parent_Status" drawLayer="BACKGROUND" >
+            <StatusBar name="$parent_Status" >
                 <Size>
-                  <AbsDimension x="160" y="10" />
+                  <AbsDimension x="162" y="13" />
                 </Size>
                 <BarTexture file="Interface\TargetingFrame\UI-StatusBar" />
                 <Anchors>
@@ -78,6 +72,11 @@
                         </Offset>
                     </Anchor>
                 </Anchors>
+                <Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" tile="true">
+                    <TileSize>
+                        <AbsValue val="16" />
+                    </TileSize>
+                </Backdrop>
             </StatusBar>
         </Frames>
     </Frame>
@@ -95,7 +94,7 @@
         <Frames>
             <StatusBar name="$parent_Status" drawLayer="BACKGROUND" minValue="0" maxValue="1" >
                 <Size>
-                  <AbsDimension x="160" y="10" />
+                  <AbsDimension x="163" y="13" />
                 </Size>
                 <BarTexture file="Interface\TargetingFrame\UI-StatusBar" />
                 <Anchors>
@@ -105,6 +104,11 @@
                         </Offset>
                     </Anchor>
                 </Anchors>
+                <Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" tile="true">
+                    <TileSize>
+                        <AbsValue val="16" />
+                    </TileSize>
+                </Backdrop>
             </StatusBar>
         </Frames>
     </Frame>
