@@ -1,4 +1,8 @@
-﻿2.00
+﻿2.01
+====
+Improved the look of the bars by making the statusbar slightly bigger and drawing it under the frame instead of on top of it.
+
+2.00
 ========
 Bumped TOC for 5.1
 
