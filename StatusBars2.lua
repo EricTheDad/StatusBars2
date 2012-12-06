@@ -14,6 +14,8 @@ local lastFlashTime = 0;
 -- Bar group spacing
 local kGroupSpacing = 18;
 
+-- Group ids
+
 -- Bar ids
 local kPlayerHealth				= 0;
 local kPlayerPower				= 1;
@@ -170,15 +172,15 @@ end
 -------------------------------------------------------------------------------
 --
 function StatusBars2_CreateGroups( )
-    -- We'll use the main frame for the player group
-    table.insert( groups, StatusBars2 );
-    
-    -- Now we'll create frames for the target, focus and pet groups.
+
+    -- Create frames for the player, target, focus and pet groups.
+    local playerGroup = CreateFrame( "Frame", "StatusBars2_PlayerGroup", StatusBars2, StatusBars2_GroupFrameTemplate );
     local targetGroup = CreateFrame( "Frame", "StatusBars2_TargetGroup", StatusBars2, StatusBars2_GroupFrameTemplate );
     local focusGroup = CreateFrame( "Frame", "StatusBars2_FocusGroup", StatusBars2, StatusBars2_GroupFrameTemplate );
     local petGroup = CreateFrame( "Frame", "StatusBars2_PetGroup", StatusBars2, StatusBars2_GroupFrameTemplate );
     
-    -- And insert them into the groups table for later reference.
+    -- Insert the group frames into the groups table for later reference.
+    table.insert( groups, playerGroup );
     table.insert( groups, targetGroup );
     table.insert( groups, focusGroup );
     table.insert( groups, petGroup );
