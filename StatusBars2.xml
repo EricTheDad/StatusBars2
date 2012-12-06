@@ -793,7 +793,7 @@
                 </Anchors>
                 <Scripts>
                     <OnLoad>
-                        getglobal( self:GetName( ) .. "Text" ):SetText( "Lock bar position" );
+                        getglobal( self:GetName( ) .. "Text" ):SetText( "Lock bar positions" );
                     </OnLoad>
                 </Scripts>
             </CheckButton>
@@ -805,14 +805,26 @@
                 </Anchors>
                 <Scripts>
                     <OnLoad>
-                        getglobal( self:GetName( ) .. "Text" ):SetText( "Group bars" );
+                        getglobal( self:GetName( ) .. "Text" ):SetText( "Lock bars to groups" );
+                    </OnLoad>
+                </Scripts>
+            </CheckButton>
+            <CheckButton name="$parent_LockGroupsTogetherButton" inherits="OptionsCheckButtonTemplate" >
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeto="$parent_GroupedButton" >
+                        <Offset x="0" y="-24" />
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal( self:GetName( ) .. "Text" ):SetText( "Lock groups together" );
                     </OnLoad>
                 </Scripts>
             </CheckButton>
             <Button name="$parent_ResetBarPositionButton" inherits="OptionsButtonTemplate" text="Reset Bar Positions">
                 <Size x="150" y="21"/>
                 <Anchors>
-                    <Anchor point="TOPLEFT" relativeto="$parent_GroupedButton" >
+                    <Anchor point="TOPLEFT" relativeto="$parent_LockGroupsTogetherButton" >
                         <Offset x="0" y="-24" />
                     </Anchor>
                 </Anchors>

@@ -85,6 +85,9 @@ function StatusBars2_OnLoad( self )
     self:SetScript( "OnMouseDown", StatusBars2_OnMouseDown );
     self:SetScript( "OnMouseUp", StatusBars2_OnMouseUp );
     self:SetScript( "OnHide", StatusBars2_OnHide );
+    
+    self.OnMouseDown = StatusBars2_OnMouseDown;
+    self.OnMouseUp = StatusBars2_OnMouseUp;
 
     -- Register for events
     self:RegisterEvent( "PLAYER_ENTERING_WORLD" );
@@ -174,16 +177,118 @@ end
 function StatusBars2_CreateGroups( )
 
     -- Create frames for the player, target, focus and pet groups.
-    local playerGroup = CreateFrame( "Frame", "StatusBars2_PlayerGroup", StatusBars2, StatusBars2_GroupFrameTemplate );
-    local targetGroup = CreateFrame( "Frame", "StatusBars2_TargetGroup", StatusBars2, StatusBars2_GroupFrameTemplate );
-    local focusGroup = CreateFrame( "Frame", "StatusBars2_FocusGroup", StatusBars2, StatusBars2_GroupFrameTemplate );
-    local petGroup = CreateFrame( "Frame", "StatusBars2_PetGroup", StatusBars2, StatusBars2_GroupFrameTemplate );
+    local playerGroup = StatusBars2_CreateGroupFrame( "PlayerGroup" );
+    local targetGroup = StatusBars2_CreateGroupFrame( "TargetGroup" );
+    local focusGroup = StatusBars2_CreateGroupFrame( "FocusGroup" );
+    local petGroup = StatusBars2_CreateGroupFrame( "PetGroup" );
     
     -- Insert the group frames into the groups table for later reference.
     table.insert( groups, playerGroup );
     table.insert( groups, targetGroup );
     table.insert( groups, focusGroup );
     table.insert( groups, petGroup );
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_CreateGroupFrame
+--
+--  Description:    Create a group to attach bars to
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_CreateGroupFrame( name )
+
+    local groupFrame = CreateFrame( "Frame", "StatusBars2_"..name, StatusBars2, StatusBars2_GroupFrameTemplate );
+    groupFrame:SetMovable( true );
+    
+    groupFrame:SetScript( "OnMouseDown", StatusBars2_Group_OnMouseDown );
+    groupFrame:SetScript( "OnMouseUp", StatusBars2_Group_OnMouseUp );
+
+    groupFrame.OnMouseDown = StatusBars2_Group_OnMouseDown;
+    groupFrame.OnMouseUp = StatusBars2_Group_OnMouseUp;
+    return groupFrame;
+    
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_Group_OnMouseDown
+--
+--  Description:    Handle "OnMouseDown" event coming from one of the attached bars
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_Group_OnMouseDown( self, button )
+
+    -- Move on left button down
+    if( button == 'LeftButton' ) then
+
+        -- print("StatusBars2_StatusBar_OnMouseDown "..self:GetName().." x "..self:GetLeft().." y "..self:GetTop().." parent "..self:GetParent():GetName());
+        -- point, relativeTo, relativePoint, xOfs, yOfs = self:GetPoint()
+        -- print("Anchor "..relativePoint.." of "..relativeTo:GetName().." to "..point.." xoff "..xOfs.." yoff "..yOfs);
+
+        -- If grouped move the main frame
+        if( StatusBars2_Settings.groupsLocked == true ) then
+            self:GetParent( ):OnMouseDown( button );
+            -- StatusBars2_OnMouseDown( StatusBars2, button );
+
+        -- Otherwise move this bar
+        else
+            self:StartMoving( );
+            self.isMoving = true;
+        end
+
+    end
+   
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_Group_OnMouseUp
+--
+--  Description:    Handle "OnMouseUp" event coming from one of the attached bars
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_Group_OnMouseUp( self, button )
+
+    -- Move with left button
+    if( button == 'LeftButton' ) then
+
+        -- If grouped move the main frame
+        if( StatusBars2_Settings.groupLocked == true ) then
+            self:GetParent( ):OnMouseUp( button );
+            -- StatusBars2_OnMouseUp( StatusBars2, button );
+
+        -- Otherwise move this bar
+        elseif( self.isMoving ) then
+
+            -- End moving
+            self:StopMovingOrSizing( );
+            self.isMoving = false;
+
+            -- Get the scaled position
+            local left = self:GetLeft( ); -- * self:GetScale( );
+            local top = self:GetTop( ); -- * self:GetScale( );
+
+            -- Get the offsets relative to the main frame
+            local xOffset = left - StatusBars2:GetLeft( );
+            local yOffset = top - StatusBars2:GetTop( );
+
+            -- -- Save the position in the settings
+            -- StatusBars2_Settings.bars[ self.key ].position = {};
+            -- StatusBars2_Settings.bars[ self.key ].position.x = xOffset;
+            -- StatusBars2_Settings.bars[ self.key ].position.y = yOffset;
+
+            -- Moving the bar de-anchored it from the main frame and anchored it to the screen.
+            -- We don't want that, so re-anchor the bar to the main parent frame
+            self:ClearAllPoints( );
+            self:SetPoint( "TOPLEFT", StatusBars2, "TOPLEFT", xOffset, yOffset );
+
+        end
+    end
+    
 end
 
 -------------------------------------------------------------------------------
@@ -3089,8 +3194,16 @@ end
 --
 function StatusBars2_CreateBar( name, unit, template, displayName, key, barType )
 
+    local parentFrame;
+    
+    if( unit == "player" ) then
+        parentFrame = groups[ 1 ];
+    else
+        parentFrame = StatusBars2;
+    end
+    
     -- Create the bar
-    local bar = CreateFrame( "Frame", name, StatusBars2, template );
+    local bar = CreateFrame( "Frame", name, parentFrame, template );
     bar:Hide( );
 
     -- Set the default methods
@@ -3180,7 +3293,8 @@ function StatusBars2_StatusBar_OnMouseDown( self, button )
 
         -- If grouped move the main frame
         if( StatusBars2_Settings.grouped == true ) then
-            StatusBars2_OnMouseDown( StatusBars2, button );
+            self:GetParent( ):OnMouseDown( button );
+            -- StatusBars2_OnMouseDown( StatusBars2, button );
 
         -- Otherwise move this bar
         else
@@ -3207,7 +3321,8 @@ function StatusBars2_StatusBar_OnMouseUp( self, button )
 
         -- If grouped move the main frame
         if( StatusBars2_Settings.grouped == true ) then
-            StatusBars2_OnMouseUp( StatusBars2, button );
+            self:GetParent( ):OnMouseUp( button );
+            -- StatusBars2_OnMouseUp( StatusBars2, button );
 
         -- Otherwise move this bar
         elseif( self.isMoving ) then
@@ -3306,7 +3421,14 @@ function StatusBars2_StatusBar_SetPosition( self, x, y )
 
     -- Set the bar position
     self:ClearAllPoints( );
-    self:SetPoint( "TOPLEFT", StatusBars2, "TOPLEFT", xOffset, yOffset );
+
+    if( self.unit == "player" ) then
+        parentFrame = groups[ 1 ];
+    else
+        parentFrame = StatusBars2;
+    end
+    
+    self:SetPoint( "TOPLEFT", parentFrame, "TOPLEFT", xOffset, yOffset );
 
     -- if( self:IsVisible() ~= nil) then
     --     print("StatusBars2_StatusBar_SetPosition "..self:GetName().." x "..x.." y "..y.." xOffset "..xOffset.." yOffset "..yOffset.." vis "..self:IsVisible());
