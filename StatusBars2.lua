@@ -260,7 +260,7 @@ function StatusBars2_Group_OnMouseUp( self, button )
     if( button == 'LeftButton' ) then
 
         -- If grouped move the main frame
-        if( StatusBars2_Settings.groupLocked == true ) then
+        if( StatusBars2_Settings.groupsLocked == true ) then
             self:GetParent( ):OnMouseUp( button );
             -- StatusBars2_OnMouseUp( StatusBars2, button );
 
@@ -279,10 +279,10 @@ function StatusBars2_Group_OnMouseUp( self, button )
             local xOffset = left - StatusBars2:GetLeft( );
             local yOffset = top - StatusBars2:GetTop( );
 
-            -- -- Save the position in the settings
-            -- StatusBars2_Settings.bars[ self.key ].position = {};
-            -- StatusBars2_Settings.bars[ self.key ].position.x = xOffset;
-            -- StatusBars2_Settings.bars[ self.key ].position.y = yOffset;
+            -- Save the position in the settings
+            StatusBars2_Settings.groups[ self.key ].position = {};
+            StatusBars2_Settings.groups[ self.key ].position.x = xOffset;
+            StatusBars2_Settings.groups[ self.key ].position.y = yOffset;
 
             -- Moving the bar de-anchored it from the main frame and anchored it to the screen.
             -- We don't want that, so re-anchor the bar to the main parent frame
@@ -3377,9 +3377,11 @@ function StatusBars2_StatusBar_OnMouseUp( self, button )
     -- Move with left button
     if( button == 'LeftButton' ) then
 
+        local parentFrame = self:GetParent( );
+
         -- If grouped move the main frame
         if( StatusBars2_Settings.grouped == true ) then
-            self:GetParent( ):OnMouseUp( button );
+            parentFrame:OnMouseUp( button );
             -- StatusBars2_OnMouseUp( StatusBars2, button );
 
         -- Otherwise move this bar
@@ -3388,14 +3390,14 @@ function StatusBars2_StatusBar_OnMouseUp( self, button )
             -- End moving
             self:StopMovingOrSizing( );
             self.isMoving = false;
-
+            
             -- Get the scaled position
             local left = self:GetLeft( ) * self:GetScale( );
             local top = self:GetTop( ) * self:GetScale( );
 
             -- Get the offsets relative to the main frame
-            local xOffset = left - StatusBars2:GetLeft( );
-            local yOffset = top - StatusBars2:GetTop( );
+            local xOffset = left - parentFrame:GetLeft( );
+            local yOffset = top - parentFrame:GetTop( );
 
             -- Save the position in the settings
             StatusBars2_Settings.bars[ self.key ].position = {};
