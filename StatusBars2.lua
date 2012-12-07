@@ -15,6 +15,10 @@ local lastFlashTime = 0;
 local kGroupSpacing = 18;
 
 -- Group ids
+local kPlayerGroup              = 1;
+local kTargetGroup              = 2;
+local kFocusGroup               = 3;
+local kPetGroup                 = 4;
 
 -- Bar ids
 local kPlayerHealth				= 0;
@@ -88,6 +92,9 @@ function StatusBars2_OnLoad( self )
     
     self.OnMouseDown = StatusBars2_OnMouseDown;
     self.OnMouseUp = StatusBars2_OnMouseUp;
+
+    local backdropInfo = { edgeFile = "Interface/Tooltips/UI-Tooltip-Border", edgeSize = 16 };
+    self:SetBackdrop( backdropInfo );
 
     -- Register for events
     self:RegisterEvent( "PLAYER_ENTERING_WORLD" );
@@ -177,16 +184,10 @@ end
 function StatusBars2_CreateGroups( )
 
     -- Create frames for the player, target, focus and pet groups.
-    local playerGroup = StatusBars2_CreateGroupFrame( "PlayerGroup" );
-    local targetGroup = StatusBars2_CreateGroupFrame( "TargetGroup" );
-    local focusGroup = StatusBars2_CreateGroupFrame( "FocusGroup" );
-    local petGroup = StatusBars2_CreateGroupFrame( "PetGroup" );
-    
-    -- Insert the group frames into the groups table for later reference.
-    table.insert( groups, playerGroup );
-    table.insert( groups, targetGroup );
-    table.insert( groups, focusGroup );
-    table.insert( groups, petGroup );
+    StatusBars2_CreateGroupFrame( "PlayerGroup", kPlayerGroup );
+    StatusBars2_CreateGroupFrame( "TargetGroup", kTargetGroup );
+    StatusBars2_CreateGroupFrame( "FocusGroup", kFocusGroup );
+    StatusBars2_CreateGroupFrame( "PetGroup", kPetGroup );
 end
 
 -------------------------------------------------------------------------------
@@ -197,17 +198,19 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateGroupFrame( name )
+function StatusBars2_CreateGroupFrame( name, key )
 
-    local groupFrame = CreateFrame( "Frame", "StatusBars2_"..name, StatusBars2, StatusBars2_GroupFrameTemplate );
-    groupFrame:SetMovable( true );
+    local groupFrame = CreateFrame( "Frame", "StatusBars2_"..name, StatusBars2, "StatusBars2_GroupFrameTemplate" );
     
-    groupFrame:SetScript( "OnMouseDown", StatusBars2_Group_OnMouseDown );
-    groupFrame:SetScript( "OnMouseUp", StatusBars2_Group_OnMouseUp );
+    -- groupFrame:SetScript( "OnMouseDown", StatusBars2_Group_OnMouseDown );
+    -- groupFrame:SetScript( "OnMouseUp", StatusBars2_Group_OnMouseUp );
 
     groupFrame.OnMouseDown = StatusBars2_Group_OnMouseDown;
     groupFrame.OnMouseUp = StatusBars2_Group_OnMouseUp;
-    return groupFrame;
+    groupFrame.key = key;
+
+    -- Insert the group frame into the groups table for later reference.
+    table.insert( groups, groupFrame );
     
 end
 
@@ -224,7 +227,7 @@ function StatusBars2_Group_OnMouseDown( self, button )
     -- Move on left button down
     if( button == 'LeftButton' ) then
 
-        -- print("StatusBars2_StatusBar_OnMouseDown "..self:GetName().." x "..self:GetLeft().." y "..self:GetTop().." parent "..self:GetParent():GetName());
+        print("StatusBars2_Group_OnMouseDown "..self:GetName().." x "..self:GetLeft().." y "..self:GetTop().." parent "..self:GetParent():GetName());
         -- point, relativeTo, relativePoint, xOfs, yOfs = self:GetPoint()
         -- print("Anchor "..relativePoint.." of "..relativeTo:GetName().." to "..point.." xoff "..xOfs.." yoff "..yOfs);
 
@@ -289,6 +292,44 @@ function StatusBars2_Group_OnMouseUp( self, button )
         end
     end
     
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_Group_SetPosition
+--
+--  Description:    Set the group position
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_Group_SetPosition( self, x, y )
+
+    local xOffset;
+    local yOffset;
+
+    -- If the bar has a saved position use it
+    if( StatusBars2_Settings.groups[ self.key ].position ~= nil ) then
+        xOffset = StatusBars2_Settings.groups[ self.key ].position.x * ( 1 / self:GetScale( ) );
+        yOffset = StatusBars2_Settings.groups[ self.key ].position.y * ( 1 / self:GetScale( ) );
+
+    -- If using default positioning need to adjust for the scale
+    else
+        xOffset = x; -- ( 85 * ( 1 / StatusBars2_Settings.groups[ self.key ].scale ) ) + ( -self:GetWidth( ) / 2 );
+        yOffset = y; -- * ( 1 / StatusBars2_Settings.groups[ self.key ].scale );
+    end
+
+    -- Set the bar position
+    self:ClearAllPoints( );
+    self:SetPoint( "TOP", StatusBars2, "TOP", xOffset, yOffset );
+
+    -- if( self:IsVisible() ~= nil) then
+    --     print("StatusBars2_StatusBar_SetPosition "..self:GetName().." x "..x.." y "..y.." xOffset "..xOffset.." yOffset "..yOffset.." vis "..self:IsVisible());
+    -- else
+    --     print("StatusBars2_StatusBar_SetPosition "..self:GetName().." x "..x.." y "..y.." xOffset "..xOffset.." yOffset "..yOffset.." vis unknown");
+    -- end
+
+    -- print("StatusBars2 pos "..StatusBars2:GetLeft().." "..StatusBars2:GetTop());
+
 end
 
 -------------------------------------------------------------------------------
@@ -491,6 +532,15 @@ function StatusBars2_UpdateBars( )
         StatusBars2:EnableMouse( false );
     end
 
+    for i, group in ipairs( groups ) do
+        if( StatusBars2_Settings.grouped == true and StatusBars2_Settings.locked ~= true ) then
+            group:EnableMouse( true );
+        else
+            group:EnableMouse( false );
+        end
+    end
+
+    
     -- Set the global scale
     StatusBars2:SetScale( StatusBars2_Settings.scale );
  
@@ -505,7 +555,17 @@ function StatusBars2_UpdateBars( )
 	
     StatusBars2:ClearAllPoints( );
     StatusBars2:SetPoint( "TOP", UIPARENT, "CENTER", x / StatusBars2:GetScale( ), y / StatusBars2:GetScale( ) );
+    print("Set "..StatusBars2:GetName().." pos "..StatusBars2:GetLeft()..", "..StatusBars2:GetTop());
 
+    -- for i, group in ipairs( groups ) do
+        -- group:Show();
+        -- group:ClearAllPoints( );
+        -- group:SetPoint( "TOP", StatusBars2, "TOP", 5*i, 5*i );
+        -- group:SetFrameLevel( StatusBars2:GetFrameLevel() + 1);
+        -- x = group:GetLeft();
+        -- y = group:GetTop();
+        -- print("Set "..group:GetName().."x "..x);
+    -- end
     -- print("update: frame x = "..StatusBars2:GetLeft( ).." frame y = "..StatusBars2:GetTop( ).." scale = "..StatusBars2:GetScale( ));
     -- print("update: frame width = "..StatusBars2:GetWidth( ).." frame height = "..StatusBars2:GetHeight( ));
     -- print("update: mid x = "..StatusBars2:GetLeft( ) + StatusBars2:GetWidth( ) / 2 .." mid y = "..StatusBars2:GetTop( ) - StatusBars2:GetHeight( ) / 2);
@@ -548,6 +608,9 @@ function StatusBars2_EnableBar( bar, group, index, removeWhenHidden )
             bar:EnableMouse( true );
         end
 
+        -- Set the parent to the appropriate group frame
+        bar:SetParent( groups[ group ]);
+        
         -- Set the scale
         bar:SetBarScale( StatusBars2_Settings.bars[ bar.key ].scale );
 
@@ -676,13 +739,16 @@ function StatusBars2_UpdateLayout( )
     -- Lay them out
     local group = nil;
     local offset = 0;
+    local group_offset = 0;
     for i, bar in ipairs( layoutBars ) do
 
-        -- Add space between groups
-        if( group ~= nil and group ~= bar.group ) then
-            offset = offset - kGroupSpacing;
+        -- Set the group frame position
+        if( group ~= bar.group ) then
+            group = bar.group;
+            StatusBars2_Group_SetPosition( groups[ group ], 0, group_offset );
+            group_offset = group_offset - kGroupSpacing;
+            offset = 0;
         end
-        group = bar.group;
 
         -- Position the bar
         bar:SetBarPosition( 0, offset );
@@ -3194,16 +3260,8 @@ end
 --
 function StatusBars2_CreateBar( name, unit, template, displayName, key, barType )
 
-    local parentFrame;
-    
-    if( unit == "player" ) then
-        parentFrame = groups[ 1 ];
-    else
-        parentFrame = StatusBars2;
-    end
-    
     -- Create the bar
-    local bar = CreateFrame( "Frame", name, parentFrame, template );
+    local bar = CreateFrame( "Frame", name, StatusBars2, template );
     bar:Hide( );
 
     -- Set the default methods
@@ -3344,10 +3402,10 @@ function StatusBars2_StatusBar_OnMouseUp( self, button )
             StatusBars2_Settings.bars[ self.key ].position.x = xOffset;
             StatusBars2_Settings.bars[ self.key ].position.y = yOffset;
 
-            -- Moving the bar de-anchored it from the main frame and anchored it to the screen.
-            -- We don't want that, so re-anchor the bar to the main parent frame
+            -- Moving the bar de-anchored it from its group frame and anchored it to the screen.
+            -- We don't want that, so re-anchor the bar to its group frame
             self:ClearAllPoints( );
-            self:SetPoint( "TOPLEFT", StatusBars2, "TOPLEFT", xOffset * ( 1 / self:GetScale( ) ), yOffset * ( 1 / self:GetScale( ) ) );
+            self:SetPoint( "TOPLEFT", groups[ self.group ], "TOPLEFT", xOffset * ( 1 / self:GetScale( ) ), yOffset * ( 1 / self:GetScale( ) ) );
 
         end
     end
@@ -3421,14 +3479,7 @@ function StatusBars2_StatusBar_SetPosition( self, x, y )
 
     -- Set the bar position
     self:ClearAllPoints( );
-
-    if( self.unit == "player" ) then
-        parentFrame = groups[ 1 ];
-    else
-        parentFrame = StatusBars2;
-    end
-    
-    self:SetPoint( "TOPLEFT", parentFrame, "TOPLEFT", xOffset, yOffset );
+    self:SetPoint( "TOPLEFT", groups[ self.group ], "TOPLEFT", xOffset, yOffset );
 
     -- if( self:IsVisible() ~= nil) then
     --     print("StatusBars2_StatusBar_SetPosition "..self:GetName().." x "..x.." y "..y.." xOffset "..xOffset.." yOffset "..yOffset.." vis "..self:IsVisible());
@@ -3649,6 +3700,18 @@ function StatusBars2_InitializeSettings( )
     for i, bar in ipairs( bars ) do
         if( StatusBars2_Settings.bars[ bar.key ] == nil ) then
             StatusBars2_Settings.bars[ bar.key ] = {};
+        end
+    end
+
+    -- Create the group array, if necessary
+    if( StatusBars2_Settings.groups == nil ) then
+        StatusBars2_Settings.groups = {};
+    end
+
+    -- Create a structure for each bar group
+    for i, group in ipairs( groups ) do
+        if( StatusBars2_Settings.groups[ i ] == nil ) then
+            StatusBars2_Settings.groups[ i ] = {};
         end
     end
 

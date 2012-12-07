@@ -474,7 +474,16 @@
 	</Frame>
 
     <Frame name="StatusBars2_GroupFrameTemplate" movable="true" hidden="false" frameStrata="LOW" virtual = "true" >
-        <Size x="170" y="200" />
+        <Size x="100" y="50" />
+
+        <Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+            <EdgeSize>
+                <AbsValue val="16" />
+            </EdgeSize>
+            <TileSize>
+                <AbsValue val="16" />
+            </TileSize>
+        </Backdrop>
     </Frame>
 
     <!-- Main frame -->
