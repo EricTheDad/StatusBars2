@@ -1,4 +1,8 @@
-﻿2.02
+﻿2.02.01
+=======
+Quick tweak to make default bar positions properly centered.
+
+2.02
 ====
 Made the bar groups individually movable so you don't have to do it one bar at a time.
 Added some additional event handling to make loading the addon and switching focus and pets work better.
