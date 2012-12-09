@@ -476,9 +476,6 @@ function StatusBars2_UpdateBars( )
     -- Sunder armor
     StatusBars2_EnableBar( StatusBars2_SunderBar, 1, 10 );
 
-    -- Deadly poison
-    -- StatusBars2_EnableBar( StatusBars2_DeadlyPoisonBar, 1, 11 );
-
     -- Player auras
     if( StatusBars2_Settings.bars.playerAura.showBuffs == true or StatusBars2_Settings.bars.playerAura.showDebuffs == true ) then
         StatusBars2_EnableBar( StatusBars2_AuraBar, 1, 19 );
