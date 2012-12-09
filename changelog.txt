@@ -1,4 +1,10 @@
-﻿2.01
+﻿2.02
+====
+Made the bar groups individually movable so you don't have to do it one bar at a time.
+Added some additional event handling to make loading the addon and switching focus and pets work better.
+Removed Renewing Mists bar, as it doesn't really affect the players actions, so the aura display is good enough.
+
+2.01
 ====
 Improved the look of the bars by making the statusbar slightly bigger and drawing it under the frame instead of on top of it.
 

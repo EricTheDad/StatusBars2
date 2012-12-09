@@ -474,20 +474,11 @@
 	</Frame>
 
     <Frame name="StatusBars2_GroupFrameTemplate" movable="true" hidden="false" frameStrata="LOW" virtual = "true" >
-        <Size x="100" y="50" />
-
-        <Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-            <EdgeSize>
-                <AbsValue val="16" />
-            </EdgeSize>
-            <TileSize>
-                <AbsValue val="16" />
-            </TileSize>
-        </Backdrop>
+        <Size x="200" y="50" />
     </Frame>
 
     <!-- Main frame -->
-    <Frame name="StatusBars2" toplevel="true" parent="UIParent" inherits="StatusBars2_GroupFrameTemplate" >
+    <Frame name="StatusBars2" parent="UIParent" inherits="StatusBars2_GroupFrameTemplate" >
 
         <Size x="170" y="200" />
 
@@ -830,7 +821,7 @@
                     </OnLoad>
                 </Scripts>
             </CheckButton>
-            <Button name="$parent_ResetBarPositionButton" inherits="OptionsButtonTemplate" text="Reset Bar Positions">
+            <Button name="$parent_ResetBarPositionButton" inherits="OptionsButtonTemplate" text="Snap Bars To Group">
                 <Size x="150" y="21"/>
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeto="$parent_LockGroupsTogetherButton" >
@@ -840,6 +831,19 @@
                 <Scripts>
                     <OnClick>
                         StatusBars2_Options_ResetBarPositionButton_OnClick( self );
+                    </OnClick>
+                </Scripts>
+            </Button>
+            <Button name="$parent_ResetGroupPositionButton" inherits="OptionsButtonTemplate" text="Reset Group Positions">
+                <Size x="150" y="21"/>
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeto="$parent_ResetBarPositionButton" >
+                        <Offset x="0" y="-24" />
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                        StatusBars2_Options_ResetGroupPositionButton_OnClick( self );
                     </OnClick>
                 </Scripts>
             </Button>
