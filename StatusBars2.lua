@@ -3827,18 +3827,6 @@ function StatusBars2_SetDefaultSettings( )
     -- Set defaults for the bars
     for i, bar in ipairs( bars ) do
 
-		-- print("Bar "..i);
-
-		-- if( bar.displayName == nil ) then
-			-- print(" Name <unknown>");
-		-- else
-			-- print(" Name "..bar.displayName);
-		-- end
-
-		-- print(" Key "..bar.key);
-		-- print(" Unit "..bar.unit);
-		-- print(" Type "..bar.type);
-
         -- Enable all bars by default
         if( StatusBars2_Settings.bars[ bar.key ].enabled == nil ) then
             StatusBars2_Settings.bars[ bar.key ].enabled = bar.defaultEnabled;
