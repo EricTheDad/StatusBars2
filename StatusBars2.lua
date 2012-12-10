@@ -101,6 +101,7 @@ function StatusBars2_OnLoad( self )
     self:RegisterEvent( "UNIT_DISPLAYPOWER" );
     self:RegisterEvent( "PLAYER_TALENT_UPDATE" );
     self:RegisterEvent( "GLYPH_UPDATED" );
+    self:RegisterEvent( "PLAYER_LEVEL_UP" );
     self:RegisterEvent( "ADDON_LOADED" );
 
 end
@@ -139,7 +140,7 @@ function StatusBars2_OnEvent( self, event, ... )
             StatusBars2_UpdateBars( );
         end
         
-    elseif ( event == "PLAYER_TALENT_UPDATE" or event == "GLYPH_UPDATED" )	then
+    elseif ( event == "PLAYER_TALENT_UPDATE" or event == "GLYPH_UPDATED" or event == "PLAYER_LEVEL_UP" ) then
 
         StatusBars2_UpdateBars( );
        
@@ -551,6 +552,8 @@ function StatusBars2_EnableBar( bar, group, index, removeWhenHidden )
         -- If not locked enable the mouse for moving
         if( StatusBars2_Settings.locked ~= true ) then
             bar:EnableMouse( true );
+        else
+            bar:EnableMouse( false );
         end
 
         -- Set the parent to the appropriate group frame
@@ -615,7 +618,7 @@ function StatusBars2_HideBar( bar, immediate )
             fadeInfo.finishedArg1 = bar;
             UIFrameFade( bar, fadeInfo );
         else
-            bar:Hide( );
+            StatusBars2_FadeOutFinished( bar );
         end
         bar.visible = false;
     end
