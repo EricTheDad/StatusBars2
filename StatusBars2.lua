@@ -1400,9 +1400,9 @@ function StatusBars2_CreateSpecialtyBar( name, displayName, key, specialty )
     StatusBars2_ConfigureDiscreteBar( bar, MAX_COMBO_POINTS, 1, 0, 0, displayName, kCombo );
 
     -- Set the event handlers
-    bar.OnEvent = StatusBars2_ComboBar_OnEvent;
-    bar.OnEnable = StatusBars2_ComboBar_OnEnable;
-    bar.IsDefault = StatusBars2_ComboBar_IsDefault;
+    bar.OnEvent = StatusBars2_SpecialtyBar_OnEvent;
+    bar.OnEnable = StatusBars2_SpecialtyBar_OnEnable;
+    bar.IsDefault = StatusBars2_SpecialtyBar_IsDefault;
 
     -- Register for events
     bar:RegisterEvent( "PLAYER_TARGET_CHANGED" );
@@ -1422,7 +1422,7 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_ComboBar_OnEvent( self, event, ... )
+function StatusBars2_SpecialtyBar_OnEvent( self, event, ... )
 
     -- Target changed
     if( event == "PLAYER_TARGET_CHANGED" ) then
@@ -1479,7 +1479,7 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_ComboBar_IsDefault( self )
+function StatusBars2_SpecialtyBar_IsDefault( self )
 
     return StatusBars2_GetComboPoints( ) == 0;
 
