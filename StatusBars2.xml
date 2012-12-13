@@ -64,6 +64,11 @@
                 <Size>
                   <AbsDimension x="162" y="13" />
                 </Size>
+                <Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" tile="true">
+                    <TileSize>
+                        <AbsValue val="16" />
+                    </TileSize>
+                </Backdrop>
                 <BarTexture file="Interface\TargetingFrame\UI-StatusBar" />
                 <Anchors>
                     <Anchor point="CENTER" relativeto="$Parent">
@@ -72,11 +77,6 @@
                         </Offset>
                     </Anchor>
                 </Anchors>
-                <Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" tile="true">
-                    <TileSize>
-                        <AbsValue val="16" />
-                    </TileSize>
-                </Backdrop>
             </StatusBar>
         </Frames>
     </Frame>
@@ -96,6 +96,11 @@
                 <Size>
                   <AbsDimension x="163" y="13" />
                 </Size>
+                <Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" tile="true">
+                    <TileSize>
+                        <AbsValue val="16" />
+                    </TileSize>
+                </Backdrop>
                 <BarTexture file="Interface\TargetingFrame\UI-StatusBar" />
                 <Anchors>
                     <Anchor point="CENTER" relativeto="$Parent">
@@ -104,11 +109,6 @@
                         </Offset>
                     </Anchor>
                 </Anchors>
-                <Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" tile="true">
-                    <TileSize>
-                        <AbsValue val="16" />
-                    </TileSize>
-                </Backdrop>
             </StatusBar>
         </Frames>
     </Frame>

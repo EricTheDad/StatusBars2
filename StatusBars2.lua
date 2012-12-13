@@ -2923,7 +2923,7 @@ function StatusBars2_CreateContinuousBar( name, unit, r, g, b, displayName, key,
     bar.status:SetStatusBarColor( r, g, b );
 
     -- Set the background color
-    bar.status:SetBackdropColor( 0, 0, 0, 0.35 );
+    bar.status:SetBackdropColor( 0, 0, 0, 0.85 );
     
     -- Set the status bar to draw behind the edge frame so it doesn't overlap.  
     -- This should be possible with XML, but I can't figure it out with the documentation available.
@@ -3187,7 +3187,7 @@ function StatusBars2_AdjustDiscreteBarBoxes( bar, boxCount )
             -- Set the status bar to draw behind the edge frame so it doesn't overlap.
             -- This should be possible in XML, but the documentation is too sketchy for me to figure it out.
             status:SetFrameLevel( box:GetFrameLevel( ) - 1 );
-            status:SetBackdropColor( 0, 0, 0, 0.35 );
+            status:SetBackdropColor( 0, 0, 0, 0.85 );
             
             box:SetPoint( "TOPLEFT", bar, "TOPLEFT", boxLeft , 0 );
             boxLeft = boxLeft + boxWidth - overlap;

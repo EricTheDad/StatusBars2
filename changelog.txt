@@ -1,4 +1,8 @@
-﻿2.02.01
+﻿2.02.02
+=======
+Another quick tweak to ensure the statusbar texture doesn't get drawn behind the backdrop texture.
+
+2.02.01
 =======
 Quick tweak to make default bar positions properly centered.
 
