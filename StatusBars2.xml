@@ -79,6 +79,11 @@
                 </Backdrop>
             </StatusBar>
         </Frames>
+        <Scripts>
+            <OnLoad>
+                RaiseFrameLevel(self);
+            </OnLoad>
+        </Scripts>
     </Frame>
 
     <!-- Discrete box template for boxes that are added to a discrete bar -->
@@ -111,6 +116,11 @@
                 </Backdrop>
             </StatusBar>
         </Frames>
+        <Scripts>
+            <OnLoad>
+                RaiseFrameLevel(self);
+            </OnLoad>
+        </Scripts>
     </Frame>
 
     <!-- Discrete bar template. Boxes are added to it programatically -->
