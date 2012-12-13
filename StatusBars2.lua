@@ -3105,11 +3105,6 @@ function StatusBars2_CreateContinuousBar( name, unit, key )
     bar.spark = _G[ name .. "_Spark" ];
     bar.flash = _G[ name .. "_FlashOverlay" ];
     
-    -- Set the status bar to draw behind the edge frame so it doesn't overlap.  
-    -- This should be possible with XML, but I can't figure it out with the documentation available.
-    -- Would probably work if the statusbar was the parent frame to the edge frame, but that would entail a large rewrite.
-    bar.status:SetFrameLevel( bar:GetFrameLevel( ) - 1 );
-    
     return bar;
 
 end
@@ -3370,9 +3365,6 @@ function StatusBars2_AdjustDiscreteBarBoxes( bar, boxCount )
             box:SetWidth( boxWidth );
             status:SetWidth( boxWidth - statusWidthDiff );
             
-            -- Set the status bar to draw behind the edge frame so it doesn't overlap.
-            -- This should be possible in XML, but the documentation is too sketchy for me to figure it out.
-            status:SetFrameLevel( box:GetFrameLevel( ) - 1 );
             status:SetBackdropColor( 0, 0, 0, 0.35 );
             
             box:SetPoint( "TOPLEFT", bar, "TOPLEFT", boxLeft , 0 );
