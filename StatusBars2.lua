@@ -3402,7 +3402,7 @@ function StatusBars2_UpdateDiscreteBar( bar, current )
     -- Initialize the boxes
     for i, box in ipairs(boxes) do
     
-       local status = box:GetChildren( );
+        local status = box:GetChildren( );
        
         if i <= current then
             status:SetValue( 1 );

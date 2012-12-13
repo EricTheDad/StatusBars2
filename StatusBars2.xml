@@ -64,6 +64,11 @@
                 <Size>
                   <AbsDimension x="162" y="13" />
                 </Size>
+                <Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" tile="true">
+                    <TileSize>
+                        <AbsValue val="16" />
+                    </TileSize>
+                </Backdrop>
                 <BarTexture file="Interface\TargetingFrame\UI-StatusBar" />
                 <Anchors>
                     <Anchor point="CENTER" relativeto="$Parent">
@@ -72,18 +77,8 @@
                         </Offset>
                     </Anchor>
                 </Anchors>
-                <Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" tile="true">
-                    <TileSize>
-                        <AbsValue val="16" />
-                    </TileSize>
-                </Backdrop>
             </StatusBar>
         </Frames>
-        <Scripts>
-            <OnLoad>
-                RaiseFrameLevel(self);
-            </OnLoad>
-        </Scripts>
     </Frame>
 
     <!-- Discrete box template for boxes that are added to a discrete bar -->
@@ -97,10 +92,15 @@
             </Anchor>
         </Anchors>
         <Frames>
-            <StatusBar name="$parent_Status" drawLayer="BACKGROUND" minValue="0" maxValue="1" >
+            <StatusBar name="$parent_Status" drawLayer="LOW" minValue="0" maxValue="1" >
                 <Size>
                   <AbsDimension x="163" y="13" />
                 </Size>
+                <Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" tile="true">
+                    <TileSize>
+                        <AbsValue val="16" />
+                    </TileSize>
+                </Backdrop>
                 <BarTexture file="Interface\TargetingFrame\UI-StatusBar" />
                 <Anchors>
                     <Anchor point="CENTER" relativeto="$Parent">
@@ -109,18 +109,8 @@
                         </Offset>
                     </Anchor>
                 </Anchors>
-                <Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" tile="true">
-                    <TileSize>
-                        <AbsValue val="16" />
-                    </TileSize>
-                </Backdrop>
             </StatusBar>
         </Frames>
-        <Scripts>
-            <OnLoad>
-                RaiseFrameLevel(self);
-            </OnLoad>
-        </Scripts>
     </Frame>
 
     <!-- Discrete bar template. Boxes are added to it programatically -->
