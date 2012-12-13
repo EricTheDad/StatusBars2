@@ -3133,7 +3133,7 @@ function StatusBars2_ConfigureContinuousBar( bar, r, g, b, displayName, barType 
     bar.BarIsVisible = StatusBars2_ContinuousBar_IsVisible;
 
     -- Set the background color
-    bar.status:SetBackdropColor( 0, 0, 0, 0.35 );
+    bar.status:SetBackdropColor( 0, 0, 0, 0.85 );
 	
     -- Set the status bar color
     bar.status:SetStatusBarColor( r, g, b );
@@ -3373,7 +3373,7 @@ function StatusBars2_AdjustDiscreteBarBoxes( bar, boxCount )
             -- Set the status bar to draw behind the edge frame so it doesn't overlap.
             -- This should be possible in XML, but the documentation is too sketchy for me to figure it out.
             status:SetFrameLevel( box:GetFrameLevel( ) - 1 );
-            status:SetBackdropColor( 0, 0, 0, 0.35 );
+            status:SetBackdropColor( 0, 0, 0, 0.85 );
             
             box:SetPoint( "TOPLEFT", bar, "TOPLEFT", boxLeft , 0 );
             boxLeft = boxLeft + boxWidth - overlap;
@@ -3437,13 +3437,13 @@ function StatusBars2_GetDiscreteBarColor( bar, boxIndex )
     elseif( bar.barType == kAuraStack ) then
         if( bar.key == "sunder" ) then
             return 1, 0.5, 0;
-        else if( bar.key == "anticipation" ) then
+        elseif( bar.key == "anticipation" ) then
             return 1, 0, 1;
-        else if( bar.key == "arcaneCharges" ) then
+        elseif( bar.key == "arcaneCharges" ) then
             return 95/255, 182/255, 255/255;
-        else if( bar.key == "maelstromWeapon" ) then
+        elseif( bar.key == "maelstromWeapon" ) then
             return 1, 0, 1;
-        else if( bar.key == "frenzy" ) then
+        elseif( bar.key == "frenzy" ) then
             return 1, 0, 1;
         end
     end
