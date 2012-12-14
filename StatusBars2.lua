@@ -3297,6 +3297,10 @@ end;
 --
 function StatusBars2_CreateDiscreteBarBoxes( bar, desiredBoxCount )
 
+    if desiredBoxCount > 20 then
+        return;
+    end
+    
     local boxes = { bar:GetChildren( ) };
 	local boxesAvailableCount = #boxes;
 
@@ -3421,20 +3425,20 @@ end
 -------------------------------------------------------------------------------
 --
 function StatusBars2_GetDiscreteBarColor( bar, boxIndex )
-
-    if( bar.barType == kCombo ) then
+    
+    if( bar.type == kCombo ) then
         return 1, 0, 0;
-    elseif( bar.barType == kShard ) then
+    elseif( bar.type == kShard ) then
         return 0.50, 0.32, 0.55;
-    elseif( bar.barType == kHolyPower ) then
+    elseif( bar.type == kHolyPower ) then
         return 0.95, 0.90, 0.60;
-    elseif( bar.barType == kChi ) then
+    elseif( bar.type == kChi ) then
         return 0, 1, 0.59;
-    elseif( bar.barType == kOrbs ) then
+    elseif( bar.type == kOrbs ) then
         return 0.57, 0.12, 1;
-    elseif( bar.barType == kEmbers ) then
+    elseif( bar.type == kEmbers ) then
         return 0.57, 0.12, 1;
-    elseif( bar.barType == kAuraStack ) then
+    elseif( bar.type == kAuraStack ) then
         if( bar.key == "sunder" ) then
             return 1, 0.5, 0;
         elseif( bar.key == "anticipation" ) then
