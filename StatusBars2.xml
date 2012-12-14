@@ -92,7 +92,7 @@
             </Anchor>
         </Anchors>
         <Frames>
-            <StatusBar name="$parent_Status" drawLayer="BACKGROUND" minValue="0" maxValue="1" >
+            <StatusBar name="$parent_Status" drawLayer="LOW" minValue="0" maxValue="1" >
                 <Size>
                   <AbsDimension x="163" y="13" />
                 </Size>
