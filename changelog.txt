@@ -1,4 +1,8 @@
-﻿2.02.02
+﻿2.02.03
+=======
+Added a necessary, missed part of the fix intended in 2.02.02
+
+2.02.02
 =======
 Another quick tweak to ensure the statusbar texture doesn't get drawn behind the backdrop texture.
 
