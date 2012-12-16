@@ -1,4 +1,10 @@
-﻿2.02.03
+﻿2.03
+=======
+Fixed Chi bar power type so that it works now
+Refactored specialty bars so they now all share most of their code instead of being error-prone copy-and-paste jobs.
+Taking bar colors from Blizzard resources instead of having local hard coded values
+
+2.02.03
 =======
 Added a necessary, missed part of the fix intended in 2.02.02
 

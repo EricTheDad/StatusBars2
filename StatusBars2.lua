@@ -68,6 +68,7 @@ local kFlashDuration = 0.5;
 -- Max flash alpha
 local kFlashAlpha = 0.8;
 
+local kDefaultPowerBarColor = { r = 0.75, g = 0.75, b = 0.75 }
 local kDefaultFramePosition = { x = 0, y = -100 };
 
 -------------------------------------------------------------------------------
@@ -364,19 +365,19 @@ function StatusBars2_CreateBars( )
     -- Specialty bars
     StatusBars2_CreatePowerBar( "StatusBars2_DruidManaBar", "player", "druidMana" );
    	StatusBars2_CreatePowerBar( "StatusBars2_DemonicFuryBar", "player", "fury" );
-    StatusBars2_CreateComboBar( "StatusBars2_ComboBar", "Combo Points", "combo" );
+    StatusBars2_CreateComboBar( );
     StatusBars2_CreateAuraStackBar( "StatusBars2_AnticipationBar", "player", "Anticipation", GetSpellInfo( 115189 ), "buff", 5, "anticipation" );
     StatusBars2_CreateRuneBar( "StatusBars2_RuneBar", "Runes", "rune" );
     StatusBars2_CreateAuraStackBar( "StatusBars2_SunderBar", "target", "Sunder Armor", GetSpellInfo( 113746 ), "debuff", 3, "sunder" );
     StatusBars2_CreateAuraStackBar( "StatusBars2_ArcaneChargesBar", "player", "Arcane Charges", GetSpellInfo( 36032 ), "debuff", 6, "arcaneCharges" );
     StatusBars2_CreateAuraStackBar( "StatusBars2_MaelstromWeaponBar", "player", "Maelstrom Weapon", GetSpellInfo( 51528 ), "buff", 5, "maelstromWeapon" );
 	StatusBars2_CreateAuraStackBar( "StatusBars2_FrenzyBar", "player", "Frenzy", GetSpellInfo( 19615 ), "buff", 5, "frenzy" );
-	StatusBars2_CreateShardBar( "StatusBars2_ShardBar", "Soul Shards", "shard" );
-	StatusBars2_CreateHolyPowerBar( "StatusBars2_HolyPowerBar", "Holy Power", "holyPower" );
+	StatusBars2_CreateShardBar( );
+	StatusBars2_CreateHolyPowerBar( );
 	StatusBars2_CreateEclipseBar( "StatusBars2_EclipseBar", "Eclipse", "eclipse" );
-	StatusBars2_CreateChiBar( "StatusBars2_ChiBar", "Chi", "chi" );
-	StatusBars2_CreateOrbsBar( "StatusBars2_OrbsBar", "Orbs", "orbs" );
-	StatusBars2_CreateEmbersBar( "StatusBars2_EmbersBar", "Embers", "embers" );
+	StatusBars2_CreateChiBar( );
+	StatusBars2_CreateOrbsBar( );
+	StatusBars2_CreateEmbersBar( );
 
 end
 
@@ -392,7 +393,6 @@ function StatusBars2_ConfigureBars( )
 
     -- Get the current class and power type
     local localizedClass, englishClass = UnitClass( "player" );
-    local powerType = UnitPowerType( "player" );
 
     -- Druid mana
     -- if( englishClass == "DRUID" ) then
@@ -1353,6 +1353,23 @@ end
 
 -------------------------------------------------------------------------------
 --
+--  Name:           StatusBars2_GetPowerBarColor
+--
+--  Description:    Set the color of a power bar
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_GetPowerBarColor( powerToken )
+
+    -- PowerBarColor defined by blizzard unit frame
+    local color = PowerBarColor[powerToken];
+    if( not color ) then color = kDefaultPowerBarColor; end
+    return color.r, color.g, color.b;
+        
+end
+
+-------------------------------------------------------------------------------
+--
 --  Name:           StatusBars2_SetPowerBarColor
 --
 --  Description:    Set the color of a power bar
@@ -1361,29 +1378,8 @@ end
 --
 function StatusBars2_SetPowerBarColor( self )
 
-    -- Get the power type
     local powerType = StatusBars2_GetPowerType( self );
-
-    -- Get the color based on the power type
-    local r, g, b;
-    if( powerType == SPELL_POWER_ENERGY ) then
-        r, g, b = 1, 1, 0;
-    elseif( powerType == SPELL_POWER_RAGE ) then
-        r, g, b = 1, 0, 0;
-    elseif( powerType == SPELL_POWER_MANA ) then
-        r, g, b = 0, 0, 1;
-    elseif( powerType == SPELL_POWER_FOCUS ) then
-        r, g, b = 1, 0.5, 0;
-    elseif( powerType == SPELL_POWER_RUNIC_POWER ) then
-        r, g, b = 0, 0.82, 1;
-	elseif( powerType == SPELL_POWER_DEMONIC_FURY ) then
-        r, g, b = 0.57, 0.12, 1;
-    else
-        r, g, b = 1, 0, 0;
-    end
-
-    -- Set the bar color
-    self.status:SetStatusBarColor( r, g, b );
+    self.status:SetStatusBarColor( StatusBars2_GetPowerBarColor( powerType ) );
 end
 
 -------------------------------------------------------------------------------
@@ -1394,42 +1390,17 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateSpecialtyBar( name, unit, key )
+function StatusBars2_CreateSpecialtyBar( name, unit, key, displayName, maxCharges, barType )
 
     -- Create the bar
-    local bar = StatusBars2_CreateDiscreteBar( name, "player", key );
+    local bar = StatusBars2_CreateDiscreteBar( name, unit, key );
+    StatusBars2_ConfigureDiscreteBar( bar, maxCharges, displayName, barType );
 
     -- Set the event handlers
     bar.OnEvent = StatusBars2_SpecialtyBar_OnEvent;
     bar.OnEnable = StatusBars2_SpecialtyBar_OnEnable;
-    bar.IsDefault = StatusBars2_SpecialtyBar_IsDefault;
-
-    -- Register for events
-    bar:RegisterEvent( "PLAYER_REGEN_ENABLED" );
-    bar:RegisterEvent( "PLAYER_REGEN_DISABLED" );
-
-    return bar;
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_ConfigureSpecialtyBar
---
---  Description:    Configure the specialty bar for the specific class/spec needed
---
--------------------------------------------------------------------------------
---
-function StatusBars2_ConfigureSpecialtyBar( bar, displayName, maxPoints, barType )
-
-    -- Create the bar
-    local bar = StatusBars2_CreateDiscreteBar( name, "player", key );
-    StatusBars2_ConfigureDiscreteBar( bar, maxPoints, displayName, barType );
-
-    -- Set the event handlers
-    bar.OnEvent = StatusBars2_SpecialtyBar_OnEvent;
-    bar.OnEnable = StatusBars2_SpecialtyBar_OnEnable;
-    bar.IsDefault = StatusBars2_SpecialtyBar_IsDefault;
+    bar.Update = StatusBars2_UpdateDiscreteBar;
+    bar.HandleEvent = StatusBars2_SpecialtyBars_HandleEvent;
 
     -- Register for events
     bar:RegisterEvent( "PLAYER_REGEN_ENABLED" );
@@ -1449,31 +1420,35 @@ end
 --
 function StatusBars2_SpecialtyBar_OnEvent( self, event, ... )
 
-    -- Target changed
-    if( event == "PLAYER_TARGET_CHANGED" ) then
-        StatusBars2_UpdateDiscreteBar( self, StatusBars2_GetComboPoints( ) );
-
-    -- Combo points changed
-    elseif( event == "UNIT_COMBO_POINTS" ) then
-        local unit = ...;
-        if( unit == "player" ) then
-            StatusBars2_UpdateDiscreteBar( self, StatusBars2_GetComboPoints( ) );
-        end
-
-    -- Entering combat
-    elseif( event == "PLAYER_REGEN_DISABLED" ) then
-        self.inCombat = true;
-
-    -- Leaving combat
-    elseif( event == "PLAYER_REGEN_ENABLED" ) then
-        self.inCombat = false;
-    end
+    -- Do the actual event handling
+    self:HandleEvent( event, ... );
 
     -- Update visibility
     if( self:BarIsVisible( ) == true ) then
         StatusBars2_ShowBar( self );
     else
         StatusBars2_HideBar( self );
+    end
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_SpecialtyBar_HandleEvent
+--
+--  Description:    Specialty bar event handler
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_SpecialtyBar_HandleEvent( self, event, ... )
+    
+    -- Entering combat
+    if( event == "PLAYER_REGEN_DISABLED" ) then
+        self.inCombat = true;
+
+    -- Leaving combat
+    elseif( event == "PLAYER_REGEN_ENABLED" ) then
+        self.inCombat = false;
     end
 
 end
@@ -1488,8 +1463,11 @@ end
 --
 function StatusBars2_SpecialtyBar_OnEnable( self )
 
+    -- Set the number of boxes we should be seeing
+    StatusBars2_SetDiscreteBarBoxCount( self, self:GetMaxCharges( ) );
+
     -- Update
-    StatusBars2_UpdateDiscreteBar( self, StatusBars2_GetComboPoints( ) );
+    self:Update( self:GetCharges( ) );
 
     -- Call the base method
     StatusBars2_StatusBar_OnEnable( self );
@@ -1498,15 +1476,29 @@ end
 
 -------------------------------------------------------------------------------
 --
---  Name:           StatusBars2_SpecialtyBar_IsDefault
+--  Name:           StatusBars2_SpecialtyBar_ZeroIsDefault
 --
---  Description:    Determine if a specialty bar is at its default state
+--  Description:    Determine if a specialty bar is at its default state when zero power is default
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_SpecialtyBar_IsDefault( self )
+function StatusBars2_SpecialtyBar_ZeroIsDefault( self )
 
-    return StatusBars2_GetComboPoints( ) == 0;
+    return self:GetCharges( ) == 0;
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_SpecialtyBar_MaxIsDefault
+--
+--  Description:    Determine if a specialty bar is at its default state when max power is default
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_SpecialtyBar_MaxIsDefault( self )
+
+    return self:GetCharges( ) == self:GetMaxCharges( );
 
 end
 
@@ -1518,22 +1510,19 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateComboBar( name, displayName, key )
+function StatusBars2_CreateComboBar( )
 
     -- Create the bar
-    local bar = StatusBars2_CreateDiscreteBar( name, "player", key );
-    StatusBars2_ConfigureDiscreteBar( bar, MAX_COMBO_POINTS, displayName, kCombo );
+    local bar = StatusBars2_CreateSpecialtyBar( "StatusBars2_ComboBar", "player", "combo", "Combo Points", 0, kCombo );
 
-    -- Set the event handlers
-    bar.OnEvent = StatusBars2_ComboBar_OnEvent;
-    bar.OnEnable = StatusBars2_ComboBar_OnEnable;
-    bar.IsDefault = StatusBars2_ComboBar_IsDefault;
-
+    bar.HandleEvent = StatusBars2_ComboBar_HandleEvent;
+    bar.GetCharges = StatusBars2_GetComboPoints;
+    bar.GetMaxCharges = StatusBars2_GetMaxComboPoints;
+    bar.IsDefault = StatusBars2_SpecialtyBar_ZeroIsDefault;
+    
     -- Register for events
-    bar:RegisterEvent( "PLAYER_TARGET_CHANGED" );
     bar:RegisterEvent( "UNIT_COMBO_POINTS" );
-    bar:RegisterEvent( "PLAYER_REGEN_ENABLED" );
-    bar:RegisterEvent( "PLAYER_REGEN_DISABLED" );
+    bar:RegisterEvent( "PLAYER_TARGET_CHANGED" );
 
     return bar;
 
@@ -1541,72 +1530,156 @@ end
 
 -------------------------------------------------------------------------------
 --
---  Name:           StatusBars2_ComboBar_OnEvent
+--  Name:           StatusBars2_ComboBar_HandleEvent
 --
 --  Description:    Combo bar event handler
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_ComboBar_OnEvent( self, event, ... )
+function StatusBars2_ComboBar_HandleEvent( self, event, ... )
 
     -- Target changed
     if( event == "PLAYER_TARGET_CHANGED" ) then
-        StatusBars2_UpdateDiscreteBar( self, StatusBars2_GetComboPoints( ) );
+        StatusBars2_UpdateDiscreteBar( self, self:GetCharges( ) );
 
     -- Combo points changed
     elseif( event == "UNIT_COMBO_POINTS" ) then
         local unit = ...;
-        if( unit == "player" ) then
-            StatusBars2_UpdateDiscreteBar( self, StatusBars2_GetComboPoints( ) );
+        if( unit == self.unit ) then
+            StatusBars2_UpdateDiscreteBar( self, self:GetCharges( ) );
         end
-
-    -- Entering combat
-    elseif( event == "PLAYER_REGEN_DISABLED" ) then
-        self.inCombat = true;
-
-    -- Leaving combat
-    elseif( event == "PLAYER_REGEN_ENABLED" ) then
-        self.inCombat = false;
-    end
-
-    -- Update visibility
-    if( self:BarIsVisible( ) == true ) then
-        StatusBars2_ShowBar( self );
     else
-        StatusBars2_HideBar( self );
+        StatusBars2_SpecialtyBar_HandleEvent( self, event, ... );
     end
 
 end
 
 -------------------------------------------------------------------------------
 --
---  Name:           StatusBars2_ComboBar_OnEnable
+--  Name:           StatusBars2_GetMaxCharges
 --
---  Description:    Combo bar enable handler
+--  Description:    Get the max number of combo points/shards/holy power etc.
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_ComboBar_OnEnable( self )
+function StatusBars2_GetMaxComboPoints( )
 
-    -- Update
-    StatusBars2_UpdateDiscreteBar( self, StatusBars2_GetComboPoints( ) );
+    return MAX_COMBO_POINTS;
+    
+end
 
-    -- Call the base method
-    StatusBars2_StatusBar_OnEnable( self );
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_CreateUnitPowerBar
+--
+--  Description:    Create a bar that processes the unit power (this is how most specialty charges operate)
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_CreateUnitPowerBar( name, displayName, key, barType )
+    
+    -- Create the bar
+    local bar = StatusBars2_CreateSpecialtyBar( name, "player", key, displayName, 0, barType );
+
+    local powerType, powerToken, powerEvent = StatusBars2_GetSpecialtyUnitPowerType( barType );
+
+    -- Save the unit power type 
+    bar.powerType = powerType;
+    bar.powerToken = powerToken;
+    
+    -- Blizzard sometimes listens to "UNIT_POWER" and sometimes to "UNIT_POWER_FREQUENT" to update their
+    -- displays.  I'll just listen to the approriate event they listen for.
+    bar.powerEvent = powerEvent;
+    
+    -- Set the event handlers
+    bar.HandleEvent = StatusBars2_UnitPower_HandleEvent;
+    
+    bar.GetCharges = StatusBars2_GetUnitPowerCharges;
+    bar.GetMaxCharges = StatusBars2_GetMaxUnitPowerCharges;
+
+    -- Register for events
+    bar:RegisterEvent( powerEvent );
+
+    return bar;
 
 end
 
 -------------------------------------------------------------------------------
 --
---  Name:           StatusBars2_ComboBar_IsDefault
+--  Name:           StatusBars2_UnitPower_HandleEvent
 --
---  Description:    Determine if a combo bar is at its default state
+--  Description:    Unit power bar event handler
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_ComboBar_IsDefault( self )
+function StatusBars2_UnitPower_HandleEvent( self, event, ... )
+    
+    -- Number of shards changed
+    if( event == self.powerEvent ) then
+        local unit, powerToken = ...;
 
-    return StatusBars2_GetComboPoints( ) == 0;
+        if( unit == self.unit and powerToken == self.powerToken ) then
+            self:Update( self:GetCharges( ) );
+        end
+    else
+        StatusBars2_SpecialtyBar_HandleEvent( self, event, ... );
+    end
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_GetSpecialtyUnitPowerType
+--
+--  Description:    Get the power type and power token based on the bar type
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_GetSpecialtyUnitPowerType( barType )
+
+    if( barType == kShard ) then
+        return SPELL_POWER_SOUL_SHARDS, "SOUL_SHARDS", "UNIT_POWER_FREQUENT";
+    elseif( barType == kHolyPower ) then
+        return SPELL_POWER_HOLY_POWER, "HOLY_POWER", "UNIT_POWER";
+    elseif( barType == kChi ) then
+        -- Contrary to the documentation, the power token for CHI appears to be "CHI"
+        return SPELL_POWER_CHI, "CHI", "UNIT_POWER_FREQUENT";
+    elseif( barType == kOrbs ) then
+        return SPELL_POWER_SHADOW_ORBS, "SHADOW_ORBS", "UNIT_POWER_FREQUENT";
+    elseif( barType == kEmbers ) then
+        return SPELL_POWER_BURNING_EMBERS, "BURNING_EMBERS", "UNIT_POWER_FREQUENT";
+    else
+        assert(false, "unknown bar type");
+    end
+    
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_GetUnitPowerCharges
+--
+--  Description:    Get the number of combo points for the current player
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_GetUnitPowerCharges( self )
+
+    -- undocumented parameter "true" in Unitpower delivers the Emberparticles
+    return UnitPower( self.unit, self.powerType, self.powerType == SPELL_POWER_BURNING_EMBERS );
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_GetMaxUnitPowerCharges
+--
+--  Description:    Get the number of combo points for the current player
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_GetMaxUnitPowerCharges( self )
+
+    return UnitPowerMax( self.unit, self.powerType );
 
 end
 
@@ -1618,97 +1691,14 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateShardBar( name, displayName, key )
+function StatusBars2_CreateShardBar( )
 
-	local numShards = UnitPower( "player", SPELL_POWER_SOUL_SHARDS );
-	
     -- Create the bar
-    local bar = StatusBars2_CreateDiscreteBar( name, "player", key );
-    StatusBars2_ConfigureDiscreteBar( bar, numShards, displayName, kShard );
-
-    -- Set the event handlers
-    bar.OnEvent = StatusBars2_ShardBar_OnEvent;
-    bar.OnEnable = StatusBars2_ShardBar_OnEnable;
-    bar.IsDefault = StatusBars2_ShardBar_IsDefault;
-
-    -- Register for events
-    bar:RegisterEvent( "UNIT_POWER" );
-    bar:RegisterEvent( "PLAYER_REGEN_ENABLED" );
-    bar:RegisterEvent( "PLAYER_REGEN_DISABLED" );
-
+    bar = StatusBars2_CreateUnitPowerBar( "StatusBars2_ShardBar", "Soul Shards", "shard", kShard );
+    
+    bar.IsDefault = StatusBars2_SpecialtyBar_MaxIsDefault;
+    
     return bar;
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_ShardBar_OnEvent
---
---  Description:    Shard bar event handler
---
--------------------------------------------------------------------------------
---
-function StatusBars2_ShardBar_OnEvent( self, event, ... )
-
-    -- Number of shards changed
-    if( event == "UNIT_POWER" ) then
-        local unit, powerToken = ...;
-
-        if( unit == self.unit and powerToken == "SOUL_SHARDS" ) then
-            StatusBars2_UpdateDiscreteBar( self, UnitPower( self.unit, SPELL_POWER_SOUL_SHARDS ) );
-        end
-
-    -- Entering combat
-    elseif( event == "PLAYER_REGEN_DISABLED" ) then
-        self.inCombat = true;
-
-    -- Leaving combat
-    elseif( event == "PLAYER_REGEN_ENABLED" ) then
-        self.inCombat = false;
-    end
-
-    -- Update visibility
-    if( self:BarIsVisible( ) == true ) then
-        StatusBars2_ShowBar( self );
-    else
-        StatusBars2_HideBar( self );
-    end
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_ShardBar_OnEnable
---
---  Description:    Shard bar enable handler
---
--------------------------------------------------------------------------------
---
-function StatusBars2_ShardBar_OnEnable( self )
-
-    -- Set the number of boxes we should be seeing
-    StatusBars2_SetDiscreteBarBoxCount( self, UnitPowerMax( self.unit, SPELL_POWER_SOUL_SHARDS ) );
-
-    -- Update
-    StatusBars2_UpdateDiscreteBar( self, UnitPower( self.unit, SPELL_POWER_SOUL_SHARDS ) );
-
-    -- Call the base method
-    StatusBars2_StatusBar_OnEnable( self );
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_ShardBar_IsDefault
---
---  Description:    Determine if a shard is at its default state
---
--------------------------------------------------------------------------------
---
-function StatusBars2_ShardBar_IsDefault( self )
-
-    return UnitPower( self.unit, SPELL_POWER_SOUL_SHARDS ) == UnitPowerMax( self.unit, SPELL_POWER_SOUL_SHARDS );
-
 end
 
 -------------------------------------------------------------------------------
@@ -1721,97 +1711,15 @@ end
 --
 function StatusBars2_CreateHolyPowerBar( name, displayName, key )
 
-	local maxHolyPower = UnitPower( "player", SPELL_POWER_HOLY_POWER ); -- 5 with Boundless Conviction, otherwise 3
-
     -- Create the bar
-    local bar = StatusBars2_CreateDiscreteBar( name, "player", key );
-    StatusBars2_ConfigureDiscreteBar( bar, maxHolyPower, displayName, kHolyPower );
+    bar = StatusBars2_CreateUnitPowerBar( "StatusBars2_HolyPowerBar", "Holy Power", "holyPower", kHolyPower );
 
     -- Set the event handlers
-    bar.OnEvent = StatusBars2_HolyPowerBar_OnEvent;
-    bar.OnEnable = StatusBars2_HolyPowerBar_OnEnable;
-    bar.IsDefault = StatusBars2_HolyPowerBar_IsDefault;
-
-    -- Register for events
-    bar:RegisterEvent( "UNIT_POWER" );
-    bar:RegisterEvent( "PLAYER_REGEN_ENABLED" );
-    bar:RegisterEvent( "PLAYER_REGEN_DISABLED" );
+    bar.IsDefault = StatusBars2_SpecialtyBar_ZeroIsDefault;
 
     return bar;
 
 end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_HolyPowerBar_OnEvent
---
---  Description:    Holy power bar event handler
---
--------------------------------------------------------------------------------
---
-function StatusBars2_HolyPowerBar_OnEvent( self, event, ... )
-
-    -- Number of shards changed
-    if( event == "UNIT_POWER" ) then
-        local unit, powerToken = ...;
-
-        if( unit == self.unit and powerToken == "HOLY_POWER" ) then
-            StatusBars2_UpdateDiscreteBar( self, UnitPower( self.unit, SPELL_POWER_HOLY_POWER ) );
-        end
-
-    -- Entering combat
-    elseif( event == "PLAYER_REGEN_DISABLED" ) then
-        self.inCombat = true;
-
-    -- Leaving combat
-    elseif( event == "PLAYER_REGEN_ENABLED" ) then
-        self.inCombat = false;
-    end
-
-    -- Update visibility
-    if( self:BarIsVisible( ) == true ) then
-        StatusBars2_ShowBar( self );
-    else
-        StatusBars2_HideBar( self );
-    end
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_HolyPowerBar_OnEnable
---
---  Description:    Holy power bar enable handler
---
--------------------------------------------------------------------------------
---
-function StatusBars2_HolyPowerBar_OnEnable( self )
-
-    -- Set the number of boxes we should be seeing
-    StatusBars2_SetDiscreteBarBoxCount( self, UnitPowerMax( self.unit, SPELL_POWER_HOLY_POWER ) );
-
-    -- Update
-    StatusBars2_UpdateDiscreteBar( self, UnitPower( self.unit, SPELL_POWER_HOLY_POWER ) );
-
-    -- Call the base method
-    StatusBars2_StatusBar_OnEnable( self );
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_HolyPowerBar_IsDefault
---
---  Description:    Determine if a holy power bar is at its default state
---
--------------------------------------------------------------------------------
---
-function StatusBars2_HolyPowerBar_IsDefault( self )
-
-    return UnitPower( self.unit, SPELL_POWER_HOLY_POWER ) == 0;
-
-end
-
 
 -------------------------------------------------------------------------------
 --
@@ -1823,96 +1731,13 @@ end
 --
 function StatusBars2_CreateChiBar( name, displayName, key )
 
-    local maxChiOrbs = UnitPower( "player", SPELL_POWER_LIGHT_FORCE ); -- 6 with Ascendance selected (default 4)
-
     -- Create the bar
-    local bar = StatusBars2_CreateDiscreteBar( name, "player", key );
-    StatusBars2_ConfigureDiscreteBar( bar, maxChiOrbs, displayName, kChi );
+    bar = StatusBars2_CreateUnitPowerBar( "StatusBars2_ChiBar", "Chi", "chi", kChi );
 
     -- Set the event handlers
-    bar.OnEvent = StatusBars2_ChiBar_OnEvent;
-    bar.OnEnable = StatusBars2_ChiBar_OnEnable;
-    bar.IsDefault = StatusBars2_ChiBar_IsDefault;
-
-    -- Register for events
-    bar:RegisterEvent( "UNIT_POWER" );
-    bar:RegisterEvent( "PLAYER_REGEN_ENABLED" );
-    bar:RegisterEvent( "PLAYER_REGEN_DISABLED" );
+    bar.IsDefault = StatusBars2_SpecialtyBar_ZeroIsDefault;
 
     return bar;
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_ChiBar_OnEvent
---
---  Description:    Chi bar event handler
---
--------------------------------------------------------------------------------
---
-function StatusBars2_ChiBar_OnEvent( self, event, ... )
-
-    -- Number of shards changed
-    if( event == "UNIT_POWER" ) then
-        local unit, powerToken = ...;
-
-        if( unit == self.unit and powerToken == "LIGHT_FORCE" ) then
-            StatusBars2_UpdateDiscreteBar( self, UnitPower( self.unit, SPELL_POWER_LIGHT_FORCE ) );
-        end
-
-    -- Entering combat
-    elseif( event == "PLAYER_REGEN_DISABLED" ) then
-        self.inCombat = true;
-
-    -- Leaving combat
-    elseif( event == "PLAYER_REGEN_ENABLED" ) then
-        self.inCombat = false;
-    end
-
-    -- Update visibility
-    if( self:BarIsVisible( ) == true ) then
-        StatusBars2_ShowBar( self );
-    else
-        StatusBars2_HideBar( self );
-    end
-
-end
-
-
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_ChiBar_OnEnable
---
---  Description:    Chi bar enable handler
---
--------------------------------------------------------------------------------
---
-function StatusBars2_ChiBar_OnEnable( self )
-
-    -- Set the number of boxes we should be seeing
-    StatusBars2_SetDiscreteBarBoxCount( self, UnitPowerMax( self.unit, SPELL_POWER_LIGHT_FORCE ) );
-
-    -- Update
-    StatusBars2_UpdateDiscreteBar( self, UnitPower( self.unit, SPELL_POWER_LIGHT_FORCE ) );
-
-    -- Call the base method
-    StatusBars2_StatusBar_OnEnable( self );
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_ChiBar_IsDefault
---
---  Description:    Determine if a Chi bar is at its default state
---
--------------------------------------------------------------------------------
---
-function StatusBars2_ChiBar_IsDefault( self )
-
-    return UnitPower( self.unit, SPELL_POWER_LIGHT_FORCE ) == 0;
 
 end
 
@@ -1926,92 +1751,13 @@ end
 --
 function StatusBars2_CreateOrbsBar( name, displayName, key )
 
-    local numOrbs = UnitPowerMax( "player", SPELL_POWER_SHADOW_ORBS );
-
     -- Create the bar
-    local bar = StatusBars2_CreateDiscreteBar( name, "player", key );
-    StatusBars2_ConfigureDiscreteBar( bar, numOrbs, displayName, kOrbs );
+    bar = StatusBars2_CreateUnitPowerBar( "StatusBars2_OrbsBar", "Orbs", "orbs", kOrbs );
 
     -- Set the event handlers
-    bar.OnEvent = StatusBars2_OrbsBar_OnEvent;
-    bar.OnEnable = StatusBars2_OrbsBar_OnEnable;
-    bar.IsDefault = StatusBars2_OrbsBar_IsDefault;
-
-    -- Register for events
-    bar:RegisterEvent( "UNIT_POWER" );
-    bar:RegisterEvent( "PLAYER_REGEN_ENABLED" );
-    bar:RegisterEvent( "PLAYER_REGEN_DISABLED" );
+    bar.IsDefault = StatusBars2_SpecialtyBar_ZeroIsDefault;
 
     return bar;
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_OrbsBar_OnEvent
---
---  Description:    Orbs bar event handler
---
--------------------------------------------------------------------------------
---
-function StatusBars2_OrbsBar_OnEvent( self, event, ... )
-
-    -- Number of orbs changed
-    if( event == "UNIT_POWER" ) then
-        local unit, powerToken = ...;
-
-        if( unit == self.unit and powerToken == "SHADOW_ORBS" ) then
-            StatusBars2_UpdateDiscreteBar( self, UnitPower( self.unit, SPELL_POWER_SHADOW_ORBS ) );
-        end
-
-    -- Entering combat
-    elseif( event == "PLAYER_REGEN_DISABLED" ) then
-        self.inCombat = true;
-
-    -- Leaving combat
-    elseif( event == "PLAYER_REGEN_ENABLED" ) then
-        self.inCombat = false;
-    end
-
-    -- Update visibility
-    if( self:BarIsVisible( ) == true ) then
-        StatusBars2_ShowBar( self );
-    else
-        StatusBars2_HideBar( self );
-    end
-
-end
-
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_OrbsBar_OnEnable
---
---  Description:    Orbs bar enable handler
---
--------------------------------------------------------------------------------
---
-function StatusBars2_OrbsBar_OnEnable( self )
-
-    -- Update
-    StatusBars2_UpdateDiscreteBar( self, UnitPower( self.unit, SPELL_POWER_SHADOW_ORBS ) );
-
-    -- Call the base method
-    StatusBars2_StatusBar_OnEnable( self );
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_OrbsBar_IsDefault
---
---  Description:    Determine if a Orbs bar is at its default state
---
--------------------------------------------------------------------------------
---
-function StatusBars2_OrbsBar_IsDefault( self )
-
-    return UnitPower( self.unit, SPELL_POWER_SHADOW_ORBS ) == 0;
 
 end
 
@@ -2025,11 +1771,13 @@ end
 --
 function StatusBars2_CreateEmbersBar( name, displayName, key )
 
-	local numEmbers = UnitPowerMax( "player", SPELL_POWER_BURNING_EMBERS );
-	
+
     -- Create the bar
-    local bar = StatusBars2_CreateDiscreteBar( name, "player", key );
-    StatusBars2_ConfigureDiscreteBar( bar, numEmbers, displayName, kEmbers );
+    bar = StatusBars2_CreateUnitPowerBar( "StatusBars2_EmbersBar", "Embers", "embers", kEmbers );
+
+    -- Set the event handlers
+    bar.IsDefault = StatusBars2_EmbersBar_IsDefault;
+    bar.Update = StatusBars2_UpdateEmbersBar;
 
     -- Modify the boxes to display ember particles
     boxes = { bar:GetChildren( ) };
@@ -2042,54 +1790,7 @@ function StatusBars2_CreateEmbersBar( name, displayName, key )
 
     end
 
-    -- Set the event handlers
-    bar.OnEvent = StatusBars2_EmbersBar_OnEvent;
-    bar.OnEnable = StatusBars2_EmbersBar_OnEnable;
-    bar.IsDefault = StatusBars2_EmbersBar_IsDefault;
-
-    -- Register for events
-    bar:RegisterEvent( "UNIT_POWER" );
-    bar:RegisterEvent( "PLAYER_REGEN_ENABLED" );
-    bar:RegisterEvent( "PLAYER_REGEN_DISABLED" );
-
     return bar;
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_EmbersBar_OnEvent
---
---  Description:    Orbs bar event handler
---
--------------------------------------------------------------------------------
---
-function StatusBars2_EmbersBar_OnEvent( self, event, ... )
-
-    -- Number of Embers changed
-    if( event == "UNIT_POWER" ) then
-        local unit, powerToken = ...;
-
-        if( unit == self.unit and powerToken == "BURNING_EMBERS" ) then
-            -- undocumented parameter "true" in Unitpower delivers the Emberparticles
-            StatusBars2_UpdateEmbersBar( self, UnitPower( self.unit, SPELL_POWER_BURNING_EMBERS, true ) );
-        end
-
-    -- Entering combat
-    elseif( event == "PLAYER_REGEN_DISABLED" ) then
-        self.inCombat = true;
-
-    -- Leaving combat
-    elseif( event == "PLAYER_REGEN_ENABLED" ) then
-        self.inCombat = false;
-    end
-
-    -- Update visibility
-    if( self:BarIsVisible( ) == true ) then
-        StatusBars2_ShowBar( self );
-    else
-        StatusBars2_HideBar( self );
-    end
 
 end
 
@@ -2112,37 +1813,16 @@ function StatusBars2_UpdateEmbersBar( self, current )
     for i, box in ipairs(boxes) do
     
        local status = box:GetChildren( );
+       local _, maxValue = status:GetMinMaxValues( );
        
-        if current < MAX_POWER_PER_EMBER then
+        if current < maxValue then
             status:SetValue( current );
             current = 0;
         else
-            status:SetValue( MAX_POWER_PER_EMBER );
-            current = current - MAX_POWER_PER_EMBER;
+            status:SetValue( maxValue );
+            current = current - maxValue;
         end
     end
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_EmbersBar_OnEnable
---
---  Description:    Embers bar enable handler
---
--------------------------------------------------------------------------------
---
-function StatusBars2_EmbersBar_OnEnable( self )
-
-    -- Set the number of boxes we should be seeing
-    StatusBars2_SetDiscreteBarBoxCount( self, UnitPowerMax( self.unit, SPELL_POWER_BURNING_EMBERS ) );
-
-    -- Update
-	-- undocumented parameter "true" in Unitpower delivers the Emberparticles
-    StatusBars2_UpdateEmbersBar( self, UnitPower( self.unit, SPELL_POWER_BURNING_EMBERS, true ) );
-
-    -- Call the base method
-    StatusBars2_StatusBar_OnEnable( self );
-
 end
 
 -------------------------------------------------------------------------------
@@ -2155,7 +1835,7 @@ end
 --
 function StatusBars2_EmbersBar_IsDefault( self )
 
-    return UnitPower( self.unit, SPELL_POWER_BURNING_EMBERS ) == 1;
+    return UnitPower( self.unit, self.powerType ) == 1;
 
 end
 
@@ -3260,7 +2940,7 @@ function StatusBars2_ConfigureDiscreteBar( bar, boxCount, displayName, barType )
 	StatusBars2_ConfigureBar( bar, displayName, barType );
 
 	-- Save the color in the settings.  I'll make this editable in the future.
-	bar.getColor = StatusBars2_GetDiscreteBarColor;
+	bar.GetColor = StatusBars2_GetDiscreteBarColor;
 
 	-- Now create the number of boxes initially requested.  We may create more or hide 
 	-- some in the future, depending on spec/glyph/talent changes.
@@ -3297,9 +2977,7 @@ end;
 --
 function StatusBars2_CreateDiscreteBarBoxes( bar, desiredBoxCount )
 
-    if desiredBoxCount > 20 then
-        return;
-    end
+    assert( desiredBoxCount < 20, "Way too many discrete boxes" );
     
     local boxes = { bar:GetChildren( ) };
 	local boxesAvailableCount = #boxes;
@@ -3315,7 +2993,7 @@ function StatusBars2_CreateDiscreteBarBoxes( bar, desiredBoxCount )
 			local statusName = name .. '_Box' .. i .. '_Status';
 			local box = CreateFrame( "Frame", boxName, bar, "StatusBars2_DiscreteBoxTemplate" );
 			local status = box:GetChildren( );
-			status:SetStatusBarColor( bar:getColor( i ) );
+			status:SetStatusBarColor( bar:GetColor( i ) );
 			status:SetValue( 0 );
 		end
     end
@@ -3425,19 +3103,9 @@ end
 -------------------------------------------------------------------------------
 --
 function StatusBars2_GetDiscreteBarColor( bar, boxIndex )
-    
+
     if( bar.type == kCombo ) then
         return 1, 0, 0;
-    elseif( bar.type == kShard ) then
-        return 0.50, 0.32, 0.55;
-    elseif( bar.type == kHolyPower ) then
-        return 0.95, 0.90, 0.60;
-    elseif( bar.type == kChi ) then
-        return 0, 1, 0.59;
-    elseif( bar.type == kOrbs ) then
-        return 0.57, 0.12, 1;
-    elseif( bar.type == kEmbers ) then
-        return 0.57, 0.12, 1;
     elseif( bar.type == kAuraStack ) then
         if( bar.key == "sunder" ) then
             return 1, 0.5, 0;
@@ -3450,10 +3118,9 @@ function StatusBars2_GetDiscreteBarColor( bar, boxIndex )
         elseif( bar.key == "frenzy" ) then
             return 1, 0, 1;
         end
+    else
+        return StatusBars2_GetPowerBarColor( bar.powerToken );
     end
-
-    -- Default color if we can't find anything else
-    return 1, 1, 0;
     
 end
 
@@ -4605,6 +4272,22 @@ end
 --
 function StatusBars2_Trace( message )
     DEFAULT_CHAT_FRAME:AddMessage( message );
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:
+--
+--  Description:    Trace a message to the console
+--
+-------------------------------------------------------------------------------
+--
+function safePrint( value )
+    if value then
+        return value;
+    else
+        return "nil";
+    end
 end
 
 -------------------------------------------------------------------------------
