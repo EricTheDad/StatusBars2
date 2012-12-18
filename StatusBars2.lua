@@ -81,9 +81,6 @@ local kDefaultFramePosition = { x = 0, y = -100 };
 --
 function StatusBars2_OnLoad( self )
 
-    StatusBars2_CreateGroups( );
-    StatusBars2_CreateBars( );
-	
     -- Set scripts
     self:SetScript( "OnEvent", StatusBars2_OnEvent );
     self:SetScript( "OnUpdate", StatusBars2_OnUpdate );
@@ -94,15 +91,8 @@ function StatusBars2_OnLoad( self )
     self.OnMouseDown = StatusBars2_OnMouseDown;
     self.OnMouseUp = StatusBars2_OnMouseUp;
     
-    -- local backdropInfo = { edgeFile = "Interface/Tooltips/UI-Tooltip-Border", edgeSize = 16 };
-    -- self:SetBackdrop( backdropInfo );
-
     -- Register for events
     self:RegisterEvent( "PLAYER_ENTERING_WORLD" );
-    self:RegisterEvent( "UNIT_DISPLAYPOWER" );
-    self:RegisterEvent( "PLAYER_TALENT_UPDATE" );
-    self:RegisterEvent( "GLYPH_UPDATED" );
-    self:RegisterEvent( "PLAYER_LEVEL_UP" );
     self:RegisterEvent( "ADDON_LOADED" );
 
 end
@@ -120,18 +110,10 @@ function StatusBars2_OnEvent( self, event, ... )
     if( event == "ADDON_LOADED" ) then
         if( select( 1, ... ) == "StatusBars2" ) then
         
-            -- Saved variables have been loaded, we can fix up the settings now
-            StatusBars2_LoadSettings( );
-            
         end
     elseif( event == "PLAYER_ENTERING_WORLD" ) then
         
-        -- Configure the bars based on class, spec and settings
-        StatusBars2_ConfigureBars( );
-        
-        -- Initialize the option panel controls
-        StatusBars2_Options_Configure_Bar_Options( );
-        StatusBars2_Options_DoDataExchange( false );
+        StatusBars2_Setup( self );
 
     -- Druid change form
     elseif( event == "UNIT_DISPLAYPOWER" and select( 1, ... ) == "player" ) then
@@ -145,9 +127,42 @@ function StatusBars2_OnEvent( self, event, ... )
     elseif ( event == "PLAYER_TALENT_UPDATE" or event == "GLYPH_UPDATED" or event == "PLAYER_LEVEL_UP" ) then
 
         -- Any of these events could lead to differences in how the bars should be configured
-        StatusBars2_ConfigureBars( );
+        StatusBars2_UpdateBars( );
        
     end
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_Setup
+--
+--  Description:    Set up the groups, bars and settings
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_Setup( self )
+
+        StatusBars2_CreateGroups( );
+        StatusBars2_CreateBars( );
+
+        -- Saved variables have been loaded, we can fix up the settings now
+        StatusBars2_LoadSettings( );
+
+        -- Update the bars according to the settings
+        StatusBars2_UpdateBars( );
+
+        -- Initialize the option panel controls
+        StatusBars2_Options_Configure_Bar_Options( );
+        StatusBars2_Options_DoDataExchange( false );
+
+        -- local backdropInfo = { edgeFile = "Interface/Tooltips/UI-Tooltip-Border", edgeSize = 16 };
+        -- self:SetBackdrop( backdropInfo );
+
+        self:RegisterEvent( "UNIT_DISPLAYPOWER" );
+        self:RegisterEvent( "PLAYER_TALENT_UPDATE" );
+        self:RegisterEvent( "GLYPH_UPDATED" );
+        self:RegisterEvent( "PLAYER_LEVEL_UP" );
+
 end
 
 -------------------------------------------------------------------------------
@@ -342,70 +357,60 @@ end
 --
 function StatusBars2_CreateBars( )
 
-    -- Player bars
-    StatusBars2_CreateHealthBar( "StatusBars2_HealthBar", "player", "Player Health", "playerHealth" );
-    StatusBars2_CreatePrimaryPowerBar( "StatusBars2_PowerBar", "player", "Player Power", "playerPower" );
-    StatusBars2_CreateAuraBar( "StatusBars2_AuraBar", "player", "Player Auras", "playerAura" );
-
-    -- Target bars
-    StatusBars2_CreateHealthBar( "StatusBars2_TargetHealthBar", "target", "Target Health", "targetHealth" );
-    StatusBars2_CreatePrimaryPowerBar( "StatusBars2_TargetPowerBar", "target", "Target Power", "targetPower" );
-    StatusBars2_CreateAuraBar( "StatusBars2_TargetAuraBar", "target", "Target Auras", "targetAura" );
-
-    -- Focus bars
-    StatusBars2_CreateHealthBar( "StatusBars2_FocusHealthBar", "focus", "Focus Health", "focusHealth" );
-    StatusBars2_CreatePrimaryPowerBar( "StatusBars2_FocusPowerBar", "focus", "Focus Power", "focusPower" );
-    StatusBars2_CreateAuraBar( "StatusBars2_FocusAuraBar", "focus", "Focus Auras", "focusAura" );
-
-    -- Pet bars
-    StatusBars2_CreateHealthBar( "StatusBars2_PetHealthBar", "pet", "Pet Health", "petHealth" );
-    StatusBars2_CreatePrimaryPowerBar( "StatusBars2_PetPowerBar", "pet", "Pet Power", "petPower" );
-    StatusBars2_CreateAuraBar( "StatusBars2_PetAuraBar", "pet", "Pet Auras", "petAura" );
-
-    -- Specialty bars
-    StatusBars2_CreatePowerBar( "StatusBars2_DruidManaBar", "player", "druidMana" );
-   	StatusBars2_CreatePowerBar( "StatusBars2_DemonicFuryBar", "player", "fury" );
-    StatusBars2_CreateComboBar( );
-    StatusBars2_CreateAuraStackBar( "StatusBars2_AnticipationBar", "player", "Anticipation", GetSpellInfo( 115189 ), "buff", 5, "anticipation" );
-    StatusBars2_CreateRuneBar( "StatusBars2_RuneBar", "Runes", "rune" );
-    StatusBars2_CreateAuraStackBar( "StatusBars2_SunderBar", "target", "Sunder Armor", GetSpellInfo( 113746 ), "debuff", 3, "sunder" );
-    StatusBars2_CreateAuraStackBar( "StatusBars2_ArcaneChargesBar", "player", "Arcane Charges", GetSpellInfo( 36032 ), "debuff", 6, "arcaneCharges" );
-    StatusBars2_CreateAuraStackBar( "StatusBars2_MaelstromWeaponBar", "player", "Maelstrom Weapon", GetSpellInfo( 51528 ), "buff", 5, "maelstromWeapon" );
-	StatusBars2_CreateAuraStackBar( "StatusBars2_FrenzyBar", "player", "Frenzy", GetSpellInfo( 19615 ), "buff", 5, "frenzy" );
-	StatusBars2_CreateShardBar( );
-	StatusBars2_CreateHolyPowerBar( );
-	StatusBars2_CreateEclipseBar( "StatusBars2_EclipseBar", "Eclipse", "eclipse" );
-	StatusBars2_CreateChiBar( );
-	StatusBars2_CreateOrbsBar( );
-	StatusBars2_CreateEmbersBar( );
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_ConfigureBars
---
---  Description:    Configure the bars based on character class, spec and settings.
---
--------------------------------------------------------------------------------
---
-function StatusBars2_ConfigureBars( )
-
     -- Get the current class and power type
     local localizedClass, englishClass = UnitClass( "player" );
 
-    -- Druid mana
-    -- if( englishClass == "DRUID" ) then
-        StatusBars2_ConfigurePowerBar( StatusBars2_DruidManaBar, SPELL_POWER_MANA, "Druid Mana", kDruidMana );
-	-- elseif ( englishClass == "WARLOCK" and GetSpecialization() == 2 ) then
-        StatusBars2_ConfigurePowerBar( StatusBars2_DemonicFuryBar, SPELL_POWER_DEMONIC_FURY, "Demonic Fury", kDemonicFury );
-    -- end
+    -- Player bars
+    StatusBars2_CreateHealthBar( "playerHealth", "player", "Player Health" );
+    StatusBars2_CreatePowerBar( "playerPower", "player", "Player Power" );
+    StatusBars2_CreateAuraBar( "playerAura", "player", "Player Auras" );
+
+    -- Target bars
+    StatusBars2_CreateHealthBar( "targetHealth", "target", "Target Health" );
+    StatusBars2_CreatePowerBar( "targetPower", "target", "Target Power" );
+    StatusBars2_CreateAuraBar( "targetAura", "target", "Target Auras" );
+
+    -- Focus bars
+    StatusBars2_CreateHealthBar( "focusHealth", "focus", "Focus Health" );
+    StatusBars2_CreatePowerBar( "focusPower", "focus", "Focus Power" );
+    StatusBars2_CreateAuraBar( "focusAura", "focus", "Focus Auras" );
+
+    -- Pet bars
+    StatusBars2_CreateHealthBar( "petHealth", "pet", "Pet Health" );
+    StatusBars2_CreatePowerBar( "petPower", "pet", "Pet Power" );
+    StatusBars2_CreateAuraBar( "petAura", "pet", "Pet Auras" );
+
+    -- Specialty bars
     
-	--StatusBars2_ConfigureDiscreteBar( bar, boxCount, displayName, key, barType );
-    
-    -- Update bar visibility and location to reflect the new configuration
-    StatusBars2_UpdateBars( );
-	
+    if( englishClass == "DRUID" )  then
+        StatusBars2_CreatePowerBar( "druidMana", "player", "Druid Mana", kDruidMana, SPELL_POWER_MANA );
+        StatusBars2_CreateComboBar( );
+        StatusBars2_CreateEclipseBar( );
+    elseif( englishClass == "ROGUE" ) then
+        StatusBars2_CreateComboBar( );
+        StatusBars2_CreateAuraStackBar( "anticipation", "player", 114015, "buff", 5, 115189 );
+    elseif( englishClass == "DEATHKNIGHT" ) then
+        StatusBars2_CreateRuneBar( );
+    elseif( englishClass == "WARLOCK" ) then
+        StatusBars2_CreatePowerBar( "fury", "player", "Demonic Fury", kDemonicFury, SPELL_POWER_DEMONIC_FURY );
+        StatusBars2_CreateShardBar( );
+        StatusBars2_CreateEmbersBar( );
+    elseif( englishClass == "PALADIN" ) then
+        StatusBars2_CreateHolyPowerBar( );
+    elseif( englishClass == "PRIEST" ) then
+        StatusBars2_CreateOrbsBar( );
+    elseif( englishClass == "HUNTER" ) then
+        StatusBars2_CreateAuraStackBar( "frenzy", "player", 19623, "buff", 5, 19615 );
+    elseif( englishClass == "WARRIOR" ) then
+        StatusBars2_CreateAuraStackBar( "sunder", "target", 7386, "debuff", 3, 113746 );
+    elseif( englishClass == "MAGE" ) then
+        StatusBars2_CreateAuraStackBar( "arcaneCharge", "player", 114664, "debuff", 6, 36032 );
+    elseif( englishClass == "SHAMAN" ) then
+        StatusBars2_CreateAuraStackBar( "maelstromWeapon", "player", 51530, "buff", 5 );
+    elseif( englishClass == "MONK" ) then
+        StatusBars2_CreateChiBar( );
+    end
+   
 end
 
 -------------------------------------------------------------------------------
@@ -427,120 +432,62 @@ function StatusBars2_UpdateBars( )
     local localizedClass, englishClass = UnitClass( "player" );
     local powerType = UnitPowerType( "player" );
 
-    -- Player health
-    StatusBars2_EnableBar( StatusBars2_HealthBar, 1, 1 );
-
-    -- Player power
-    if( englishClass ~= "DRUID" or powerType ~= SPELL_POWER_MANA ) then
-        StatusBars2_EnableBar( StatusBars2_PowerBar, 1, 2 );
-    end
-
-    -- Druid mana
-    if( englishClass == "DRUID" and ( StatusBars2_Settings.bars.druidMana.showInAllForms == true or ( powerType == SPELL_POWER_MANA ) ) ) then
-        StatusBars2_EnableBar( StatusBars2_DruidManaBar, 1, 3 );
-    end
-
-    -- Combo points
-    if( englishClass == "DRUID" and powerType == SPELL_POWER_ENERGY )  then
-        StatusBars2_EnableBar( StatusBars2_ComboBar, 1, 4 );
-    elseif( englishClass == "ROGUE" ) then
-        StatusBars2_EnableBar( StatusBars2_ComboBar, 1, 4 );
-
-        if (IsSpellKnown( 114015 )) then
-            StatusBars2_EnableBar( StatusBars2_AnticipationBar, 1, 16 );
+    for i, bar in ipairs( bars ) do
+        if( bar.key == "playerHealth" ) then
+            StatusBars2_EnableBar( bar, 1, 1 );
+        elseif( bar.key == "playerPower" and ( englishClass ~= "DRUID" or powerType ~= SPELL_POWER_MANA ) ) then
+            StatusBars2_EnableBar( StatusBars2_playerPowerBar, 1, 2 );
+        elseif( bar.key == "playerAura" and ( StatusBars2_Settings.bars.playerAura.showBuffs == true or StatusBars2_Settings.bars.playerAura.showDebuffs == true ) ) then
+            StatusBars2_EnableBar( bar, 1, 19 );
+        elseif( bar.key == "targetHealth" ) then
+            StatusBars2_EnableBar( bar, 2, 1 );
+        elseif( bar.key == "targetPower" ) then
+            StatusBars2_EnableBar( bar, 2, 2, true );
+        elseif( bar.key == "targetAura" and ( StatusBars2_Settings.bars.targetAura.showBuffs == true or StatusBars2_Settings.bars.targetAura.showDebuffs == true ) ) then
+            StatusBars2_EnableBar( bar, 2, 3 );
+        elseif( bar.key == "focusHealth" ) then
+            StatusBars2_EnableBar( bar, 3, 1 );
+        elseif( bar.key == "focusPower" ) then
+            StatusBars2_EnableBar( bar, 3, 2, true );
+        elseif( bar.key == "focusAura" and ( StatusBars2_Settings.bars.focusAura.showBuffs == true or StatusBars2_Settings.bars.focusAura.showDebuffs == true ) ) then
+            StatusBars2_EnableBar( bar, 3, 3 );
+        elseif( bar.key == "petHealth" ) then
+            StatusBars2_EnableBar( bar, 4, 1 );
+        elseif( bar.key == "petPower" ) then
+            StatusBars2_EnableBar( bar, 4, 2 );
+        elseif( bar.key == "petAura" and ( StatusBars2_Settings.bars.petAura.showBuffs == true or StatusBars2_Settings.bars.petAura.showDebuffs == true ) ) then
+            StatusBars2_EnableBar( bar, 4, 3 );
+        elseif( bar.key == "druidMana" and ( StatusBars2_Settings.bars.druidMana.showInAllForms == true or powerType == SPELL_POWER_MANA ) ) then
+            StatusBars2_EnableBar( bar, 1, 3 );
+        elseif( bar.key == "eclipse" and powerType == SPELL_POWER_MANA and GetSpecialization() == 1 ) then
+			StatusBars2_EnableBar( bar, 1, 8 );
+        elseif( bar.key == "combo" and powerType == SPELL_POWER_ENERGY ) then
+            StatusBars2_EnableBar( bar, 1, 4 );
+        elseif( bar.key == "anticipation" and IsSpellKnown( bar.spellID ) ) then
+            StatusBars2_EnableBar( bar, 1, 16 );
+        elseif( bar.key == "rune" ) then
+            StatusBars2_EnableBar( bar, 1, 7 );
+        elseif( bar.key == "fury" and GetSpecialization() == 2 ) then
+            StatusBars2_EnableBar( bar, 1, 14 );
+        elseif( bar.key == "shard" and GetSpecialization() == 1 ) then
+            StatusBars2_EnableBar( bar, 1, 5 );
+        elseif( bar.key == "embers" and GetSpecialization() == 3 ) then
+            StatusBars2_EnableBar( bar, 1, 13 );
+        elseif( bar.key == "holyPower" ) then
+            StatusBars2_EnableBar( bar, 1, 6 );
+        elseif( bar.key == "orbs" and GetSpecialization() == 3 ) then
+            StatusBars2_EnableBar( bar, 1, 12 );
+        elseif( bar.key == "frenzy" and IsSpellKnown( bar.spellID ) ) then
+            StatusBars2_EnableBar( bar, 1, 18 );
+        elseif( bar.key == "sunder" and IsSpellKnown( bar.spellID ) ) then
+            StatusBars2_EnableBar( bar, 1, 10 );
+        elseif( bar.key == "arcaneCharge" and IsSpellKnown( bar.spellID ) ) then
+            StatusBars2_EnableBar( bar, 1, 15 );
+        elseif( bar.key == "maelstromWeapon" and IsSpellKnown( bar.spellID ) ) then
+            StatusBars2_EnableBar( bar, 1, 9 );
+        elseif( bar.key == "chi" ) then
+            StatusBars2_EnableBar( bar, 1, 11 );
         end
-    end
-
-	-- Shards
-	if ( englishClass == "WARLOCK" and GetSpecialization() == 1 ) then
-		StatusBars2_EnableBar( StatusBars2_ShardBar, 1, 5 );
-	elseif ( englishClass == "WARLOCK" and GetSpecialization() == 3 ) then
-		StatusBars2_EnableBar( StatusBars2_EmbersBar, 1, 13 );
-	elseif ( englishClass == "WARLOCK" and GetSpecialization() == 2 ) then
-		StatusBars2_EnableBar( StatusBars2_DemonicFuryBar, 1, 14 );
-	end
-
-	-- Holy Power
-	if( englishClass == "PALADIN" ) then
-		StatusBars2_EnableBar( StatusBars2_HolyPowerBar, 1, 6 );
-	end
-
-    -- Runes
-    if( englishClass == "DEATHKNIGHT" ) then
-        StatusBars2_EnableBar( StatusBars2_RuneBar, 1, 7 );
-    end
-
-	-- Eclipse
-	if( englishClass == "DRUID" ) then
-		if( powerType == SPELL_POWER_MANA and GetSpecialization() == 1 ) then
-			StatusBars2_EnableBar( StatusBars2_EclipseBar, 1, 8 );
-		end
-	end
-
-    -- Maelstrom Weapon
-    if( englishClass == "SHAMAN" ) then
-        StatusBars2_EnableBar( StatusBars2_MaelstromWeaponBar, 1, 9 );
-    end
-
-	-- Arcane Charges
-    if( englishClass == "MAGE" and GetSpecialization() == 1 ) then
-        StatusBars2_EnableBar( StatusBars2_ArcaneChargesBar, 1, 15 );
-    end
-
-	-- monk's chi
-    if( englishClass == "MONK" ) then
-        StatusBars2_EnableBar( StatusBars2_ChiBar, 1, 11 );
-    end
-
-    -- Frenzy
-    if( englishClass == "HUNTER" ) then
-        StatusBars2_EnableBar( StatusBars2_FrenzyBar, 1, 18 );
-    end
-   
-    -- priest's orbs
-    if( englishClass == "PRIEST"  and GetSpecialization() == 3 )then
-		StatusBars2_EnableBar( StatusBars2_OrbsBar, 1, 12 );
-    end
-
-    -- Sunder armor
-    StatusBars2_EnableBar( StatusBars2_SunderBar, 1, 10 );
-
-    -- Player auras
-    if( StatusBars2_Settings.bars.playerAura.showBuffs == true or StatusBars2_Settings.bars.playerAura.showDebuffs == true ) then
-        StatusBars2_EnableBar( StatusBars2_AuraBar, 1, 19 );
-    end
-
-    -- Target health
-    StatusBars2_EnableBar( StatusBars2_TargetHealthBar, 2, 1 );
-
-    -- Target power
-    StatusBars2_EnableBar( StatusBars2_TargetPowerBar, 2, 2, true );
-
-    -- Target auras
-    if( StatusBars2_Settings.bars.targetAura.showBuffs == true or StatusBars2_Settings.bars.targetAura.showDebuffs == true ) then
-        StatusBars2_EnableBar( StatusBars2_TargetAuraBar, 2, 3 );
-    end
-
-    -- Focus health
-    StatusBars2_EnableBar( StatusBars2_FocusHealthBar, 3, 1 );
-
-    -- Focus power
-    StatusBars2_EnableBar( StatusBars2_FocusPowerBar, 3, 2, true );
-
-    -- Focus auras
-    if( StatusBars2_Settings.bars.focusAura.showBuffs == true or StatusBars2_Settings.bars.focusAura.showDebuffs == true ) then
-        StatusBars2_EnableBar( StatusBars2_FocusAuraBar, 3, 3 );
-    end
-
-    -- Pet health
-     StatusBars2_EnableBar( StatusBars2_PetHealthBar, 4, 1 );
-
-    -- Pet power
-    StatusBars2_EnableBar( StatusBars2_PetPowerBar, 4, 2 );
-
-    -- Pet araus
-    if( StatusBars2_Settings.bars.petAura.showBuffs == true or StatusBars2_Settings.bars.petAura.showDebuffs == true ) then
-        StatusBars2_EnableBar( StatusBars2_PetAuraBar, 4, 3 );
     end
 
     -- Set the global scale
@@ -771,11 +718,10 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateHealthBar( name, unit, displayName, key )
+function StatusBars2_CreateHealthBar( key, unit, displayName )
 
     -- Create the bar
-    local bar = StatusBars2_CreateContinuousBar( name, unit, key );
-    StatusBars2_ConfigureContinuousBar( bar, 1, 0, 0, displayName, kHealth );
+    local bar = StatusBars2_CreateContinuousBar( key, unit, displayName, kHealth, 1, 0, 0 );
 
     -- Set the event handlers
     bar.OnEvent = StatusBars2_HealthBar_OnEvent;
@@ -901,48 +847,16 @@ end
 
 -------------------------------------------------------------------------------
 --
---  Name:           StatusBars2_CreatePrimaryPowerBar
---
---  Description:    Create the primary power bar.  This one will be the same regardless of class or spec, so we can configure it right away
---
--------------------------------------------------------------------------------
---
-function StatusBars2_CreatePrimaryPowerBar( name, unit, displayName, key )
-
-    local bar = StatusBars2_CreatePowerBar( name, unit, key );
-    StatusBars2_ConfigurePowerBar( bar, nil, displayName, kPower );
-
-    return bar;
-
-end
-
--------------------------------------------------------------------------------
---
 --  Name:           StatusBars2_CreatePowerBar
 --
 --  Description:    Create a power bar
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreatePowerBar( name, unit, key )
+function StatusBars2_CreatePowerBar( key, unit, displayName, barType, powerType )
 
     -- Create the power bar
-    local bar = StatusBars2_CreateContinuousBar( name, unit, key );
-    return bar;
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_ConfigurePowerBar
---
---  Description:    Change the characteristics of a power bar
---
--------------------------------------------------------------------------------
---
-function StatusBars2_ConfigurePowerBar( bar, powerType, displayName, barType )
-
-	StatusBars2_ConfigureContinuousBar( bar, 1, 1, 0, displayName, barType );
+    local bar = StatusBars2_CreateContinuousBar( key, unit, displayName, barType, 1, 1, 0 );
 
     -- If its the druid mana bar use a special options template
     if( barType == kDruidMana ) then
@@ -992,6 +906,8 @@ function StatusBars2_ConfigurePowerBar( bar, powerType, displayName, barType )
 		bar:UnregisterEvent( "UNIT_DISPLAYPOWER" );
     end
 	
+    return bar;
+
 end
 
 -------------------------------------------------------------------------------
@@ -1361,7 +1277,7 @@ end
 --
 function StatusBars2_GetPowerBarColor( powerToken )
 
-    -- PowerBarColor defined by blizzard unit frame
+    -- PowerBarColor defined by Blizzard unit frame
     local color = PowerBarColor[powerToken];
     if( not color ) then color = kDefaultPowerBarColor; end
     return color.r, color.g, color.b;
@@ -1390,11 +1306,10 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateSpecialtyBar( name, unit, key, displayName, maxCharges, barType )
+function StatusBars2_CreateSpecialtyBar( key, unit, displayName, barType )
 
     -- Create the bar
-    local bar = StatusBars2_CreateDiscreteBar( name, unit, key );
-    StatusBars2_ConfigureDiscreteBar( bar, maxCharges, displayName, barType );
+    local bar = StatusBars2_CreateDiscreteBar( key, unit, displayName, barType, 0 );
 
     -- Set the event handlers
     bar.OnEvent = StatusBars2_SpecialtyBar_OnEvent;
@@ -1513,7 +1428,7 @@ end
 function StatusBars2_CreateComboBar( )
 
     -- Create the bar
-    local bar = StatusBars2_CreateSpecialtyBar( "StatusBars2_ComboBar", "player", "combo", "Combo Points", 0, kCombo );
+    local bar = StatusBars2_CreateSpecialtyBar( "combo", "player", "Combo Points", kCombo );
 
     bar.HandleEvent = StatusBars2_ComboBar_HandleEvent;
     bar.GetCharges = StatusBars2_GetComboPoints;
@@ -1576,10 +1491,10 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateUnitPowerBar( name, displayName, key, barType )
+function StatusBars2_CreateUnitPowerBar( key, displayName, barType )
     
     -- Create the bar
-    local bar = StatusBars2_CreateSpecialtyBar( name, "player", key, displayName, 0, barType );
+    local bar = StatusBars2_CreateSpecialtyBar( key, "player", displayName, barType );
 
     local powerType, powerToken, powerEvent = StatusBars2_GetSpecialtyUnitPowerType( barType );
 
@@ -1694,7 +1609,7 @@ end
 function StatusBars2_CreateShardBar( )
 
     -- Create the bar
-    bar = StatusBars2_CreateUnitPowerBar( "StatusBars2_ShardBar", "Soul Shards", "shard", kShard );
+    bar = StatusBars2_CreateUnitPowerBar( "shard", "Soul Shards", kShard );
     
     bar.IsDefault = StatusBars2_SpecialtyBar_MaxIsDefault;
     
@@ -1709,10 +1624,10 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateHolyPowerBar( name, displayName, key )
+function StatusBars2_CreateHolyPowerBar( )
 
     -- Create the bar
-    bar = StatusBars2_CreateUnitPowerBar( "StatusBars2_HolyPowerBar", "Holy Power", "holyPower", kHolyPower );
+    bar = StatusBars2_CreateUnitPowerBar( "holyPower", "Holy Power", kHolyPower );
 
     -- Set the event handlers
     bar.IsDefault = StatusBars2_SpecialtyBar_ZeroIsDefault;
@@ -1729,10 +1644,10 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateChiBar( name, displayName, key )
+function StatusBars2_CreateChiBar( )
 
     -- Create the bar
-    bar = StatusBars2_CreateUnitPowerBar( "StatusBars2_ChiBar", "Chi", "chi", kChi );
+    bar = StatusBars2_CreateUnitPowerBar( "chi", "Chi", kChi );
 
     -- Set the event handlers
     bar.IsDefault = StatusBars2_SpecialtyBar_ZeroIsDefault;
@@ -1749,10 +1664,10 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateOrbsBar( name, displayName, key )
+function StatusBars2_CreateOrbsBar( )
 
     -- Create the bar
-    bar = StatusBars2_CreateUnitPowerBar( "StatusBars2_OrbsBar", "Orbs", "orbs", kOrbs );
+    bar = StatusBars2_CreateUnitPowerBar( "orbs", "Orbs", kOrbs );
 
     -- Set the event handlers
     bar.IsDefault = StatusBars2_SpecialtyBar_ZeroIsDefault;
@@ -1769,11 +1684,11 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateEmbersBar( name, displayName, key )
+function StatusBars2_CreateEmbersBar( )
 
 
     -- Create the bar
-    bar = StatusBars2_CreateUnitPowerBar( "StatusBars2_EmbersBar", "Embers", "embers", kEmbers );
+    bar = StatusBars2_CreateUnitPowerBar( "embers", "Embers", kEmbers );
 
     -- Set the event handlers
     bar.IsDefault = StatusBars2_EmbersBar_IsDefault;
@@ -1847,11 +1762,10 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateEclipseBar( name, displayName, key )
+function StatusBars2_CreateEclipseBar( )
 
     -- Create the bar
-    local bar = StatusBars2_CreateBar( name, "player", "StatusBars2_EclipseBarTemplate", key );
-    StatusBars2_ConfigureBar( bar, displayName, kEclipse );
+    local bar = StatusBars2_CreateBar( "eclipse", "StatusBars2_EclipseBarTemplate", "player", "Eclipse", kEclipse );
 
     -- Set the event handlers
     bar.OnEvent = StatusBars2_EclipseBar_OnEvent;
@@ -2028,11 +1942,11 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateRuneBar( name, displayName, key )
+function StatusBars2_CreateRuneBar( )
 
     -- Create the bar
-    local bar = StatusBars2_CreateBar( name, "player", "StatusBars2_RuneFrameTemplate", key );
-    StatusBars2_ConfigureBar( bar, displayName, kRune );
+    local bar = StatusBars2_CreateBar( "rune", "StatusBars2_RuneFrameTemplate", "player", "Runes", kRune );
+    local name = bar:GetName( );
 
     -- Create the rune table
     bar.runes = {};
@@ -2258,28 +2172,23 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateAuraStackBar( name, unit, displayName, aura, auraType, count, key )
+function StatusBars2_CreateAuraStackBar( key, unit, spellID, auraType, count, auraID )
 
+    -- The player has a spell that is the pre-condition for the aura stack
+    -- We can match on the same name as the spell, but if we know it, the auraID is more efficient and reliable
+    local auraName = GetSpellInfo( auraID or spellID );
+    
+    -- We'll always use the triggering spell name as the display name
+    local displayName = GetSpellInfo( spellID );
+    
     -- Create the bar
-    local bar = StatusBars2_CreateDiscreteBar( name, unit, key );
-    StatusBars2_ConfigureAuraStackBar( bar, aura, auraType, count, displayName, kAuraStack );
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_ConfigureAuraStackBar
---
---  Description:    Create bar to track the stack size of a buff or debuff
---
--------------------------------------------------------------------------------
---
-function StatusBars2_ConfigureAuraStackBar( bar, aura, auraType, count, displayName, key )
-
-    StatusBars2_ConfigureDiscreteBar( bar, count, displayName, kAuraStack );
+    local bar = StatusBars2_CreateDiscreteBar( key, unit, displayName, kAuraStack, count );
+    StatusBars2_SetDiscreteBarBoxCount( bar, count );
 
     -- Save the aura name and unit
-    bar.aura = aura;
+    bar.spellID = spellID;
+    bar.auraID = auraID;
+    bar.aura = auraName;
     bar.auraType = auraType;
 
     -- Set the event handlers
@@ -2334,8 +2243,22 @@ function StatusBars2_AuraStackBar_OnEvent( self, event, ... )
             if( eventType == "SPELL_AURA_APPLIED" or eventType == "SPELL_AURA_REMOVED" or eventType == "SPELL_AURA_APPLIED_DOSE" or eventType == "SPELL_AURA_REMOVED_DOSE" ) then
 
                 -- Look for the aura
+                local spellID = select( 12, ... );
                 local spellName = select( 13, ... );
-                if( string.find( spellName, self.aura ) == 1 ) then
+                local found = false;
+                
+                -- If we have the auraID, check that as it's faster and more reliable
+                if( self.auraID ) then
+                    if( self.auraID == spellID ) then 
+                        found = true; 
+                    end
+                -- Otherwise, see if the name matches
+                elseif( string.find( spellName, self.aura ) == 1 ) then 
+                    print( spellName.." - "..spellid );
+                    found = true; 
+                end
+                
+                if( found ) then
 
                     -- Applied
                     if( eventType == "SPELL_AURA_APPLIED" ) then
@@ -2386,11 +2309,10 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateAuraBar( name, unit, displayName, key )
+function StatusBars2_CreateAuraBar( key, unit, displayName )
 
     -- Create the bar
-    local bar = StatusBars2_CreateBar( name, unit, "StatusBars2_AuraBarTemplate", key );
-    StatusBars2_ConfigureBar( bar, displayName, kAura );
+    local bar = StatusBars2_CreateBar( key, "StatusBars2_AuraBarTemplate", unit, displayName, kAura );
 
     -- Set the options template
     bar.optionsTemplate = "StatusBars2_AuraBarOptionsTemplate";
@@ -2773,11 +2695,12 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateContinuousBar( name, unit, key )
+function StatusBars2_CreateContinuousBar( key, unit, displayName, barType, r, g, b )
 
     -- Create the bar
-    local bar = StatusBars2_CreateBar( name, unit, "StatusBars2_ContinuousBarTemplate", key );
-
+    local bar = StatusBars2_CreateBar( key, "StatusBars2_ContinuousBarTemplate", unit, displayName, barType );
+    local name = bar:GetName( );
+    
     -- Get the status and text frames
     bar.status = _G[ name .. "_Status" ];
     bar.text = _G[ name .. "_Text" ];
@@ -2785,27 +2708,6 @@ function StatusBars2_CreateContinuousBar( name, unit, key )
     bar.spark = _G[ name .. "_Spark" ];
     bar.flash = _G[ name .. "_FlashOverlay" ];
     
-    -- Set the status bar to draw behind the edge frame so it doesn't overlap.  
-    -- This should be possible with XML, but I can't figure it out with the documentation available.
-    -- Would probably work if the statusbar was the parent frame to the edge frame, but that would entail a large rewrite.
-    bar.status:SetFrameLevel( bar:GetFrameLevel( ) - 1 );
-    
-    return bar;
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_ConfigureContinuousBar
---
---  Description:    Change the characteristics of a power bar
---
--------------------------------------------------------------------------------
---
-function StatusBars2_ConfigureContinuousBar( bar, r, g, b, displayName, barType )
-
-	StatusBars2_ConfigureBar( bar, displayName, barType );
-
     -- Set the options template
     bar.optionsTemplate = "StatusBars2_ContinuousBarOptionsTemplate";
 
@@ -2823,6 +2725,13 @@ function StatusBars2_ConfigureContinuousBar( bar, r, g, b, displayName, barType 
 
 	-- Set the options template
 	bar.optionsTemplate = "StatusBars2_ContinuousBarOptionsTemplate";
+    
+    -- Set the status bar to draw behind the edge frame so it doesn't overlap.  
+    -- This should be possible with XML, but I can't figure it out with the documentation available.
+    -- Would probably work if the statusbar was the parent frame to the edge frame, but that would entail a large rewrite.
+    bar.status:SetFrameLevel( bar:GetFrameLevel( ) - 1 );
+
+    return bar;
 
 end
 
@@ -2915,33 +2824,17 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateDiscreteBar( name, unit, key )
+function StatusBars2_CreateDiscreteBar( key, unit, displayName, barType, boxCount )
 
     -- Create the bar
-    local bar = StatusBars2_CreateBar( name, unit, "StatusBars2_DiscreteBarTemplate", key );
+    local bar = StatusBars2_CreateBar( key, "StatusBars2_DiscreteBarTemplate", unit, displayName, barType, boxCount );
 	
-	-- Bar starts off with no boxes created.
-	bar.boxCount = 0;
-	
-    return bar;
-
-end;
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_ConfigureDiscreteBar
---
---  Description:    Create a bar to track a discrete number of values.
---
--------------------------------------------------------------------------------
---
-function StatusBars2_ConfigureDiscreteBar( bar, boxCount, displayName, barType )
-
-	StatusBars2_ConfigureBar( bar, displayName, barType );
-
 	-- Save the color in the settings.  I'll make this editable in the future.
 	bar.GetColor = StatusBars2_GetDiscreteBarColor;
 
+	-- Bar starts off with no boxes created.
+	bar.boxCount = 0;
+	
 	-- Now create the number of boxes initially requested.  We may create more or hide 
 	-- some in the future, depending on spec/glyph/talent changes.
 	StatusBars2_SetDiscreteBarBoxCount( bar, boxCount );
@@ -3111,7 +3004,7 @@ function StatusBars2_GetDiscreteBarColor( bar, boxIndex )
             return 1, 0.5, 0;
         elseif( bar.key == "anticipation" ) then
             return 1, 0, 1;
-        elseif( bar.key == "arcaneCharges" ) then
+        elseif( bar.key == "arcaneCharge" ) then
             return 95/255, 182/255, 255/255;
         elseif( bar.key == "maelstromWeapon" ) then
             return 1, 0, 1;
@@ -3132,42 +3025,18 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateBar( name, unit, template, key )
+function StatusBars2_CreateBar( key, template, unit, displayName, barType )
 
     -- Create the bar
-    local bar = CreateFrame( "Frame", name, StatusBars2, template );
+    local bar = CreateFrame( "Frame", "StatusBars2_"..key.."Bar", StatusBars2, template );
     bar:Hide( );
 
     -- Store bar settings
     bar.unit = unit;
     bar.key = key;
-	bar.inCombat = false;
-
-    -- Default the bar to Auto enabled
-    bar.defaultEnabled = "Auto";
-
-    -- Initialize flashing variables
-    bar.flashing = false;
-
-    -- Save it in the bar collection
-    table.insert( bars, bar );
-
-    return bar;
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_ConfigureBar
---
---  Description:    Change the characteristics of a bar after is has been created.
---
--------------------------------------------------------------------------------
---
-function StatusBars2_ConfigureBar( bar, displayName, barType )
-
     bar.displayName = displayName;
     bar.type = barType;
+	bar.inCombat = false;
 
     -- Set the default options template
     bar.optionsTemplate = "StatusBars2_BarOptionsTemplate";
@@ -3184,6 +3053,17 @@ function StatusBars2_ConfigureBar( bar, displayName, barType )
     bar:SetScript( "OnMouseDown", StatusBars2_StatusBar_OnMouseDown );
     bar:SetScript( "OnMouseUp", StatusBars2_StatusBar_OnMouseUp );
     bar:SetScript( "OnHide", StatusBars2_StatusBar_OnHide );
+
+    -- Default the bar to Auto enabled
+    bar.defaultEnabled = "Auto";
+
+    -- Initialize flashing variables
+    bar.flashing = false;
+
+    -- Save it in the bar collection
+    table.insert( bars, bar );
+
+    return bar;
 
 end
 
@@ -3542,6 +3422,9 @@ function StatusBars2_LoadSettings( )
     -- Import old settings
     StatusBars2_ImportSettings( );
 
+    -- Get rid of old setting we no longer care about
+    StatisBars2_PruneSettings( );
+    
     -- Set default settings
     StatusBars2_SetDefaultSettings( );
 
@@ -3707,6 +3590,32 @@ function StatusBars2_ImportEnableSetting( old, new )
         StatusBars2_Settings[ old ] = nil;
     end
 
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatisBars2_PruneSettings
+--
+--  Description:    Get rid of old setting we no longer care about
+--
+-------------------------------------------------------------------------------
+--
+function StatisBars2_PruneSettings( )
+
+    local tempBars = {};
+    
+    for i, bar in ipairs( bars ) do
+        tempBars[bar.key] = bar;
+    end
+	
+    local barSettings = StatusBars2_Settings.bars;
+    
+    -- Set defaults for the bars
+    for key, barSetting in pairs( barSettings ) do
+        if( not tempBars[key] ) then
+            barSettings[key] = nil;
+        end
+    end
 end
 
 -------------------------------------------------------------------------------
