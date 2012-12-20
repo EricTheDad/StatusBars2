@@ -108,12 +108,34 @@ end
 function StatusBars2_OnEvent( self, event, ... )
 
     if( event == "ADDON_LOADED" ) then
+    
         if( select( 1, ... ) == "StatusBars2" ) then
         
-        end
-    elseif( event == "PLAYER_ENTERING_WORLD" ) then
+            -- local backdropInfo = { edgeFile = "Interface/Tooltips/UI-Tooltip-Border", edgeSize = 16 };
+            -- self:SetBackdrop( backdropInfo );
+
+            StatusBars2_CreateGroups( );
+            StatusBars2_CreateBars( );
+
+            -- Saved variables have been loaded, we can fix up the settings now
+            StatusBars2_LoadSettings( );
+            
+            -- Initialize the option panel controls
+            StatusBars2_Options_Configure_Bar_Options( );
         
-        StatusBars2_Setup( self );
+        end
+        
+    elseif( event == "PLAYER_ENTERING_WORLD" ) then
+
+        -- Update the bars according to the settings
+        StatusBars2_UpdateBars( );
+
+        StatusBars2_Options_DoDataExchange( false );
+
+        self:RegisterEvent( "UNIT_DISPLAYPOWER" );
+        self:RegisterEvent( "PLAYER_TALENT_UPDATE" );
+        self:RegisterEvent( "GLYPH_UPDATED" );
+        self:RegisterEvent( "PLAYER_LEVEL_UP" );
 
     -- Druid change form
     elseif( event == "UNIT_DISPLAYPOWER" and select( 1, ... ) == "player" ) then
@@ -130,39 +152,6 @@ function StatusBars2_OnEvent( self, event, ... )
         StatusBars2_UpdateBars( );
        
     end
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_Setup
---
---  Description:    Set up the groups, bars and settings
---
--------------------------------------------------------------------------------
---
-function StatusBars2_Setup( self )
-
-        StatusBars2_CreateGroups( );
-        StatusBars2_CreateBars( );
-
-        -- Saved variables have been loaded, we can fix up the settings now
-        StatusBars2_LoadSettings( );
-
-        -- Update the bars according to the settings
-        StatusBars2_UpdateBars( );
-
-        -- Initialize the option panel controls
-        StatusBars2_Options_Configure_Bar_Options( );
-        StatusBars2_Options_DoDataExchange( false );
-
-        -- local backdropInfo = { edgeFile = "Interface/Tooltips/UI-Tooltip-Border", edgeSize = 16 };
-        -- self:SetBackdrop( backdropInfo );
-
-        self:RegisterEvent( "UNIT_DISPLAYPOWER" );
-        self:RegisterEvent( "PLAYER_TALENT_UPDATE" );
-        self:RegisterEvent( "GLYPH_UPDATED" );
-        self:RegisterEvent( "PLAYER_LEVEL_UP" );
-
 end
 
 -------------------------------------------------------------------------------
