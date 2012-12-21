@@ -66,6 +66,22 @@ local kFlashAlpha = 0.8;
 local kDefaultPowerBarColor = { r = 0.75, g = 0.75, b = 0.75 }
 local kDefaultFramePosition = { x = 0, y = -100 };
 
+-- Spell IDs Blizzard doesn't define
+local PRIEST_SHADOW_ORBS = 95740;
+local HUNTER_FRENZY = 19623;
+local WARRIOR_SUNDER_ARMOR = 7386;
+local MAGE_ARCANE_CHARGE = 114664;
+local SHAMAN_MAELSTROM_WEAPON = 51530;
+local ROGUE_ANTICIPATION = 114015;
+
+-- Buff IDs Blizzard doesn't define
+local BUFF_FRENZY = 19615;
+local BUFF_ANTICIPATION = 115189;
+
+-- Debuff IDs Blizzard doesn't define
+local DEBUFF_WEAKENED_ARMOR = 113746;
+local DEBUFF_ARCANE_CHARGE = 36032;
+
 -------------------------------------------------------------------------------
 --
 --  Name:           StatusBars2_OnLoad
@@ -376,7 +392,7 @@ function StatusBars2_CreateBars( )
         StatusBars2_CreateEclipseBar( );
     elseif( englishClass == "ROGUE" ) then
         StatusBars2_CreateComboBar( );
-        StatusBars2_CreateAuraStackBar( "anticipation", "player", 114015, "buff", 5, 115189 );
+        StatusBars2_CreateAuraStackBar( "anticipation", "player", ROGUE_ANTICIPATION, "buff", 5, BUFF_ANTICIPATION );
     elseif( englishClass == "DEATHKNIGHT" ) then
         StatusBars2_CreateRuneBar( );
     elseif( englishClass == "WARLOCK" ) then
@@ -388,13 +404,13 @@ function StatusBars2_CreateBars( )
     elseif( englishClass == "PRIEST" ) then
         StatusBars2_CreateOrbsBar( );
     elseif( englishClass == "HUNTER" ) then
-        StatusBars2_CreateAuraStackBar( "frenzy", "player", 19623, "buff", 5, 19615 );
+        StatusBars2_CreateAuraStackBar( "frenzy", "player", HUNTER_FRENZY, "buff", 5, BUFF_FRENZY );
     elseif( englishClass == "WARRIOR" ) then
-        StatusBars2_CreateAuraStackBar( "sunder", "target", 7386, "debuff", 3, 113746 );
+        StatusBars2_CreateAuraStackBar( "sunder", "target", WARRIOR_SUNDER_ARMOR, "debuff", 3, DEBUFF_WEAKENED_ARMOR );
     elseif( englishClass == "MAGE" ) then
-        StatusBars2_CreateAuraStackBar( "arcaneCharge", "player", 114664, "debuff", 6, 36032 );
+        StatusBars2_CreateAuraStackBar( "arcaneCharge", "player", MAGE_ARCANE_CHARGE, "debuff", 6, DEBUFF_ARCANE_CHARGE );
     elseif( englishClass == "SHAMAN" ) then
-        StatusBars2_CreateAuraStackBar( "maelstromWeapon", "player", 51530, "buff", 5 );
+        StatusBars2_CreateAuraStackBar( "maelstromWeapon", "player", SHAMAN_MAELSTROM_WEAPON, "buff", 5 );
     elseif( englishClass == "MONK" ) then
         StatusBars2_CreateChiBar( );
     end
@@ -463,7 +479,7 @@ function StatusBars2_UpdateBars( )
             StatusBars2_EnableBar( bar, 1, 13 );
         elseif( bar.key == "holyPower" ) then
             StatusBars2_EnableBar( bar, 1, 6 );
-        elseif( bar.key == "orbs" and GetSpecialization() == 3 ) then
+        elseif( bar.key == "orbs" and IsSpellKnown( PRIEST_SHADOW_ORBS ) ) then
             StatusBars2_EnableBar( bar, 1, 12 );
         elseif( bar.key == "frenzy" and IsSpellKnown( bar.spellID ) ) then
             StatusBars2_EnableBar( bar, 1, 18 );
@@ -1273,8 +1289,10 @@ function StatusBars2_GetPowerBarColor( powerToken )
     if( not color ) then 
         if( powerToken == SPELL_POWER_DEMONIC_FURY or powerToken == "DEMONIC_FURY" ) then
             color = { r = 0.57, g = 0.12, b = 1 };
-        else if( powerToken == SPELL_POWER_BURNING_EMBERS or powerToken == "BURNING_EMBERS") then
+        elseif( powerToken == SPELL_POWER_BURNING_EMBERS or powerToken == "BURNING_EMBERS") then
             color = { r = 1, g = 0.33, b = 0 };
+        elseif( powerToken == SPELL_POWER_SHADOW_ORBS or powerToken == "SHADOW_ORBS") then
+            color = { r = 162/255, g = 51/255, b = 209/255 };
         else
             color = kDefaultPowerBarColor; 
         end
@@ -1755,7 +1773,8 @@ end
 --
 function StatusBars2_EmbersBar_IsDefault( self )
 
-    return UnitPower( self.unit, self.powerType ) == 1;
+    -- Default is exactly one full ember
+    return self:GetCharges( ) == MAX_POWER_PER_EMBER;
 
 end
 
@@ -3004,20 +3023,18 @@ function StatusBars2_GetDiscreteBarColor( bar, boxIndex )
     if( bar.type == kCombo ) then
         return 1, 0, 0;
     elseif( bar.type == kAuraStack ) then
-        if( bar.key == "sunder" ) then
-            return 1, 0.5, 0;
-        elseif( bar.key == "anticipation" ) then
-            return 1, 0, 1;
-        elseif( bar.key == "arcaneCharge" ) then
-            return 95/255, 182/255, 255/255;
+        if( bar.key == "anticipation" ) then
+            return 0.6, 0, 0;
         elseif( bar.key == "maelstromWeapon" ) then
-            return 1, 0, 1;
+            return 0, 0.5, 1;
         elseif( bar.key == "frenzy" ) then
-            return 1, 0, 1;
+            return 1, 0.6, 0;
         end
     else
         return StatusBars2_GetPowerBarColor( bar.powerToken );
     end
+
+    return kDefaultPowerBarColor.r, kDefaultPowerBarColor.g, kDefaultPowerBarColor.b;
     
 end
 
