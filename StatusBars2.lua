@@ -45,14 +45,9 @@ local kAuraStack = 3;
 local kCombo = 4;
 local kRune = 5;
 local kDruidMana = 6;
-local kShard = 7;
-local kHolyPower = 8;
+local kUnitPower = 7;
 local kEclipse = 9;
-local kChi = 10;
-local kOrbs = 11;
-local kEmbers = 12;
 local kDemonicFury = 13;
-local kAnticipation = 14;
 
 
 -- Number of runes
@@ -85,9 +80,9 @@ function StatusBars2_OnLoad( self )
     self:SetScript( "OnEvent", StatusBars2_OnEvent );
     self:SetScript( "OnUpdate", StatusBars2_OnUpdate );
     
-    -- We only want mouse clicks to be detected in the actual bars.  This bars or groups 
-    -- are locked, the bar will push the mouse click handling up to the parent.
-    -- Therefore, we don't register the handlers with the system.
+    -- We only want mouse clicks to be detected in the actual bars.  If bars or groups 
+    -- are locked, the bar will push the mouse click handling up to the parent, so we don't 
+    -- register the handlers with the system even though we need the handlers.
     self.OnMouseDown = StatusBars2_OnMouseDown;
     self.OnMouseUp = StatusBars2_OnMouseUp;
     
@@ -113,6 +108,10 @@ function StatusBars2_OnEvent( self, event, ... )
         
             -- local backdropInfo = { edgeFile = "Interface/Tooltips/UI-Tooltip-Border", edgeSize = 16 };
             -- self:SetBackdrop( backdropInfo );
+
+            -- If we have a power bar we don't have a blizzard color for, we'll use the class color.
+            local _, englishClass = UnitClass( "player" );
+            kDefaultPowerBarColor = RAID_CLASS_COLORS[englishClass];
 
             StatusBars2_CreateGroups( );
             StatusBars2_CreateBars( );
@@ -140,7 +139,7 @@ function StatusBars2_OnEvent( self, event, ... )
     -- Druid change form
     elseif( event == "UNIT_DISPLAYPOWER" and select( 1, ... ) == "player" ) then
 
-        local localizedClass, englishClass = UnitClass( "player" );
+        local _, englishClass = UnitClass( "player" );
         
         if( englishClass == "DRUID" ) then
             StatusBars2_UpdateBars( );
@@ -456,11 +455,11 @@ function StatusBars2_UpdateBars( )
             StatusBars2_EnableBar( bar, 1, 16 );
         elseif( bar.key == "rune" ) then
             StatusBars2_EnableBar( bar, 1, 7 );
-        elseif( bar.key == "fury" and GetSpecialization() == 2 ) then
+        elseif( bar.key == "fury" and GetSpecialization() == SPEC_WARLOCK_DEMONOLOGY ) then
             StatusBars2_EnableBar( bar, 1, 14 );
-        elseif( bar.key == "shard" and GetSpecialization() == 1 ) then
+        elseif( bar.key == "shard" and IsSpellKnown( WARLOCK_SOULBURN ) ) then
             StatusBars2_EnableBar( bar, 1, 5 );
-        elseif( bar.key == "embers" and GetSpecialization() == 3 ) then
+        elseif( bar.key == "embers" and IsSpellKnown( WARLOCK_BURNING_EMBERS ) ) then
             StatusBars2_EnableBar( bar, 1, 13 );
         elseif( bar.key == "holyPower" ) then
             StatusBars2_EnableBar( bar, 1, 6 );
@@ -1206,6 +1205,8 @@ function StatusBars2_PowerBar_IsDefault( self )
 		-- Determine if power is at it's default state
 		if( powerType == SPELL_POWER_RAGE or powerType == SPELL_POWER_RUNIC_POWER ) then
 			isDefault = ( power == 0 );
+        elseif( powerType == SPELL_POWER_DEMONIC_FURY ) then
+            isDefault = ( power == 200 );
 		else
 			local maxPower = UnitPowerMax( self.unit, powerType );
 			isDefault = ( power == maxPower );
@@ -1268,7 +1269,17 @@ function StatusBars2_GetPowerBarColor( powerToken )
 
     -- PowerBarColor defined by Blizzard unit frame
     local color = PowerBarColor[powerToken];
-    if( not color ) then color = kDefaultPowerBarColor; end
+    
+    if( not color ) then 
+        if( powerToken == SPELL_POWER_DEMONIC_FURY or powerToken == "DEMONIC_FURY" ) then
+            color = { r = 0.57, g = 0.12, b = 1 };
+        else if( powerToken == SPELL_POWER_BURNING_EMBERS or powerToken == "BURNING_EMBERS") then
+            color = { r = 1, g = 0.33, b = 0 };
+        else
+            color = kDefaultPowerBarColor; 
+        end
+    end
+    
     return color.r, color.g, color.b;
         
 end
@@ -1305,6 +1316,8 @@ function StatusBars2_CreateSpecialtyBar( key, unit, displayName, barType )
     bar.OnEnable = StatusBars2_SpecialtyBar_OnEnable;
     bar.Update = StatusBars2_UpdateDiscreteBar;
     bar.HandleEvent = StatusBars2_SpecialtyBars_HandleEvent;
+    bar.SetupBoxes = StatusBars2_SetDiscreteBarBoxCount;
+    bar.IsDefault = StatusBars2_SpecialtyBar_ZeroIsDefault;
 
     -- Register for events
     bar:RegisterEvent( "PLAYER_REGEN_ENABLED" );
@@ -1368,7 +1381,7 @@ end
 function StatusBars2_SpecialtyBar_OnEnable( self )
 
     -- Set the number of boxes we should be seeing
-    StatusBars2_SetDiscreteBarBoxCount( self, self:GetMaxCharges( ) );
+    self:SetupBoxes( self:GetMaxCharges( ) );
 
     -- Update
     self:Update( self:GetCharges( ) );
@@ -1422,7 +1435,6 @@ function StatusBars2_CreateComboBar( )
     bar.HandleEvent = StatusBars2_ComboBar_HandleEvent;
     bar.GetCharges = StatusBars2_GetComboPoints;
     bar.GetMaxCharges = StatusBars2_GetMaxComboPoints;
-    bar.IsDefault = StatusBars2_SpecialtyBar_ZeroIsDefault;
     
     -- Register for events
     bar:RegisterEvent( "UNIT_COMBO_POINTS" );
@@ -1480,12 +1492,12 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateUnitPowerBar( key, displayName, barType )
+function StatusBars2_CreateUnitPowerBar( key, displayName )
     
     -- Create the bar
-    local bar = StatusBars2_CreateSpecialtyBar( key, "player", displayName, barType );
+    local bar = StatusBars2_CreateSpecialtyBar( key, "player", displayName, kUnitPower );
 
-    local powerType, powerToken, powerEvent = StatusBars2_GetSpecialtyUnitPowerType( barType );
+    local powerType, powerToken, powerEvent = StatusBars2_GetSpecialtyUnitPowerType( key );
 
     -- Save the unit power type 
     bar.powerType = powerType;
@@ -1539,18 +1551,18 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_GetSpecialtyUnitPowerType( barType )
+function StatusBars2_GetSpecialtyUnitPowerType( key )
 
-    if( barType == kShard ) then
+    if( key == "shard" ) then
         return SPELL_POWER_SOUL_SHARDS, "SOUL_SHARDS", "UNIT_POWER_FREQUENT";
-    elseif( barType == kHolyPower ) then
+    elseif( key == "holyPower" ) then
         return SPELL_POWER_HOLY_POWER, "HOLY_POWER", "UNIT_POWER";
-    elseif( barType == kChi ) then
+    elseif( key == "chi" ) then
         -- Contrary to the documentation, the power token for CHI appears to be "CHI"
         return SPELL_POWER_CHI, "CHI", "UNIT_POWER_FREQUENT";
-    elseif( barType == kOrbs ) then
+    elseif( key == "orbs" ) then
         return SPELL_POWER_SHADOW_ORBS, "SHADOW_ORBS", "UNIT_POWER_FREQUENT";
-    elseif( barType == kEmbers ) then
+    elseif( key == "embers" ) then
         return SPELL_POWER_BURNING_EMBERS, "BURNING_EMBERS", "UNIT_POWER_FREQUENT";
     else
         assert(false, "unknown bar type");
@@ -1598,8 +1610,9 @@ end
 function StatusBars2_CreateShardBar( )
 
     -- Create the bar
-    bar = StatusBars2_CreateUnitPowerBar( "shard", "Soul Shards", kShard );
-    
+    local bar = StatusBars2_CreateUnitPowerBar( "shard", "Soul Shards" );
+
+    -- Override event handlers for this specific type of bar
     bar.IsDefault = StatusBars2_SpecialtyBar_MaxIsDefault;
     
     return bar;
@@ -1616,11 +1629,7 @@ end
 function StatusBars2_CreateHolyPowerBar( )
 
     -- Create the bar
-    bar = StatusBars2_CreateUnitPowerBar( "holyPower", "Holy Power", kHolyPower );
-
-    -- Set the event handlers
-    bar.IsDefault = StatusBars2_SpecialtyBar_ZeroIsDefault;
-
+    local bar = StatusBars2_CreateUnitPowerBar( "holyPower", "Holy Power" );
     return bar;
 
 end
@@ -1636,11 +1645,7 @@ end
 function StatusBars2_CreateChiBar( )
 
     -- Create the bar
-    bar = StatusBars2_CreateUnitPowerBar( "chi", "Chi", kChi );
-
-    -- Set the event handlers
-    bar.IsDefault = StatusBars2_SpecialtyBar_ZeroIsDefault;
-
+    local bar = StatusBars2_CreateUnitPowerBar( "chi", "Chi" );
     return bar;
 
 end
@@ -1656,11 +1661,7 @@ end
 function StatusBars2_CreateOrbsBar( )
 
     -- Create the bar
-    bar = StatusBars2_CreateUnitPowerBar( "orbs", "Orbs", kOrbs );
-
-    -- Set the event handlers
-    bar.IsDefault = StatusBars2_SpecialtyBar_ZeroIsDefault;
-
+    local bar = StatusBars2_CreateUnitPowerBar( "orbs", "Orbs" );
     return bar;
 
 end
@@ -1675,16 +1676,33 @@ end
 --
 function StatusBars2_CreateEmbersBar( )
 
-
     -- Create the bar
-    bar = StatusBars2_CreateUnitPowerBar( "embers", "Embers", kEmbers );
+    local bar = StatusBars2_CreateUnitPowerBar( "embers", "Embers" );
 
     -- Set the event handlers
     bar.IsDefault = StatusBars2_EmbersBar_IsDefault;
+    bar.SetupBoxes = StatusBars2_SetEmbersBoxCount;
     bar.Update = StatusBars2_UpdateEmbersBar;
 
+    return bar;
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_SetEmbersBoxCount
+--
+--  Description:    Set up the number of embers boxes and initialize them specially for embers
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_SetEmbersBoxCount( self, boxCount )
+
+    -- Call the base class
+    StatusBars2_SetDiscreteBarBoxCount( self, boxCount );
+    
     -- Modify the boxes to display ember particles
-    boxes = { bar:GetChildren( ) };
+    boxes = { self:GetChildren( ) };
     
     -- MAX_POWER_PER_EMBER defined in Blizzard constants
     for i, box in ipairs(boxes) do
@@ -1693,8 +1711,6 @@ function StatusBars2_CreateEmbersBar( )
        status:SetMinMaxValues( 0, MAX_POWER_PER_EMBER );
 
     end
-
-    return bar;
 
 end
 
@@ -2243,7 +2259,6 @@ function StatusBars2_AuraStackBar_OnEvent( self, event, ... )
                     end
                 -- Otherwise, see if the name matches
                 elseif( string.find( spellName, self.aura ) == 1 ) then 
-                    print( spellName.." - "..spellid );
                     found = true; 
                 end
                 
@@ -3693,7 +3708,7 @@ function StatusBars2_SetDefaultSettings( )
 
     -- Locked
     if( StatusBars2_Settings.locked == nil ) then
-        StatusBars2_Settings.locked = false;
+        StatusBars2_Settings.locked = true;
     end
 
     -- Bars locked to groups
@@ -3709,13 +3724,6 @@ function StatusBars2_SetDefaultSettings( )
     -- Scale
     if( StatusBars2_Settings.scale == nil or StatusBars2_Settings.scale <= 0 ) then
         StatusBars2_Settings.scale = 1.0;
-    end
-
-    -- Main Frame Position
-    if( StatusBars2_Settings.position == nil ) then
-        StatusBars2_Settings.position = {};
-		StatusBars2_Settings.position.x = 0;
-        StatusBars2_Settings.position.y = -100;
     end
 
 end;
