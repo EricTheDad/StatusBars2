@@ -1,5 +1,14 @@
-﻿2.03
-=======
+﻿2.04
+====
+All classes and specs tested and working.
+Creating only the bars your character class could actually potentially use, so you don't have config pages for 
+bars that never even could be used by your class.
+Tweaked some of the bar colors to be what I feel is more representative of the power they are displaying.
+Config page headings are now created using pre-defined Blizzard strings (meaning they are localized?)
+Made Eclipse bar the same size as the Blizzard one until I figure out how to make it bigger without it looking crappy.
+
+2.03
+====
 Fixed Chi bar power type so that it works now
 Refactored specialty bars so they now all share most of their code instead of being error-prone copy-and-paste jobs.
 Taking bar colors from Blizzard resources instead of having local hard coded values

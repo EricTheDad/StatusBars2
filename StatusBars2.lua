@@ -20,23 +20,6 @@ local kTargetGroup              = 2;
 local kFocusGroup               = 3;
 local kPetGroup                 = 4;
 
--- Bar ids
-local kPlayerHealth				= 0;
-local kPlayerPower				= 1;
-local kPlayerSecondaryPower		= 2;
-local kPlayerSpecialty			= 3;
-local kPlayerSecondarySpecialty	= 4;
-local kPlayerAuras				= 5;
-local kTargetHealth				= 6;
-local kTargetPower				= 7;
-local kTargetAuras				= 8;
-local kFocusHealth				= 9;
-local kFocusPower				= 10;
-local kFocusAuras				= 11;
-local kPetHealth				= 12;
-local kPetPower					= 13;
-local kPetAuras					= 14;
-
 -- Bar types
 local kHealth = 0;
 local kPower = 1;
@@ -48,7 +31,6 @@ local kDruidMana = 6;
 local kUnitPower = 7;
 local kEclipse = 9;
 local kDemonicFury = 13;
-
 
 -- Number of runes
 local kMaxRunes = 6;
@@ -387,7 +369,7 @@ function StatusBars2_CreateBars( )
     -- Specialty bars
     
     if( englishClass == "DRUID" )  then
-        StatusBars2_CreatePowerBar( "druidMana", "player", "Druid Mana", kDruidMana, SPELL_POWER_MANA );
+        StatusBars2_CreatePowerBar( "druidMana", "player", kDruidMana, SPELL_POWER_MANA );
         StatusBars2_CreateComboBar( );
         StatusBars2_CreateEclipseBar( );
     elseif( englishClass == "ROGUE" ) then
@@ -396,7 +378,7 @@ function StatusBars2_CreateBars( )
     elseif( englishClass == "DEATHKNIGHT" ) then
         StatusBars2_CreateRuneBar( );
     elseif( englishClass == "WARLOCK" ) then
-        StatusBars2_CreatePowerBar( "fury", "player", "Demonic Fury", kDemonicFury, SPELL_POWER_DEMONIC_FURY );
+        StatusBars2_CreatePowerBar( "fury", "player", kDemonicFury, SPELL_POWER_DEMONIC_FURY );
         StatusBars2_CreateShardBar( );
         StatusBars2_CreateEmbersBar( );
     elseif( englishClass == "PALADIN" ) then
@@ -724,10 +706,11 @@ end
 --
 function StatusBars2_CreateHealthBar( key, unit )
 
-    local displayName = StatusBars2_ConstructDisplayName( unit, HEALTH );
+    local barType = kHealth;
+    local displayName = StatusBars2_ConstructDisplayName( unit, barType );
 
     -- Create the bar
-    local bar = StatusBars2_CreateContinuousBar( key, unit, displayName, kHealth, 1, 0, 0 );
+    local bar = StatusBars2_CreateContinuousBar( key, unit, displayName, barType, 1, 0, 0 );
 
     -- Set the event handlers
     bar.OnEvent = StatusBars2_HealthBar_OnEvent;
@@ -861,9 +844,9 @@ end
 --
 function StatusBars2_CreatePowerBar( key, unit, barType, powerType )
 
-    -- A little odd, but as far as Blizzard defined strings go, the text for PET_BATTLE_STAT_POWER 
-    -- probably best embodies a generic power bar for all languages
-    local displayName = StatusBars2_ConstructDisplayName( unit, PET_BATTLE_STAT_POWER );
+    if( not barType ) then barType = kPower end
+    
+    local displayName = StatusBars2_ConstructDisplayName( unit, barType );
 
     -- Create the power bar
     local bar = StatusBars2_CreateContinuousBar( key, unit, displayName, barType, 1, 1, 0 );
@@ -1889,7 +1872,7 @@ function StatusBars2_EclipseBar_OnUpdate( self )
 		self.powerText:SetText(abs(power));
 	end
 
-	local xpos =  47*(power/maxPower)
+	local xpos =  ECLIPSE_BAR_TRAVEL*(power/maxPower)
 	self.marker:SetPoint("CENTER", xpos, 0);
 end
 
@@ -2340,10 +2323,11 @@ end
 --
 function StatusBars2_CreateAuraBar( key, unit )
 
-    local displayName = StatusBars2_ConstructDisplayName( unit, AURAS );
+    local barType = kAura;
+    local displayName = StatusBars2_ConstructDisplayName( unit, barType );
 
     -- Create the bar
-    local bar = StatusBars2_CreateBar( key, "StatusBars2_AuraBarTemplate", unit, displayName, kAura );
+    local bar = StatusBars2_CreateBar( key, "StatusBars2_AuraBarTemplate", unit, displayName, barType );
 
     -- Set the options template
     bar.optionsTemplate = "StatusBars2_AuraBarOptionsTemplate";
@@ -3443,8 +3427,27 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_ConstructDisplayName( unit, partTwo )
+function StatusBars2_ConstructDisplayName( unit, barType )
 
+    local barTypeText;
+    
+    if( barType == kDruidMana ) then
+        local localizedClass = UnitClass( unit );
+        return localizedClass.." "..MANA;
+    elseif( barType == kDemonicFury ) then
+        return DEMONIC_FURY;
+    elseif( barType == kHealth ) then
+        barTypeText = HEALTH;
+    elseif( barType == kPower ) then
+        -- A little odd, but as far as Blizzard defined strings go, the text for PET_BATTLE_STAT_POWER 
+        -- probably best embodies a generic power bar for all languages
+        barTypeText = PET_BATTLE_STAT_POWER;
+    elseif( barType == kAura ) then
+        barTypeText = AURAS;
+    else
+        assert( false, "unknown bar type");
+    end
+    
     local unitText;
     
     if( unit == "player" ) then
@@ -3459,7 +3462,7 @@ function StatusBars2_ConstructDisplayName( unit, partTwo )
         assert( false, "Unknown unit type" );
     end
 
-    return unitText.." "..partTwo;
+    return unitText.." "..barTypeText;
     
 end
 
