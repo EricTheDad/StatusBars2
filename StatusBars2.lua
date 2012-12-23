@@ -365,24 +365,24 @@ function StatusBars2_CreateBars( )
     local localizedClass, englishClass = UnitClass( "player" );
 
     -- Player bars
-    StatusBars2_CreateHealthBar( "playerHealth", "player", "Player Health" );
-    StatusBars2_CreatePowerBar( "playerPower", "player", "Player Power" );
-    StatusBars2_CreateAuraBar( "playerAura", "player", "Player Auras" );
+    StatusBars2_CreateHealthBar( "playerHealth", "player" );
+    StatusBars2_CreatePowerBar( "playerPower", "player" );
+    StatusBars2_CreateAuraBar( "playerAura", "player" );
 
     -- Target bars
-    StatusBars2_CreateHealthBar( "targetHealth", "target", "Target Health" );
-    StatusBars2_CreatePowerBar( "targetPower", "target", "Target Power" );
-    StatusBars2_CreateAuraBar( "targetAura", "target", "Target Auras" );
+    StatusBars2_CreateHealthBar( "targetHealth", "target" );
+    StatusBars2_CreatePowerBar( "targetPower", "target" );
+    StatusBars2_CreateAuraBar( "targetAura", "target" );
 
     -- Focus bars
-    StatusBars2_CreateHealthBar( "focusHealth", "focus", "Focus Health" );
-    StatusBars2_CreatePowerBar( "focusPower", "focus", "Focus Power" );
-    StatusBars2_CreateAuraBar( "focusAura", "focus", "Focus Auras" );
+    StatusBars2_CreateHealthBar( "focusHealth", "focus" );
+    StatusBars2_CreatePowerBar( "focusPower", "focus" );
+    StatusBars2_CreateAuraBar( "focusAura", "focus" );
 
     -- Pet bars
-    StatusBars2_CreateHealthBar( "petHealth", "pet", "Pet Health" );
-    StatusBars2_CreatePowerBar( "petPower", "pet", "Pet Power" );
-    StatusBars2_CreateAuraBar( "petAura", "pet", "Pet Auras" );
+    StatusBars2_CreateHealthBar( "petHealth", "pet" );
+    StatusBars2_CreatePowerBar( "petPower", "pet" );
+    StatusBars2_CreateAuraBar( "petAura", "pet" );
 
     -- Specialty bars
     
@@ -722,7 +722,9 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateHealthBar( key, unit, displayName )
+function StatusBars2_CreateHealthBar( key, unit )
+
+    local displayName = StatusBars2_ConstructDisplayName( unit, HEALTH );
 
     -- Create the bar
     local bar = StatusBars2_CreateContinuousBar( key, unit, displayName, kHealth, 1, 0, 0 );
@@ -857,7 +859,11 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreatePowerBar( key, unit, displayName, barType, powerType )
+function StatusBars2_CreatePowerBar( key, unit, barType, powerType )
+
+    -- A little odd, but as far as Blizzard defined strings go, the text for PET_BATTLE_STAT_POWER 
+    -- probably best embodies a generic power bar for all languages
+    local displayName = StatusBars2_ConstructDisplayName( unit, PET_BATTLE_STAT_POWER );
 
     -- Create the power bar
     local bar = StatusBars2_CreateContinuousBar( key, unit, displayName, barType, 1, 1, 0 );
@@ -1448,7 +1454,7 @@ end
 function StatusBars2_CreateComboBar( )
 
     -- Create the bar
-    local bar = StatusBars2_CreateSpecialtyBar( "combo", "player", "Combo Points", kCombo );
+    local bar = StatusBars2_CreateSpecialtyBar( "combo", "player", COMBAT_TEXT_SHOW_COMBO_POINTS_TEXT, kCombo );
 
     bar.HandleEvent = StatusBars2_ComboBar_HandleEvent;
     bar.GetCharges = StatusBars2_GetComboPoints;
@@ -1548,7 +1554,7 @@ end
 --
 function StatusBars2_UnitPower_HandleEvent( self, event, ... )
     
-    -- Number of shards changed
+    -- Number of charges changed
     if( event == self.powerEvent ) then
         local unit, powerToken = ...;
 
@@ -1628,7 +1634,7 @@ end
 function StatusBars2_CreateShardBar( )
 
     -- Create the bar
-    local bar = StatusBars2_CreateUnitPowerBar( "shard", "Soul Shards" );
+    local bar = StatusBars2_CreateUnitPowerBar( "shard", SOUL_SHARDS );
 
     -- Override event handlers for this specific type of bar
     bar.IsDefault = StatusBars2_SpecialtyBar_MaxIsDefault;
@@ -1647,7 +1653,7 @@ end
 function StatusBars2_CreateHolyPowerBar( )
 
     -- Create the bar
-    local bar = StatusBars2_CreateUnitPowerBar( "holyPower", "Holy Power" );
+    local bar = StatusBars2_CreateUnitPowerBar( "holyPower", HOLY_POWER );
     return bar;
 
 end
@@ -1663,7 +1669,7 @@ end
 function StatusBars2_CreateChiBar( )
 
     -- Create the bar
-    local bar = StatusBars2_CreateUnitPowerBar( "chi", "Chi" );
+    local bar = StatusBars2_CreateUnitPowerBar( "chi", CHI_POWER );
     return bar;
 
 end
@@ -1679,7 +1685,7 @@ end
 function StatusBars2_CreateOrbsBar( )
 
     -- Create the bar
-    local bar = StatusBars2_CreateUnitPowerBar( "orbs", "Orbs" );
+    local bar = StatusBars2_CreateUnitPowerBar( "orbs", SHADOW_ORBS );
     return bar;
 
 end
@@ -1695,7 +1701,7 @@ end
 function StatusBars2_CreateEmbersBar( )
 
     -- Create the bar
-    local bar = StatusBars2_CreateUnitPowerBar( "embers", "Embers" );
+    local bar = StatusBars2_CreateUnitPowerBar( "embers", BURNING_EMBERS );
 
     -- Set the event handlers
     bar.IsDefault = StatusBars2_EmbersBar_IsDefault;
@@ -1789,7 +1795,7 @@ end
 function StatusBars2_CreateEclipseBar( )
 
     -- Create the bar
-    local bar = StatusBars2_CreateBar( "eclipse", "StatusBars2_EclipseBarTemplate", "player", "Eclipse", kEclipse );
+    local bar = StatusBars2_CreateBar( "eclipse", "StatusBars2_EclipseBarTemplate", "player", ECLIPSE, kEclipse );
 
     -- Set the event handlers
     bar.OnEvent = StatusBars2_EclipseBar_OnEvent;
@@ -1969,7 +1975,7 @@ end
 function StatusBars2_CreateRuneBar( )
 
     -- Create the bar
-    local bar = StatusBars2_CreateBar( "rune", "StatusBars2_RuneFrameTemplate", "player", "Runes", kRune );
+    local bar = StatusBars2_CreateBar( "rune", "StatusBars2_RuneFrameTemplate", "player", RUNES, kRune );
     local name = bar:GetName( );
 
     -- Create the rune table
@@ -2332,7 +2338,9 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateAuraBar( key, unit, displayName )
+function StatusBars2_CreateAuraBar( key, unit )
+
+    local displayName = StatusBars2_ConstructDisplayName( unit, AURAS );
 
     -- Create the bar
     local bar = StatusBars2_CreateBar( key, "StatusBars2_AuraBarTemplate", unit, displayName, kAura );
@@ -3429,6 +3437,147 @@ end
 
 -------------------------------------------------------------------------------
 --
+--  Name:           StatusBars2_ConstructDisplayName
+--
+--  Description:    Construct the appropriate display name for a bar
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_ConstructDisplayName( unit, partTwo )
+
+    local unitText;
+    
+    if( unit == "player" ) then
+        unitText = STATUS_TEXT_PLAYER;
+    elseif( unit == "target" ) then
+        unitText = STATUS_TEXT_TARGET;
+    elseif( unit == "focus" ) then
+        unitText = FOCUS;
+    elseif( unit == "pet" ) then
+        unitText = STATUS_TEXT_PET;
+    else
+        assert( false, "Unknown unit type" );
+    end
+
+    return unitText.." "..partTwo;
+    
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_GetComboPoints
+--
+--  Description:    Get the number of combo points for the current player
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_GetComboPoints( )
+
+    -- Check if the target is dead
+    if UnitIsDeadOrGhost( 'target' ) then
+        return 0;
+    else
+        return GetComboPoints( "player", "target" );
+    end;
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_GetAuraStack
+--
+--  Description:    Get the stack size of the specified aura
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_GetAuraStack( unit, aura, auraType )
+
+    local stack = 0;
+
+    -- Iterate over the auras on the target
+    local i;
+    for i = 1, 40 do
+
+        -- Get the aura
+        local name, rank, texture, count;
+        if( auraType == "buff" ) then
+            name, rank, texture, count = UnitBuff( unit, i );
+        else
+            name, rank, texture, count = UnitDebuff( unit, i );
+        end
+
+        -- Check the name
+		if( name == nil ) then
+			break;
+		elseif( string.find( name, aura ) == 1 ) then
+            stack = count;
+            break;
+        end;
+    end
+
+    return stack;
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_Trace
+--
+--  Description:    Trace a message to the console
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_Trace( message )
+    DEFAULT_CHAT_FRAME:AddMessage( message );
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:
+--
+--  Description:    Trace a message to the console
+--
+-------------------------------------------------------------------------------
+--
+function safePrint( value )
+    if value then
+        return value;
+    else
+        return "nil";
+    end
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:
+--
+--  Description:    Trace a message to the console
+--
+-------------------------------------------------------------------------------
+--
+function printBool( boolVal )
+    if boolVal then
+        return "true";
+    else
+        return "false";
+    end
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_Round
+--
+--  Description:    Round a number
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_Round( x, places )
+    local mult = 10 ^  ( places or 0 )
+    return floor( x * mult + 0.5 ) / mult
+end
+
+-------------------------------------------------------------------------------
+--
 --  Name:           StatusBars2_LoadSettings
 --
 --  Description:    Load settings
@@ -3857,34 +4006,29 @@ end
 --
 function StatusBars2_BarEnabledMenu_Initialize( self )
 
-    -- Button info
-    local info = {};
-    info.func = StatusBars2_BarEnabledMenu_OnClick;
-    info.arg1 = self;
-
     -- Auto
-    local auto = {};
+    local auto = UIDropDownMenu_CreateInfo();
     auto.func = StatusBars2_BarEnabledMenu_OnClick;
     auto.arg1 = self;
     auto.text = "Auto";
     UIDropDownMenu_AddButton( auto );
 
     -- Combat
-    local combat = {};
+    local combat = UIDropDownMenu_CreateInfo();
     combat.func = StatusBars2_BarEnabledMenu_OnClick;
     combat.arg1 = self;
     combat.text = "Combat";
     UIDropDownMenu_AddButton( combat );
 
     -- Always
-    local always = {};
+    local always = UIDropDownMenu_CreateInfo();
     always.func = StatusBars2_BarEnabledMenu_OnClick;
     always.arg1 = self;
     always.text = "Always";
     UIDropDownMenu_AddButton( always );
 
     -- Never
-    local never = {};
+    local never = UIDropDownMenu_CreateInfo();
     never.func = StatusBars2_BarEnabledMenu_OnClick;
     never.arg1 = self;
     never.text = "Never";
@@ -3922,21 +4066,21 @@ function StatusBars2_PercentTextMenu_Initialize( self )
     info.arg1 = self;
 
     -- Left
-    local left = {};
+    local left = UIDropDownMenu_CreateInfo();
     left.func = StatusBars2_PercentTextMenu_OnClick;
     left.arg1 = self;
     left.text = "Left";
     UIDropDownMenu_AddButton( left );
 
     -- Right
-    local right = {};
+    local right = UIDropDownMenu_CreateInfo();
     right.func = StatusBars2_PercentTextMenu_OnClick;
     right.arg1 = self;
     right.text = "Right";
     UIDropDownMenu_AddButton( right );
 
     -- Hide
-    local hide = {};
+    local hide = UIDropDownMenu_CreateInfo();
     hide.func = StatusBars2_PercentTextMenu_OnClick;
     hide.arg1 = self;
     hide.text = "Hide";
@@ -4129,115 +4273,3 @@ function StatusBars2_Options_DoDataExchange( save )
     end
 end
 
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_GetComboPoints
---
---  Description:    Get the number of combo points for the current player
---
--------------------------------------------------------------------------------
---
-function StatusBars2_GetComboPoints( )
-
-    -- Check if the target is dead
-    if UnitIsDeadOrGhost( 'target' ) then
-        return 0;
-    else
-        return GetComboPoints( "player", "target" );
-    end;
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_GetAuraStack
---
---  Description:    Get the stack size of the specified aura
---
--------------------------------------------------------------------------------
---
-function StatusBars2_GetAuraStack( unit, aura, auraType )
-
-    local stack = 0;
-
-    -- Iterate over the auras on the target
-    local i;
-    for i = 1, 40 do
-
-        -- Get the aura
-        local name, rank, texture, count;
-        if( auraType == "buff" ) then
-            name, rank, texture, count = UnitBuff( unit, i );
-        else
-            name, rank, texture, count = UnitDebuff( unit, i );
-        end
-
-        -- Check the name
-		if( name == nil ) then
-			break;
-		elseif( string.find( name, aura ) == 1 ) then
-            stack = count;
-            break;
-        end;
-    end
-
-    return stack;
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_Trace
---
---  Description:    Trace a message to the console
---
--------------------------------------------------------------------------------
---
-function StatusBars2_Trace( message )
-    DEFAULT_CHAT_FRAME:AddMessage( message );
-end
-
--------------------------------------------------------------------------------
---
---  Name:
---
---  Description:    Trace a message to the console
---
--------------------------------------------------------------------------------
---
-function safePrint( value )
-    if value then
-        return value;
-    else
-        return "nil";
-    end
-end
-
--------------------------------------------------------------------------------
---
---  Name:
---
---  Description:    Trace a message to the console
---
--------------------------------------------------------------------------------
---
-function printBool( boolVal )
-    if boolVal then
-        return "true";
-    else
-        return "false";
-    end
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_Round
---
---  Description:    Round a number
---
--------------------------------------------------------------------------------
---
-function StatusBars2_Round( x, places )
-    local mult = 10 ^  ( places or 0 )
-    return floor( x * mult + 0.5 ) / mult
-end

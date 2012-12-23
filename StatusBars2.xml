@@ -260,7 +260,7 @@
                 <Anchors>
                     <Anchor point="LEFT" relativeTo="$Parent" relativePoint="LEFT">
                         <Offset>
-			<AbsDimension x="62" y="0"/>
+                            <AbsDimension x="62" y="0"/>
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -542,7 +542,7 @@
             </Layer>
         </Layers>
         <Frames>
-            <Frame name="$parent_EnabledMenu" inherits="UIDropDownMenuTemplate" id="16789" >
+            <Frame name="$parent_EnabledMenu" inherits="UIDropDownMenuTemplate" >
                 <Size x="60" y="17"/>
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeTo="$parent_EnabledLabel" relativePoint="TOPRIGHT" >
