@@ -1,4 +1,8 @@
-﻿2.04
+﻿2.04.01
+=======
+Fix for Warlock Shard Bar not appearing.  Lesson of the day: "Do not assume a Blizzard define is actually defining what it appears to." or "Caution when copying Blizzard code".
+
+2.04
 ====
 All classes and specs tested and working.
 Creating only the bars your character class could actually potentially use, so you don't have config pages for 
@@ -35,9 +39,18 @@ Removed Renewing Mists bar, as it doesn't really affect the players actions, so 
 ====
 Improved the look of the bars by making the statusbar slightly bigger and drawing it under the frame instead of on top of it.
 
-2.00====
+2.00
+====
 Bumped TOC for 5.1
-2.00.06b========Discrete bars not size however large they need to be on enable, completely obliviating the need to know what the maximum possible power is.They will always size themselves to however many embers/orbs/holy power/chi the player has at a given moment. So even if Blizzard introduces somethingthat increases the maximum of these types of powers, the addon will continue to work correctly, it will just add another box for those that need it.Ember bar now updates in particle increments (untested).Cleaned up the look of discrete bars with 6+ boxes by making the edge a little thinner so the art elements don't overlap.
+
+2.00.06b
+========
+Discrete bars not size however large they need to be on enable, completely obliviating the need to know what the maximum possible power is.
+They will always size themselves to however many embers/orbs/holy power/chi the player has at a given moment. So even if Blizzard introduces something
+that increases the maximum of these types of powers, the addon will continue to work correctly, it will just add another box for those that need it.
+Ember bar now updates in particle increments (untested).
+Cleaned up the look of discrete bars with 6+ boxes by making the edge a little thinner so the art elements don't overlap.
+
 2.00.05b
 ========
 Constructing discrete bars directly now rather than from a template.  This allows me to change the number of boxes for embers, holy power etc. 
