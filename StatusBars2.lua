@@ -119,6 +119,7 @@ function StatusBars2_OnEvent( self, event, ... )
             
             -- Initialize the option panel controls
             StatusBars2_Options_Configure_Bar_Options( );
+            StatusBars2_Options_DoDataExchange( false );
         
         end
         
@@ -126,8 +127,6 @@ function StatusBars2_OnEvent( self, event, ... )
 
         -- Update the bars according to the settings
         StatusBars2_UpdateBars( );
-
-        StatusBars2_Options_DoDataExchange( false );
 
         self:RegisterEvent( "UNIT_DISPLAYPOWER" );
         self:RegisterEvent( "PLAYER_TALENT_UPDATE" );

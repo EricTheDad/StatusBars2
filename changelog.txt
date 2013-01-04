@@ -1,4 +1,8 @@
-﻿2.04.01
+﻿2.04.02
+=======
+Fix for an error that was occasionally popping up in instances (not 100% certain, but it does seem to do the job)
+
+2.04.01
 =======
 Fix for Warlock Shard Bar not appearing.  Lesson of the day: "Do not assume a Blizzard define is actually defining what it appears to." or "Caution when copying Blizzard code".
 
