@@ -1,4 +1,8 @@
-﻿2.04.02
+﻿2.04.03
+=======
+Fixed eclipse bar
+
+2.04.02
 =======
 Fix for an error that was occasionally popping up in instances (not 100% certain, but it does seem to do the job)
 
