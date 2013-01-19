@@ -2558,7 +2558,7 @@ function StatusBars2_ShowAuraButtons( self, auraType, getAuraFunction, maxAuras,
 
                 -- Update the offset
                 offset = offset + button:GetWidth( ) + 2;
-
+                
                 -- Show the button
                 button:Show( );
             end
@@ -2628,6 +2628,9 @@ function StatusBars2_GetAuraButton( self, id, buttonName, template, auraName, au
 
     -- Set the parent bar
     button.parentBar = self;
+
+    -- Enable/disable tooltips
+    button:EnableMouse( StatusBars2_Settings.bars[ self.key ].enableTooltips );
 
     -- If its a debuff set the border size and color
     if( template == "TargetDebuffFrameTemplate" ) then
@@ -2837,7 +2840,7 @@ end
 function StatusBars2_CreateDiscreteBar( key, unit, displayName, barType, boxCount )
 
     -- Create the bar
-    local bar = StatusBars2_CreateBar( key, "StatusBars2_DiscreteBarTemplate", unit, displayName, barType, boxCount );
+    local bar = StatusBars2_CreateBar( key, "StatusBars2_DiscreteBarTemplate", unit, displayName, barType );
 	
 	-- Save the color in the settings.  I'll make this editable in the future.
 	bar.GetColor = StatusBars2_GetDiscreteBarColor;
@@ -4119,6 +4122,7 @@ function StatusBars2_BarOptions_DoDataExchange( save, frame )
     local showDebuffsButton = _G[ frame:GetName( ) .. "_ShowDebuffsButton" ];
     local onlyShowSelfAurasButton = _G[ frame:GetName( ) .. "_OnlyShowSelfAurasButton" ];
     local onlyShowTimedAurasButton = _G[ frame:GetName( ) .. "_OnlyShowTimedAurasButton" ];
+    local enableTooltipsButton = _G[ frame:GetName( ) .. "_EnableTooltips" ];
     local showSpellButton = _G[ frame:GetName( ) .. "_ShowSpellButton" ];
     local showInAllFormsButton = _G[ frame:GetName( ) .. "_ShowInAllForms" ];
     local percentTextMenu = _G[ frame:GetName( ) .. "_PercentTextMenu" ];
@@ -4142,6 +4146,9 @@ function StatusBars2_BarOptions_DoDataExchange( save, frame )
         end
         if( onlyShowTimedAurasButton ~= nil ) then
             StatusBars2_Settings.bars[ frame.bar.key ].onlyShowTimed = onlyShowTimedAurasButton:GetChecked( ) == 1;
+        end
+        if( enableTooltipsButton ~= nil ) then
+            StatusBars2_Settings.bars[ frame.bar.key ].enableTooltips = enableTooltipsButton:GetChecked( ) == 1;
         end
         if( showSpellButton ~= nil ) then
             StatusBars2_Settings.bars[ frame.bar.key ].showSpell = showSpellButton:GetChecked( ) == 1;
@@ -4171,6 +4178,9 @@ function StatusBars2_BarOptions_DoDataExchange( save, frame )
         end
         if( onlyShowTimedAurasButton ~= nil ) then
             onlyShowTimedAurasButton:SetChecked( StatusBars2_Settings.bars[ frame.bar.key ].onlyShowTimed );
+        end
+        if( enableTooltipsButton ~= nil ) then
+            enableTooltipsButton:SetChecked( StatusBars2_Settings.bars[ frame.bar.key ].enableTooltips );
         end
         if( showSpellButton ~= nil ) then
             showSpellButton:SetChecked( StatusBars2_Settings.bars[ frame.bar.key ].showSpell );

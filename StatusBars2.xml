@@ -764,6 +764,18 @@
                     </OnLoad>
                 </Scripts>
             </CheckButton>
+            <CheckButton name="$parent_EnableTooltips" inherits="OptionsCheckButtonTemplate" >
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeto="$parent_OnlyShowTimedAurasButton" >
+                        <Offset x="0" y="-24" />
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal( self:GetName( ) .. "Text" ):SetText( "Enable Tooltips" );
+                    </OnLoad>
+                </Scripts>
+            </CheckButton>
         </Frames>
     </Frame>
 
