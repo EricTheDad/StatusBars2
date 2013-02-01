@@ -1,4 +1,8 @@
-﻿2.04.04
+﻿2.05.00
+=======
+Revised version number since the last update was actually a new feature rather than a bug fix to existing features
+
+2.04.04
 =======
 Disabled tooltips on the aura bar icons.  Added option to re-enable them if desired.
 
