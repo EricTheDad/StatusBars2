@@ -2552,15 +2552,17 @@ function StatusBars2_ShowAuraButtons( self, auraType, getAuraFunction, maxAuras,
             -- Determine if the button should be shown
             if( ( caster == "player" or mineOnly == false ) and ( duration > 0 or StatusBars2_Settings.bars[ self.key ].onlyShowTimed == false ) ) then
 
-                -- Get the button
-                local buttonName = self:GetName( ) .. "_" .. auraType .. "Button" .. i;
-                local button = StatusBars2_GetAuraButton( self, i, buttonName, "Target" .. auraType .. "FrameTemplate", name, rank, icon, count, debuffType, duration, expirationTime, offset );
+                if( not StatusBars2_Settings.bars[ self.key ].onlyShowListed or StatusBars2_Settings.bars[ self.key ].auraFilter[ name ] ) then
+                    -- Get the button
+                    local buttonName = self:GetName( ) .. "_" .. auraType .. "Button" .. i;
+                    local button = StatusBars2_GetAuraButton( self, i, buttonName, "Target" .. auraType .. "FrameTemplate", name, rank, icon, count, debuffType, duration, expirationTime, offset );
 
-                -- Update the offset
-                offset = offset + button:GetWidth( ) + 2;
+                    -- Update the offset
+                    offset = offset + button:GetWidth( ) + 2;
                 
-                -- Show the button
-                button:Show( );
+                    -- Show the button
+                    button:Show( );
+                end
             end
         else
             break;

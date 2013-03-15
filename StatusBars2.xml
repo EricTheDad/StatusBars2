@@ -752,9 +752,21 @@
                     </OnLoad>
                 </Scripts>
             </CheckButton>
-            <CheckButton name="$parent_OnlyShowTimedAurasButton" inherits="OptionsCheckButtonTemplate" >
+            <CheckButton name="$parent_EnableTooltips" inherits="OptionsCheckButtonTemplate" >
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeto="$parent_OnlyShowSelfAurasButton" >
+                        <Offset x="0" y="-24" />
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal( self:GetName( ) .. "Text" ):SetText( "Enable Tooltips" );
+                    </OnLoad>
+                </Scripts>
+            </CheckButton>
+            <CheckButton name="$parent_OnlyShowTimedAurasButton" inherits="OptionsCheckButtonTemplate" >
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeto="$parent_EnableTooltips" >
                         <Offset x="0" y="-24" />
                     </Anchor>
                 </Anchors>
@@ -764,7 +776,7 @@
                     </OnLoad>
                 </Scripts>
             </CheckButton>
-            <CheckButton name="$parent_EnableTooltips" inherits="OptionsCheckButtonTemplate" >
+            <CheckButton name="$parent_OnlyShowListedAuraButtons" inherits="OptionsCheckButtonTemplate" >
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeto="$parent_OnlyShowTimedAurasButton" >
                         <Offset x="0" y="-24" />
@@ -772,7 +784,7 @@
                 </Anchors>
                 <Scripts>
                     <OnLoad>
-                        getglobal( self:GetName( ) .. "Text" ):SetText( "Enable Tooltips" );
+                        getglobal( self:GetName( ) .. "Text" ):SetText( "Only show auras listed below" );
                     </OnLoad>
                 </Scripts>
             </CheckButton>
