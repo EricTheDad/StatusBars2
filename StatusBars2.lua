@@ -3742,6 +3742,13 @@ function StatusBars2_ImportSettings( )
         StatusBars2_Settings.AuraSize = nil;
     end
 
+    if StatusBars2_Settings.bars[ "playerAura" ].auraFilter then
+        print("auraFilter found on load "..#StatusBars2_Settings.bars[ "playerAura" ].auraFilter.." entries");
+        
+        for i, entry in ipairs(StatusBars2_Settings.bars[ "playerAura" ].auraFilter) do
+            print("Entry "..i..": "..entry);
+        end
+    end
 end
 
 -------------------------------------------------------------------------------
@@ -3841,16 +3848,6 @@ function StatusBars2_SetDefaultSettings( )
         -- Enable debuffs
         if( StatusBars2_Settings.bars[ bar.key ].showDebuffs == nil and bar.type == kAura ) then
             StatusBars2_Settings.bars[ bar.key ].showDebuffs = true;
-        end
-
-        -- Show all auras
-        if( StatusBars2_Settings.bars[ bar.key ].onlyShowSelf == nil and bar.type == kAura ) then
-            StatusBars2_Settings.bars[ bar.key ].onlyShowSelf = false;
-        end
-
-        -- Show all auras
-        if( StatusBars2_Settings.bars[ bar.key ].onlyShowTimed == nil and bar.type == kAura ) then
-            StatusBars2_Settings.bars[ bar.key ].onlyShowTimed = false;
         end
 
         -- Set scale to 1.0
@@ -4107,6 +4104,142 @@ end
 
 -------------------------------------------------------------------------------
 --
+--  Name:           StatusBars2_AuraFilterMenu_Initialize
+--
+--  Description:    Initialize the list of auras to display menu
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_AuraFilterMenu_Initialize( self )
+
+    -- Auto
+    local auto = UIDropDownMenu_CreateInfo();
+    auto.func = StatusBars2_BarEnabledMenu_OnClick;
+    auto.arg1 = self;
+    auto.text = "Auto";
+    UIDropDownMenu_AddButton( auto );
+
+    -- Combat
+    local combat = UIDropDownMenu_CreateInfo();
+    combat.func = StatusBars2_BarEnabledMenu_OnClick;
+    combat.arg1 = self;
+    combat.text = "Combat";
+    UIDropDownMenu_AddButton( combat );
+
+    -- Always
+    local always = UIDropDownMenu_CreateInfo();
+    always.func = StatusBars2_BarEnabledMenu_OnClick;
+    always.arg1 = self;
+    always.text = "Always";
+    UIDropDownMenu_AddButton( always );
+
+    -- Never
+    local never = UIDropDownMenu_CreateInfo();
+    never.func = StatusBars2_BarEnabledMenu_OnClick;
+    never.arg1 = self;
+    never.text = "Never";
+    UIDropDownMenu_AddButton( never );
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_BarOptions_AddAuraFilterEntry
+--
+--  Description:    Add an aura name to the aura filter list
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_BarOptions_AddAuraFilterEntry( self )
+
+    local aura_list = _G[ self:GetParent():GetName( ) .. "_AuraFilterList" ];
+    local buttons = aura_list.buttons;
+
+    if aura_list.allEntries == nil then
+        aura_list.allEntries = {};
+    end
+
+    local numEntries = #aura_list.allEntries;
+    
+
+    local aura_name = self:GetText( );
+    print("Adding aura '"..aura_name.."' to aura filter");
+    
+    aura_list.allEntries[numEntries+1] = aura_name;
+    StatusBars2_BarOptions_AuraListUpdate( aura_list );
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_BarOptions_AuraListUpdate
+--
+--  Description:    Select an item in the list of aura names
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_BarOptions_AuraListUpdate( self )
+
+    if self then
+        local scrollFrame = self;
+        local buttons = scrollFrame.buttons;
+        local num_buttons = #buttons;
+        local button_height = buttons[1]:GetHeight();
+
+        for i, entry in ipairs(buttons) do
+            if self.allEntries and self.allEntries[i] then
+                entry:SetText( self.allEntries[i] );
+            else
+                break;
+            end
+        end
+        
+        print("StatusBars2_BarOptions_AuraListUpdate");
+        local num_entries;
+        if self.allEntries then num_entries = #self.allEntries; else num_entries = 0; end
+        local offset = HybridScrollFrame_GetOffset(scrollFrame);
+
+        HybridScrollFrame_Update(scrollFrame, num_entries * button_height, scrollFrame:GetHeight());
+    end
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_BarListEntryButton_OnClick
+--
+--  Description:    Select an item in the list of aura names
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_BarListEntryButton_OnClick( self )
+
+    if self:GetText() then
+        print("Clicked on "..self:GetText());
+    else
+        print("Clicked on empty button");
+    end
+    
+    StatusBars2_BarOptions_AuraListUpdate( aura_list );
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_BarOptions_ClearAuraFilterList_OnClick
+--
+--  Description:    Add an aura name to the aura filter list
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_BarOptions_ClearAuraFilterList_OnClick( self )
+
+    local aura_list = _G[ self:GetParent():GetName( ) .. "_AuraFilterList" ];
+    aura_list.allEntries = nil;
+
+end
+
+-------------------------------------------------------------------------------
+--
 --  Name:           StatusBars2_BarOptions_DoDataExchange
 --
 --  Description:    Exchange data between settings and controls
@@ -4124,10 +4257,12 @@ function StatusBars2_BarOptions_DoDataExchange( save, frame )
     local showDebuffsButton = _G[ frame:GetName( ) .. "_ShowDebuffsButton" ];
     local onlyShowSelfAurasButton = _G[ frame:GetName( ) .. "_OnlyShowSelfAurasButton" ];
     local onlyShowTimedAurasButton = _G[ frame:GetName( ) .. "_OnlyShowTimedAurasButton" ];
+    local onlyShowListedAurasButton = _G[ frame:GetName( ) .. "_OnlyShowListedAuraButtons" ];
     local enableTooltipsButton = _G[ frame:GetName( ) .. "_EnableTooltips" ];
     local showSpellButton = _G[ frame:GetName( ) .. "_ShowSpellButton" ];
     local showInAllFormsButton = _G[ frame:GetName( ) .. "_ShowInAllForms" ];
     local percentTextMenu = _G[ frame:GetName( ) .. "_PercentTextMenu" ];
+    local auraList = _G[ frame:GetName( ) .. "_AuraFilterList" ];
 
     -- Exchange data
     if( save == true ) then
@@ -4149,6 +4284,9 @@ function StatusBars2_BarOptions_DoDataExchange( save, frame )
         if( onlyShowTimedAurasButton ~= nil ) then
             StatusBars2_Settings.bars[ frame.bar.key ].onlyShowTimed = onlyShowTimedAurasButton:GetChecked( ) == 1;
         end
+        if( onlyShowListedAurasButton ~= nil ) then
+            StatusBars2_Settings.bars[ frame.bar.key ].onlyShowListed = onlyShowListedAurasButton:GetChecked( ) == 1;
+        end
         if( enableTooltipsButton ~= nil ) then
             StatusBars2_Settings.bars[ frame.bar.key ].enableTooltips = enableTooltipsButton:GetChecked( ) == 1;
         end
@@ -4161,6 +4299,20 @@ function StatusBars2_BarOptions_DoDataExchange( save, frame )
         if( percentTextMenu ~= nil ) then
             StatusBars2_Settings.bars[ frame.bar.key ].percentText = UIDropDownMenu_GetSelectedName( percentTextMenu );
         end
+        if ( auraList ) then
+            print("auraList for "..frame:GetName());
+            if auraList.allEntries then
+                print("allEntries found "..#auraFilter.." entries");
+                StatusBars2_Settings.bars[ frame.bar.key ].auraFilter = {};
+                for i, entry in ipairs(auraList.allEntries) do
+                    StatusBars2_Settings.bars[ frame.bar.key ].auraFilter[entry] = entry;
+                    print("Adding "..entry);
+                end
+            else
+                StatusBars2_Settings.bars[ frame.bar.key ].auraFilter = nil;
+            end
+        end
+
     else
         UIDropDownMenu_SetSelectedName( enabledMenu, StatusBars2_Settings.bars[ frame.bar.key ].enabled );
         UIDropDownMenu_SetText( enabledMenu, StatusBars2_Settings.bars[ frame.bar.key ].enabled );
@@ -4181,6 +4333,9 @@ function StatusBars2_BarOptions_DoDataExchange( save, frame )
         if( onlyShowTimedAurasButton ~= nil ) then
             onlyShowTimedAurasButton:SetChecked( StatusBars2_Settings.bars[ frame.bar.key ].onlyShowTimed );
         end
+        if( onlyShowListedAurasButton ~= nil ) then
+            onlyShowListedAurasButton:SetChecked( StatusBars2_Settings.bars[ frame.bar.key ].onlyShowListed );
+        end
         if( enableTooltipsButton ~= nil ) then
             enableTooltipsButton:SetChecked( StatusBars2_Settings.bars[ frame.bar.key ].enableTooltips );
         end
@@ -4193,6 +4348,20 @@ function StatusBars2_BarOptions_DoDataExchange( save, frame )
         if( percentTextMenu ~= nil ) then
             UIDropDownMenu_SetSelectedName( percentTextMenu, StatusBars2_Settings.bars[ frame.bar.key ].percentText );
             UIDropDownMenu_SetText( percentTextMenu, StatusBars2_Settings.bars[ frame.bar.key ].percentText );
+        end
+        if ( auraList ) then
+            print("auraList for "..frame:GetName());
+            local auraFilter = StatusBars2_Settings.bars[ frame.bar.key ].auraFilter;
+            if auraFilter then
+                print("auraFilter found "..#auraFilter.." entries");
+                auraList.allEntries = {};
+                for i, entry in ipairs(auraFilter) do
+                    auraList.allEntries[entry] = entry;
+                    print("Adding "..entry);
+                end
+            else
+                auraList.allEntries = nil;
+            end
         end
     end
 end
