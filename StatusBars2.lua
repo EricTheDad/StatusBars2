@@ -219,6 +219,7 @@ function StatusBars2_CreateGroupFrame( name, key )
     groupFrame.key = key;
 
     -- Insert the group frame into the groups table for later reference.
+    print("Creating group "..key);
     table.insert( groups, groupFrame );
     
 end
@@ -3633,6 +3634,7 @@ function StatusBars2_InitializeSettings( )
     -- Create a structure for each bar group
     for i, group in ipairs( groups ) do
         if( StatusBars2_Settings.groups[ i ] == nil ) then
+            print("Creating settings for group "..i);
             StatusBars2_Settings.groups[ i ] = {};
         end
     end
@@ -3741,14 +3743,7 @@ function StatusBars2_ImportSettings( )
     if( StatusBars2_Settings.AuraSize ~= nil ) then
         StatusBars2_Settings.AuraSize = nil;
     end
-
-    if StatusBars2_Settings.bars[ "playerAura" ].auraFilter then
-        print("auraFilter found on load "..#StatusBars2_Settings.bars[ "playerAura" ].auraFilter.." entries");
-        
-        for i, entry in ipairs(StatusBars2_Settings.bars[ "playerAura" ].auraFilter) do
-            print("Entry "..i..": "..entry);
-        end
-    end
+    
 end
 
 -------------------------------------------------------------------------------
@@ -3796,6 +3791,12 @@ function StatisBars2_PruneSettings( )
             barSettings[key] = nil;
         end
     end
+    
+    -- clear out any excess groups, since they seem to have sneaked in
+    for i = #groups + 1, #StatusBars2_Settings.groups do
+        StatusBars2_Settings.groups[ i ] = nil;
+    end
+
 end
 
 -------------------------------------------------------------------------------
@@ -4163,12 +4164,14 @@ function StatusBars2_BarOptions_AddAuraFilterEntry( self )
     
 
     local aura_name = self:GetText( );
-    print("Adding aura '"..aura_name.."' to aura filter");
+    print("Adding aura '"..aura_name.."' at pos "..numEntries+1);
     
     aura_list.allEntries[numEntries+1] = aura_name;
     StatusBars2_BarOptions_AuraListUpdate( aura_list );
 end
 
+local oldOffset = 0;
+local currentScrollFrame = nil;
 -------------------------------------------------------------------------------
 --
 --  Name:           StatusBars2_BarOptions_AuraListUpdate
@@ -4180,27 +4183,47 @@ end
 function StatusBars2_BarOptions_AuraListUpdate( self )
 
     if self then
-        local scrollFrame = self;
-        local buttons = scrollFrame.buttons;
-        local num_buttons = #buttons;
-        local button_height = buttons[1]:GetHeight();
+        currentScrollFrame = self;
+    end
+    
+    if currentScrollFrame then
+    
+        local scrollFrame = currentScrollFrame;
+        local offset = HybridScrollFrame_GetOffset(scrollFrame);
+        
+        if self or offset ~= oldOffset then
+            oldOffset = offset;
+            
+            local buttons = scrollFrame.buttons;
+            local num_buttons = #buttons;
+            local button_height = buttons[1]:GetHeight();
+            
+            print("StatusBars2_BarOptions_AuraListUpdate");
 
-        for i, entry in ipairs(buttons) do
-            if self.allEntries and self.allEntries[i] then
-                entry:SetText( self.allEntries[i] );
-            else
-                break;
+            for i, entry in ipairs(buttons) do
+                local index = i + offset;
+                
+                print("Checking entry "..i);
+                if scrollFrame.allEntries and scrollFrame.allEntries[index] then
+                    print("Adding "..scrollFrame.allEntries[index]);
+                    entry:SetText( scrollFrame.allEntries[index] );
+                    entry:Show();
+                else
+                    print("Hiding button "..i);
+                    entry:Hide();
+                end
             end
+            
+            print("Offset is now "..offset);
+
+            local num_entries;
+            if scrollFrame.allEntries then num_entries = #scrollFrame.allEntries; else num_entries = 0; end
+
+            HybridScrollFrame_Update(scrollFrame, num_entries * button_height, scrollFrame:GetHeight());
         end
         
-        print("StatusBars2_BarOptions_AuraListUpdate");
-        local num_entries;
-        if self.allEntries then num_entries = #self.allEntries; else num_entries = 0; end
-        local offset = HybridScrollFrame_GetOffset(scrollFrame);
-
-        HybridScrollFrame_Update(scrollFrame, num_entries * button_height, scrollFrame:GetHeight());
     end
-
+    
 end
 
 -------------------------------------------------------------------------------
@@ -4235,6 +4258,7 @@ function StatusBars2_BarOptions_ClearAuraFilterList_OnClick( self )
 
     local aura_list = _G[ self:GetParent():GetName( ) .. "_AuraFilterList" ];
     aura_list.allEntries = nil;
+    StatusBars2_BarOptions_AuraListUpdate( aura_list );
 
 end
 
@@ -4300,16 +4324,17 @@ function StatusBars2_BarOptions_DoDataExchange( save, frame )
             StatusBars2_Settings.bars[ frame.bar.key ].percentText = UIDropDownMenu_GetSelectedName( percentTextMenu );
         end
         if ( auraList ) then
-            print("auraList for "..frame:GetName());
+            print("saving auraList for "..frame:GetName());
             if auraList.allEntries then
-                print("allEntries found "..#auraFilter.." entries");
                 StatusBars2_Settings.bars[ frame.bar.key ].auraFilter = {};
+                
                 for i, entry in ipairs(auraList.allEntries) do
-                    StatusBars2_Settings.bars[ frame.bar.key ].auraFilter[entry] = entry;
+                    StatusBars2_Settings.bars[ frame.bar.key ].auraFilter[entry] = true;
                     print("Adding "..entry);
                 end
             else
-                StatusBars2_Settings.bars[ frame.bar.key ].auraFilter = nil;
+                print("auraList.allEntries is nil");
+                auraFilter = nil;
             end
         end
 
@@ -4353,12 +4378,15 @@ function StatusBars2_BarOptions_DoDataExchange( save, frame )
             print("auraList for "..frame:GetName());
             local auraFilter = StatusBars2_Settings.bars[ frame.bar.key ].auraFilter;
             if auraFilter then
-                print("auraFilter found "..#auraFilter.." entries");
                 auraList.allEntries = {};
-                for i, entry in ipairs(auraFilter) do
-                    auraList.allEntries[entry] = entry;
-                    print("Adding "..entry);
+                local i = 1;
+                for name in pairs(auraFilter) do
+                    auraList.allEntries[i] = name;
+                    i = i + 1;
+                    print("Adding "..name);
                 end
+                
+                print("allEntries size "..#auraList.allEntries);
             else
                 auraList.allEntries = nil;
             end

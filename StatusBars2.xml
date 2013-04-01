@@ -817,7 +817,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$Parent" relativePoint="TOPRIGHT" >
                         <Offset>
-                            <AbsDimension x="14" y="-20"/>
+                            <AbsDimension x="-30" y="-20"/>
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -829,21 +829,31 @@
                         self:ClearFocus();
                     </OnEnterPressed>
                 </Scripts>
-                <Size x="160" y="32" />
+                <Size x="150" y="32" />
             </EditBox >
             <ScrollFrame name="$parent_AuraFilterList" inherits="HybridScrollFrameTemplate" >
                  <Anchors>
-                    <Anchor point="TOPRIGHT" relativeto="$parent_AuraNameEntry" >
-                        <Offset x="0" y="-24" />
+                    <Anchor point="TOPLEFT" relativeto="$parent_AuraNameEntry" relativepoint="BOTTOMLEFT">
+                        <Offset x="0" y="-5" />
                     </Anchor>
                 </Anchors>
+                <!--<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+                    <EdgeSize>
+                        <AbsValue val="16" />
+                    </EdgeSize>
+                    <TileSize>
+                        <AbsValue val="16" />
+                    </TileSize>
+                </Backdrop> -->
                 <Scripts>
                     <OnLoad>
                         HybridScrollFrame_OnLoad(self);
                         self.update = StatusBars2_BarOptions_AuraListUpdate;
                         HybridScrollFrame_CreateButtons(self, "StatusBar2_ListEntryButtonTemplate");
-                        StatusBars2_BarOptions_AuraListUpdate( self );    
                     </OnLoad>
+                    <OnShow>
+                        StatusBars2_BarOptions_AuraListUpdate( self );    
+                    </OnShow>
                 </Scripts>
                 <Size x="150" y="150"/>
                 <Frames>
@@ -866,8 +876,8 @@
             <Button name="$parent_ClearAuraFilterList" inherits="OptionsButtonTemplate" text="Clear List">
                 <Size x="150" y="21"/>
                 <Anchors>
-                    <Anchor point="BOTTOMLEFT" relativeto="$parent_AuraFilterList" >
-                        <Offset x="0" y="-30" />
+                    <Anchor point="TOPLEFT" relativeto="$parent_AuraFilterList" relativepoint="BOTTOMLEFT" >
+                        <Offset x="0" y="-5" />
                     </Anchor>
                 </Anchors>
                 <Scripts>
