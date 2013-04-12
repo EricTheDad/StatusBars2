@@ -4161,12 +4161,10 @@ function StatusBars2_BarOptions_AddAuraFilterEntry( self )
     end
 
     local numEntries = #aura_list.allEntries;
-    
-
     local aura_name = self:GetText( );
-    print("Adding aura '"..aura_name.."' at pos "..numEntries+1);
     
     aura_list.allEntries[numEntries+1] = aura_name;
+    table.sort(aura_list.allEntries);
     StatusBars2_BarOptions_AuraListUpdate( aura_list );
 end
 
@@ -4198,24 +4196,25 @@ function StatusBars2_BarOptions_AuraListUpdate( self )
             local num_buttons = #buttons;
             local button_height = buttons[1]:GetHeight();
             
-            print("StatusBars2_BarOptions_AuraListUpdate");
-
             for i, entry in ipairs(buttons) do
                 local index = i + offset;
                 
-                print("Checking entry "..i);
                 if scrollFrame.allEntries and scrollFrame.allEntries[index] then
-                    print("Adding "..scrollFrame.allEntries[index]);
                     entry:SetText( scrollFrame.allEntries[index] );
                     entry:Show();
+                    entry.index = index;
+                    
+                    if scrollFrame.selectedIndex == index then
+                        entry:LockHighlight( );
+                    else
+                        entry:UnlockHighlight( );
+                    end
+                    
                 else
-                    print("Hiding button "..i);
                     entry:Hide();
                 end
             end
             
-            print("Offset is now "..offset);
-
             local num_entries;
             if scrollFrame.allEntries then num_entries = #scrollFrame.allEntries; else num_entries = 0; end
 
@@ -4228,20 +4227,38 @@ end
 
 -------------------------------------------------------------------------------
 --
---  Name:           StatusBars2_BarListEntryButton_OnClick
+--  Name:           StatusBars2_BarOptions_ListEntryButton_OnClick
 --
 --  Description:    Select an item in the list of aura names
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_BarListEntryButton_OnClick( self )
+function StatusBars2_BarOptions_ListEntryButton_OnClick( self )
 
-    if self:GetText() then
-        print("Clicked on "..self:GetText());
-    else
-        print("Clicked on empty button");
-    end
+    local aura_list = self:GetParent():GetParent();
     
+    aura_list.selectedIndex = self.index;
+    StatusBars2_BarOptions_AuraListUpdate( aura_list );
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_BarOptions_DeleteAuraFilterListEntry_OnClick
+--
+--  Description:    Add an aura name to the aura filter list
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_BarOptions_DeleteAuraFilterListEntry_OnClick( self )
+
+    local aura_list = _G[ self:GetParent():GetName( ) .. "_AuraFilterList" ];
+    
+    if aura_list.selectedIndex then
+        table.remove(aura_list.allEntries, aura_list.selectedIndex);
+    end
+
+    aura_list.selectedIndex = nil;
     StatusBars2_BarOptions_AuraListUpdate( aura_list );
 
 end
@@ -4324,16 +4341,13 @@ function StatusBars2_BarOptions_DoDataExchange( save, frame )
             StatusBars2_Settings.bars[ frame.bar.key ].percentText = UIDropDownMenu_GetSelectedName( percentTextMenu );
         end
         if ( auraList ) then
-            print("saving auraList for "..frame:GetName());
             if auraList.allEntries then
                 StatusBars2_Settings.bars[ frame.bar.key ].auraFilter = {};
                 
                 for i, entry in ipairs(auraList.allEntries) do
                     StatusBars2_Settings.bars[ frame.bar.key ].auraFilter[entry] = true;
-                    print("Adding "..entry);
                 end
             else
-                print("auraList.allEntries is nil");
                 auraFilter = nil;
             end
         end
@@ -4375,18 +4389,17 @@ function StatusBars2_BarOptions_DoDataExchange( save, frame )
             UIDropDownMenu_SetText( percentTextMenu, StatusBars2_Settings.bars[ frame.bar.key ].percentText );
         end
         if ( auraList ) then
-            print("auraList for "..frame:GetName());
             local auraFilter = StatusBars2_Settings.bars[ frame.bar.key ].auraFilter;
+            
             if auraFilter then
                 auraList.allEntries = {};
                 local i = 1;
                 for name in pairs(auraFilter) do
                     auraList.allEntries[i] = name;
                     i = i + 1;
-                    print("Adding "..name);
                 end
                 
-                print("allEntries size "..#auraList.allEntries);
+                table.sort(auraList.allEntries);
             else
                 auraList.allEntries = nil;
             end

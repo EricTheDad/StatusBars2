@@ -733,7 +733,7 @@
 
         <Scripts>
             <OnClick>
-                StatusBars2_BarListEntryButton_OnClick( self );
+                StatusBars2_BarOptions_ListEntryButton_OnClick( self );
             </OnClick>
         </Scripts>
         <Size x="140" y="20" />
@@ -873,10 +873,23 @@
                     </Slider>
                 </Frames>
             </ScrollFrame>
-            <Button name="$parent_ClearAuraFilterList" inherits="OptionsButtonTemplate" text="Clear List">
+            <Button name="$parent_DeleteAuraFilterListEntry" inherits="OptionsButtonTemplate" text="Delete Entry">
                 <Size x="150" y="21"/>
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeto="$parent_AuraFilterList" relativepoint="BOTTOMLEFT" >
+                        <Offset x="0" y="-5" />
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                        StatusBars2_BarOptions_DeleteAuraFilterListEntry_OnClick( self );
+                    </OnClick>
+                </Scripts>
+            </Button>
+            <Button name="$parent_ClearAuraFilterList" inherits="OptionsButtonTemplate" text="Clear List">
+                <Size x="150" y="21"/>
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeto="$parent_DeleteAuraFilterListEntry" relativepoint="BOTTOMLEFT" >
                         <Offset x="0" y="-5" />
                     </Anchor>
                 </Anchors>
