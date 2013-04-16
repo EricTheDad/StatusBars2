@@ -219,7 +219,7 @@ function StatusBars2_CreateGroupFrame( name, key )
     groupFrame.key = key;
 
     -- Insert the group frame into the groups table for later reference.
-    print("Creating group "..key);
+    -- print("Creating group "..key);
     table.insert( groups, groupFrame );
     
 end
@@ -4145,6 +4145,73 @@ end
 
 -------------------------------------------------------------------------------
 --
+--  Name:           StatusBars2_BarOptions_Enable_Aura_List
+--
+--  Description:    Enable / disable user input for the aura list
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_BarOptions_Enable_Aura_List_Buttons( scrollFrame, is_enabled )
+
+	local buttons = scrollFrame.buttons;
+	local num_buttons = #buttons;
+	
+	for i, entry in ipairs(buttons) do
+
+		if is_enabled then
+			entry:Enable();
+		else
+			entry:Disable();
+		end
+	end
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_BarOptions_Enable_Aura_List
+--
+--  Description:    Enable / disable user input for the aura list
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_BarOptions_Enable_Aura_List( frame, is_enabled )
+
+    local aura_list = _G[ frame:GetName( ) .. "_AuraFilterList" ];
+	local aura_editbox = _G[ frame:GetName( ) .. "_AuraNameEntry" ];
+    local deleteEntryButton = _G[ frame:GetName( ) .. "_DeleteAuraListEntryButton" ];
+    local clearListButton = _G[ frame:GetName( ) .. "_ClearAuraListButton" ];
+	
+	StatusBars2_BarOptions_Enable_Aura_List_Buttons( aura_list, is_enabled );
+	
+	if( is_enabled ) then
+		aura_editbox:Enable( );
+		deleteEntryButton:Enable( );
+		clearListButton:Enable( );
+	else
+		aura_editbox:Disable( );
+		deleteEntryButton:Disable( );
+		clearListButton:Disable( );
+	end
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_OnlyShowListedAurasButton_OnClick
+--
+--  Description:    Called when a menu item is clicked
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_OnlyShowListedAurasButton_OnClick( self )
+
+	StatusBars2_BarOptions_Enable_Aura_List( self:GetParent( ), self:GetChecked( ) );
+
+end
+
+-------------------------------------------------------------------------------
+--
 --  Name:           StatusBars2_BarOptions_AddAuraFilterEntry
 --
 --  Description:    Add an aura name to the aura filter list
@@ -4298,7 +4365,7 @@ function StatusBars2_BarOptions_DoDataExchange( save, frame )
     local showDebuffsButton = _G[ frame:GetName( ) .. "_ShowDebuffsButton" ];
     local onlyShowSelfAurasButton = _G[ frame:GetName( ) .. "_OnlyShowSelfAurasButton" ];
     local onlyShowTimedAurasButton = _G[ frame:GetName( ) .. "_OnlyShowTimedAurasButton" ];
-    local onlyShowListedAurasButton = _G[ frame:GetName( ) .. "_OnlyShowListedAuraButtons" ];
+    local onlyShowListedAurasButton = _G[ frame:GetName( ) .. "_OnlyShowListedAurasButton" ];
     local enableTooltipsButton = _G[ frame:GetName( ) .. "_EnableTooltips" ];
     local showSpellButton = _G[ frame:GetName( ) .. "_ShowSpellButton" ];
     local showInAllFormsButton = _G[ frame:GetName( ) .. "_ShowInAllForms" ];
@@ -4374,6 +4441,7 @@ function StatusBars2_BarOptions_DoDataExchange( save, frame )
         end
         if( onlyShowListedAurasButton ~= nil ) then
             onlyShowListedAurasButton:SetChecked( StatusBars2_Settings.bars[ frame.bar.key ].onlyShowListed );
+			StatusBars2_BarOptions_Enable_Aura_List( frame, StatusBars2_Settings.bars[ frame.bar.key ].onlyShowListed );
         end
         if( enableTooltipsButton ~= nil ) then
             enableTooltipsButton:SetChecked( StatusBars2_Settings.bars[ frame.bar.key ].enableTooltips );
