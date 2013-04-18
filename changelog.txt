@@ -1,4 +1,13 @@
-﻿2.05.01
+﻿2.06.00
+=======
+Added a filter for buffs / debuffs.  If this option is selected, the exact name of the buff or debuff that you want displayed needs to be typed into the list 
+on the configuration page for the appropriate aura bar, so if a rogue wants to see his slice and dice buff, he would type that in to the list for the player auras, 
+and if he wanted to see his rupture debuff on the target, he would type that into the list for the target auras.
+
+I'm filtering on the localized name of the aura, so you need to type in the aura name in the language that your WoW client is using and it should work fine.  I haven't
+been able to test this, so if anyone using a non-English client has problems with this, let me know.
+
+2.05.01
 =======
 TOC updated for WoW 5.2
 

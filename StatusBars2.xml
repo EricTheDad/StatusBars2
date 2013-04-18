@@ -737,7 +737,7 @@
             </OnClick>
             <OnEnter>
                 if ( self:GetText( ) ) then
-                    GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_RIGHT");
+                    GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_RIGHT", 0, -self:GetHeight( ));
                     GameTooltip:SetText(self:GetText( ), nil, nil, nil, nil, 1);
                 end
             </OnEnter>
@@ -745,7 +745,7 @@
                 GameTooltip:Hide( );
             </OnLeave>
         </Scripts>
-        <Size x="140" y="20" />
+        <Size x="150" y="20" />
     </Button>
 
     <Frame name="StatusBars2_AuraBarOptionsTemplate" inherits="StatusBars2_BarOptionsTemplate" virtual="true" >
@@ -827,13 +827,13 @@
             </CheckButton>
             <EditBox name="$parent_AuraNameEntry" autoFocus="false" inherits="InputBoxTemplate" >
                 <Anchors>
-                    <Anchor point="TOPRIGHT" relativeTo="$Parent" relativePoint="TOPRIGHT" >
+                    <Anchor point="TOPLEFT" relativeTo="$parent_OnlyShowListedAurasButton" relativePoint="BOTTOMLEFT" >
                         <Offset>
-                            <AbsDimension x="-30" y="-20"/>
+                            <AbsDimension x="40" y="0"/>
                         </Offset>
                     </Anchor>
                 </Anchors>
-                <FontString inherits="ChatFontNormal" />
+                <FontString inherits="GameFontNormalLeft" />
                 <Scripts>
                     <OnEnterPressed>
                         StatusBars2_BarOptions_AddAuraFilterEntry(self);
@@ -841,12 +841,12 @@
                         self:ClearFocus();
                     </OnEnterPressed>
                 </Scripts>
-                <Size x="150" y="32" />
+                <Size x="172" y="32" />
             </EditBox >
             <ScrollFrame name="$parent_AuraFilterList" inherits="HybridScrollFrameTemplate" >
                  <Anchors>
                     <Anchor point="TOPLEFT" relativeto="$parent_AuraNameEntry" relativepoint="BOTTOMLEFT">
-                        <Offset x="0" y="-5" />
+                        <Offset x="0" y="0" />
                     </Anchor>
                 </Anchors>
                 <!--<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
@@ -867,7 +867,7 @@
                         StatusBars2_BarOptions_AuraListUpdate( self );    
                     </OnShow>
                 </Scripts>
-                <Size x="150" y="150"/>
+                <Size x="150" y="80"/>
                 <Frames>
                     <Slider name="$parentScrollBar" inherits="HybridScrollBarTemplate">
                         <Anchors>
@@ -888,8 +888,8 @@
             <Button name="$parent_DeleteAuraListEntryButton" inherits="OptionsButtonTemplate" text="Delete Entry">
                 <Size x="150" y="21"/>
                 <Anchors>
-                    <Anchor point="TOPLEFT" relativeto="$parent_AuraFilterList" relativepoint="BOTTOMLEFT" >
-                        <Offset x="0" y="-5" />
+                    <Anchor point="TOPLEFT" relativeto="$parent_AuraFilterList" relativepoint="TOPRIGHT" >
+                        <Offset x="24" y="0" />
                     </Anchor>
                 </Anchors>
                 <Scripts>
@@ -901,8 +901,8 @@
             <Button name="$parent_ClearAuraListButton" inherits="OptionsButtonTemplate" text="Clear List">
                 <Size x="150" y="21"/>
                 <Anchors>
-                    <Anchor point="TOPLEFT" relativeto="$parent_DeleteAuraListEntryButton" relativepoint="BOTTOMLEFT" >
-                        <Offset x="0" y="-5" />
+                    <Anchor point="BOTTOMLEFT" relativeto="$parent_AuraFilterList" relativepoint="BOTTOMRIGHT" >
+                        <Offset x="24" y="0" />
                     </Anchor>
                 </Anchors>
                 <Scripts>
