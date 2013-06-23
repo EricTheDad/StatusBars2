@@ -20,6 +20,20 @@ local kTargetGroup              = 2;
 local kFocusGroup               = 3;
 local kPetGroup                 = 4;
 
+-- Text display options
+local kAbbreviated      = 1;
+local kCommaSeparated   = 2;
+local kUnformatted      = 3;
+local kHidden           = 4;
+
+local TextOptionLabels =
+{
+    "Abbreviated",
+    "Thousand Separators Only",
+    "Unformatted",
+    "Hidden",
+}
+
 -- Bar types
 local kHealth = 0;
 local kPower = 1;
@@ -2761,7 +2775,7 @@ end
 --
 function StatusBars2_UpdateContinuousBar( self, current, max )
 
-    -- If the should not be visible, hide it
+    -- If the bar should not be visible, hide it
     if( self:BarIsVisible( ) == false ) then
         StatusBars2_HideBar( self );
 
@@ -2774,10 +2788,7 @@ function StatusBars2_UpdateContinuousBar( self, current, max )
         -- Set the bar current and max values
         self.status:SetMinMaxValues( 0, max );
         self.status:SetValue( current );
-
-        -- Set the text
-        self.text:SetText( current .. ' / ' .. max );
-
+        
         -- Set the percent text
         self.percentText:SetText( StatusBars2_Round( current / max * 100 ) .. "%" );
 
@@ -2787,8 +2798,19 @@ function StatusBars2_UpdateContinuousBar( self, current, max )
         else
             StatusBars2_EndFlash( self );
         end
-    end
-    
+
+        -- Abbreviate the numbers for display, if desired
+        if( StatusBars2_Settings.textDisplayOption == kAbbreviated ) then
+            current = AbbreviateLargeNumbers( current );
+            max = AbbreviateLargeNumbers( max );
+        elseif( StatusBars2_Settings.textDisplayOption == kCommaSeparated ) then
+            current = BreakUpLargeNumbers( current );
+            max = BreakUpLargeNumbers( max );
+        end
+            
+        -- Set the text
+        self.text:SetText( current .. ' / ' .. max );
+     end   
 end
 
 -------------------------------------------------------------------------------
@@ -2813,6 +2835,12 @@ function StatusBars2_ContinuousBar_OnEnable( self )
         end
     end
 
+    if( StatusBars2_Settings.textDisplayOption == kHidden ) then
+        self.text:Hide( );
+    else
+        self.text:Show( );
+    end
+    
     -- Call the base method
     StatusBars2_StatusBar_OnEnable( self );
 
@@ -3868,6 +3896,11 @@ function StatusBars2_SetDefaultSettings( )
 
     end
 
+    -- Text display options
+    if( StatusBars2_Settings.textDisplayOption == nil or StatusBars2_Settings.textDisplayOption < kAbbreviated or StatusBars2_Settings.textDisplayOption > kHidden) then
+        StatusBars2_Settings.textDisplayOption = kAbbreviated;
+    end
+    
     -- Fade
     if( StatusBars2_Settings.fade == nil ) then
         StatusBars2_Settings.fade = true;
@@ -3994,6 +4027,64 @@ function StatusBars2_Options_OnCancel( )
     -- Revert changes
     StatusBars2_Options.resetBarPositions = false;
     StatusBars2_Options_DoDataExchange( false );
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_TextDisplayOptionsMenu_Initialize
+--
+--  Description:    Initialize the text display options drop down menu
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_TextDisplayOptionsMenu_Initialize( self )
+
+    -- Abbreviated
+    local abbreviated = UIDropDownMenu_CreateInfo();
+    abbreviated.func = StatusBars2_TextDisplayOptionsMenu_OnClick;
+    abbreviated.arg1 = self;
+    abbreviated.value = kAbbreviated;
+    abbreviated.text = TextOptionLabels[kAbbreviated];
+    UIDropDownMenu_AddButton( abbreviated );
+
+    -- Broken up
+    local brokenup = UIDropDownMenu_CreateInfo();
+    brokenup.func = StatusBars2_TextDisplayOptionsMenu_OnClick;
+    brokenup.arg1 = self;
+    brokenup.value = kCommaSeparated;
+    brokenup.text = TextOptionLabels[kCommaSeparated];
+    UIDropDownMenu_AddButton( brokenup );
+
+    -- Old School
+    local oldschool = UIDropDownMenu_CreateInfo();
+    oldschool.func = StatusBars2_TextDisplayOptionsMenu_OnClick;
+    oldschool.arg1 = self;
+    oldschool.value = kUnformatted;
+    oldschool.text = TextOptionLabels[kUnformatted];
+    UIDropDownMenu_AddButton( oldschool );
+
+    -- Hidden
+    local hidden = UIDropDownMenu_CreateInfo();
+    hidden.func = StatusBars2_TextDisplayOptionsMenu_OnClick;
+    hidden.arg1 = self;
+    hidden.value = kHidden;
+    hidden.text = TextOptionLabels[kHidden];
+    UIDropDownMenu_AddButton( hidden );
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_TextDisplayOptionsMenu_OnClick
+--
+--  Description:    Called when a menu item is clicked
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_TextDisplayOptionsMenu_OnClick( self, menu )
+
+    UIDropDownMenu_SetSelectedValue( menu, self.value );
 
 end
 
@@ -4539,6 +4630,9 @@ end
 --
 function StatusBars2_Options_DoDataExchange( save )
 
+    -- Get controls
+    local textOptionsMenu = StatusBars2_Options_TextDisplayOptionsMenu;
+
     -- Exchange bar data
     for i, bar in ipairs( bars ) do
         local frame = _G[ bar:GetName( ) .. "_OptionFrame" ];
@@ -4547,12 +4641,15 @@ function StatusBars2_Options_DoDataExchange( save )
 
     -- Exchange options data
     if( save == true ) then
+        StatusBars2_Settings.textDisplayOption = UIDropDownMenu_GetSelectedValue( textOptionsMenu );
         StatusBars2_Settings.fade = StatusBars2_Options_FadeButton:GetChecked( ) == 1;
         StatusBars2_Settings.locked = StatusBars2_Options_LockedButton:GetChecked( ) == 1;
         StatusBars2_Settings.grouped = StatusBars2_Options_GroupedButton:GetChecked( ) == 1;
         StatusBars2_Settings.groupsLocked = StatusBars2_Options_LockGroupsTogetherButton:GetChecked( ) == 1;
         StatusBars2_Settings.scale = StatusBars2_Options_ScaleSlider:GetValue( );
     else
+        UIDropDownMenu_SetSelectedValue( textOptionsMenu, StatusBars2_Settings.textDisplayOption );
+        UIDropDownMenu_SetText( textOptionsMenu, TextOptionLabels[StatusBars2_Settings.textDisplayOption] );
         StatusBars2_Options_FadeButton:SetChecked( StatusBars2_Settings.fade );
         StatusBars2_Options_LockedButton:SetChecked( StatusBars2_Settings.locked );
         StatusBars2_Options_GroupedButton:SetChecked( StatusBars2_Settings.grouped );

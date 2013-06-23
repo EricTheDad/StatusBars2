@@ -545,7 +545,7 @@
         </Layers>
         <Frames>
             <Frame name="$parent_EnabledMenu" inherits="UIDropDownMenuTemplate" >
-                <Size x="60" y="17"/>
+                <Size x="70" y="17"/>
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeTo="$parent_EnabledLabel" relativePoint="TOPRIGHT" >
                         <Offset x="5" y="3" />
@@ -554,6 +554,8 @@
                 <Scripts>
                     <OnLoad>
                         UIDropDownMenu_Initialize( self, StatusBars2_BarEnabledMenu_Initialize );
+                        UIDropDownMenu_SetWidth(self, self:GetWidth());
+                        UIDropDownMenu_SetButtonWidth(self, "TEXT");
                     </OnLoad>
                 </Scripts>
             </Frame>
@@ -671,6 +673,8 @@
                 <Scripts>
                     <OnLoad>
                         UIDropDownMenu_Initialize( self, StatusBars2_PercentTextMenu_Initialize );
+                        UIDropDownMenu_SetWidth(self, self:GetWidth());
+                        UIDropDownMenu_SetButtonWidth(self, "TEXT");
                     </OnLoad>
                 </Scripts>
             </Frame>
@@ -921,6 +925,20 @@
                 StatusBars2_Options_OnLoad( self );
             </OnLoad>
         </Scripts>
+        <Layers>
+            <Layer level="BACKGROUND">
+                <FontString name="$parent_TextDisplayOptionsLabel" inherits="GameFontNormalSmallLeft" text="Text Display Options" >
+                    <Size x="200" y="17"/>
+                    <Anchors>
+                        <Anchor point="TOPRIGHT" relativeTo="$Parent" >
+                            <Offset>
+                                <AbsDimension x="-140" y="-20"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
         <Frames>
             <CheckButton name="$parent_FadeButton" inherits="OptionsCheckButtonTemplate" >
                 <Anchors>
@@ -1009,6 +1027,21 @@
 					</OnClick>
 				</Scripts>
 			</Button> -->
+            <Frame name="$parent_TextDisplayOptionsMenu" inherits="UIDropDownMenuTemplate" >
+                <Size x="170" y="17"/>
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parent_TextDisplayOptionsLabel" relativePoint="BOTTOMLEFT" >
+                        <Offset x="-12" y="-3" />
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        UIDropDownMenu_Initialize( self, StatusBars2_TextDisplayOptionsMenu_Initialize );
+                        UIDropDownMenu_SetWidth(self, self:GetWidth());
+                        UIDropDownMenu_SetButtonWidth(self, "TEXT");
+                    </OnLoad>
+                </Scripts>
+            </Frame>
 			<Slider name="$parent_ScaleSlider" inherits="OptionsSliderTemplate" minValue="0.25" maxValue="3.0" valueStep="0.05" >
                 <Size x="200" y="17"/>
                 <Anchors>

@@ -1,4 +1,8 @@
-﻿2.06.01
+﻿2.07.00
+=======
+Added formatting for large numbers to make them more readable using some Blizzard functions intended for that purpose.  Several options available depending on personal preference.
+
+2.06.01
 =======
 Updated TOC for 5.3
 

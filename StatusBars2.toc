@@ -6,5 +6,9 @@
 ## Dependencies:
 ## OptionalDeps:
 ## SavedVariablesPerCharacter: StatusBars2_Settings
+## X-Curse-Packaged-Version: 2.06.01
+## X-Curse-Project-Name: StatusBars2
+## X-Curse-Project-ID: statusbars2
+## X-Curse-Repository-ID: wow/statusbars2/mainline
 StatusBars2.lua
 StatusBars2.xml
