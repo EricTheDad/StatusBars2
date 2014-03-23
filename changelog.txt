@@ -1,4 +1,7 @@
-﻿2.07.01
+﻿2.08.00
+Added bars for Shaman Lighting Shield and Marksman Hunter Master Marksman buffs.  Corrected Arcane charges so they only have 4 boxes on their bar now.
+
+2.07.01
 =======
 TOC bump for 5.4
 

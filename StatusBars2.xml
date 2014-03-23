@@ -559,7 +559,7 @@
                     </OnLoad>
                 </Scripts>
             </Frame>
-            <Slider name="$parent_ScaleSlider" inherits="OptionsSliderTemplate" minValue="0.25" maxValue="3.0" valueStep="0.05" >
+            <Slider name="$parent_ScaleSlider" parentKey="slider" inherits="OptionsSliderTemplate" minValue="0.25" maxValue="3.0" valueStep="0.05" >
                 <Size x="200" y="17"/>
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeTo="$Parent" >

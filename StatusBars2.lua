@@ -69,14 +69,25 @@ local WARRIOR_SUNDER_ARMOR = 7386;
 local MAGE_ARCANE_CHARGE = 114664;
 local SHAMAN_MAELSTROM_WEAPON = 51530;
 local ROGUE_ANTICIPATION = 114015;
+local HUNTER_STEADY_SHOT = 56641;
 
 -- Buff IDs Blizzard doesn't define
 local BUFF_FRENZY = 19615;
 local BUFF_ANTICIPATION = 115189;
+local BUFF_MASTER_MARKSMAN = 34487;
+local BUFF_FINGERS_OF_FROST = 112965;
+local BUFF_MASTERY_ICICLES = 76613;
+local BUFF_LIGHTNING_SHIELD = 324;
+local BUFF_TIDAL_WAVE = 51564;
 
 -- Debuff IDs Blizzard doesn't define
 local DEBUFF_WEAKENED_ARMOR = 113746;
 local DEBUFF_ARCANE_CHARGE = 36032;
+
+-- Specialization IDs
+local SPEC_HUNTER_MARKSMAN = 2;
+local SPEC_MAGE_FROST = 3;
+local SPEC_SHAMAN_RESTORATION = 3;
 
 -------------------------------------------------------------------------------
 --
@@ -401,12 +412,19 @@ function StatusBars2_CreateBars( )
         StatusBars2_CreateOrbsBar( );
     elseif( englishClass == "HUNTER" ) then
         StatusBars2_CreateAuraStackBar( "frenzy", "player", HUNTER_FRENZY, "buff", 5, BUFF_FRENZY );
+        StatusBars2_CreateAuraStackBar( "masterMarksman", "player", HUNTER_STEADY_SHOT, "buff", 3, BUFF_MASTER_MARKSMAN );
     elseif( englishClass == "WARRIOR" ) then
         StatusBars2_CreateAuraStackBar( "sunder", "target", WARRIOR_SUNDER_ARMOR, "debuff", 3, DEBUFF_WEAKENED_ARMOR );
     elseif( englishClass == "MAGE" ) then
-        StatusBars2_CreateAuraStackBar( "arcaneCharge", "player", MAGE_ARCANE_CHARGE, "debuff", 6, DEBUFF_ARCANE_CHARGE );
+        StatusBars2_CreateAuraStackBar( "arcaneCharge", "player", MAGE_ARCANE_CHARGE, "debuff", 4, DEBUFF_ARCANE_CHARGE );
+        -- Not sure these are actually useful.
+        -- StatusBars2_CreateAuraStackBar( "fingersOfFrost", "player", BUFF_FINGERS_OF_FROST, "buff", 2, BUFF_FINGERS_OF_FROST );
+        -- StatusBars2_CreateAuraStackBar( "masteryIcicles", "player", BUFF_MASTERY_ICICLES, "buff", 5, BUFF_MASTERY_ICICLES );
     elseif( englishClass == "SHAMAN" ) then
         StatusBars2_CreateAuraStackBar( "maelstromWeapon", "player", SHAMAN_MAELSTROM_WEAPON, "buff", 5 );
+        StatusBars2_CreateAuraStackBar( "lightningShield", "player", BUFF_LIGHTNING_SHIELD, "buff", 7 );
+        -- Not sure this is actually useful.
+        -- StatusBars2_CreateAuraStackBar( "tidalWave", "player", BUFF_TIDAL_WAVE, "buff", 2 );
     elseif( englishClass == "MONK" ) then
         StatusBars2_CreateChiBar( );
     end
@@ -438,7 +456,7 @@ function StatusBars2_UpdateBars( )
         elseif( bar.key == "playerPower" and ( englishClass ~= "DRUID" or powerType ~= SPELL_POWER_MANA ) ) then
             StatusBars2_EnableBar( StatusBars2_playerPowerBar, 1, 2 );
         elseif( bar.key == "playerAura" and ( StatusBars2_Settings.bars.playerAura.showBuffs == true or StatusBars2_Settings.bars.playerAura.showDebuffs == true ) ) then
-            StatusBars2_EnableBar( bar, 1, 19 );
+            StatusBars2_EnableBar( bar, 1, 20 );
         elseif( bar.key == "targetHealth" ) then
             StatusBars2_EnableBar( bar, 2, 1 );
         elseif( bar.key == "targetPower" ) then
@@ -457,34 +475,53 @@ function StatusBars2_UpdateBars( )
             StatusBars2_EnableBar( bar, 4, 2 );
         elseif( bar.key == "petAura" and ( StatusBars2_Settings.bars.petAura.showBuffs == true or StatusBars2_Settings.bars.petAura.showDebuffs == true ) ) then
             StatusBars2_EnableBar( bar, 4, 3 );
+        -- Special Druid Bars
         elseif( bar.key == "druidMana" and ( StatusBars2_Settings.bars.druidMana.showInAllForms == true or powerType == SPELL_POWER_MANA ) ) then
             StatusBars2_EnableBar( bar, 1, 3 );
         elseif( bar.key == "eclipse" and powerType == SPELL_POWER_MANA and GetSpecialization() == 1 ) then
 			StatusBars2_EnableBar( bar, 1, 8 );
+        -- Special Rogue Bars
         elseif( bar.key == "combo" and powerType == SPELL_POWER_ENERGY ) then
             StatusBars2_EnableBar( bar, 1, 4 );
         elseif( bar.key == "anticipation" and IsSpellKnown( bar.spellID ) ) then
             StatusBars2_EnableBar( bar, 1, 16 );
+        -- Special Death Knight Bars
         elseif( bar.key == "rune" ) then
             StatusBars2_EnableBar( bar, 1, 7 );
+        -- Special Warlock Bars
         elseif( bar.key == "fury" and GetSpecialization() == SPEC_WARLOCK_DEMONOLOGY ) then
             StatusBars2_EnableBar( bar, 1, 14 );
         elseif( bar.key == "shard" and IsPlayerSpell( WARLOCK_SOULBURN ) ) then
             StatusBars2_EnableBar( bar, 1, 5 );
         elseif( bar.key == "embers" and IsPlayerSpell( WARLOCK_BURNING_EMBERS ) ) then
             StatusBars2_EnableBar( bar, 1, 13 );
+        -- Special Paladin Bars
         elseif( bar.key == "holyPower" ) then
             StatusBars2_EnableBar( bar, 1, 6 );
+        -- Special Priest Bars
         elseif( bar.key == "orbs" and IsSpellKnown( PRIEST_SHADOW_ORBS ) ) then
             StatusBars2_EnableBar( bar, 1, 12 );
+        -- Special Hunter Bars
         elseif( bar.key == "frenzy" and IsSpellKnown( bar.spellID ) ) then
             StatusBars2_EnableBar( bar, 1, 18 );
+        elseif( bar.key == "masterMarksman" and IsSpellKnown( bar.spellID ) and GetSpecialization() == SPEC_HUNTER_MARKSMAN ) then
+            StatusBars2_EnableBar( bar, 1, 19 );
+        -- Special Warrior Bars
         elseif( bar.key == "sunder" and IsSpellKnown( bar.spellID ) ) then
             StatusBars2_EnableBar( bar, 1, 10 );
+        -- Special Mage Bars
         elseif( bar.key == "arcaneCharge" and IsSpellKnown( bar.spellID ) ) then
             StatusBars2_EnableBar( bar, 1, 15 );
+        elseif( bar.key == "fingersOfFrost" and GetSpecialization() == SPEC_MAGE_FROST and GetUnitLevel( bar.unit ) == 24 ) then
+            StatusBars2_EnableBar( bar, 1, 16 );
+        elseif( bar.key == "masteryIcicles" and GetSpecialization() == SPEC_MAGE_FROST and GetUnitLevel( bar.unit ) == 80 ) then
+            StatusBars2_EnableBar( bar, 1, 17 );
+        -- Special Shaman Bars
         elseif( bar.key == "maelstromWeapon" and IsSpellKnown( bar.spellID ) ) then
             StatusBars2_EnableBar( bar, 1, 9 );
+        elseif( bar.key == "lightningShield" and IsSpellKnown( bar.spellID ) ) then
+            StatusBars2_EnableBar( bar, 1, 10 );
+        -- Special Monk Bars
         elseif( bar.key == "chi" ) then
             StatusBars2_EnableBar( bar, 1, 11 );
         end
@@ -2200,7 +2237,7 @@ function StatusBars2_CreateAuraStackBar( key, unit, spellID, auraType, count, au
     -- The player has a spell that is the pre-condition for the aura stack
     -- We can match on the same name as the spell, but if we know it, the auraID is more efficient and reliable
     local auraName = GetSpellInfo( auraID or spellID );
-    
+     
     -- We'll always use the triggering spell name as the display name
     local displayName = GetSpellInfo( spellID );
     
@@ -2617,6 +2654,21 @@ function StatusBars2_GetAuraButton( self, id, buttonName, template, auraName, au
     local buttonIcon = _G[ buttonName .. "Icon" ];
     buttonIcon:SetTexture( auraIcon );
 
+    local auraSize = StatusBars2_GetAuraSize( self );
+ 
+    -- Set the count
+    buttonCount = _G[ buttonName .."Count" ];
+    if( auraCount > 1 ) then
+        -- buttonCount:SetFontObject( "NumberFontNormalSmall" );
+        -- buttonCount:SetTextHeight( auraSize / 2 );
+        -- buttonCount:ClearAllPoints( );
+        -- buttonCount:SetPoint( "BOTTOMRIGHT", buttonCount:GetParent( ), -2, -2 );
+        buttonCount:SetText( auraCount );
+        buttonCount:Show( );
+    else
+        buttonCount:Hide( );
+    end
+
     -- Set the cooldown
     local buttonCooldown = _G[ buttonName .. "Cooldown" ];
     if( auraDuration > 0 ) then
@@ -2626,23 +2678,13 @@ function StatusBars2_GetAuraButton( self, id, buttonName, template, auraName, au
         buttonCooldown:Hide( );
     end
 
-    -- Set the count
-    buttonCount = _G[ buttonName .."Count" ];
-    if( auraCount > 1 ) then
-        buttonCount:SetText( auraCount );
-        buttonCount:Show( );
-    else
-        buttonCount:Hide( );
-    end
-
     -- Set the position
     button:SetPoint( "TOPLEFT", self, "TOPLEFT", offset, -2 );
 
     -- Set the size
-    local auraSize = StatusBars2_GetAuraSize( self );
     button:SetWidth( auraSize );
     button:SetHeight( auraSize );
-
+    
     -- Set the parent bar
     button.parentBar = self;
 
