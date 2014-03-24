@@ -2502,8 +2502,8 @@ end
 --
 function StatusBars2_AuraBar_SetScale( self, scale )
 
-    self:SetHeight( StatusBars2_GetAuraSize( self ) );
-
+    self:SetScale( scale );
+ 
 end
 
 -------------------------------------------------------------------------------
@@ -2516,15 +2516,7 @@ end
 --
 function StatusBars2_AuraBar_SetPosition( self, x, y )
 
-    -- If the bar has a saved position call the default method
-    if( StatusBars2_Settings.bars[ self.key ].position ~= nil ) then
         StatusBars2_StatusBar_SetPosition( self, x, y );
-
-    -- Otherwise set the bar position
-    else
-        self:ClearAllPoints( );
-        self:SetPoint( "TOPLEFT", groups[ self.group ], "TOPLEFT", x, y );
-    end
 
 end
 
@@ -2654,15 +2646,9 @@ function StatusBars2_GetAuraButton( self, id, buttonName, template, auraName, au
     local buttonIcon = _G[ buttonName .. "Icon" ];
     buttonIcon:SetTexture( auraIcon );
 
-    local auraSize = StatusBars2_GetAuraSize( self );
- 
     -- Set the count
     buttonCount = _G[ buttonName .."Count" ];
     if( auraCount > 1 ) then
-        -- buttonCount:SetFontObject( "NumberFontNormalSmall" );
-        -- buttonCount:SetTextHeight( auraSize / 2 );
-        -- buttonCount:ClearAllPoints( );
-        -- buttonCount:SetPoint( "BOTTOMRIGHT", buttonCount:GetParent( ), -2, -2 );
         buttonCount:SetText( auraCount );
         buttonCount:Show( );
     else
@@ -2681,10 +2667,6 @@ function StatusBars2_GetAuraButton( self, id, buttonName, template, auraName, au
     -- Set the position
     button:SetPoint( "TOPLEFT", self, "TOPLEFT", offset, -2 );
 
-    -- Set the size
-    button:SetWidth( auraSize );
-    button:SetHeight( auraSize );
-    
     -- Set the parent bar
     button.parentBar = self;
 
@@ -2704,8 +2686,8 @@ function StatusBars2_GetAuraButton( self, id, buttonName, template, auraName, au
         local border = _G[ buttonName .. "Border" ];
 
         -- Set its size and color
-        border:SetWidth( auraSize + 2 );
-        border:SetHeight( auraSize + 2 );
+        border:SetWidth( button:GetWidth( ) + 2 );
+        border:SetHeight( button:GetHeight( ) + 2 );
         border:SetVertexColor(color.r, color.g, color.b);
     end
 
@@ -2755,7 +2737,7 @@ end
 --
 function StatusBars2_GetAuraSize( self )
 
-    return 16 * StatusBars2_Settings.bars[ self.key ].scale;
+    return StatusBars2_Round( 16 * StatusBars2_Settings.bars[ self.key ].scale, 2 );
 
 end
 

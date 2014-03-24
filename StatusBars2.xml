@@ -300,9 +300,15 @@
 
     <!-- Aura bar template -->
     <Frame name="StatusBars2_AuraBarTemplate" movable="true" virtual="true" >
-
         <Size x="170" y="20" />
-
+        <!-- <Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+            <EdgeSize>
+                <AbsValue val="16" />
+            </EdgeSize>
+            <TileSize>
+                <AbsValue val="16" />
+            </TileSize>
+        </Backdrop> -->
     </Frame>
 
     <!-- Eclipse bar template -->
