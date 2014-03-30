@@ -1,10 +1,14 @@
 ﻿## Interface: 50400
-## Version: 2.08.01
+## Version: 2.08.02
 ## Title: Status Bars 2
 ## Author: GopherYerguns, Wesslen, 堂吉先生, EricTheDad
 ## Notes: Movable status bars for health, power and a variety of class-ability-specific displays.
 ## Dependencies:
 ## OptionalDeps:
 ## SavedVariablesPerCharacter: StatusBars2_Settings
+## X-Curse-Packaged-Version: 2.08.01
+## X-Curse-Project-Name: StatusBars2
+## X-Curse-Project-ID: statusbars2
+## X-Curse-Repository-ID: wow/statusbars2/mainline
 StatusBars2.lua
 StatusBars2.xml

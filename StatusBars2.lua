@@ -562,10 +562,11 @@ function StatusBars2_EnableBar( bar, group, index, removeWhenHidden )
         bar:SetScript( "OnUpdate", bar.OnUpdate );
 
         -- If not locked enable the mouse for moving
-        if( StatusBars2_Settings.locked ~= true ) then
-            bar:EnableMouse( true );
-        else
+        -- Don't enable mouse on aura bars, we only want the mouse to be able to grab active icons
+        if( StatusBars2_Settings.locked or bar.type == kAura ) then
             bar:EnableMouse( false );
+        else
+            bar:EnableMouse( true );
         end
 
         -- Set the parent to the appropriate group frame
@@ -2626,18 +2627,29 @@ end
 --
 function StatusBars2_GetAuraButton( self, id, buttonName, template, auraName, auraRank, auraIcon, auraCount, debuffType, auraDuration, auraExpirationTime, offset )
 
-    -- If the button does not exist create it
-    if( self.buttons[ buttonName ] == nil ) then
-        self.buttons[ buttonName ] = CreateFrame( "Button", buttonName, self, template );
-        self.buttons[ buttonName ]:SetScript( "OnMouseDown", StatusBars2_AuraButton_OnMouseDown );
-        self.buttons[ buttonName ]:SetScript( "OnMouseUp", StatusBars2_AuraButton_OnMouseUp );
-    end
-
     -- Get the button
     local button = self.buttons[ buttonName ];
 
-    -- Set the ID
-    button:SetID( id );
+    -- If the button does not exist create it
+    if( button == nil ) then
+        button = CreateFrame( "Button", buttonName, self, template );
+        button:SetScript( "OnMouseDown", StatusBars2_AuraButton_OnMouseDown );
+        button:SetScript( "OnMouseUp", StatusBars2_AuraButton_OnMouseUp );
+
+        -- Set the ID
+        button:SetID( id );
+
+        -- Set the parent bar
+        button.parentBar = self;
+
+        -- This makes prevents the icon text from falling off the button when we scale.
+        local buttonCount = _G[ buttonName .."Count" ];
+        buttonCount:SetAllPoints();
+        buttonCount:SetJustifyV("BOTTOM");
+
+        -- Add the finished button to the bar
+        self.buttons[ buttonName ] = button;
+    end
 
     -- Set the unit
     button.unit = self.unit;
@@ -2647,7 +2659,7 @@ function StatusBars2_GetAuraButton( self, id, buttonName, template, auraName, au
     buttonIcon:SetTexture( auraIcon );
 
     -- Set the count
-    buttonCount = _G[ buttonName .."Count" ];
+    local buttonCount = _G[ buttonName .."Count" ];
     if( auraCount > 1 ) then
         buttonCount:SetText( auraCount );
         buttonCount:Show( );
@@ -2666,9 +2678,6 @@ function StatusBars2_GetAuraButton( self, id, buttonName, template, auraName, au
 
     -- Set the position
     button:SetPoint( "TOPLEFT", self, "TOPLEFT", offset, -2 );
-
-    -- Set the parent bar
-    button.parentBar = self;
 
     -- Enable/disable tooltips
     button:EnableMouse( StatusBars2_Settings.bars[ self.key ].enableTooltips );

@@ -1,4 +1,7 @@
-﻿2.08.01
+﻿2.08.02
+Corrected aura bar stack displays sliding off the aura icons when global scale was applied.
+
+2.08.01
 Corrected aura bar scaling functionality.  Stack display now scales correctly with the icons.
 
 2.08.00
