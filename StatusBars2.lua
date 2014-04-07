@@ -563,11 +563,7 @@ function StatusBars2_EnableBar( bar, group, index, removeWhenHidden )
 
         -- If not locked enable the mouse for moving
         -- Don't enable mouse on aura bars, we only want the mouse to be able to grab active icons
-        if( StatusBars2_Settings.locked or bar.type == kAura ) then
-            bar:EnableMouse( false );
-        else
-            bar:EnableMouse( true );
-        end
+        bar:EnableMouse( not StatusBars2_Settings.locked and bar.type ~= kAura );
 
         -- Set the parent to the appropriate group frame
         bar:SetParent( groups[ group ]);
@@ -2563,14 +2559,16 @@ function StatusBars2_UpdateAuraBar( self )
         offset = StatusBars2_ShowAuraButtons( self, "Buff", UnitBuff, MAX_TARGET_BUFFS, StatusBars2_Settings.bars[ self.key ].onlyShowSelf, offset );
     end
 
-    -- Add a space between the buffs and the debuffs
-    if( offset > 2 ) then
-        offset = offset + StatusBars2_GetAuraSize( self );
-    end
-
     -- Debuffs
     if( StatusBars2_Settings.bars[ self.key ].showDebuffs == true ) then
+
+        -- Add a space between the buffs and the debuffs
+        if( offset > 2 ) then
+            offset = offset + StatusBars2_GetAuraSize( self );
+        end
+
         offset = StatusBars2_ShowAuraButtons( self, "Debuff", UnitDebuff, MAX_TARGET_DEBUFFS, StatusBars2_Settings.bars[ self.key ].onlyShowSelf, offset );
+
     end
 
 end
@@ -2585,11 +2583,13 @@ end
 --
 function StatusBars2_ShowAuraButtons( self, auraType, getAuraFunction, maxAuras, mineOnly, offset )
 
+    local playerIsTarget = UnitIsUnit(PlayerFrame.unit, self.unit);
+
     -- Iterate over the unit auras
     for i = 1, maxAuras do
 
         -- Get the aura
-        local name, rank, icon, count, debuffType, duration, expirationTime, caster = getAuraFunction( self.unit, i );
+        local name, rank, icon, count, debuffType, duration, expirationTime, caster, isStealable = getAuraFunction( self.unit, i );
 
         -- If the aura exists show it
         if( icon ~= nil ) then
@@ -2633,8 +2633,14 @@ function StatusBars2_GetAuraButton( self, id, buttonName, template, auraName, au
     -- If the button does not exist create it
     if( button == nil ) then
         button = CreateFrame( "Button", buttonName, self, template );
+        button:SetSize( StatusBars2_GetAuraSize( self ), StatusBars2_GetAuraSize( self ) );
         button:SetScript( "OnMouseDown", StatusBars2_AuraButton_OnMouseDown );
         button:SetScript( "OnMouseUp", StatusBars2_AuraButton_OnMouseUp );
+
+        button.DefaultOnEnter = button:GetScript( "OnEnter" );
+        button.DefaultOnLeave = button:GetScript( "OnLeave" );
+        button:SetScript( "OnEnter", StatusBars2_AuraButton_OnEnter );
+        button:SetScript( "OnLeave", StatusBars2_AuraButton_OnLeave );
 
         -- Set the ID
         button:SetID( id );
@@ -2677,10 +2683,10 @@ function StatusBars2_GetAuraButton( self, id, buttonName, template, auraName, au
     end
 
     -- Set the position
-    button:SetPoint( "TOPLEFT", self, "TOPLEFT", offset, -2 );
+    button:SetPoint( "TOPLEFT", self, "TOPLEFT", offset, 0 );
 
-    -- Enable/disable tooltips
-    button:EnableMouse( StatusBars2_Settings.bars[ self.key ].enableTooltips );
+    -- Enable/disable mouse for moving or tooltips
+    button:EnableMouse( StatusBars2_Settings.bars[ self.key ].enableTooltips or not StatusBars2_Settings.locked );
 
     -- If its a debuff set the border size and color
     if( template == "TargetDebuffFrameTemplate" ) then
@@ -2695,12 +2701,25 @@ function StatusBars2_GetAuraButton( self, id, buttonName, template, auraName, au
         local border = _G[ buttonName .. "Border" ];
 
         -- Set its size and color
-        border:SetWidth( button:GetWidth( ) + 2 );
-        border:SetHeight( button:GetHeight( ) + 2 );
+        border:SetAllPoints( );
         border:SetVertexColor(color.r, color.g, color.b);
     end
 
     return button;
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_GetAuraSize
+--
+--  Description:    Get the size of an aura button
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_GetAuraSize( self )
+
+    return self:GetHeight( );
 
 end
 
@@ -2730,7 +2749,7 @@ end
 --
 function StatusBars2_AuraButton_OnMouseUp( self, button )
 
-    if( StatusBars2_Settings.locked ~= true ) then
+    if( StatusBars2_Settings.locked ~= true or StatusBars2_Options.moveBars == true  ) then
         StatusBars2_StatusBar_OnMouseUp( self.parentBar, button );
     end
 
@@ -2738,15 +2757,33 @@ end
 
 -------------------------------------------------------------------------------
 --
---  Name:           StatusBars2_GetAuraSize
+--  Name:           StatusBars2_AuraButton_OnEnter
 --
---  Description:    Get the size of an aura button
+--  Description:    Override for button template's OnEnter
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_GetAuraSize( self )
+function StatusBars2_AuraButton_OnEnter( self )
 
-    return StatusBars2_Round( 16 * StatusBars2_Settings.bars[ self.key ].scale, 2 );
+    if( StatusBars2_Settings.bars[ self.parentBar.key ].enableTooltips ) then
+        self.DefaultOnEnter( self );
+    end
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_AuraButton_OnLeave
+--
+--  Description:    Override for button template's OnLeave
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_AuraButton_OnLeave( self )
+
+    if( StatusBars2_Settings.bars[ self.parentBar.key ].enableTooltips ) then
+        self.DefaultOnLeave( self );
+    end
 
 end
 
@@ -4278,7 +4315,6 @@ end
 function StatusBars2_BarOptions_Enable_Aura_List_Buttons( scrollFrame, is_enabled )
 
 	local buttons = scrollFrame.buttons;
-	local num_buttons = #buttons;
 	
 	for i, entry in ipairs(buttons) do
 
@@ -4384,7 +4420,6 @@ function StatusBars2_BarOptions_AuraListUpdate( self )
             oldOffset = offset;
             
             local buttons = scrollFrame.buttons;
-            local num_buttons = #buttons;
             local button_height = buttons[1]:GetHeight();
             
             for i, entry in ipairs(buttons) do
@@ -4406,8 +4441,10 @@ function StatusBars2_BarOptions_AuraListUpdate( self )
                 end
             end
             
-            local num_entries;
-            if scrollFrame.allEntries then num_entries = #scrollFrame.allEntries; else num_entries = 0; end
+            local num_entries = 0;
+            if scrollFrame.allEntries then
+                num_entries = #scrollFrame.allEntries;
+            end
 
             HybridScrollFrame_Update(scrollFrame, num_entries * button_height, scrollFrame:GetHeight());
         end
