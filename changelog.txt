@@ -1,4 +1,7 @@
-﻿2.08.03
+﻿2.09.00
+Added the ability to set bars' opacity, either globally or individually on each bar.  Options panel restructuring.  Major improvements and bug fixes to aura filtering UI.
+
+2.08.03
 Corrected moving aura bars
 
 2.08.02

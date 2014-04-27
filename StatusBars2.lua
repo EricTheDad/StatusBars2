@@ -479,7 +479,7 @@ function StatusBars2_UpdateBars( )
         elseif( bar.key == "druidMana" and ( StatusBars2_Settings.bars.druidMana.showInAllForms == true or powerType == SPELL_POWER_MANA ) ) then
             StatusBars2_EnableBar( bar, 1, 3 );
         elseif( bar.key == "eclipse" and powerType == SPELL_POWER_MANA and GetSpecialization() == 1 ) then
-			StatusBars2_EnableBar( bar, 1, 8 );
+            StatusBars2_EnableBar( bar, 1, 8 );
         -- Special Rogue Bars
         elseif( bar.key == "combo" and powerType == SPELL_POWER_ENERGY ) then
             StatusBars2_EnableBar( bar, 1, 4 );
@@ -527,10 +527,11 @@ function StatusBars2_UpdateBars( )
         end
     end
 
-    -- Set the global scale
+    -- Set the global scale and alpha
     StatusBars2:SetScale( StatusBars2_Settings.scale );
- 
-	-- Update the layout
+    StatusBars2:SetAlpha( StatusBars2_Settings.alpha );
+
+    -- Update the layout
     StatusBars2_UpdateLayout( );
 
 end
@@ -570,6 +571,9 @@ function StatusBars2_EnableBar( bar, group, index, removeWhenHidden )
         
         -- Set the scale
         bar:SetBarScale( StatusBars2_Settings.bars[ bar.key ].scale );
+
+        -- Set maximum opacity
+        bar.maxAlpha = StatusBars2_Settings.bars[ bar.key ].alpha or 1.0;
 
         -- Notify the bar is is enabled
         bar:OnEnable( );
@@ -621,7 +625,7 @@ function StatusBars2_HideBar( bar, immediate )
             local fadeInfo = {};
             fadeInfo.mode = "OUT";
             fadeInfo.timeToFade = kFadeOutTime;
-            fadeInfo.startAlpha = 1,0;
+            fadeInfo.startAlpha = bar.maxAlpha;
             fadeInfo.endAlpha = 0;
             fadeInfo.finishedFunc = StatusBars2_FadeOutFinished;
             fadeInfo.finishedArg1 = bar;
@@ -660,9 +664,9 @@ function StatusBars2_ShowBar( bar )
 
     if( bar.visible == false ) then
         if( StatusBars2_Settings.fade == true ) then
-            UIFrameFadeIn( bar, kFadeInTime, 0, 1.0 );
+            UIFrameFadeIn( bar, kFadeInTime, 0, bar.maxAlpha );
         else
-            bar:SetAlpha( 1.0 );
+            bar:SetAlpha( bar.maxAlpha );
             bar:Show( );
         end
         bar.visible = true;
@@ -681,14 +685,14 @@ end
 function StatusBars2_UpdateLayout( )
 
     -- Set Main Frame Position
-	local x = kDefaultFramePosition.x;
-	local y = kDefaultFramePosition.y;
-	
-	if ( StatusBars2_Settings.position ~= nil ) then
+    local x = kDefaultFramePosition.x;
+    local y = kDefaultFramePosition.y;
+
+    if ( StatusBars2_Settings.position ~= nil ) then
         x = StatusBars2_Settings.position.x;
         y = StatusBars2_Settings.position.y;
     end
-	
+
     StatusBars2:ClearAllPoints( );
     StatusBars2:SetPoint( "TOP", UIPARENT, "CENTER", x / StatusBars2:GetScale( ), y / StatusBars2:GetScale( ) );
 
@@ -906,12 +910,12 @@ function StatusBars2_CreatePowerBar( key, unit, barType, powerType )
     elseif( bar.unit == "target" ) then
         bar.optionsTemplate = "StatusBars2_TargetPowerBarOptionsTemplate";
     end
-	
+
     bar.powerType = powerType;
 
     -- Set the color
     StatusBars2_SetPowerBarColor( bar );
-	
+
     -- Set the event handlers
     bar.OnEvent = StatusBars2_PowerBar_OnEvent;
     bar.OnUpdate = StatusBars2_PowerBar_OnUpdate;
@@ -922,8 +926,8 @@ function StatusBars2_CreatePowerBar( key, unit, barType, powerType )
     -- Register for events
     bar:RegisterEvent( "PLAYER_REGEN_DISABLED" );
     bar:RegisterEvent( "PLAYER_REGEN_ENABLED" );
-	bar:RegisterEvent( "UNIT_POWER" );
-	bar:RegisterEvent( "UNIT_MAXPOWER" );
+    bar:RegisterEvent( "UNIT_POWER" );
+    bar:RegisterEvent( "UNIT_MAXPOWER" );
 
     if( bar.unit == "target" ) then
         bar:RegisterEvent( "PLAYER_TARGET_CHANGED" );
@@ -943,10 +947,10 @@ function StatusBars2_CreatePowerBar( key, unit, barType, powerType )
 
     if( powerType == nil ) then
         bar:RegisterEvent( "UNIT_DISPLAYPOWER" );
-	elseif( bar:IsEventRegistered( "UNIT_DISPLAYPOWER" ) ) then
-		bar:UnregisterEvent( "UNIT_DISPLAYPOWER" );
+    elseif( bar:IsEventRegistered( "UNIT_DISPLAYPOWER" ) ) then
+        bar:UnregisterEvent( "UNIT_DISPLAYPOWER" );
     end
-	
+
     return bar;
 
 end
@@ -964,23 +968,23 @@ function StatusBars2_PowerBar_OnEvent( self, event, ... )
     -- Target changed
     if( event == "PLAYER_TARGET_CHANGED" ) then
 
-		-- Bar is visible
+        -- Bar is visible
         if( self:BarIsVisible( ) == true ) then
 
-			-- Update the casting bar if applicable
-			StatusBars2_PowerBar_StartCasting( self );
+            -- Update the casting bar if applicable
+            StatusBars2_PowerBar_StartCasting( self );
 
-			-- If not in casting mode update as normal
-			if( self.casting ~= true and self.channeling ~= true ) then
-				StatusBars2_SetPowerBarColor( self );
-				self.status:SetMinMaxValues( 0, UnitPowerMax( self.unit, StatusBars2_GetPowerType( self ) ) );
-			end
+            -- If not in casting mode update as normal
+            if( self.casting ~= true and self.channeling ~= true ) then
+                StatusBars2_SetPowerBarColor( self );
+                self.status:SetMinMaxValues( 0, UnitPowerMax( self.unit, StatusBars2_GetPowerType( self ) ) );
+            end
 
-			-- Show the bar and update the layout
-			StatusBars2_ShowBar( self );
-			StatusBars2_UpdateLayout( );
+            -- Show the bar and update the layout
+            StatusBars2_ShowBar( self );
+            StatusBars2_UpdateLayout( );
 
-		-- Bar is not visible
+        -- Bar is not visible
         else
             local unitExists = UnitExists( self.unit );
             StatusBars2_HideBar( self, unitExists == 1 );
@@ -1019,10 +1023,10 @@ function StatusBars2_PowerBar_OnEvent( self, event, ... )
     elseif( event == "UNIT_PET" or event == "PLAYER_FOCUS_CHANGED") then
         if( self:BarIsVisible( ) == true ) then
             StatusBars2_SetPowerBarColor( self );
-			StatusBars2_ShowBar( self );
+            StatusBars2_ShowBar( self );
             StatusBars2_UpdatePowerBar( self );
-			StatusBars2_UpdateLayout( );
-		-- Bar is not visible
+            StatusBars2_UpdateLayout( );
+        -- Bar is not visible
         else
             local unitExists = UnitExists( self.unit );
             StatusBars2_HideBar( self, unitExists == 1 );
@@ -1039,29 +1043,29 @@ function StatusBars2_PowerBar_OnEvent( self, event, ... )
     -- Casting started
     elseif( select( 1, ... ) == self.unit and ( event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_CHANNEL_START" or event == "UNIT_SPELLCAST_CHANNEL_UPDATE"  ) and StatusBars2_Settings.bars[ self.key ].showSpell == true ) then
 
-		-- Set to casting mode
-		StatusBars2_PowerBar_StartCasting( self );
+        -- Set to casting mode
+        StatusBars2_PowerBar_StartCasting( self );
 
-		-- If the bar is currently hidden show it and update the layout
-		if self.visible == false then
-			StatusBars2_ShowBar( self );
-			StatusBars2_UpdateLayout( );
-		end
+        -- If the bar is currently hidden show it and update the layout
+        if self.visible == false then
+            StatusBars2_ShowBar( self );
+            StatusBars2_UpdateLayout( );
+        end
 
     -- Casting ended
     elseif( event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_INTERRUPTED" or event == "UNIT_SPELLCAST_CHANNEL_STOP" ) then
 
         if( select( 1, ... ) == self.unit and ( event == "UNIT_SPELLCAST_CHANNEL_STOP" or select( 4, ... ) == self.castID ) ) then
 
-			-- End casting mode
+            -- End casting mode
             StatusBars2_PowerBar_EndCasting( self );
 
-			-- If the bar should no longer be visible hide it and update the layout
-			if( self:BarIsVisible( ) == false ) then
-				self:Hide( );
-				self.visible = false;
-				StatusBars2_UpdateLayout( );
-			end
+            -- If the bar should no longer be visible hide it and update the layout
+            if( self:BarIsVisible( ) == false ) then
+                self:Hide( );
+                self.visible = false;
+                StatusBars2_UpdateLayout( );
+            end
 
         end
 
@@ -1120,14 +1124,14 @@ function StatusBars2_PowerBar_StartCasting( self )
         -- Get spell info
         local name, nameSubtext, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible = UnitCastingInfo( self.unit );
 
-		-- If that failed try getting channeling info
-		channeling = false;
-		if( name == nil ) then
+        -- If that failed try getting channeling info
+        channeling = false;
+        if( name == nil ) then
             name, nameSubtext, text, texture, startTime, endTime, isTradeSkill, notInterruptible = UnitChannelInfo( self.unit );
-			channeling = true;
+            channeling = true;
         end
 
-		-- If the unit is casting a spell update the power bar
+        -- If the unit is casting a spell update the power bar
         if( name ~= nil ) then
 
             -- Get the current and max values
@@ -1151,8 +1155,8 @@ function StatusBars2_PowerBar_StartCasting( self )
             self.spark:Show( );
 
             -- Set the bar color
-			if( notInterruptible == true ) then
-				self.status:SetStatusBarColor( 1.0, 0.0, 0.0 );
+            if( notInterruptible == true ) then
+                self.status:SetStatusBarColor( 1.0, 0.0, 0.0 );
             elseif( channeling == true ) then
                 self.status:SetStatusBarColor( 1.0, 0.7, 0.0 );
             else
@@ -1162,7 +1166,7 @@ function StatusBars2_PowerBar_StartCasting( self )
             -- Enter channeling mode
             self.casting = channeling == false;
             self.channeling = channeling;
-		end
+        end
 
 end
 
@@ -1242,29 +1246,29 @@ function StatusBars2_PowerBar_IsDefault( self )
 
     local isDefault = true;
 
-	-- If casting the bar is not at the default level
-	if self.casting == true or self.channeling == true then
-		isDefault = false
+    -- If casting the bar is not at the default level
+    if self.casting == true or self.channeling == true then
+        isDefault = false
 
-	-- Otherwise check the power level
-	else
+    -- Otherwise check the power level
+    else
 
-		-- Get the power type
-		local powerType = StatusBars2_GetPowerType( self );
+        -- Get the power type
+        local powerType = StatusBars2_GetPowerType( self );
 
-		-- Get the current power
-		local power = UnitPower( self.unit, powerType );
+        -- Get the current power
+        local power = UnitPower( self.unit, powerType );
 
-		-- Determine if power is at it's default state
-		if( powerType == SPELL_POWER_RAGE or powerType == SPELL_POWER_RUNIC_POWER ) then
-			isDefault = ( power == 0 );
+        -- Determine if power is at it's default state
+        if( powerType == SPELL_POWER_RAGE or powerType == SPELL_POWER_RUNIC_POWER ) then
+            isDefault = ( power == 0 );
         elseif( powerType == SPELL_POWER_DEMONIC_FURY ) then
             isDefault = ( power == 200 );
-		else
-			local maxPower = UnitPowerMax( self.unit, powerType );
-			isDefault = ( power == maxPower );
-		end
-	end
+        else
+            local maxPower = UnitPowerMax( self.unit, powerType );
+            isDefault = ( power == maxPower );
+        end
+    end
 
     return isDefault;
 
@@ -1831,7 +1835,7 @@ function StatusBars2_CreateEclipseBar( )
     -- Set the event handlers
     bar.OnEvent = StatusBars2_EclipseBar_OnEvent;
     bar.OnEnable = StatusBars2_EclipseBar_OnEnable;
-	bar.OnUpdate = StatusBars2_EclipseBar_OnUpdate;
+    bar.OnUpdate = StatusBars2_EclipseBar_OnUpdate;
 
     -- Register for events
     bar:RegisterEvent( "UNIT_AURA" );
@@ -1853,12 +1857,12 @@ end
 --
 function StatusBars2_EclipseBar_OnEvent( self, event, ... )
 
-	if event == "UNIT_AURA" then
-		local arg1 = ...;
-		if arg1 ==  PlayerFrame.unit then
-			EclipseBar_CheckBuffs(self);
-		end
-	elseif event == "ECLIPSE_DIRECTION_CHANGE" then
+    if event == "UNIT_AURA" then
+        local arg1 = ...;
+        if arg1 ==  PlayerFrame.unit then
+            EclipseBar_CheckBuffs(self);
+        end
+    elseif event == "ECLIPSE_DIRECTION_CHANGE" then
         local status = ...;
         self.marker:SetTexCoord(unpack(ECLIPSE_MARKER_COORDS[status]));
 
@@ -1891,8 +1895,8 @@ end
 --
 function StatusBars2_EclipseBar_OnEnable( self )
 
-	-- Update
-	StatusBars2_EclipseBar_OnUpdate( self )
+    -- Update
+    StatusBars2_EclipseBar_OnUpdate( self )
 
     -- Call the base method
     StatusBars2_StatusBar_OnEnable( self );
@@ -1908,16 +1912,16 @@ end
 -------------------------------------------------------------------------------
 --
 function StatusBars2_EclipseBar_OnUpdate( self )
-	local power = UnitPower( "player", SPELL_POWER_ECLIPSE );
-	local maxPower = UnitPowerMax( "player", SPELL_POWER_ECLIPSE );
-	if self.showPercent then
-		self.powerText:SetText(abs(power/maxPower*100).."%");
-	else
-		self.powerText:SetText(abs(power));
-	end
+    local power = UnitPower( "player", SPELL_POWER_ECLIPSE );
+    local maxPower = UnitPowerMax( "player", SPELL_POWER_ECLIPSE );
+    if self.showPercent then
+        self.powerText:SetText(abs(power/maxPower*100).."%");
+    else
+        self.powerText:SetText(abs(power));
+    end
 
-	local xpos =  ECLIPSE_BAR_TRAVEL*(power/maxPower)
-	self.marker:SetPoint("CENTER", xpos, 0);
+    local xpos =  ECLIPSE_BAR_TRAVEL*(power/maxPower)
+    self.marker:SetPoint("CENTER", xpos, 0);
 end
 
 -------------------------------------------------------------------------------
@@ -1930,65 +1934,65 @@ end
 --
 function StatusBars2_EclipseBar_OnShow( self )
 
-	local direction = GetEclipseDirection();
-	if direction then
-		self.marker:SetTexCoord( unpack(ECLIPSE_MARKER_COORDS[direction]));
-	end
+    local direction = GetEclipseDirection();
+    if direction then
+        self.marker:SetTexCoord( unpack(ECLIPSE_MARKER_COORDS[direction]));
+    end
 
-	local hasLunarEclipse = false;
-	local hasSolarEclipse = false;
+    local hasLunarEclipse = false;
+    local hasSolarEclipse = false;
 
-	local unit = "player";
-	local j = 1;
-	local name, _, _, _, _, _, _, _, _, _, spellID = UnitBuff(unit, j);
-	while name do
-		if spellID == ECLIPSE_BAR_SOLAR_BUFF_ID then
-			hasSolarEclipse = true;
-		elseif spellID == ECLIPSE_BAR_LUNAR_BUFF_ID then
-			hasLunarEclipse = true;
-		end
-		j=j+1;
-		name, _, _, _, _, _, _, _, _, _, spellID = UnitBuff(unit, j);
-	end
+    local unit = "player";
+    local j = 1;
+    local name, _, _, _, _, _, _, _, _, _, spellID = UnitBuff(unit, j);
+    while name do
+        if spellID == ECLIPSE_BAR_SOLAR_BUFF_ID then
+            hasSolarEclipse = true;
+        elseif spellID == ECLIPSE_BAR_LUNAR_BUFF_ID then
+            hasLunarEclipse = true;
+        end
+        j=j+1;
+        name, _, _, _, _, _, _, _, _, _, spellID = UnitBuff(unit, j);
+    end
 
-	if hasLunarEclipse then
-		self.glow:ClearAllPoints();
-		local glowInfo = ECLIPSE_ICONS["moon"].big;
-		self.glow:SetPoint("CENTER", self.moon, "CENTER", 0, 0);
-		self.glow:SetWidth(glowInfo.x);
-		self.glow:SetHeight(glowInfo.y);
-		self.glow:SetTexCoord(glowInfo.left, glowInfo.right, glowInfo.top, glowInfo.bottom);
-		self.sunBar:SetAlpha(0);
-		self.darkMoon:SetAlpha(0);
-		self.moonBar:SetAlpha(1);
-		self.darkSun:SetAlpha(1);
-		self.glow:SetAlpha(1);
-		self.glow.pulse:Play();
-	elseif hasSolarEclipse then
-		self.glow:ClearAllPoints();
-		local glowInfo = ECLIPSE_ICONS["sun"].big;
-		self.glow:SetPoint("CENTER", self.sun, "CENTER", 0, 0);
-		self.glow:SetWidth(glowInfo.x);
-		self.glow:SetHeight(glowInfo.y);
-		self.glow:SetTexCoord(glowInfo.left, glowInfo.right, glowInfo.top, glowInfo.bottom);
-		self.moonBar:SetAlpha(0);
-		self.darkSun:SetAlpha(0);
-		self.sunBar:SetAlpha(1);
-		self.darkMoon:SetAlpha(1);
-		self.glow:SetAlpha(1);
-		self.glow.pulse:Play();
-	else
-		self.sunBar:SetAlpha(0);
-		self.moonBar:SetAlpha(0);
-		self.darkSun:SetAlpha(0);
-		self.darkMoon:SetAlpha(0);
-		self.glow:SetAlpha(0);
-	end
+    if hasLunarEclipse then
+        self.glow:ClearAllPoints();
+        local glowInfo = ECLIPSE_ICONS["moon"].big;
+        self.glow:SetPoint("CENTER", self.moon, "CENTER", 0, 0);
+        self.glow:SetWidth(glowInfo.x);
+        self.glow:SetHeight(glowInfo.y);
+        self.glow:SetTexCoord(glowInfo.left, glowInfo.right, glowInfo.top, glowInfo.bottom);
+        self.sunBar:SetAlpha(0);
+        self.darkMoon:SetAlpha(0);
+        self.moonBar:SetAlpha(1);
+        self.darkSun:SetAlpha(1);
+        self.glow:SetAlpha(1);
+        self.glow.pulse:Play();
+    elseif hasSolarEclipse then
+        self.glow:ClearAllPoints();
+        local glowInfo = ECLIPSE_ICONS["sun"].big;
+        self.glow:SetPoint("CENTER", self.sun, "CENTER", 0, 0);
+        self.glow:SetWidth(glowInfo.x);
+        self.glow:SetHeight(glowInfo.y);
+        self.glow:SetTexCoord(glowInfo.left, glowInfo.right, glowInfo.top, glowInfo.bottom);
+        self.moonBar:SetAlpha(0);
+        self.darkSun:SetAlpha(0);
+        self.sunBar:SetAlpha(1);
+        self.darkMoon:SetAlpha(1);
+        self.glow:SetAlpha(1);
+        self.glow.pulse:Play();
+    else
+        self.sunBar:SetAlpha(0);
+        self.moonBar:SetAlpha(0);
+        self.darkSun:SetAlpha(0);
+        self.darkMoon:SetAlpha(0);
+        self.glow:SetAlpha(0);
+    end
 
-	self.hasLunarEclipse = hasLunarEclipse;
-	self.hasSolarEclipse = hasSolarEclipse;
+    self.hasLunarEclipse = hasLunarEclipse;
+    self.hasSolarEclipse = hasSolarEclipse;
 
-	StatusBars2_EclipseBar_OnUpdate(self);
+    StatusBars2_EclipseBar_OnUpdate(self);
 end
 
 -------------------------------------------------------------------------------
@@ -2026,7 +2030,7 @@ function StatusBars2_CreateRuneBar( )
     bar:RegisterEvent( "RUNE_TYPE_UPDATE" );
     bar:RegisterEvent( "PLAYER_REGEN_ENABLED" );
     bar:RegisterEvent( "PLAYER_REGEN_DISABLED" );
-	bar:RegisterEvent( "PLAYER_ENTERING_WORLD" );
+    bar:RegisterEvent( "PLAYER_ENTERING_WORLD" );
 
     return bar;
 
@@ -2050,44 +2054,44 @@ function StatusBars2_RuneBar_OnEvent( self, event, ... )
     elseif( event == "PLAYER_REGEN_ENABLED" ) then
         self.inCombat = false;
 
-	-- Player entering world
-	elseif( event == "PLAYER_ENTERING_WORLD" ) then
-		StatusBars2_RuneBar_UpdateAllRunes( self );
+    -- Player entering world
+    elseif( event == "PLAYER_ENTERING_WORLD" ) then
+        StatusBars2_RuneBar_UpdateAllRunes( self );
 
-	-- Rune power update
-	elseif( event == "RUNE_POWER_UPDATE" ) then
-		local runeIndex, isEnergize = ...;
-		if runeIndex and runeIndex >= 1 and runeIndex <= kMaxRunes then
-			local runeButton = _G[ self:GetName( ) .. '_RuneButton' .. runeIndex ];
-			local cooldown = _G[runeButton:GetName().."Cooldown"];
+    -- Rune power update
+    elseif( event == "RUNE_POWER_UPDATE" ) then
+        local runeIndex, isEnergize = ...;
+        if runeIndex and runeIndex >= 1 and runeIndex <= kMaxRunes then
+            local runeButton = _G[ self:GetName( ) .. '_RuneButton' .. runeIndex ];
+            local cooldown = _G[runeButton:GetName().."Cooldown"];
 
-			local start, duration, runeReady = GetRuneCooldown(runeIndex);
+            local start, duration, runeReady = GetRuneCooldown(runeIndex);
 
-			if not runeReady  then
-				if start then
-					CooldownFrame_SetTimer(cooldown, start, duration, 1);
-				end
-				runeButton.energize:Stop();
-			else
-				cooldown:Hide();
-				runeButton.shine:SetVertexColor(1, 1, 1);
-				RuneButton_ShineFadeIn(runeButton.shine)
-			end
+            if not runeReady  then
+                if start then
+                    CooldownFrame_SetTimer(cooldown, start, duration, 1);
+                end
+                runeButton.energize:Stop();
+            else
+                cooldown:Hide();
+                runeButton.shine:SetVertexColor(1, 1, 1);
+                RuneButton_ShineFadeIn(runeButton.shine)
+            end
 
-			if isEnergize  then
-				runeButton.energize:Play();
-			end
-		else
-			assert(false, "Bad rune index")
-		end
+            if isEnergize  then
+                runeButton.energize:Play();
+            end
+        else
+            assert(false, "Bad rune index")
+        end
 
-	-- Rune type update
-	elseif ( event == "RUNE_TYPE_UPDATE" ) then
-		local runeIndex = ...;
-		if ( runeIndex and runeIndex >= 1 and runeIndex <= kMaxRunes ) then
-			RuneButton_Update(_G[ self:GetName( ) .. '_RuneButton' .. runeIndex ], runeIndex);
-		end
-	end
+    -- Rune type update
+    elseif ( event == "RUNE_TYPE_UPDATE" ) then
+        local runeIndex = ...;
+        if ( runeIndex and runeIndex >= 1 and runeIndex <= kMaxRunes ) then
+            RuneButton_Update(_G[ self:GetName( ) .. '_RuneButton' .. runeIndex ], runeIndex);
+        end
+    end
 
     -- Update the bar visibility
     if( self:BarIsVisible( ) == true ) then
@@ -2126,8 +2130,8 @@ function StatusBars2_RuneBar_OnEnable( self )
         end
     end
 
-	-- Update the runes
-	StatusBars2_RuneBar_UpdateAllRunes( self );
+    -- Update the runes
+    StatusBars2_RuneBar_UpdateAllRunes( self );
 
     -- Call the base method
     StatusBars2_StatusBar_OnEnable( self );
@@ -2144,12 +2148,12 @@ end
 --
 function StatusBars2_RuneBar_UpdateAllRunes( self )
 
-	for i=1,kMaxRunes do
-		local runeButton = _G[ self:GetName( ) .. '_RuneButton' .. i ];
-		if runeButton then
-			RuneButton_Update( runeButton, i, true );
-		end
-	end
+    for i=1,kMaxRunes do
+        local runeButton = _G[ self:GetName( ) .. '_RuneButton' .. i ];
+        if runeButton then
+            RuneButton_Update( runeButton, i, true );
+        end
+    end
 
 end
 
@@ -2394,10 +2398,10 @@ function StatusBars2_CreateAuraBar( key, unit )
     bar:RegisterEvent( "PLAYER_REGEN_DISABLED" );
     if( unit == "target" ) then
         bar:RegisterEvent( "PLAYER_TARGET_CHANGED" );
-	elseif( unit == "focus" ) then
-		bar:RegisterEvent( "PLAYER_FOCUS_CHANGED" );
-	elseif( unit == "pet" ) then
-		bar:RegisterEvent( "UNIT_PET" );
+    elseif( unit == "focus" ) then
+        bar:RegisterEvent( "PLAYER_FOCUS_CHANGED" );
+    elseif( unit == "pet" ) then
+        bar:RegisterEvent( "UNIT_PET" );
     end
 
     return bar;
@@ -2577,7 +2581,7 @@ end
 --
 --  Name:           StatusBars2_ShowAuraButtons
 --
---  Description:    Show buff or debuff buttons
+--  Description:    Show buff or debuff buttons (icons)
 --
 -------------------------------------------------------------------------------
 --
@@ -2597,7 +2601,8 @@ function StatusBars2_ShowAuraButtons( self, auraType, getAuraFunction, maxAuras,
             -- Determine if the button should be shown
             if( ( caster == "player" or mineOnly == false ) and ( duration > 0 or StatusBars2_Settings.bars[ self.key ].onlyShowTimed == false ) ) then
 
-                if( not StatusBars2_Settings.bars[ self.key ].onlyShowListed or StatusBars2_Settings.bars[ self.key ].auraFilter[ name ] ) then
+                if( not StatusBars2_Settings.bars[ self.key ].onlyShowListed
+                or ( StatusBars2_Settings.bars[ self.key ].auraFilter and StatusBars2_Settings.bars[ self.key ].auraFilter[ name ] )) then
                     -- Get the button
                     local buttonName = self:GetName( ) .. "_" .. auraType .. "Button" .. i;
                     local button = StatusBars2_GetAuraButton( self, i, buttonName, "Target" .. auraType .. "FrameTemplate", name, rank, icon, count, debuffType, duration, expirationTime, offset );
@@ -2816,15 +2821,15 @@ function StatusBars2_CreateContinuousBar( key, unit, displayName, barType, r, g,
 
     -- Set the background color
     bar.status:SetBackdropColor( 0, 0, 0, 0.85 );
-	
+
     -- Set the status bar color
     bar.status:SetStatusBarColor( r, g, b );
 
     -- Set the text color
     bar.text:SetTextColor( 1, 1, 1 );
 
-	-- Set the options template
-	bar.optionsTemplate = "StatusBars2_ContinuousBarOptionsTemplate";
+    -- Set the options template
+    bar.optionsTemplate = "StatusBars2_ContinuousBarOptionsTemplate";
     
     -- Set the status bar to draw behind the edge frame so it doesn't overlap.  
     -- This should be possible with XML, but I can't figure it out with the documentation available.
@@ -2942,17 +2947,17 @@ function StatusBars2_CreateDiscreteBar( key, unit, displayName, barType, boxCoun
 
     -- Create the bar
     local bar = StatusBars2_CreateBar( key, "StatusBars2_DiscreteBarTemplate", unit, displayName, barType );
-	
-	-- Save the color in the settings.  I'll make this editable in the future.
-	bar.GetColor = StatusBars2_GetDiscreteBarColor;
 
-	-- Bar starts off with no boxes created.
-	bar.boxCount = 0;
-	
-	-- Now create the number of boxes initially requested.  We may create more or hide 
-	-- some in the future, depending on spec/glyph/talent changes.
-	StatusBars2_SetDiscreteBarBoxCount( bar, boxCount );
-	
+    -- Save the color in the settings.  I'll make this editable in the future.
+    bar.GetColor = StatusBars2_GetDiscreteBarColor;
+
+    -- Bar starts off with no boxes created.
+    bar.boxCount = 0;
+
+    -- Now create the number of boxes initially requested.  We may create more or hide
+    -- some in the future, depending on spec/glyph/talent changes.
+    StatusBars2_SetDiscreteBarBoxCount( bar, boxCount );
+
     return bar;
 
 end;
@@ -2968,8 +2973,8 @@ end;
 function StatusBars2_SetDiscreteBarBoxCount( bar, boxCount )
 
     if ( bar.boxCount ~= boxCount ) then
-		StatusBars2_CreateDiscreteBarBoxes( bar, boxCount );
-		StatusBars2_AdjustDiscreteBarBoxes( bar, boxCount );
+        StatusBars2_CreateDiscreteBarBoxes( bar, boxCount );
+        StatusBars2_AdjustDiscreteBarBoxes( bar, boxCount );
     end
     
 end;
@@ -2987,24 +2992,24 @@ function StatusBars2_CreateDiscreteBarBoxes( bar, desiredBoxCount )
     assert( desiredBoxCount < 20, "Way too many discrete boxes" );
     
     local boxes = { bar:GetChildren( ) };
-	local boxesAvailableCount = #boxes;
+    local boxesAvailableCount = #boxes;
 
-	if ( boxesAvailableCount < desiredBoxCount ) then
-		
-		local name = bar:GetName( );
+    if ( boxesAvailableCount < desiredBoxCount ) then
 
-		-- Initialize the boxes
-		local i;
-		for i = boxesAvailableCount, desiredBoxCount do
-			local boxName = name .. '_Box' .. i;
-			local statusName = name .. '_Box' .. i .. '_Status';
-			local box = CreateFrame( "Frame", boxName, bar, "StatusBars2_DiscreteBoxTemplate" );
-			local status = box:GetChildren( );
-			status:SetStatusBarColor( bar:GetColor( i ) );
-			status:SetValue( 0 );
-		end
+        local name = bar:GetName( );
+
+        -- Initialize the boxes
+        local i;
+        for i = boxesAvailableCount, desiredBoxCount do
+            local boxName = name .. '_Box' .. i;
+            local statusName = name .. '_Box' .. i .. '_Status';
+            local box = CreateFrame( "Frame", boxName, bar, "StatusBars2_DiscreteBoxTemplate" );
+            local status = box:GetChildren( );
+            status:SetStatusBarColor( bar:GetColor( i ) );
+            status:SetValue( 0 );
+        end
     end
-	
+
 end;
 
 -------------------------------------------------------------------------------
@@ -3023,7 +3028,7 @@ function StatusBars2_AdjustDiscreteBarBoxes( bar, boxCount )
     -- has a pretty wide shadow on it.  Let them overlap a bit to snuggle them to
     -- a more aesthetically pleasing spacing
     local overlap = 3;
-	local statusWidthDiff = 8;
+    local statusWidthDiff = 8;
     local combinedBoxWidth = bar:GetWidth( ) + ( boxCount - 1 ) * overlap;
     local boxWidth = combinedBoxWidth / boxCount;
     local boxLeft = 0;
@@ -3033,44 +3038,44 @@ function StatusBars2_AdjustDiscreteBarBoxes( bar, boxCount )
     -- If the box size gets below 32, the edge elements within a box start to overlap and it looks crappy.
     -- So if that happens, scale the edge size down just enough that the elements don't overlap.
     if ( boxWidth < 32 ) then
-    
+
         -- With the edge smaller, we also want less overlap
         overlap = overlap * boxWidth / 32;
         statusWidthDiff = statusWidthDiff * boxWidth / 32;
-		
+
         -- Recalculate box size to go with the new overlap.
         combinedBoxWidth = bar:GetWidth( ) + ( boxCount - 1 ) * overlap;
         boxWidth = combinedBoxWidth / boxCount;
-        
+
         -- Now we're ready to calculate tne new edge size
         backdropInfo.edgeSize = 16 * boxWidth / 32;
-       
+
     end
-            
+
     local boxes = { bar:GetChildren( ) };
 
     -- Initialize the boxes
     for i, box in ipairs(boxes) do
-    
+
         box:SetBackdrop( backdropInfo );
-        
+
         if ( i <= bar.boxCount ) then
             local status = box:GetChildren( );
             box:SetWidth( boxWidth );
             status:SetWidth( boxWidth - statusWidthDiff );
-            
+
             -- Set the status bar to draw behind the edge frame so it doesn't overlap.
             -- This should be possible in XML, but the documentation is too sketchy for me to figure it out.
             status:SetFrameLevel( box:GetFrameLevel( ) - 1 );
             status:SetBackdropColor( 0, 0, 0, 0.85 );
-            
+
             box:SetPoint( "TOPLEFT", bar, "TOPLEFT", boxLeft , 0 );
             boxLeft = boxLeft + boxWidth - overlap;
             box:Show( );
         else
             box:Hide( );
         end
-        
+
     end
     
 end;
@@ -3148,7 +3153,7 @@ function StatusBars2_CreateBar( key, template, unit, displayName, barType )
     bar.key = key;
     bar.displayName = displayName;
     bar.type = barType;
-	bar.inCombat = false;
+    bar.inCombat = false;
 
     -- Set the default options template
     bar.optionsTemplate = "StatusBars2_BarOptionsTemplate";
@@ -3384,24 +3389,24 @@ function StatusBars2_StatusBar_IsVisible( self )
     local enabled = StatusBars2_Settings.bars[ self.key ].enabled;
 
     local visible = false;
-	
-	if ( StatusBars2_Options.moveBars == true ) then
-		visible = enabled ~= "Never";
-	else
-		-- Auto
-		if( enabled == "Auto" ) then
-			visible = self.inCombat or self:IsDefault( ) == false;
 
-		-- Combat
-		elseif( enabled == "Combat" ) then
-			visible = self.inCombat;
+    if ( StatusBars2_Options.moveBars == true ) then
+        visible = enabled ~= "Never";
+    else
+        -- Auto
+        if( enabled == "Auto" ) then
+            visible = self.inCombat or self:IsDefault( ) == false;
 
-		-- Always
-		elseif( enabled == "Always" ) then
-			visible = true;
-		end
-	end
-	
+        -- Combat
+        elseif( enabled == "Combat" ) then
+            visible = self.inCombat;
+
+        -- Always
+        elseif( enabled == "Always" ) then
+            visible = true;
+        end
+    end
+
     return visible;
 
 end
@@ -3440,8 +3445,8 @@ function StatusBars2_OnMouseUp( self, button )
         -- Save the position in the settings
         StatusBars2_Settings.position = {};
 
-		local xOffset = self:GetLeft( ) + self:GetWidth( ) / 2;
-		local yOffset = self:GetTop( );
+        local xOffset = self:GetLeft( ) + self:GetWidth( ) / 2;
+        local yOffset = self:GetTop( );
         StatusBars2_Settings.position.x = xOffset * self:GetScale( ) - self:GetParent( ):GetWidth( ) / 2;
         StatusBars2_Settings.position.y = yOffset * self:GetScale( ) - self:GetParent( ):GetHeight( ) / 2;
     end
@@ -3477,8 +3482,8 @@ function StatusBars2_UpdateFlash( self, level )
 
         -- Set the bar backdrop level
         self:SetBackdropColor( level, 0, 0, level * kFlashAlpha );
-		self.flash:SetVertexColor( level * kFlashAlpha, 0, 0 );
-		self.flash:Show( );
+        self.flash:SetVertexColor( level * kFlashAlpha, 0, 0 );
+        self.flash:Show( );
 
     end
 
@@ -3609,9 +3614,9 @@ function StatusBars2_GetAuraStack( unit, aura, auraType )
         end
 
         -- Check the name
-		if( name == nil ) then
-			break;
-		elseif( string.find( name, aura ) == 1 ) then
+        if( name == nil ) then
+            break;
+        elseif( string.find( name, aura ) == 1 ) then
             stack = count;
             break;
         end;
@@ -3880,9 +3885,9 @@ function StatisBars2_PruneSettings( )
     for i, bar in ipairs( bars ) do
         tempBars[bar.key] = bar;
     end
-	
+
     local barSettings = StatusBars2_Settings.bars;
-    
+
     -- Set defaults for the bars
     for key, barSetting in pairs( barSettings ) do
         if( not tempBars[key] ) then
@@ -3906,7 +3911,7 @@ end
 -------------------------------------------------------------------------------
 --
 function StatusBars2_SetDefaultSettings( )
-	
+
     -- Set defaults for the bars
     for i, bar in ipairs( bars ) do
 
@@ -3915,7 +3920,7 @@ function StatusBars2_SetDefaultSettings( )
             StatusBars2_Settings.bars[ bar.key ].enabled = bar.defaultEnabled;
         end
 
-		-- Flash player and pet health and mana bars
+        -- Flash player and pet health and mana bars
         if( StatusBars2_Settings.bars[ bar.key ].flash == nil and ( bar.optionsTemplate == "StatusBars2_ContinuousBarOptionsTemplate" or bar.optionsTemplate == "StatusBars2_DruidManaBarOptionsTemplate" ) ) then
             if( ( bar.unit == "player" or bar.unit == "pet" ) and bar.type == kHealth ) then
                 StatusBars2_Settings.bars[ bar.key ].flash = true;
@@ -3996,6 +4001,11 @@ function StatusBars2_SetDefaultSettings( )
         StatusBars2_Settings.scale = 1.0;
     end
 
+    -- Opacity
+    if( StatusBars2_Settings.alpha == nil or StatusBars2_Settings.alpha <= 0 or StatusBars2_Settings.alpha > 1.0 ) then
+        StatusBars2_Settings.alpha = 1.0;
+    end
+
 end;
 
 -------------------------------------------------------------------------------
@@ -4060,8 +4070,8 @@ function StatusBars2_Options_OnOK( )
     -- If the reset position button was pressed null out the position data
     if( StatusBars2_Options.resetGroupPositions == true ) then
 
-		StatusBars2_Settings.position.x = 0;
-		StatusBars2_Settings.position.y = -100;
+        StatusBars2_Settings.position.x = 0;
+        StatusBars2_Settings.position.y = -100;
 
         for i, group in ipairs( groups ) do
             StatusBars2_Settings.groups[ i ].position = nil;
@@ -4306,24 +4316,39 @@ end
 
 -------------------------------------------------------------------------------
 --
---  Name:           StatusBars2_BarOptions_Enable_Aura_List
+--  Name:           StatusBars2_BarOptions_Check_Enable_Aura_List_Buttons
 --
---  Description:    Enable / disable user input for the aura list
+--  Description:    Enable / disable buttons that perform operations on the aura list depending on if they are currently usable.
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_BarOptions_Enable_Aura_List_Buttons( scrollFrame, is_enabled )
+function StatusBars2_BarOptions_Check_Enable_Aura_List_Buttons( scrollFrame )
 
-	local buttons = scrollFrame.buttons;
-	
-	for i, entry in ipairs(buttons) do
+    local num_entries = 0;
+    if scrollFrame.allEntries then
+        num_entries = #scrollFrame.allEntries;
+    end
 
-		if is_enabled then
-			entry:Enable();
-		else
-			entry:Disable();
-		end
-	end
+    local deleteEntryButton = _G[ scrollFrame:GetParent( ):GetName( ) .. "_DeleteAuraListEntryButton" ];
+    local clearListButton = _G[ scrollFrame:GetParent( ):GetName( ) .. "_ClearAuraListButton" ];
+
+    -- Buttons are nil on the initial update because the buttons get created after the list
+    if( deleteEntryButton and clearListButton ) then
+        local should_enable_clear_button = num_entries > 0 and scrollFrame.isEnabled;
+        local should_enabled_delete_button = should_enable_clear_button and scrollFrame.selectedIndex;
+
+        if( should_enable_clear_button ) then
+            clearListButton:Enable( );
+        else
+            clearListButton:Disable( );
+        end
+
+        if( should_enabled_delete_button ) then
+            deleteEntryButton:Enable( );
+        else
+            deleteEntryButton:Disable( );
+        end
+    end
 
 end
 
@@ -4338,35 +4363,26 @@ end
 function StatusBars2_BarOptions_Enable_Aura_List( frame, is_enabled )
 
     local aura_list = _G[ frame:GetName( ) .. "_AuraFilterList" ];
-	local aura_editbox = _G[ frame:GetName( ) .. "_AuraNameEntry" ];
-    local deleteEntryButton = _G[ frame:GetName( ) .. "_DeleteAuraListEntryButton" ];
-    local clearListButton = _G[ frame:GetName( ) .. "_ClearAuraListButton" ];
-	
-	StatusBars2_BarOptions_Enable_Aura_List_Buttons( aura_list, is_enabled );
-	
-	if( is_enabled ) then
-		aura_editbox:Enable( );
-		deleteEntryButton:Enable( );
-		clearListButton:Enable( );
-	else
-		aura_editbox:Disable( );
-		deleteEntryButton:Disable( );
-		clearListButton:Disable( );
-	end
+    local aura_editbox = _G[ frame:GetName( ) .. "_AuraNameInput" ];
 
-end
+    aura_list.isEnabled = is_enabled;
+    local buttons = aura_list.buttons;
 
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_OnlyShowListedAurasButton_OnClick
---
---  Description:    Called when a menu item is clicked
---
--------------------------------------------------------------------------------
---
-function StatusBars2_OnlyShowListedAurasButton_OnClick( self )
+    for i, entry in ipairs(buttons) do
+        if is_enabled then
+            entry:Enable();
+        else
+            entry:Disable();
+        end
+    end
 
-	StatusBars2_BarOptions_Enable_Aura_List( self:GetParent( ), self:GetChecked( ) );
+    if( is_enabled ) then
+        aura_editbox:Enable( );
+    else
+        aura_editbox:Disable( );
+    end
+
+    StatusBars2_BarOptions_Check_Enable_Aura_List_Buttons( aura_list );
 
 end
 
@@ -4393,6 +4409,9 @@ function StatusBars2_BarOptions_AddAuraFilterEntry( self )
     aura_list.allEntries[numEntries+1] = aura_name;
     table.sort(aura_list.allEntries);
     StatusBars2_BarOptions_AuraListUpdate( aura_list );
+
+    self:ClearFocus();
+
 end
 
 local oldOffset = 0;
@@ -4410,15 +4429,15 @@ function StatusBars2_BarOptions_AuraListUpdate( self )
     if self then
         currentScrollFrame = self;
     end
-    
+
     if currentScrollFrame then
-    
+
         local scrollFrame = currentScrollFrame;
         local offset = HybridScrollFrame_GetOffset(scrollFrame);
-        
+
         if self or offset ~= oldOffset then
             oldOffset = offset;
-            
+
             local buttons = scrollFrame.buttons;
             local button_height = buttons[1]:GetHeight();
             
@@ -4446,6 +4465,7 @@ function StatusBars2_BarOptions_AuraListUpdate( self )
                 num_entries = #scrollFrame.allEntries;
             end
 
+            StatusBars2_BarOptions_Check_Enable_Aura_List_Buttons( scrollFrame );
             HybridScrollFrame_Update(scrollFrame, num_entries * button_height, scrollFrame:GetHeight());
         end
         
@@ -4474,7 +4494,7 @@ end
 --
 --  Name:           StatusBars2_BarOptions_DeleteAuraFilterListEntry_OnClick
 --
---  Description:    Add an aura name to the aura filter list
+--  Description:    Delete an aura name from the aura filter list
 --
 -------------------------------------------------------------------------------
 --
@@ -4520,6 +4540,7 @@ function StatusBars2_BarOptions_DoDataExchange( save, frame )
     -- Get controls
     local enabledMenu = _G[ frame:GetName( ) .. "_EnabledMenu" ];
     local scaleSlider = _G[ frame:GetName( ) .. "_ScaleSlider" ];
+    local alphaSlider = _G[ frame:GetName( ) .. "_AlphaSlider" ];
     local flashButton = _G[ frame:GetName( ) .. "_FlashButton" ];
     local flashThresholdSlider = _G[ frame:GetName( ) .. "_FlashThresholdSlider" ];
     local showBuffsButton = _G[ frame:GetName( ) .. "_ShowBuffsButton" ];
@@ -4537,46 +4558,53 @@ function StatusBars2_BarOptions_DoDataExchange( save, frame )
     if( save == true ) then
         StatusBars2_Settings.bars[ frame.bar.key ].enabled = UIDropDownMenu_GetSelectedName( enabledMenu );
         StatusBars2_Settings.bars[ frame.bar.key ].scale = StatusBars2_Round( scaleSlider:GetValue( ), 2 );
-        if( flashButton ~= nil ) then
+
+        local alphaValue = StatusBars2_Round( alphaSlider:GetValue( ), 2 );
+        if( alphaValue < 1 ) then
+            StatusBars2_Settings.bars[ frame.bar.key ].alpha = alphaValue;
+        else
+            StatusBars2_Settings.bars[ frame.bar.key ].alpha = nil;
+        end
+        if( flashButton ) then
             StatusBars2_Settings.bars[ frame.bar.key ].flash = flashButton:GetChecked( ) == 1;
             StatusBars2_Settings.bars[ frame.bar.key ].flashThreshold = StatusBars2_Round( flashThresholdSlider:GetValue( ), 2 );
         end
-        if( showBuffsButton ~= nil ) then
+        if( showBuffsButton ) then
             StatusBars2_Settings.bars[ frame.bar.key ].showBuffs = showBuffsButton:GetChecked( ) == 1;
         end
-        if( showDebuffsButton ~= nil ) then
+        if( showDebuffsButton ) then
             StatusBars2_Settings.bars[ frame.bar.key ].showDebuffs = showDebuffsButton:GetChecked( ) == 1;
         end
-        if( onlyShowSelfAurasButton ~= nil ) then
+        if( onlyShowSelfAurasButton ) then
             StatusBars2_Settings.bars[ frame.bar.key ].onlyShowSelf = onlyShowSelfAurasButton:GetChecked( ) == 1;
         end
-        if( onlyShowTimedAurasButton ~= nil ) then
+        if( onlyShowTimedAurasButton ) then
             StatusBars2_Settings.bars[ frame.bar.key ].onlyShowTimed = onlyShowTimedAurasButton:GetChecked( ) == 1;
         end
-        if( onlyShowListedAurasButton ~= nil ) then
+        if( onlyShowListedAurasButton ) then
             StatusBars2_Settings.bars[ frame.bar.key ].onlyShowListed = onlyShowListedAurasButton:GetChecked( ) == 1;
         end
-        if( enableTooltipsButton ~= nil ) then
+        if( enableTooltipsButton ) then
             StatusBars2_Settings.bars[ frame.bar.key ].enableTooltips = enableTooltipsButton:GetChecked( ) == 1;
         end
-        if( showSpellButton ~= nil ) then
+        if( showSpellButton ) then
             StatusBars2_Settings.bars[ frame.bar.key ].showSpell = showSpellButton:GetChecked( ) == 1;
         end
-        if( showInAllFormsButton ~= nil ) then
+        if( showInAllFormsButton ) then
             StatusBars2_Settings.bars[ frame.bar.key ].showInAllForms = showInAllFormsButton:GetChecked( ) == 1;
         end
-        if( percentTextMenu ~= nil ) then
+        if( percentTextMenu ) then
             StatusBars2_Settings.bars[ frame.bar.key ].percentText = UIDropDownMenu_GetSelectedName( percentTextMenu );
         end
-        if ( auraList ) then
-            if auraList.allEntries then
+        if( auraList ) then
+            if( auraList.allEntries and #auraList.allEntries > 0 ) then
                 StatusBars2_Settings.bars[ frame.bar.key ].auraFilter = {};
                 
                 for i, entry in ipairs(auraList.allEntries) do
                     StatusBars2_Settings.bars[ frame.bar.key ].auraFilter[entry] = true;
                 end
             else
-                auraFilter = nil;
+                StatusBars2_Settings.bars[ frame.bar.key ].auraFilter = nil;
             end
         end
 
@@ -4584,43 +4612,49 @@ function StatusBars2_BarOptions_DoDataExchange( save, frame )
         UIDropDownMenu_SetSelectedName( enabledMenu, StatusBars2_Settings.bars[ frame.bar.key ].enabled );
         UIDropDownMenu_SetText( enabledMenu, StatusBars2_Settings.bars[ frame.bar.key ].enabled );
         scaleSlider:SetValue( StatusBars2_Settings.bars[ frame.bar.key ].scale );
-        if( flashButton ~= nil ) then
+
+        if( StatusBars2_Settings.bars[ frame.bar.key ].alpha ) then
+            alphaSlider:SetValue( StatusBars2_Settings.bars[ frame.bar.key ].alpha );
+        else
+            alphaSlider:SetValue( StatusBars2_Settings.alpha );
+        end
+        if( flashButton ) then
             flashButton:SetChecked( StatusBars2_Settings.bars[ frame.bar.key ].flash );
             flashThresholdSlider:SetValue( StatusBars2_Settings.bars[ frame.bar.key ].flashThreshold );
         end
-        if( showBuffsButton ~= nil ) then
+        if( showBuffsButton ) then
             showBuffsButton:SetChecked( StatusBars2_Settings.bars[ frame.bar.key ].showBuffs );
         end
-        if( showDebuffsButton ~= nil ) then
+        if( showDebuffsButton ) then
             showDebuffsButton:SetChecked( StatusBars2_Settings.bars[ frame.bar.key ].showDebuffs );
         end
-        if( onlyShowSelfAurasButton ~= nil ) then
+        if( onlyShowSelfAurasButton ) then
             onlyShowSelfAurasButton:SetChecked( StatusBars2_Settings.bars[ frame.bar.key ].onlyShowSelf );
         end
-        if( onlyShowTimedAurasButton ~= nil ) then
+        if( onlyShowTimedAurasButton ) then
             onlyShowTimedAurasButton:SetChecked( StatusBars2_Settings.bars[ frame.bar.key ].onlyShowTimed );
         end
-        if( onlyShowListedAurasButton ~= nil ) then
+        if( onlyShowListedAurasButton ) then
             onlyShowListedAurasButton:SetChecked( StatusBars2_Settings.bars[ frame.bar.key ].onlyShowListed );
-			StatusBars2_BarOptions_Enable_Aura_List( frame, StatusBars2_Settings.bars[ frame.bar.key ].onlyShowListed );
+            StatusBars2_BarOptions_Enable_Aura_List( frame, StatusBars2_Settings.bars[ frame.bar.key ].onlyShowListed );
         end
-        if( enableTooltipsButton ~= nil ) then
+        if( enableTooltipsButton ) then
             enableTooltipsButton:SetChecked( StatusBars2_Settings.bars[ frame.bar.key ].enableTooltips );
         end
-        if( showSpellButton ~= nil ) then
+        if( showSpellButton ) then
             showSpellButton:SetChecked( StatusBars2_Settings.bars[ frame.bar.key ].showSpell );
         end
-        if( showInAllFormsButton ~= nil ) then
+        if( showInAllFormsButton ) then
             showInAllFormsButton:SetChecked( StatusBars2_Settings.bars[ frame.bar.key ].showInAllForms );
         end
-        if( percentTextMenu ~= nil ) then
+        if( percentTextMenu ) then
             UIDropDownMenu_SetSelectedName( percentTextMenu, StatusBars2_Settings.bars[ frame.bar.key ].percentText );
             UIDropDownMenu_SetText( percentTextMenu, StatusBars2_Settings.bars[ frame.bar.key ].percentText );
         end
         if ( auraList ) then
             local auraFilter = StatusBars2_Settings.bars[ frame.bar.key ].auraFilter;
-            
-            if auraFilter then
+
+            if( auraFilter ) then
                 auraList.allEntries = {};
                 local i = 1;
                 for name in pairs(auraFilter) do
@@ -4632,6 +4666,8 @@ function StatusBars2_BarOptions_DoDataExchange( save, frame )
             else
                 auraList.allEntries = nil;
             end
+
+            StatusBars2_BarOptions_AuraListUpdate( auraList );
         end
     end
 end
@@ -4677,14 +4713,14 @@ end
 function StatusBars2_Options_ToggleMoveBars_OnClick( self )
 
     -- Set a flag and reset the positions if the OK button is clicked
-	if(StatusBars2_Options.moveBars == nil or StatusBars2_Options.moveBars == false) then
+    if(StatusBars2_Options.moveBars == nil or StatusBars2_Options.moveBars == false) then
         StatusBars2_Options.moveBars = true;
         StatusBars2_Options.saveLocked = StatusBars2_Settings.locked;
         StatusBars2_Settings.locked = false;
-	else
+    else
         StatusBars2_Options.moveBars = false;
         StatusBars2_Settings.locked = StatusBars2_Options.saveLocked;
-	end
+    end
 
     StatusBars2_UpdateBars( );
 
@@ -4717,6 +4753,7 @@ function StatusBars2_Options_DoDataExchange( save )
         StatusBars2_Settings.grouped = StatusBars2_Options_GroupedButton:GetChecked( ) == 1;
         StatusBars2_Settings.groupsLocked = StatusBars2_Options_LockGroupsTogetherButton:GetChecked( ) == 1;
         StatusBars2_Settings.scale = StatusBars2_Options_ScaleSlider:GetValue( );
+        StatusBars2_Settings.alpha = StatusBars2_Options_AlphaSlider:GetValue( );
     else
         UIDropDownMenu_SetSelectedValue( textOptionsMenu, StatusBars2_Settings.textDisplayOption );
         UIDropDownMenu_SetText( textOptionsMenu, TextOptionLabels[StatusBars2_Settings.textDisplayOption] );
@@ -4725,6 +4762,7 @@ function StatusBars2_Options_DoDataExchange( save )
         StatusBars2_Options_GroupedButton:SetChecked( StatusBars2_Settings.grouped );
         StatusBars2_Options_LockGroupsTogetherButton:SetChecked( StatusBars2_Settings.groupsLocked );
         StatusBars2_Options_ScaleSlider:SetValue( StatusBars2_Settings.scale );
+        StatusBars2_Options_AlphaSlider:SetValue( StatusBars2_Settings.alpha );
     end
 end
 
