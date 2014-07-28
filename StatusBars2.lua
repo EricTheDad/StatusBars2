@@ -34,6 +34,14 @@ local TextOptionLabels =
     "Hidden",
 }
 
+local FontInfo =
+{
+    { ["label"] = "Small", ["filename"] = "GameFontNormalSmall" },
+    { ["label"] = "Medium", ["filename"] = "GameFontNormal" },
+    { ["label"] = "Large", ["filename"] = "GameFontNormalLarge" },
+    { ["label"] = "Huge", ["filename"] = "GameFontNormalHuge" },
+}
+
 -- Bar types
 local kHealth = 0;
 local kPower = 1;
@@ -568,7 +576,7 @@ function StatusBars2_EnableBar( bar, group, index, removeWhenHidden )
 
         -- Set the parent to the appropriate group frame
         bar:SetParent( groups[ group ]);
-        
+
         -- Set the scale
         bar:SetBarScale( StatusBars2_Settings.bars[ bar.key ].scale );
 
@@ -722,6 +730,11 @@ function StatusBars2_UpdateLayout( )
             StatusBars2_Group_SetPosition( groups[ group ], 0, group_offset );
             group_offset = group_offset - kGroupSpacing;
             offset = 0;
+        end
+
+        -- Aura bars need a bit more space
+        if( bar.type == kAura ) then
+            offset = offset - 1;
         end
 
         -- Position the bar
@@ -1446,7 +1459,7 @@ function StatusBars2_SpecialtyBar_OnEnable( self )
     self:Update( self:GetCharges( ) );
 
     -- Call the base method
-    StatusBars2_StatusBar_OnEnable( self );
+    StatusBars2_DiscreteBar_OnEnable( self );
 
 end
 
@@ -2915,7 +2928,9 @@ function StatusBars2_ContinuousBar_OnEnable( self )
     else
         self.text:Show( );
     end
-    
+
+    self.text:SetFontObject(FontInfo[StatusBars2_Settings.font].filename);
+
     -- Call the base method
     StatusBars2_StatusBar_OnEnable( self );
 
@@ -2948,6 +2963,12 @@ function StatusBars2_CreateDiscreteBar( key, unit, displayName, barType, boxCoun
     -- Create the bar
     local bar = StatusBars2_CreateBar( key, "StatusBars2_DiscreteBarTemplate", unit, displayName, barType );
 
+    -- Set custom options template
+    bar.optionsTemplate = "StatusBars2_AuraStatckBarOptionsTemplate";
+
+    -- Override default methods as needed
+    bar.OnEnable = StatusBars2_DiscreteBar_OnEnable;
+
     -- Save the color in the settings.  I'll make this editable in the future.
     bar.GetColor = StatusBars2_GetDiscreteBarColor;
 
@@ -2976,7 +2997,6 @@ function StatusBars2_SetDiscreteBarBoxCount( bar, boxCount )
         StatusBars2_CreateDiscreteBarBoxes( bar, boxCount );
         StatusBars2_AdjustDiscreteBarBoxes( bar, boxCount );
     end
-    
 end;
 
 -------------------------------------------------------------------------------
@@ -3005,7 +3025,6 @@ function StatusBars2_CreateDiscreteBarBoxes( bar, desiredBoxCount )
             local statusName = name .. '_Box' .. i .. '_Status';
             local box = CreateFrame( "Frame", boxName, bar, "StatusBars2_DiscreteBoxTemplate" );
             local status = box:GetChildren( );
-            status:SetStatusBarColor( bar:GetColor( i ) );
             status:SetValue( 0 );
         end
     end
@@ -3075,10 +3094,29 @@ function StatusBars2_AdjustDiscreteBarBoxes( bar, boxCount )
         else
             box:Hide( );
         end
-
     end
-    
+
 end;
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_UpdateDiscreteBarBoxColors
+--
+--  Description:    Set the color of the boxes on a discrete bar
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_UpdateDiscreteBarBoxColors( bar )
+
+    local boxes = { bar:GetChildren( ) };
+
+    -- Initialize the boxes
+    for i, box in ipairs(boxes) do
+        local status = box:GetChildren( );
+        status:SetStatusBarColor( bar:GetColor( i ) );
+    end
+
+end
 
 -------------------------------------------------------------------------------
 --
@@ -3116,7 +3154,9 @@ end
 --
 function StatusBars2_GetDiscreteBarColor( bar, boxIndex )
 
-    if( bar.type == kCombo ) then
+    if( StatusBars2_Settings.bars[ bar.key ].color ) then
+        return unpack(StatusBars2_Settings.bars[ bar.key ].color);
+    elseif( bar.type == kCombo ) then
         return 1, 0, 0;
     elseif( bar.type == kAuraStack ) then
         if( bar.key == "anticipation" ) then
@@ -3131,7 +3171,24 @@ function StatusBars2_GetDiscreteBarColor( bar, boxIndex )
     end
 
     return kDefaultPowerBarColor.r, kDefaultPowerBarColor.g, kDefaultPowerBarColor.b;
-    
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_DiscreteBar_OnEnable
+--
+--  Description:    Discrete bar enable handler
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_DiscreteBar_OnEnable( self )
+
+    StatusBars2_UpdateDiscreteBarBoxColors( self );
+
+    -- Call the base method
+    StatusBars2_StatusBar_OnEnable( self );
+
 end
 
 -------------------------------------------------------------------------------
@@ -3685,6 +3742,18 @@ end
 
 -------------------------------------------------------------------------------
 --
+--  Name:           Setting variables
+--
+--  Description:    Global variables needed for the settings
+--
+-------------------------------------------------------------------------------
+--
+local oldOffset = 0;
+local currentScrollFrame = nil;
+local currentColorSwatch = nil;
+
+-------------------------------------------------------------------------------
+--
 --  Name:           StatusBars2_LoadSettings
 --
 --  Description:    Load settings
@@ -3737,7 +3806,6 @@ function StatusBars2_InitializeSettings( )
     -- Create a structure for each bar group
     for i, group in ipairs( groups ) do
         if( StatusBars2_Settings.groups[ i ] == nil ) then
-            print("Creating settings for group "..i);
             StatusBars2_Settings.groups[ i ] = {};
         end
     end
@@ -3975,7 +4043,12 @@ function StatusBars2_SetDefaultSettings( )
     if( StatusBars2_Settings.textDisplayOption == nil or StatusBars2_Settings.textDisplayOption < kAbbreviated or StatusBars2_Settings.textDisplayOption > kHidden) then
         StatusBars2_Settings.textDisplayOption = kAbbreviated;
     end
-    
+
+    -- Text Size
+    if( StatusBars2_Settings.font == nil or not FontInfo[StatusBars2_Settings.font] ) then
+        StatusBars2_Settings.font = 1;
+    end
+
     -- Fade
     if( StatusBars2_Settings.fade == nil ) then
         StatusBars2_Settings.fade = true;
@@ -4019,7 +4092,7 @@ end;
 function StatusBars2_Options_OnLoad( self )
 
     -- Setup the top level category
-    self.name = "StatusBars 2";
+    self.name = "StatusBars2";
     self.okay = StatusBars2_Options_OnOK;
     self.cancel = StatusBars2_Options_OnCancel;
     InterfaceOptions_AddCategory( self );
@@ -4044,7 +4117,7 @@ function StatusBars2_Options_Configure_Bar_Options(  )
 
         -- Initialize the frame
         frame.name = bar.displayName;
-        frame.parent = "StatusBars 2";
+        frame.parent = "StatusBars2";
         frame.bar = bar;
 
         -- Add it
@@ -4163,6 +4236,41 @@ end
 -------------------------------------------------------------------------------
 --
 function StatusBars2_TextDisplayOptionsMenu_OnClick( self, menu )
+
+    UIDropDownMenu_SetSelectedValue( menu, self.value );
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_FontMenu_Initialize
+--
+--  Description:    Initialize the text display options drop down menu
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_FontMenu_Initialize( self )
+
+    for i, info in ipairs( FontInfo ) do
+        local entry = UIDropDownMenu_CreateInfo();
+        entry.func = StatusBars2_FontMenu_OnClick;
+        entry.arg1 = self;
+        entry.value = i;
+        entry.text = info.label;
+        UIDropDownMenu_AddButton( entry );
+    end
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_FontMenu_OnClick
+--
+--  Description:    Called when a menu item is clicked
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_FontMenu_OnClick( self, menu )
 
     UIDropDownMenu_SetSelectedValue( menu, self.value );
 
@@ -4414,8 +4522,6 @@ function StatusBars2_BarOptions_AddAuraFilterEntry( self )
 
 end
 
-local oldOffset = 0;
-local currentScrollFrame = nil;
 -------------------------------------------------------------------------------
 --
 --  Name:           StatusBars2_BarOptions_AuraListUpdate
@@ -4440,26 +4546,26 @@ function StatusBars2_BarOptions_AuraListUpdate( self )
 
             local buttons = scrollFrame.buttons;
             local button_height = buttons[1]:GetHeight();
-            
+
             for i, entry in ipairs(buttons) do
                 local index = i + offset;
-                
+
                 if scrollFrame.allEntries and scrollFrame.allEntries[index] then
                     entry:SetText( scrollFrame.allEntries[index] );
                     entry:Show();
                     entry.index = index;
-                    
+
                     if scrollFrame.selectedIndex == index then
                         entry:LockHighlight( );
                     else
                         entry:UnlockHighlight( );
                     end
-                    
+
                 else
                     entry:Hide();
                 end
             end
-            
+
             local num_entries = 0;
             if scrollFrame.allEntries then
                 num_entries = #scrollFrame.allEntries;
@@ -4468,7 +4574,6 @@ function StatusBars2_BarOptions_AuraListUpdate( self )
             StatusBars2_BarOptions_Check_Enable_Aura_List_Buttons( scrollFrame );
             HybridScrollFrame_Update(scrollFrame, num_entries * button_height, scrollFrame:GetHeight());
         end
-        
     end
     
 end
@@ -4484,7 +4589,7 @@ end
 function StatusBars2_BarOptions_ListEntryButton_OnClick( self )
 
     local aura_list = self:GetParent():GetParent();
-    
+
     aura_list.selectedIndex = self.index;
     StatusBars2_BarOptions_AuraListUpdate( aura_list );
 
@@ -4501,7 +4606,7 @@ end
 function StatusBars2_BarOptions_DeleteAuraFilterListEntry_OnClick( self )
 
     local aura_list = _G[ self:GetParent():GetName( ) .. "_AuraFilterList" ];
-    
+
     if aura_list.selectedIndex then
         table.remove(aura_list.allEntries, aura_list.selectedIndex);
     end
@@ -4524,6 +4629,76 @@ function StatusBars2_BarOptions_ClearAuraFilterList_OnClick( self )
     local aura_list = _G[ self:GetParent():GetName( ) .. "_AuraFilterList" ];
     aura_list.allEntries = nil;
     StatusBars2_BarOptions_AuraListUpdate( aura_list );
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_BarOptions_Enable_ColorSelectButton
+--
+--  Description:    Enable / disable user input for the color select button
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_BarOptions_Enable_ColorSelectButton( frame, is_enabled )
+
+    local color_select_button = _G[ frame:GetName( ) .. "_PickColorButton" ];
+
+    if( is_enabled ) then
+        color_select_button:Enable( );
+    else
+        color_select_button:Disable( );
+    end
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_Options_OnSetBarColor
+--
+--  Description:    Called when the set bar color button is clicked
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_Options_OnSetBarColor( restore )
+
+    if( currentColorSwatch ) then
+        local r,g,b;
+
+        if( restore ) then
+            r,g,b = unpack( restore )
+        else
+            r,g,b = ColorPickerFrame:GetColorRGB( );
+        end
+
+        currentColorSwatch:SetBackdropColor( r, g, b );
+    end
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_Options_SetBarColorButton_OnClick
+--
+--  Description:    Called when the set bar color button is clicked
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_Options_SetBarColorButton_OnClick( frame )
+
+    local colorSwatch = _G[ frame:GetName( ) .. "_ColorSwatch" ];
+    local r,g,b = colorSwatch:GetBackdropColor( );
+
+    -- ColorPickerFrame:SetColorRGB will call ColorPickerFrame:func, so the color
+    -- swatch needs to be set before we call SetColorRGB
+    currentColorSwatch = colorSwatch;
+    ColorPickerFrame.func = StatusBars2_Options_OnSetBarColor;
+    ColorPickerFrame.opacityFunc = StatusBars2_Options_OnSetBarColor;
+    ColorPickerFrame.cancelFunc = StatusBars2_Options_OnSetBarColor;
+    ColorPickerFrame:SetColorRGB(r,g,b);
+    ColorPickerFrame.hasOpacity = false;
+    ColorPickerFrame.opacity = 1;
+    ColorPickerFrame.previousValues = {r,g,b};
+
+    ShowUIPanel(ColorPickerFrame);
 
 end
 
@@ -4553,6 +4728,8 @@ function StatusBars2_BarOptions_DoDataExchange( save, frame )
     local showInAllFormsButton = _G[ frame:GetName( ) .. "_ShowInAllForms" ];
     local percentTextMenu = _G[ frame:GetName( ) .. "_PercentTextMenu" ];
     local auraList = _G[ frame:GetName( ) .. "_AuraFilterList" ];
+    local customColorButton = _G[ frame:GetName( ) .. "_CustomColorButton" ];
+    local colorSwatch = _G[ frame:GetName( ) .. "_ColorSwatch" ];
 
     -- Exchange data
     if( save == true ) then
@@ -4564,6 +4741,13 @@ function StatusBars2_BarOptions_DoDataExchange( save, frame )
             StatusBars2_Settings.bars[ frame.bar.key ].alpha = alphaValue;
         else
             StatusBars2_Settings.bars[ frame.bar.key ].alpha = nil;
+        end
+        if( customColorButton and colorSwatch ) then
+            if( customColorButton:GetChecked( )) then
+                StatusBars2_Settings.bars[ frame.bar.key ].color = {colorSwatch:GetBackdropColor( )};
+            else
+                StatusBars2_Settings.bars[ frame.bar.key ].color = nil;
+            end
         end
         if( flashButton ) then
             StatusBars2_Settings.bars[ frame.bar.key ].flash = flashButton:GetChecked( ) == 1;
@@ -4613,10 +4797,14 @@ function StatusBars2_BarOptions_DoDataExchange( save, frame )
         UIDropDownMenu_SetText( enabledMenu, StatusBars2_Settings.bars[ frame.bar.key ].enabled );
         scaleSlider:SetValue( StatusBars2_Settings.bars[ frame.bar.key ].scale );
 
-        if( StatusBars2_Settings.bars[ frame.bar.key ].alpha ) then
-            alphaSlider:SetValue( StatusBars2_Settings.bars[ frame.bar.key ].alpha );
-        else
-            alphaSlider:SetValue( StatusBars2_Settings.alpha );
+        if( alphaSlider ) then
+            alphaSlider:SetValue( StatusBars2_Settings.bars[ frame.bar.key ].alpha or StatusBars2_Settings.alpha or 1.0);
+        end
+        if( customColorButton and colorSwatch ) then
+            local customColorEnabled = StatusBars2_Settings.bars[ frame.bar.key ].color ~= nil;
+            customColorButton:SetChecked( customColorEnabled );
+            StatusBars2_BarOptions_Enable_ColorSelectButton( frame, customColorEnabled );
+            colorSwatch:SetBackdropColor( frame.bar:GetColor( ) );
         end
         if( flashButton ) then
             flashButton:SetChecked( StatusBars2_Settings.bars[ frame.bar.key ].flash );
@@ -4738,6 +4926,7 @@ function StatusBars2_Options_DoDataExchange( save )
 
     -- Get controls
     local textOptionsMenu = StatusBars2_Options_TextDisplayOptionsMenu;
+    local fontMenu = StatusBars2_Options_TextSizeMenu;
 
     -- Exchange bar data
     for i, bar in ipairs( bars ) do
@@ -4748,6 +4937,7 @@ function StatusBars2_Options_DoDataExchange( save )
     -- Exchange options data
     if( save == true ) then
         StatusBars2_Settings.textDisplayOption = UIDropDownMenu_GetSelectedValue( textOptionsMenu );
+        StatusBars2_Settings.font = UIDropDownMenu_GetSelectedValue( fontMenu );
         StatusBars2_Settings.fade = StatusBars2_Options_FadeButton:GetChecked( ) == 1;
         StatusBars2_Settings.locked = StatusBars2_Options_LockedButton:GetChecked( ) == 1;
         StatusBars2_Settings.grouped = StatusBars2_Options_GroupedButton:GetChecked( ) == 1;
@@ -4757,6 +4947,8 @@ function StatusBars2_Options_DoDataExchange( save )
     else
         UIDropDownMenu_SetSelectedValue( textOptionsMenu, StatusBars2_Settings.textDisplayOption );
         UIDropDownMenu_SetText( textOptionsMenu, TextOptionLabels[StatusBars2_Settings.textDisplayOption] );
+        UIDropDownMenu_SetSelectedValue( fontMenu, StatusBars2_Settings.font );
+        UIDropDownMenu_SetText( fontMenu, FontInfo[UIDropDownMenu_GetSelectedValue(fontMenu)].label );
         StatusBars2_Options_FadeButton:SetChecked( StatusBars2_Settings.fade );
         StatusBars2_Options_LockedButton:SetChecked( StatusBars2_Settings.locked );
         StatusBars2_Options_GroupedButton:SetChecked( StatusBars2_Settings.grouped );
@@ -4764,5 +4956,5 @@ function StatusBars2_Options_DoDataExchange( save )
         StatusBars2_Options_ScaleSlider:SetValue( StatusBars2_Settings.scale );
         StatusBars2_Options_AlphaSlider:SetValue( StatusBars2_Settings.alpha );
     end
-end
 
+end

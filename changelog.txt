@@ -1,4 +1,8 @@
-﻿2.09.00
+﻿2.10.00
+Added the ability to set different text sizes for the text on the bars.
+Added the ability to set custom colors for aura stack bars and specialty bars.
+
+2.09.00
 Added the ability to set bars' opacity, either globally or individually on each bar.  Options panel restructuring.  Major improvements and bug fixes to aura filtering UI.
 
 2.08.03

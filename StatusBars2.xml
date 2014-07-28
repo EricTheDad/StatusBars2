@@ -1067,6 +1067,56 @@
         </Frames>
     </Frame>
 
+    <!-- Aura Stack bar options frame template -->
+    <Frame name="StatusBars2_AuraStatckBarOptionsTemplate" inherits="StatusBars2_BarOptionsTemplate" virtual="true" >
+        <Frames>
+            <CheckButton name="$parent_CustomColorButton" inherits="OptionsCheckButtonTemplate" >
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeto="$parent_AlphaSliderLabel" relativePoint="BOTTOMLEFT" >
+                        <Offset x="0" y="-15" />
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal( self:GetName( ) .. "Text" ):SetText( "Custom Color" );
+                    </OnLoad>
+					<OnClick>
+                        StatusBars2_BarOptions_Enable_ColorSelectButton( self:GetParent( ), self:GetChecked( ) );
+					</OnClick>
+                </Scripts>
+            </CheckButton>
+            <Frame name="$parent_ColorSwatch">
+                <Anchors>
+                    <Anchor point="LEFT" relativeto="$parent_CustomColorButton" relativePoint="RIGHT" >
+                        <Offset x="100" y="0" />
+                    </Anchor>
+                </Anchors>
+                <Backdrop bgFile="Interface\ChatFrame\ChatFrameColorSwatch" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="false">
+                    <EdgeSize>
+                        <AbsValue val="16" />
+                    </EdgeSize>
+                    <TileSize>
+                        <AbsValue val="16" />
+                    </TileSize>
+                </Backdrop>
+               <Size x="25" y="25" />
+            </Frame>
+            <Button name="$parent_PickColorButton" inherits="OptionsButtonTemplate" text="Set Color">
+                <Size x="90" y="21"/>
+                <Anchors>
+                    <Anchor point="LEFT" relativeto="$parent_ColorSwatch" relativePoint="RIGHT" >
+                        <Offset x="20" y="0" />
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                        StatusBars2_Options_SetBarColorButton_OnClick( self:GetParent( ) );
+                    </OnClick>
+                </Scripts>
+            </Button>
+        </Frames>
+    </Frame>
+
     <!-- Options frame -->
     <Frame name="StatusBars2_Options" >
         <Scripts>
@@ -1082,6 +1132,16 @@
                         <Anchor point="TOPRIGHT" relativeTo="$Parent" >
                             <Offset>
                                 <AbsDimension x="-140" y="-20"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parent_TextSizeLabel" inherits="GameFontNormalSmallLeft" text="Text Size" >
+                    <Size x="200" y="17"/>
+                    <Anchors>
+                        <Anchor point="TOPRIGHT" relativeTo="$parent_TextDisplayOptionsLabel" >
+                            <Offset>
+                                <AbsDimension x="0" y="-60"/>
                             </Offset>
                         </Anchor>
                     </Anchors>
@@ -1186,6 +1246,21 @@
                 <Scripts>
                     <OnLoad>
                         UIDropDownMenu_Initialize( self, StatusBars2_TextDisplayOptionsMenu_Initialize );
+                        UIDropDownMenu_SetWidth(self, self:GetWidth());
+                        UIDropDownMenu_SetButtonWidth(self, "TEXT");
+                    </OnLoad>
+                </Scripts>
+            </Frame>
+            <Frame name="$parent_TextSizeMenu" inherits="UIDropDownMenuTemplate" >
+                <Size x="170" y="17"/>
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parent_TextSizeLabel" relativePoint="BOTTOMLEFT" >
+                        <Offset x="-12" y="-3" />
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        UIDropDownMenu_Initialize( self, StatusBars2_FontMenu_Initialize );
                         UIDropDownMenu_SetWidth(self, self:GetWidth());
                         UIDropDownMenu_SetButtonWidth(self, "TEXT");
                     </OnLoad>
