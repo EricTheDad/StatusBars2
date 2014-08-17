@@ -709,7 +709,7 @@ function StatusBars2_UpdateLayout( )
     -- Build a list of bars to layout
     for i, bar in ipairs( bars ) do
         -- If the bar has a group and index set include it in the layout
-        if( bar.group ~= nil and bar.index ~= nil and ( bar.removeWhenHidden == nil or bar.visible == true ) ) then
+        if( bar.group ~= nil and bar.index ~= nil and ( bar.removeWhenHidden == false or bar.visible ) ) then
             table.insert( layoutBars, bar );
         end
     end
@@ -856,29 +856,26 @@ function StatusBars2_UpdateHealthBar( self )
     local maxHealth = UnitHealthMax( self.unit );
 
     -- Update the bar
-    if ( StatusBars2_Options.moveBars == true ) then
-        StatusBars2_UpdateContinuousBar( self, 100, 100 );
-    else
         StatusBars2_UpdateContinuousBar( self, health, maxHealth );
 
-        -- If the bar is still visible update its color
-        if( self.visible == true ) then
+    -- If the bar is still visible update its color
+    if( self.visible == true ) then
 
-            -- Determine the percentage of health remaining
-            local percent = health / maxHealth;
+        -- Determine the percentage of health remaining
+        local percent = health / maxHealth;
 
-            -- Set the bar color based on the percentage of remaining health
-            if( percent >= 0.75 ) then
-                self.status:SetStatusBarColor( 0, 1, 0 );
-            elseif( percent >= 0.50 ) then
-                self.status:SetStatusBarColor( 1, 1, 0 );
-            elseif( percent >= 0.25 ) then
-                self.status:SetStatusBarColor( 1, 0.5, 0 );
-            else
-                self.status:SetStatusBarColor( 1, 0, 0 );
-            end
+        -- Set the bar color based on the percentage of remaining health
+        if( percent >= 0.75 ) then
+            self.status:SetStatusBarColor( 0, 1, 0 );
+        elseif( percent >= 0.50 ) then
+            self.status:SetStatusBarColor( 1, 1, 0 );
+        elseif( percent >= 0.25 ) then
+            self.status:SetStatusBarColor( 1, 0.5, 0 );
+        else
+            self.status:SetStatusBarColor( 1, 0, 0 );
         end
     end
+
 end
 
 -------------------------------------------------------------------------------
@@ -1000,8 +997,8 @@ function StatusBars2_PowerBar_OnEvent( self, event, ... )
         -- Bar is not visible
         else
             local unitExists = UnitExists( self.unit );
-            StatusBars2_HideBar( self, unitExists == 1 );
-            if( unitExists == 1 ) then
+            StatusBars2_HideBar( self, unitExists );
+            if( unitExists ) then
                 StatusBars2_UpdateLayout( );
             end
         end
@@ -1042,8 +1039,8 @@ function StatusBars2_PowerBar_OnEvent( self, event, ... )
         -- Bar is not visible
         else
             local unitExists = UnitExists( self.unit );
-            StatusBars2_HideBar( self, unitExists == 1 );
-            if( unitExists == 1 ) then
+            StatusBars2_HideBar( self, unitExists );
+            if( unitExists ) then
                 StatusBars2_UpdateLayout( );
             end
         end
@@ -1243,7 +1240,7 @@ end
 --
 function StatusBars2_PowerBar_IsVisible( self )
 
-    return StatusBars2_ContinuousBar_IsVisible( self ) and ( UnitPowerMax( self.unit, StatusBars2_GetPowerType( self ) ) > 0  or ( self.casting == true or self.channeling == true ) or StatusBars2_Options.moveBars == true);
+    return StatusBars2_ContinuousBar_IsVisible( self ) and ( UnitPowerMax( self.unit, StatusBars2_GetPowerType( self ) ) > 0 or self.casting == true or self.channeling == true );
 
 end
 
@@ -1302,11 +1299,7 @@ function StatusBars2_UpdatePowerBar( self )
     local maxPower = UnitPowerMax( self.unit, StatusBars2_GetPowerType( self ) );
 
     -- Update the bar
-    if ( StatusBars2_Options.moveBars == true ) then
-        StatusBars2_UpdateContinuousBar( self, 100, 100 );
-    else
-        StatusBars2_UpdateContinuousBar( self, power, maxPower );
-    end
+    StatusBars2_UpdateContinuousBar( self, power, maxPower );
 
 end
 
@@ -2327,7 +2320,7 @@ function StatusBars2_AuraStackBar_OnEvent( self, event, ... )
                         found = true; 
                     end
                 -- Otherwise, see if the name matches
-                elseif( string.find( spellName, self.aura ) == 1 ) then 
+                elseif( string.find( spellName, self.aura, 1, true )) then 
                     found = true; 
                 end
                 
@@ -2487,7 +2480,7 @@ end
 --
 function StatusBars2_AuraBar_IsVisible( self )
 
-    return StatusBars2_StatusBar_IsVisible( self ) and (( UnitExists( self.unit ) == 1 and UnitIsDeadOrGhost( self.unit ) == nil ) or StatusBars2_Options.moveBars == true );
+    return StatusBars2_StatusBar_IsVisible( self ) and ( UnitExists( self.unit ) and UnitIsDeadOrGhost( self.unit ) == false );
 
 end
 
@@ -2751,7 +2744,7 @@ end
 --
 function StatusBars2_AuraButton_OnMouseDown( self, button )
 
-    if( StatusBars2_Settings.locked ~= true or StatusBars2_Options.moveBars == true ) then
+    if( StatusBars2_Settings.locked ~= true ) then
         StatusBars2_StatusBar_OnMouseDown( self.parentBar, button );
     end
 
@@ -2767,7 +2760,7 @@ end
 --
 function StatusBars2_AuraButton_OnMouseUp( self, button )
 
-    if( StatusBars2_Settings.locked ~= true or StatusBars2_Options.moveBars == true  ) then
+    if( StatusBars2_Settings.locked ~= true ) then
         StatusBars2_StatusBar_OnMouseUp( self.parentBar, button );
     end
 
@@ -2946,7 +2939,7 @@ end
 --
 function StatusBars2_ContinuousBar_IsVisible( self )
 
-    return StatusBars2_StatusBar_IsVisible( self ) and (( UnitExists( self.unit ) == 1 and UnitIsDeadOrGhost( self.unit ) == nil ) or StatusBars2_Options.moveBars == true );
+    return StatusBars2_StatusBar_IsVisible( self ) and ( UnitExists( self.unit ) and UnitIsDeadOrGhost( self.unit ) == false );
 
 end
 
@@ -3447,21 +3440,17 @@ function StatusBars2_StatusBar_IsVisible( self )
 
     local visible = false;
 
-    if ( StatusBars2_Options.moveBars == true ) then
-        visible = enabled ~= "Never";
-    else
-        -- Auto
-        if( enabled == "Auto" ) then
-            visible = self.inCombat or self:IsDefault( ) == false;
+    -- Auto
+    if( enabled == "Auto" ) then
+        visible = self.inCombat or self:IsDefault( ) == false;
 
-        -- Combat
-        elseif( enabled == "Combat" ) then
-            visible = self.inCombat;
+    -- Combat
+    elseif( enabled == "Combat" ) then
+        visible = self.inCombat;
 
-        -- Always
-        elseif( enabled == "Always" ) then
-            visible = true;
-        end
+    -- Always
+    elseif( enabled == "Always" ) then
+        visible = true;
     end
 
     return visible;
@@ -3673,7 +3662,7 @@ function StatusBars2_GetAuraStack( unit, aura, auraType )
         -- Check the name
         if( name == nil ) then
             break;
-        elseif( string.find( name, aura ) == 1 ) then
+        elseif( string.find( name, aura, 1, true ) ) then
             stack = count;
             break;
         end;
@@ -4750,32 +4739,32 @@ function StatusBars2_BarOptions_DoDataExchange( save, frame )
             end
         end
         if( flashButton ) then
-            StatusBars2_Settings.bars[ frame.bar.key ].flash = flashButton:GetChecked( ) == 1;
+            StatusBars2_Settings.bars[ frame.bar.key ].flash = flashButton:GetChecked( );
             StatusBars2_Settings.bars[ frame.bar.key ].flashThreshold = StatusBars2_Round( flashThresholdSlider:GetValue( ), 2 );
         end
         if( showBuffsButton ) then
-            StatusBars2_Settings.bars[ frame.bar.key ].showBuffs = showBuffsButton:GetChecked( ) == 1;
+            StatusBars2_Settings.bars[ frame.bar.key ].showBuffs = showBuffsButton:GetChecked( );
         end
         if( showDebuffsButton ) then
-            StatusBars2_Settings.bars[ frame.bar.key ].showDebuffs = showDebuffsButton:GetChecked( ) == 1;
+            StatusBars2_Settings.bars[ frame.bar.key ].showDebuffs = showDebuffsButton:GetChecked( );
         end
         if( onlyShowSelfAurasButton ) then
-            StatusBars2_Settings.bars[ frame.bar.key ].onlyShowSelf = onlyShowSelfAurasButton:GetChecked( ) == 1;
+            StatusBars2_Settings.bars[ frame.bar.key ].onlyShowSelf = onlyShowSelfAurasButton:GetChecked( );
         end
         if( onlyShowTimedAurasButton ) then
-            StatusBars2_Settings.bars[ frame.bar.key ].onlyShowTimed = onlyShowTimedAurasButton:GetChecked( ) == 1;
+            StatusBars2_Settings.bars[ frame.bar.key ].onlyShowTimed = onlyShowTimedAurasButton:GetChecked( );
         end
         if( onlyShowListedAurasButton ) then
-            StatusBars2_Settings.bars[ frame.bar.key ].onlyShowListed = onlyShowListedAurasButton:GetChecked( ) == 1;
+            StatusBars2_Settings.bars[ frame.bar.key ].onlyShowListed = onlyShowListedAurasButton:GetChecked( );
         end
         if( enableTooltipsButton ) then
-            StatusBars2_Settings.bars[ frame.bar.key ].enableTooltips = enableTooltipsButton:GetChecked( ) == 1;
+            StatusBars2_Settings.bars[ frame.bar.key ].enableTooltips = enableTooltipsButton:GetChecked( );
         end
         if( showSpellButton ) then
-            StatusBars2_Settings.bars[ frame.bar.key ].showSpell = showSpellButton:GetChecked( ) == 1;
+            StatusBars2_Settings.bars[ frame.bar.key ].showSpell = showSpellButton:GetChecked( );
         end
         if( showInAllFormsButton ) then
-            StatusBars2_Settings.bars[ frame.bar.key ].showInAllForms = showInAllFormsButton:GetChecked( ) == 1;
+            StatusBars2_Settings.bars[ frame.bar.key ].showInAllForms = showInAllFormsButton:GetChecked( );
         end
         if( percentTextMenu ) then
             StatusBars2_Settings.bars[ frame.bar.key ].percentText = UIDropDownMenu_GetSelectedName( percentTextMenu );
@@ -4938,10 +4927,10 @@ function StatusBars2_Options_DoDataExchange( save )
     if( save == true ) then
         StatusBars2_Settings.textDisplayOption = UIDropDownMenu_GetSelectedValue( textOptionsMenu );
         StatusBars2_Settings.font = UIDropDownMenu_GetSelectedValue( fontMenu );
-        StatusBars2_Settings.fade = StatusBars2_Options_FadeButton:GetChecked( ) == 1;
-        StatusBars2_Settings.locked = StatusBars2_Options_LockedButton:GetChecked( ) == 1;
-        StatusBars2_Settings.grouped = StatusBars2_Options_GroupedButton:GetChecked( ) == 1;
-        StatusBars2_Settings.groupsLocked = StatusBars2_Options_LockGroupsTogetherButton:GetChecked( ) == 1;
+        StatusBars2_Settings.fade = StatusBars2_Options_FadeButton:GetChecked( );
+        StatusBars2_Settings.locked = StatusBars2_Options_LockedButton:GetChecked( );
+        StatusBars2_Settings.grouped = StatusBars2_Options_GroupedButton:GetChecked( );
+        StatusBars2_Settings.groupsLocked = StatusBars2_Options_LockGroupsTogetherButton:GetChecked( );
         StatusBars2_Settings.scale = StatusBars2_Options_ScaleSlider:GetValue( );
         StatusBars2_Settings.alpha = StatusBars2_Options_AlphaSlider:GetValue( );
     else

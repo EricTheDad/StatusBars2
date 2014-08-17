@@ -1,4 +1,4 @@
-﻿## Interface: 50400
+﻿## Interface: 60000
 ## Version: 2.10.00
 ## Title: StatusBars2
 ## Author: GopherYerguns, Wesslen, 堂吉先生, EricTheDad
