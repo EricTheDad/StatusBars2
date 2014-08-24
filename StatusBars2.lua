@@ -763,6 +763,234 @@ end
 
 -------------------------------------------------------------------------------
 --
+--  Name:           ConfigBar_OnEVent
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+local function ConfigBar_OnEvent( )
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           ConfigBar_OnUpdate
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+local function ConfigBar_OnUpdate ( self )
+
+    -- Show the bar
+    StatusBars2_ShowBar( self );
+
+    -- Set the bar current and max values
+    self.status:SetMinMaxValues( 0, 1 );
+    self.status:SetValue( 1 );
+
+    -- Set the percent text
+    self.percentText:SetText( "100%" );
+
+    -- Set the text
+    self.text:SetText( self:GetName( ) );
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           ConfigBar_OnEnable
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+local function ConfigBar_OnEnable( bar )
+
+    ConfigBar_OnUpdate( bar );
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           ConfigBar_OnMouseDown
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+local function ConfigBar_OnMouseDown( )
+
+    -- Move on left button down
+    if( button == 'LeftButton' ) then
+
+        -- print("StatusBars2_StatusBar_OnMouseDown "..self:GetName().." x "..self:GetLeft().." y "..self:GetTop().." parent "..self:GetParent():GetName());
+        -- point, relativeTo, relativePoint, xOfs, yOfs = self:GetPoint()
+        -- print("Anchor "..relativePoint.." of "..relativeTo:GetName().." to "..point.." xoff "..xOfs.." yoff "..yOfs);
+
+        -- If grouped move the main frame
+        if( StatusBars2_Settings.grouped == true ) then
+            self:GetParent( ):OnMouseDown( button );
+            -- StatusBars2_OnMouseDown( StatusBars2, button );
+
+        -- Otherwise move this bar
+        else
+            self:StartMoving( );
+            self.isMoving = true;
+        end
+
+    end
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           ConfigBar_OnMouseUp
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+local function ConfigBar_OnMouseUp( )
+
+    -- Move with left button
+    if( button == 'LeftButton' ) then
+
+        local parentFrame = self:GetParent( );
+
+        -- If grouped move the main frame
+        if( StatusBars2_Settings.grouped == true ) then
+            parentFrame:OnMouseUp( button );
+            -- StatusBars2_OnMouseUp( StatusBars2, button );
+
+        -- Otherwise move this bar
+        elseif( self.isMoving ) then
+
+            -- End moving
+            self:StopMovingOrSizing( );
+            self.isMoving = false;
+
+            -- Moving the bar de-anchored it from its group frame and anchored it to the screen.
+            -- We don't want that, so re-anchor the bar to its group frame
+            self:ClearAllPoints( );
+            self:SetPoint( "TOPLEFT", groups[ self.group ], "TOPLEFT", xOffset * ( 1 / self:GetScale( ) ), yOffset * ( 1 / self:GetScale( ) ) );
+
+        end
+    end
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           SetNormalBarHandlers
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+local function SetNormalBarHandlers( bar )
+
+    -- Set the default methods
+    bar.OnEnable = StatusBars2_StatusBar_OnEnable;
+    bar.BarIsVisible = StatusBars2_StatusBar_IsVisible;
+    bar.IsDefault = StatusBars2_StatusBar_IsDefault;
+    bar.SetBarScale = StatusBars2_StatusBar_SetScale;
+    bar.SetBarPosition = StatusBars2_StatusBar_SetPosition;
+    bar.GetBarHeight = StatusBars2_StatusBar_GetHeight;
+
+    -- Set the mouse event handlers
+    bar:SetScript( "OnMouseDown", StatusBars2_StatusBar_OnMouseDown );
+    bar:SetScript( "OnMouseUp", StatusBars2_StatusBar_OnMouseUp );
+    bar:SetScript( "OnHide", StatusBars2_StatusBar_OnHide );
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           SetConfigBarHandlers
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+local function SetConfigBarHandlers( bar )
+
+    -- Set the default methods
+    bar.OnEvent = ConfigBar_OnEvent;
+    bar.OnEnable = ConfigBar_OnEnable;
+    bar.BarIsVisible = function ( bar ) return true end;
+
+    -- Set the mouse event handlers
+    bar:SetScript( "OnMouseDown", ConfigBar_OnMouseDown );
+    bar:SetScript( "OnMouseUp", ConfigBar_OnMouseUp );
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           SetNormalContinuousBarHandlers
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+local function SetNormalContinuousBarHandlers( bar )
+
+    SetNormalBarHandlers( bar );
+
+    -- Set the visibility handler
+    bar.BarIsVisible = StatusBars2_ContinuousBar_IsVisible;
+
+end
+    
+-------------------------------------------------------------------------------
+--
+--  Name:           SetConfigContinuousBarHandlers
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+local function SetConfigContinuousBarHandlers( bar )
+
+    SetConfigBarHandlers( bar );
+
+end
+    
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_SetNormalHealthBarHandlers
+--
+--  Description:    Create a health bar
+--
+-------------------------------------------------------------------------------
+--
+local function SetNormalHealthBarHandlers( bar )
+
+    SetNormalContinuousBarHandlers( bar );
+
+    bar.OnEvent = StatusBars2_HealthBar_OnEvent;
+    bar.OnEnable = StatusBars2_HealthBar_OnEnable;
+    bar.IsDefault = StatusBars2_HealthBar_IsDefault;
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           SetConfigHealthBarHandlers
+--
+--  Description:    Create a health bar
+--
+-------------------------------------------------------------------------------
+--
+local function SetConfigHealthBarHandelrs( bar )
+
+    SetConfigContinuousBarHandlers( bar );
+
+end
+
+-------------------------------------------------------------------------------
+--
 --  Name:           StatusBars2_CreateHealthBar
 --
 --  Description:    Create a health bar
@@ -778,9 +1006,9 @@ function StatusBars2_CreateHealthBar( key, unit )
     local bar = StatusBars2_CreateContinuousBar( key, unit, displayName, barType, 1, 0, 0 );
 
     -- Set the event handlers
-    bar.OnEvent = StatusBars2_HealthBar_OnEvent;
-    bar.OnEnable = StatusBars2_HealthBar_OnEnable;
-    bar.IsDefault = StatusBars2_HealthBar_IsDefault;
+    bar.SetNormalHandlers = SetNormalHealthBarHandlers;
+    bar.SetConfigHandlers = SetConfigHealthBarHandelrs;
+    bar:SetNormalHandlers( );
 
     -- Register for events
     bar:RegisterEvent( "UNIT_HEALTH" );
@@ -856,27 +1084,23 @@ function StatusBars2_UpdateHealthBar( self )
     local maxHealth = UnitHealthMax( self.unit );
 
     -- Update the bar
-    if ( StatusBars2_Options.moveBars == true ) then
-        StatusBars2_UpdateContinuousBar( self, 100, 100 );
-    else
-        StatusBars2_UpdateContinuousBar( self, health, maxHealth );
+    StatusBars2_UpdateContinuousBar( self, health, maxHealth );
 
-        -- If the bar is still visible update its color
-        if( self.visible == true ) then
+    -- If the bar is still visible update its color
+    if( self.visible == true ) then
 
-            -- Determine the percentage of health remaining
-            local percent = health / maxHealth;
+        -- Determine the percentage of health remaining
+        local percent = health / maxHealth;
 
-            -- Set the bar color based on the percentage of remaining health
-            if( percent >= 0.75 ) then
-                self.status:SetStatusBarColor( 0, 1, 0 );
-            elseif( percent >= 0.50 ) then
-                self.status:SetStatusBarColor( 1, 1, 0 );
-            elseif( percent >= 0.25 ) then
-                self.status:SetStatusBarColor( 1, 0.5, 0 );
-            else
-                self.status:SetStatusBarColor( 1, 0, 0 );
-            end
+        -- Set the bar color based on the percentage of remaining health
+        if( percent >= 0.75 ) then
+            self.status:SetStatusBarColor( 0, 1, 0 );
+        elseif( percent >= 0.50 ) then
+            self.status:SetStatusBarColor( 1, 1, 0 );
+        elseif( percent >= 0.25 ) then
+            self.status:SetStatusBarColor( 1, 0.5, 0 );
+        else
+            self.status:SetStatusBarColor( 1, 0, 0 );
         end
     end
 end
@@ -1243,7 +1467,7 @@ end
 --
 function StatusBars2_PowerBar_IsVisible( self )
 
-    return StatusBars2_ContinuousBar_IsVisible( self ) and ( UnitPowerMax( self.unit, StatusBars2_GetPowerType( self ) ) > 0  or ( self.casting == true or self.channeling == true ) or StatusBars2_Options.moveBars == true);
+    return StatusBars2_ContinuousBar_IsVisible( self ) and ( UnitPowerMax( self.unit, StatusBars2_GetPowerType( self ) ) > 0  or ( self.casting == true or self.channeling == true ));
 
 end
 
@@ -1302,11 +1526,7 @@ function StatusBars2_UpdatePowerBar( self )
     local maxPower = UnitPowerMax( self.unit, StatusBars2_GetPowerType( self ) );
 
     -- Update the bar
-    if ( StatusBars2_Options.moveBars == true ) then
-        StatusBars2_UpdateContinuousBar( self, 100, 100 );
-    else
-        StatusBars2_UpdateContinuousBar( self, power, maxPower );
-    end
+    StatusBars2_UpdateContinuousBar( self, power, maxPower );
 
 end
 
@@ -2487,7 +2707,7 @@ end
 --
 function StatusBars2_AuraBar_IsVisible( self )
 
-    return StatusBars2_StatusBar_IsVisible( self ) and (( UnitExists( self.unit ) == 1 and UnitIsDeadOrGhost( self.unit ) == nil ) or StatusBars2_Options.moveBars == true );
+    return StatusBars2_StatusBar_IsVisible( self ) and (( UnitExists( self.unit ) == 1 and UnitIsDeadOrGhost( self.unit ) == nil ) );
 
 end
 
@@ -2751,7 +2971,7 @@ end
 --
 function StatusBars2_AuraButton_OnMouseDown( self, button )
 
-    if( StatusBars2_Settings.locked ~= true or StatusBars2_Options.moveBars == true ) then
+    if( StatusBars2_Settings.locked ~= true ) then
         StatusBars2_StatusBar_OnMouseDown( self.parentBar, button );
     end
 
@@ -2767,7 +2987,7 @@ end
 --
 function StatusBars2_AuraButton_OnMouseUp( self, button )
 
-    if( StatusBars2_Settings.locked ~= true or StatusBars2_Options.moveBars == true  ) then
+    if( StatusBars2_Settings.locked ~= true ) then
         StatusBars2_StatusBar_OnMouseUp( self.parentBar, button );
     end
 
@@ -2829,7 +3049,7 @@ function StatusBars2_CreateContinuousBar( key, unit, displayName, barType, r, g,
     -- Set the options template
     bar.optionsTemplate = "StatusBars2_ContinuousBarOptionsTemplate";
 
-    -- Set the visible handler
+    -- Set the visibility handler
     bar.BarIsVisible = StatusBars2_ContinuousBar_IsVisible;
 
     -- Set the background color
@@ -2946,7 +3166,7 @@ end
 --
 function StatusBars2_ContinuousBar_IsVisible( self )
 
-    return StatusBars2_StatusBar_IsVisible( self ) and (( UnitExists( self.unit ) == 1 and UnitIsDeadOrGhost( self.unit ) == nil ) or StatusBars2_Options.moveBars == true );
+    return StatusBars2_StatusBar_IsVisible( self ) and (( UnitExists( self.unit ) == 1 and UnitIsDeadOrGhost( self.unit ) == nil ) );
 
 end
 
@@ -3447,21 +3667,17 @@ function StatusBars2_StatusBar_IsVisible( self )
 
     local visible = false;
 
-    if ( StatusBars2_Options.moveBars == true ) then
-        visible = enabled ~= "Never";
-    else
-        -- Auto
-        if( enabled == "Auto" ) then
-            visible = self.inCombat or self:IsDefault( ) == false;
+    -- Auto
+    if( enabled == "Auto" ) then
+        visible = self.inCombat or self:IsDefault( ) == false;
 
-        -- Combat
-        elseif( enabled == "Combat" ) then
-            visible = self.inCombat;
+    -- Combat
+    elseif( enabled == "Combat" ) then
+        visible = self.inCombat;
 
-        -- Always
-        elseif( enabled == "Always" ) then
-            visible = true;
-        end
+    -- Always
+    elseif( enabled == "Always" ) then
+        visible = true;
     end
 
     return visible;
@@ -4890,6 +5106,7 @@ function StatusBars2_Options_ResetGroupPositionButton_OnClick( self )
 
 end
 
+local config_mode = false;
 -------------------------------------------------------------------------------
 --
 --  Name:           StatusBars2_Options_ToggleMoveBars_OnClick
@@ -4901,14 +5118,23 @@ end
 function StatusBars2_Options_ToggleMoveBars_OnClick( self )
 
     -- Set a flag and reset the positions if the OK button is clicked
-    if(StatusBars2_Options.moveBars == nil or StatusBars2_Options.moveBars == false) then
-        StatusBars2_Options.moveBars = true;
-        StatusBars2_Options.saveLocked = StatusBars2_Settings.locked;
-        StatusBars2_Settings.locked = false;
+    if( config_mode ) then
+        for i, bar in ipairs( bars ) do
+            if( bar.SetNormalHandlers ) then
+                print("Setting Normal Handlers for "..bar.key);
+                bar:SetNormalHandlers( );
+                config_mode = false;
+            end
+        end
     else
-        StatusBars2_Options.moveBars = false;
-        StatusBars2_Settings.locked = StatusBars2_Options.saveLocked;
-    end
+        for i, bar in ipairs( bars ) do
+            if( bar.SetConfigHandlers ) then
+                print("Setting Config Handlers for "..bar.key);
+                bar:SetConfigHandlers( );
+                config_mode = true;
+            end
+        end
+    end;
 
     StatusBars2_UpdateBars( );
 
