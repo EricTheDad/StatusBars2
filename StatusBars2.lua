@@ -856,27 +856,23 @@ function StatusBars2_UpdateHealthBar( self )
     local maxHealth = UnitHealthMax( self.unit );
 
     -- Update the bar
-    if ( StatusBars2_Options.moveBars == true ) then
-        StatusBars2_UpdateContinuousBar( self, 100, 100 );
-    else
-        StatusBars2_UpdateContinuousBar( self, health, maxHealth );
+    StatusBars2_UpdateContinuousBar( self, health, maxHealth );
 
-        -- If the bar is still visible update its color
-        if( self.visible == true ) then
+    -- If the bar is still visible update its color
+    if( self.visible == true ) then
 
-            -- Determine the percentage of health remaining
-            local percent = health / maxHealth;
+        -- Determine the percentage of health remaining
+        local percent = health / maxHealth;
 
-            -- Set the bar color based on the percentage of remaining health
-            if( percent >= 0.75 ) then
-                self.status:SetStatusBarColor( 0, 1, 0 );
-            elseif( percent >= 0.50 ) then
-                self.status:SetStatusBarColor( 1, 1, 0 );
-            elseif( percent >= 0.25 ) then
-                self.status:SetStatusBarColor( 1, 0.5, 0 );
-            else
-                self.status:SetStatusBarColor( 1, 0, 0 );
-            end
+        -- Set the bar color based on the percentage of remaining health
+        if( percent >= 0.75 ) then
+            self.status:SetStatusBarColor( 0, 1, 0 );
+        elseif( percent >= 0.50 ) then
+            self.status:SetStatusBarColor( 1, 1, 0 );
+        elseif( percent >= 0.25 ) then
+            self.status:SetStatusBarColor( 1, 0.5, 0 );
+        else
+            self.status:SetStatusBarColor( 1, 0, 0 );
         end
     end
 end
@@ -1243,7 +1239,7 @@ end
 --
 function StatusBars2_PowerBar_IsVisible( self )
 
-    return StatusBars2_ContinuousBar_IsVisible( self ) and ( UnitPowerMax( self.unit, StatusBars2_GetPowerType( self ) ) > 0  or ( self.casting == true or self.channeling == true ) or StatusBars2_Options.moveBars == true);
+    return StatusBars2_ContinuousBar_IsVisible( self ) and ( UnitPowerMax( self.unit, StatusBars2_GetPowerType( self ) ) > 0  or ( self.casting == true or self.channeling == true ));
 
 end
 
@@ -1302,11 +1298,7 @@ function StatusBars2_UpdatePowerBar( self )
     local maxPower = UnitPowerMax( self.unit, StatusBars2_GetPowerType( self ) );
 
     -- Update the bar
-    if ( StatusBars2_Options.moveBars == true ) then
-        StatusBars2_UpdateContinuousBar( self, 100, 100 );
-    else
-        StatusBars2_UpdateContinuousBar( self, power, maxPower );
-    end
+    StatusBars2_UpdateContinuousBar( self, power, maxPower );
 
 end
 
@@ -2487,7 +2479,7 @@ end
 --
 function StatusBars2_AuraBar_IsVisible( self )
 
-    return StatusBars2_StatusBar_IsVisible( self ) and (( UnitExists( self.unit ) == 1 and UnitIsDeadOrGhost( self.unit ) == nil ) or StatusBars2_Options.moveBars == true );
+    return StatusBars2_StatusBar_IsVisible( self ) and (( UnitExists( self.unit ) == 1 and UnitIsDeadOrGhost( self.unit ) == nil ));
 
 end
 
@@ -2751,7 +2743,7 @@ end
 --
 function StatusBars2_AuraButton_OnMouseDown( self, button )
 
-    if( StatusBars2_Settings.locked ~= true or StatusBars2_Options.moveBars == true ) then
+    if( StatusBars2_Settings.locked ~= true ) then
         StatusBars2_StatusBar_OnMouseDown( self.parentBar, button );
     end
 
@@ -2767,7 +2759,7 @@ end
 --
 function StatusBars2_AuraButton_OnMouseUp( self, button )
 
-    if( StatusBars2_Settings.locked ~= true or StatusBars2_Options.moveBars == true  ) then
+    if( StatusBars2_Settings.locked ~= true ) then
         StatusBars2_StatusBar_OnMouseUp( self.parentBar, button );
     end
 
@@ -2946,7 +2938,7 @@ end
 --
 function StatusBars2_ContinuousBar_IsVisible( self )
 
-    return StatusBars2_StatusBar_IsVisible( self ) and (( UnitExists( self.unit ) == 1 and UnitIsDeadOrGhost( self.unit ) == nil ) or StatusBars2_Options.moveBars == true );
+    return StatusBars2_StatusBar_IsVisible( self ) and (( UnitExists( self.unit ) == 1 and UnitIsDeadOrGhost( self.unit ) == nil ));
 
 end
 
@@ -3444,24 +3436,19 @@ function StatusBars2_StatusBar_IsVisible( self )
 
     -- Get the enable type
     local enabled = StatusBars2_Settings.bars[ self.key ].enabled;
-
     local visible = false;
 
-    if ( StatusBars2_Options.moveBars == true ) then
-        visible = enabled ~= "Never";
-    else
-        -- Auto
-        if( enabled == "Auto" ) then
-            visible = self.inCombat or self:IsDefault( ) == false;
+    -- Auto
+    if( enabled == "Auto" ) then
+        visible = self.inCombat or self:IsDefault( ) == false;
 
-        -- Combat
-        elseif( enabled == "Combat" ) then
-            visible = self.inCombat;
+    -- Combat
+    elseif( enabled == "Combat" ) then
+        visible = self.inCombat;
 
-        -- Always
-        elseif( enabled == "Always" ) then
-            visible = true;
-        end
+    -- Always
+    elseif( enabled == "Always" ) then
+        visible = true;
     end
 
     return visible;
@@ -3956,7 +3943,7 @@ function StatisBars2_PruneSettings( )
 
     local barSettings = StatusBars2_Settings.bars;
 
-    -- Set defaults for the bars
+    -- Clear out all the old bar settings for bars that aren't supported by the current class anyway
     for key, barSetting in pairs( barSettings ) do
         if( not tempBars[key] ) then
             barSettings[key] = nil;
@@ -3967,6 +3954,8 @@ function StatisBars2_PruneSettings( )
     for i = #groups + 1, #StatusBars2_Settings.groups do
         StatusBars2_Settings.groups[ i ] = nil;
     end
+
+    StatusBars2_Options.moveBars = nil;
 
 end
 
@@ -4899,16 +4888,6 @@ end
 -------------------------------------------------------------------------------
 --
 function StatusBars2_Options_ToggleMoveBars_OnClick( self )
-
-    -- Set a flag and reset the positions if the OK button is clicked
-    if(StatusBars2_Options.moveBars == nil or StatusBars2_Options.moveBars == false) then
-        StatusBars2_Options.moveBars = true;
-        StatusBars2_Options.saveLocked = StatusBars2_Settings.locked;
-        StatusBars2_Settings.locked = false;
-    else
-        StatusBars2_Options.moveBars = false;
-        StatusBars2_Settings.locked = StatusBars2_Options.saveLocked;
-    end
 
     StatusBars2_UpdateBars( );
 
