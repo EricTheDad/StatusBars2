@@ -7,4 +7,5 @@
 ## OptionalDeps:
 ## SavedVariablesPerCharacter: StatusBars2_Settings
 StatusBars2.lua
+StatusBars2_Groups.lua
 StatusBars2.xml
