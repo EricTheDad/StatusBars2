@@ -563,8 +563,7 @@ function StatusBars2_EnableBar( bar, group, index, removeWhenHidden )
         bar.removeWhenHidden = removeWhenHidden;
 
         -- Initialize the incombat flag
-        local inCombat = UnitAffectingCombat( "player" );
-        bar.inCombat = inCombat ~= nil;
+        bar.inCombat = UnitAffectingCombat( "player" );
 
         -- Enable the event and update handlers
         bar:SetScript( "OnEvent", bar.OnEvent );

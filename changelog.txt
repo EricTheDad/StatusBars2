@@ -1,4 +1,7 @@
-﻿2.10.00
+﻿2.10b
+Updated to work with WoD Beta.  DOES NOT FUNCTION WITH CURRENT LIVE CLIENT
+
+2.10.00
 Added the ability to set different text sizes for the text on the bars.
 Added the ability to set custom colors for aura stack bars and specialty bars.
 
