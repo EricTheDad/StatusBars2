@@ -1,4 +1,7 @@
-﻿2.10b
+﻿2.10.02b
+Fixed bars moving around as they appear and disappear.  DOES NOT FUNCTION WITH CURRENT LIVE CLIENT
+
+2.10.01b
 Updated to work with WoD Beta.  DOES NOT FUNCTION WITH CURRENT LIVE CLIENT
 
 2.10.00
