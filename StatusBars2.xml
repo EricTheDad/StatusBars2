@@ -1223,10 +1223,10 @@
                     </OnClick>
                 </Scripts>
             </Button>
-			<!-- <Button name="$parent_MoveBarsButton" inherits="OptionsButtonTemplate" text="Move Bars">
+			<Button name="$parent_MoveBarsButton" inherits="OptionsButtonTemplate" text="Configure Bars">
 				<Size x="150" y="21"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeto="$parent_ResetBarPositionButton" >
+					<Anchor point="TOPLEFT" relativeto="$parent_ResetGroupPositionButton" >
 						<Offset x="0" y="-24" />
 					</Anchor>
 				</Anchors>
@@ -1235,7 +1235,7 @@
 						StatusBars2_Options_ToggleMoveBars_OnClick( self );
 					</OnClick>
 				</Scripts>
-			</Button> -->
+			</Button>
             <Frame name="$parent_TextDisplayOptionsMenu" inherits="UIDropDownMenuTemplate" >
                 <Size x="170" y="17"/>
                 <Anchors>
