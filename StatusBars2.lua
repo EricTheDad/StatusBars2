@@ -4,21 +4,11 @@
 -- Settings
 StatusBars2_Settings = { };
 
--- Bars
-local groups = {};
-local bars = {};
-
 -- Last flash time
 local lastFlashTime = 0;
 
 -- Bar group spacing
 local kGroupSpacing = 18;
-
--- Group ids
-local kPlayerGroup              = 1;
-local kTargetGroup              = 2;
-local kFocusGroup               = 3;
-local kPetGroup                 = 4;
 
 -- Text display options
 local kAbbreviated      = 1;
@@ -106,6 +96,10 @@ local SPEC_SHAMAN_RESTORATION = 3;
 -------------------------------------------------------------------------------
 --
 function StatusBars2_OnLoad( self )
+
+    -- Create bars and groups containers
+    self.bars = {};
+    self.groups = {};
 
     -- Set scripts
     self:SetScript( "OnEvent", StatusBars2_OnEvent );
@@ -209,160 +203,9 @@ function StatusBars2_OnUpdate( self )
     local level = 1 - abs( delta - kFlashDuration * 0.5) / ( kFlashDuration * 0.5 );
 
     -- Update any flashing bars
-    for i, bar in ipairs( bars ) do
+    for i, bar in ipairs( StatusBars2.bars ) do
         StatusBars2_UpdateFlash( bar, level );
     end
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_Groups
---
---  Description:    Create frames for each bar group
---
--------------------------------------------------------------------------------
---
-function StatusBars2_CreateGroups( )
-
-    -- Create frames for the player, target, focus and pet groups.
-    StatusBars2_CreateGroupFrame( "PlayerGroup", kPlayerGroup );
-    StatusBars2_CreateGroupFrame( "TargetGroup", kTargetGroup );
-    StatusBars2_CreateGroupFrame( "FocusGroup", kFocusGroup );
-    StatusBars2_CreateGroupFrame( "PetGroup", kPetGroup );
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_CreateGroupFrame
---
---  Description:    Create a group to attach bars to
---
--------------------------------------------------------------------------------
---
-function StatusBars2_CreateGroupFrame( name, key )
-
-    local groupFrame = CreateFrame( "Frame", "StatusBars2_"..name, StatusBars2, "StatusBars2_GroupFrameTemplate" );
-    
-    -- local backdropInfo = { edgeFile = "Interface/Tooltips/UI-Tooltip-Border", edgeSize = 16 };
-    -- groupFrame:SetBackdrop( backdropInfo );
-    
-    groupFrame.OnMouseDown = StatusBars2_Group_OnMouseDown;
-    groupFrame.OnMouseUp = StatusBars2_Group_OnMouseUp;
-    groupFrame.key = key;
-
-    -- Insert the group frame into the groups table for later reference.
-    -- print("Creating group "..key);
-    table.insert( groups, groupFrame );
-    
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_Group_OnMouseDown
---
---  Description:    Handle "OnMouseDown" event coming from one of the attached bars
---
--------------------------------------------------------------------------------
---
-function StatusBars2_Group_OnMouseDown( self, button )
-
-    -- Move on left button down
-    if( button == 'LeftButton' ) then
-
-        -- print("StatusBars2_Group_OnMouseDown "..self:GetName().." x "..self:GetLeft().." y "..self:GetTop().." parent "..self:GetParent():GetName());
-        -- point, relativeTo, relativePoint, xOfs, yOfs = self:GetPoint()
-        -- print("Anchor "..relativePoint.." of "..relativeTo:GetName().." to "..point.." xoff "..xOfs.." yoff "..yOfs);
-
-        -- If grouped move the main frame
-        if( StatusBars2_Settings.groupsLocked ) then
-            self:GetParent( ):OnMouseDown( button );
-
-        -- Otherwise move this bar
-        else
-            self:StartMoving( );
-            self.isMoving = true;
-        end
-
-    end
-   
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_Group_OnMouseUp
---
---  Description:    Handle "OnMouseUp" event coming from one of the attached bars
---
--------------------------------------------------------------------------------
---
-function StatusBars2_Group_OnMouseUp( self, button )
-
-    -- Move with left button
-    if( button == 'LeftButton' ) then
-
-        -- If grouped move the main frame
-        if( StatusBars2_Settings.groupsLocked ) then
-            self:GetParent( ):OnMouseUp( button );
-            -- StatusBars2_OnMouseUp( StatusBars2, button );
-
-        -- Otherwise move this bar
-        elseif( self.isMoving ) then
-
-            -- End moving
-            self:StopMovingOrSizing( );
-            self.isMoving = false;
-
-            -- Get the scaled position
-            local left = ( self:GetLeft( ) + self:GetWidth( ) / 2 ) * self:GetScale( );
-            local top = self:GetTop( ) * self:GetScale( );
-
-            -- Get the offsets relative to the main frame
-            local xOffset = left - StatusBars2:GetLeft( ) - StatusBars2:GetWidth( ) / 2;
-            local yOffset = top - StatusBars2:GetTop( );
-
-            -- Save the position in the settings
-            StatusBars2_Settings.groups[ self.key ].position = {};
-            StatusBars2_Settings.groups[ self.key ].position.x = xOffset;
-            StatusBars2_Settings.groups[ self.key ].position.y = yOffset;
-
-            -- Moving the bar de-anchored it from the main frame and anchored it to the screen.
-            -- We don't want that, so re-anchor the bar to the main parent frame
-            self:ClearAllPoints( );
-            self:SetPoint( "TOP", StatusBars2, "TOP", xOffset, yOffset );
-
-        end
-    end
-    
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_Group_SetPosition
---
---  Description:    Set the group position
---
--------------------------------------------------------------------------------
---
-function StatusBars2_Group_SetPosition( self, x, y )
-
-    local xOffset;
-    local yOffset;
-
-    -- If the bar has a saved position use it
-    if( StatusBars2_Settings.groups[ self.key ].position ~= nil ) then
-        xOffset = StatusBars2_Settings.groups[ self.key ].position.x * ( 1 / self:GetScale( ) );
-        yOffset = StatusBars2_Settings.groups[ self.key ].position.y * ( 1 / self:GetScale( ) );
-        
-    -- If using default positioning need to adjust for the scale
-    else
-        xOffset = x; -- ( 85 * ( 1 / StatusBars2_Settings.groups[ self.key ].scale ) ) + ( -self:GetWidth( ) / 2 );
-        yOffset = y; -- * ( 1 / StatusBars2_Settings.groups[ self.key ].scale );
-    end
-
-    -- Set the bar position
-    self:ClearAllPoints( );
-    self:SetPoint( "TOP", StatusBars2, "TOP", xOffset, yOffset );
 
 end
 
@@ -450,7 +293,7 @@ end
 function StatusBars2_UpdateBars( )
 
     -- Hide the bars
-    for i, bar in ipairs( bars ) do
+    for i, bar in ipairs( StatusBars2.bars ) do
         StatusBars2_DisableBar( bar );
     end
 
@@ -458,7 +301,7 @@ function StatusBars2_UpdateBars( )
     local localizedClass, englishClass = UnitClass( "player" );
     local powerType = UnitPowerType( "player" );
 
-    for i, bar in ipairs( bars ) do
+    for i, bar in ipairs( StatusBars2.bars ) do
         if( bar.key == "playerHealth" ) then
             StatusBars2_EnableBar( bar, 1, 1 );
         elseif( bar.key == "playerPower" and ( englishClass ~= "DRUID" or powerType ~= SPELL_POWER_MANA ) ) then
@@ -574,7 +417,7 @@ function StatusBars2_EnableBar( bar, group, index, removeWhenHidden )
         bar:EnableMouse( not StatusBars2_Settings.locked and bar.type ~= kAura );
 
         -- Set the parent to the appropriate group frame
-        bar:SetParent( groups[ group ]);
+        bar:SetParent( StatusBars2.groups[ group ] );
 
         -- Set the scale
         bar:SetBarScale( StatusBars2_Settings.bars[ bar.key ].scale );
@@ -706,7 +549,7 @@ function StatusBars2_UpdateLayout( )
     local layoutBars = {}
 
     -- Build a list of bars to layout
-    for i, bar in ipairs( bars ) do
+    for i, bar in ipairs( StatusBars2.bars ) do
         -- If the bar has a group and index set include it in the layout
         if( bar.group ~= nil and bar.index ~= nil and ( not bar.removeWhenHidden or bar.visible ) ) then
             table.insert( layoutBars, bar );
@@ -717,6 +560,7 @@ function StatusBars2_UpdateLayout( )
     table.sort( layoutBars, StatusBars2_BarCompareFunction );
 
     -- Lay them out
+    local groups = StatusBars2.groups;
     local group = nil;
     local offset = 0;
     local group_offset = 0;
@@ -762,234 +606,6 @@ end
 
 -------------------------------------------------------------------------------
 --
---  Name:           ConfigBar_OnEVent
---
---  Description:    
---
--------------------------------------------------------------------------------
---
-local function ConfigBar_OnEvent( )
-end
-
--------------------------------------------------------------------------------
---
---  Name:           ConfigBar_OnUpdate
---
---  Description:    
---
--------------------------------------------------------------------------------
---
-local function ConfigBar_OnUpdate ( self )
-
-    -- Show the bar
-    StatusBars2_ShowBar( self );
-
-    -- Set the bar current and max values
-    self.status:SetMinMaxValues( 0, 1 );
-    self.status:SetValue( 1 );
-
-    -- Set the percent text
-    self.percentText:SetText( "100%" );
-
-    -- Set the text
-    self.text:SetText( self:GetName( ) );
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           ConfigBar_OnEnable
---
---  Description:    
---
--------------------------------------------------------------------------------
---
-local function ConfigBar_OnEnable( bar )
-
-    ConfigBar_OnUpdate( bar );
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           ConfigBar_OnMouseDown
---
---  Description:    
---
--------------------------------------------------------------------------------
---
-local function ConfigBar_OnMouseDown( )
-
-    -- Move on left button down
-    if( button == 'LeftButton' ) then
-
-        -- print("StatusBars2_StatusBar_OnMouseDown "..self:GetName().." x "..self:GetLeft().." y "..self:GetTop().." parent "..self:GetParent():GetName());
-        -- point, relativeTo, relativePoint, xOfs, yOfs = self:GetPoint()
-        -- print("Anchor "..relativePoint.." of "..relativeTo:GetName().." to "..point.." xoff "..xOfs.." yoff "..yOfs);
-
-        -- If grouped move the main frame
-        if( StatusBars2_Settings.grouped == true ) then
-            self:GetParent( ):OnMouseDown( button );
-            -- StatusBars2_OnMouseDown( StatusBars2, button );
-
-        -- Otherwise move this bar
-        else
-            self:StartMoving( );
-            self.isMoving = true;
-        end
-
-    end
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           ConfigBar_OnMouseUp
---
---  Description:    
---
--------------------------------------------------------------------------------
---
-local function ConfigBar_OnMouseUp( )
-
-    -- Move with left button
-    if( button == 'LeftButton' ) then
-
-        local parentFrame = self:GetParent( );
-
-        -- If grouped move the main frame
-        if( StatusBars2_Settings.grouped == true ) then
-            parentFrame:OnMouseUp( button );
-            -- StatusBars2_OnMouseUp( StatusBars2, button );
-
-        -- Otherwise move this bar
-        elseif( self.isMoving ) then
-
-            -- End moving
-            self:StopMovingOrSizing( );
-            self.isMoving = false;
-
-            -- Moving the bar de-anchored it from its group frame and anchored it to the screen.
-            -- We don't want that, so re-anchor the bar to its group frame
-            self:ClearAllPoints( );
-            self:SetPoint( "TOPLEFT", groups[ self.group ], "TOPLEFT", xOffset * ( 1 / self:GetScale( ) ), yOffset * ( 1 / self:GetScale( ) ) );
-
-        end
-    end
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           SetNormalBarHandlers
---
---  Description:    
---
--------------------------------------------------------------------------------
---
-local function SetNormalBarHandlers( bar )
-
-    -- Set the default methods
-    bar.OnEnable = StatusBars2_StatusBar_OnEnable;
-    bar.BarIsVisible = StatusBars2_StatusBar_IsVisible;
-    bar.IsDefault = StatusBars2_StatusBar_IsDefault;
-    bar.SetBarScale = StatusBars2_StatusBar_SetScale;
-    bar.SetBarPosition = StatusBars2_StatusBar_SetPosition;
-    bar.GetBarHeight = StatusBars2_StatusBar_GetHeight;
-
-    -- Set the mouse event handlers
-    bar:SetScript( "OnMouseDown", StatusBars2_StatusBar_OnMouseDown );
-    bar:SetScript( "OnMouseUp", StatusBars2_StatusBar_OnMouseUp );
-    bar:SetScript( "OnHide", StatusBars2_StatusBar_OnHide );
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           SetConfigBarHandlers
---
---  Description:    
---
--------------------------------------------------------------------------------
---
-local function SetConfigBarHandlers( bar )
-
-    -- Set the default methods
-    bar.OnEvent = ConfigBar_OnEvent;
-    bar.OnEnable = ConfigBar_OnEnable;
-    bar.BarIsVisible = function ( bar ) return true end;
-
-    -- Set the mouse event handlers
-    bar:SetScript( "OnMouseDown", ConfigBar_OnMouseDown );
-    bar:SetScript( "OnMouseUp", ConfigBar_OnMouseUp );
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           SetNormalContinuousBarHandlers
---
---  Description:    
---
--------------------------------------------------------------------------------
---
-local function SetNormalContinuousBarHandlers( bar )
-
-    SetNormalBarHandlers( bar );
-
-    -- Set the visibility handler
-    bar.BarIsVisible = StatusBars2_ContinuousBar_IsVisible;
-
-end
-    
--------------------------------------------------------------------------------
---
---  Name:           SetConfigContinuousBarHandlers
---
---  Description:    
---
--------------------------------------------------------------------------------
---
-local function SetConfigContinuousBarHandlers( bar )
-
-    SetConfigBarHandlers( bar );
-
-end
-    
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_SetNormalHealthBarHandlers
---
---  Description:    Create a health bar
---
--------------------------------------------------------------------------------
---
-local function SetNormalHealthBarHandlers( bar )
-
-    SetNormalContinuousBarHandlers( bar );
-
-    bar.OnEvent = StatusBars2_HealthBar_OnEvent;
-    bar.OnEnable = StatusBars2_HealthBar_OnEnable;
-    bar.IsDefault = StatusBars2_HealthBar_IsDefault;
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           SetConfigHealthBarHandlers
---
---  Description:    Create a health bar
---
--------------------------------------------------------------------------------
---
-local function SetConfigHealthBarHandelrs( bar )
-
-    SetConfigContinuousBarHandlers( bar );
-
-end
-
--------------------------------------------------------------------------------
---
 --  Name:           StatusBars2_CreateHealthBar
 --
 --  Description:    Create a health bar
@@ -1005,9 +621,9 @@ function StatusBars2_CreateHealthBar( key, unit )
     local bar = StatusBars2_CreateContinuousBar( key, unit, displayName, barType, 1, 0, 0 );
 
     -- Set the event handlers
-    bar.SetNormalHandlers = SetNormalHealthBarHandlers;
-    bar.SetConfigHandlers = SetConfigHealthBarHandelrs;
-    bar:SetNormalHandlers( );
+    bar.OnEvent = StatusBars2_HealthBar_OnEvent;
+    bar.OnEnable = StatusBars2_HealthBar_OnEnable;
+    bar.IsDefault = StatusBars2_HealthBar_IsDefault;
 
     -- Register for events
     bar:RegisterEvent( "UNIT_HEALTH" );
@@ -2886,7 +2502,7 @@ function StatusBars2_GetAuraButton( self, id, buttonName, template, auraName, au
         -- Set the parent bar
         button.parentBar = self;
 
-        -- This makes prevents the icon text from falling off the button when we scale.
+        -- This prevents the icon text from falling off the button when we scale.
         local buttonCount = _G[ buttonName .."Count" ];
         buttonCount:SetAllPoints();
         buttonCount:SetJustifyV("BOTTOM");
@@ -3049,7 +2665,7 @@ function StatusBars2_CreateContinuousBar( key, unit, displayName, barType, r, g,
     -- Set the options template
     bar.optionsTemplate = "StatusBars2_ContinuousBarOptionsTemplate";
 
-    -- Set the visibility handler
+    -- Set the visible handler
     bar.BarIsVisible = StatusBars2_ContinuousBar_IsVisible;
 
     -- Set the background color
@@ -3455,7 +3071,7 @@ function StatusBars2_CreateBar( key, template, unit, displayName, barType )
     bar.flashing = false;
 
     -- Save it in the bar collection
-    table.insert( bars, bar );
+    table.insert( StatusBars2.bars, bar );
 
     return bar;
 
@@ -3545,7 +3161,6 @@ function StatusBars2_StatusBar_OnMouseUp( self, button )
             local yOffset = top - parentFrame:GetTop( );
 
             -- Save the position in the settings
-            print("Changing Bar Pos ".. self.key.." x:"..StatusBars2_Round(xOffset).." y:"..StatusBars2_Round(yOffset));
             StatusBars2_Settings.bars[ self.key ].position = {};
             StatusBars2_Settings.bars[ self.key ].position.x = xOffset;
             StatusBars2_Settings.bars[ self.key ].position.y = yOffset;
@@ -3553,7 +3168,7 @@ function StatusBars2_StatusBar_OnMouseUp( self, button )
             -- Moving the bar de-anchored it from its group frame and anchored it to the screen.
             -- We don't want that, so re-anchor the bar to its group frame
             self:ClearAllPoints( );
-            self:SetPoint( "TOPLEFT", groups[ self.group ], "TOPLEFT", xOffset * ( 1 / self:GetScale( ) ), yOffset * ( 1 / self:GetScale( ) ) );
+            self:SetPoint( "TOPLEFT", StatusBars2.groups[ self.group ], "TOPLEFT", xOffset * ( 1 / self:GetScale( ) ), yOffset * ( 1 / self:GetScale( ) ) );
 
         end
     end
@@ -3627,7 +3242,7 @@ function StatusBars2_StatusBar_SetPosition( self, x, y )
 
     -- Set the bar position
     self:ClearAllPoints( );
-    self:SetPoint( "TOPLEFT", groups[ self.group ], "TOPLEFT", xOffset, yOffset );
+    self:SetPoint( "TOPLEFT", StatusBars2.groups[ self.group ], "TOPLEFT", xOffset, yOffset );
 
     -- if( self:IsVisible() ~= nil) then
     --     print("StatusBars2_StatusBar_SetPosition "..self:GetName().." x "..x.." y "..y.." xOffset "..xOffset.." yOffset "..yOffset.." vis "..self:IsVisible());
@@ -4009,7 +3624,7 @@ function StatusBars2_InitializeSettings( )
     end
 
     -- Create a structure for each bar type
-    for i, bar in ipairs( bars ) do
+    for i, bar in ipairs( StatusBars2.bars ) do
         if( StatusBars2_Settings.bars[ bar.key ] == nil ) then
             StatusBars2_Settings.bars[ bar.key ] = {};
         end
@@ -4021,7 +3636,7 @@ function StatusBars2_InitializeSettings( )
     end
 
     -- Create a structure for each bar group
-    for i, group in ipairs( groups ) do
+    for i, group in ipairs( StatusBars2.groups ) do
         if( StatusBars2_Settings.groups[ i ] == nil ) then
             StatusBars2_Settings.groups[ i ] = {};
         end
@@ -4167,13 +3782,13 @@ function StatisBars2_PruneSettings( )
 
     local tempBars = {};
     
-    for i, bar in ipairs( bars ) do
+    for i, bar in ipairs( StatusBars2.bars ) do
         tempBars[bar.key] = bar;
     end
 
     local barSettings = StatusBars2_Settings.bars;
 
-    -- Set defaults for the bars
+    -- Clear out all the old bar settings for bars that aren't supported by the current class anyway
     for key, barSetting in pairs( barSettings ) do
         if( not tempBars[key] ) then
             barSettings[key] = nil;
@@ -4181,9 +3796,11 @@ function StatisBars2_PruneSettings( )
     end
     
     -- clear out any excess groups, since they seem to have sneaked in
-    for i = #groups + 1, #StatusBars2_Settings.groups do
+    for i = #StatusBars2.groups + 1, #StatusBars2_Settings.groups do
         StatusBars2_Settings.groups[ i ] = nil;
     end
+
+    StatusBars2_Options.moveBars = nil;
 
 end
 
@@ -4198,7 +3815,7 @@ end
 function StatusBars2_SetDefaultSettings( )
 
     -- Set defaults for the bars
-    for i, bar in ipairs( bars ) do
+    for i, bar in ipairs( StatusBars2.bars ) do
 
         -- Enable all bars by default
         if( StatusBars2_Settings.bars[ bar.key ].enabled == nil ) then
@@ -4327,7 +3944,7 @@ end
 function StatusBars2_Options_Configure_Bar_Options(  )
 
     -- Add a category for each bar
-    for i, bar in ipairs( bars ) do
+    for i, bar in ipairs( StatusBars2.bars ) do
 
         -- Create the option frame
         local frame = CreateFrame( "Frame", bar:GetName( ) .. "_OptionFrame", StatusBars2_Options, bar.optionsTemplate );
@@ -4363,14 +3980,14 @@ function StatusBars2_Options_OnOK( )
         StatusBars2_Settings.position.x = 0;
         StatusBars2_Settings.position.y = -100;
 
-        for i, group in ipairs( groups ) do
+        for i, group in ipairs( StatusBars2.groups ) do
             StatusBars2_Settings.groups[ i ].position = nil;
         end
     end
 
     if( StatusBars2_Options.resetBarPositions ) then
 
-        for i, bar in ipairs( bars ) do
+        for i, bar in ipairs( StatusBars2.bars ) do
             StatusBars2_Settings.bars[ bar.key ].position = nil;
         end
     end
@@ -5107,7 +4724,6 @@ function StatusBars2_Options_ResetGroupPositionButton_OnClick( self )
 
 end
 
-local config_mode = false;
 -------------------------------------------------------------------------------
 --
 --  Name:           StatusBars2_Options_ToggleMoveBars_OnClick
@@ -5118,24 +4734,15 @@ local config_mode = false;
 --
 function StatusBars2_Options_ToggleMoveBars_OnClick( self )
 
-    -- Set the handlers for config mode or normal mode as appropriate.
-    if( config_mode ) then
-        for i, bar in ipairs( bars ) do
-            if( bar.SetNormalHandlers ) then
-                print("Setting Normal Handlers for "..bar.key);
-                bar:SetNormalHandlers( );
-                config_mode = false;
-            end
-        end
+    -- Set a flag and reset the positions if the OK button is clicked
+    if( not StatusBars2_Options.moveBars ) then
+        StatusBars2_Options.moveBars = true;
+        StatusBars2_Options.saveLocked = StatusBars2_Settings.locked;
+        StatusBars2_Settings.locked = false;
     else
-        for i, bar in ipairs( bars ) do
-            if( bar.SetConfigHandlers ) then
-                print("Setting Config Handlers for "..bar.key);
-                bar:SetConfigHandlers( );
-                config_mode = true;
-            end
-        end
-    end;
+        StatusBars2_Options.moveBars = false;
+        StatusBars2_Settings.locked = StatusBars2_Options.saveLocked;
+    end
 
     StatusBars2_UpdateBars( );
 
@@ -5156,7 +4763,7 @@ function StatusBars2_Options_DoDataExchange( save )
     local fontMenu = StatusBars2_Options_TextSizeMenu;
 
     -- Exchange bar data
-    for i, bar in ipairs( bars ) do
+    for i, bar in ipairs( StatusBars2.bars ) do
         local frame = _G[ bar:GetName( ) .. "_OptionFrame" ];
         StatusBars2_BarOptions_DoDataExchange( save, frame );
     end
