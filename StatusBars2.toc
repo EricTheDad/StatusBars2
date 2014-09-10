@@ -8,4 +8,5 @@
 ## SavedVariablesPerCharacter: StatusBars2_Settings
 StatusBars2.lua
 StatusBars2_Groups.lua
+StatusBars2_InterfacePanel.lua
 StatusBars2.xml
