@@ -1,4 +1,7 @@
-﻿2.10.03b
+﻿2.10.04b
+Fixed Hunter Frenzy stacks not enabling
+
+2.10.03b
 Just another push to try to get CurseForge to build the package
 
 2.10.02b
