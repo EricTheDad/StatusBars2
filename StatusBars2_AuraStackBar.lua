@@ -29,12 +29,13 @@ function StatusBars2_CreateAuraStackBar( key, unit, spellID, auraType, count, au
     -- We can match on the same name as the spell, but if we know it, the auraID is more efficient and reliable
     local auraName = GetSpellInfo( auraID or spellID );
      
+    print("Aura Name "..auraName);
+
     -- We'll always use the triggering spell name as the display name
     local displayName = GetSpellInfo( spellID );
     
     -- Create the bar
     local bar = StatusBars2_CreateDiscreteBar( key, unit, displayName, kAuraStack, count );
-    StatusBars2_SetDiscreteBarBoxCount( bar, count );
 
     -- Save the aura name and unit
     bar.spellID = spellID;
@@ -97,7 +98,7 @@ function StatusBars2_AuraStackBar_OnEvent( self, event, ... )
                 local spellID = select( 12, ... );
                 local spellName = select( 13, ... );
                 local found = false;
-                
+
                 -- If we have the auraID, check that as it's faster and more reliable
                 if( self.auraID ) then
                     if( self.auraID == spellID ) then 

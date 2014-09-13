@@ -247,10 +247,13 @@ function StatusBars2_ShowAuraButtons( self, auraType, getAuraFunction, maxAuras,
     for i = 1, maxAuras do
 
         -- Get the aura
-        local name, rank, icon, count, debuffType, duration, expirationTime, caster, isStealable = getAuraFunction( self.unit, i );
+        local name, rank, icon, count, debuffType, duration, expirationTime, caster, isStealable,_, spellID = getAuraFunction( self.unit, i );
+
 
         -- If the aura exists show it
         if( icon ~= nil ) then
+
+            --print(name..": "..spellID);
 
             -- Determine if the button should be shown
             if( ( caster == "player" or not mineOnly ) and ( duration > 0 or not StatusBars2_Settings.bars[ self.key ].onlyShowTimed ) ) then

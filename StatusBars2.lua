@@ -69,7 +69,7 @@ local kDefaultFramePosition = { x = 0, y = -100 };
 
 -- Spell IDs Blizzard doesn't define
 local PRIEST_SHADOW_ORBS = 95740;
-local HUNTER_FRENZY = 19623;
+local HUNTER_FOCUS_FIRE = 82692;
 local WARRIOR_SUNDER_ARMOR = 7386;
 local MAGE_ARCANE_CHARGE = 114664;
 local SHAMAN_MAELSTROM_WEAPON = 51530;
@@ -79,7 +79,6 @@ local HUNTER_STEADY_SHOT = 56641;
 -- Buff IDs Blizzard doesn't define
 local BUFF_FRENZY = 19615;
 local BUFF_ANTICIPATION = 115189;
-local BUFF_MASTER_MARKSMAN = 34487;
 local BUFF_FINGERS_OF_FROST = 112965;
 local BUFF_MASTERY_ICICLES = 76613;
 local BUFF_LIGHTNING_SHIELD = 324;
@@ -265,8 +264,7 @@ function StatusBars2_CreateBars( )
     elseif( englishClass == "PRIEST" ) then
         StatusBars2_CreateOrbsBar( );
     elseif( englishClass == "HUNTER" ) then
-        StatusBars2_CreateAuraStackBar( "frenzy", "player", HUNTER_FRENZY, "buff", 5, BUFF_FRENZY );
-        StatusBars2_CreateAuraStackBar( "masterMarksman", "player", HUNTER_STEADY_SHOT, "buff", 3, BUFF_MASTER_MARKSMAN );
+        StatusBars2_CreateAuraStackBar( "frenzy", "player", HUNTER_FOCUS_FIRE, "buff", 5, BUFF_FRENZY );
     elseif( englishClass == "WARRIOR" ) then
         StatusBars2_CreateAuraStackBar( "sunder", "target", WARRIOR_SUNDER_ARMOR, "debuff", 3, DEBUFF_WEAKENED_ARMOR );
     elseif( englishClass == "MAGE" ) then
@@ -358,8 +356,6 @@ function StatusBars2_UpdateBars( )
         -- Special Hunter Bars
         elseif( bar.key == "frenzy" and IsSpellKnown( bar.spellID ) ) then
             StatusBars2_EnableBar( bar, 1, 18 );
-        elseif( bar.key == "masterMarksman" and IsSpellKnown( bar.spellID ) and GetSpecialization() == SPEC_HUNTER_MARKSMAN ) then
-            StatusBars2_EnableBar( bar, 1, 19 );
         -- Special Warrior Bars
         elseif( bar.key == "sunder" and IsSpellKnown( bar.spellID ) ) then
             StatusBars2_EnableBar( bar, 1, 10 );
