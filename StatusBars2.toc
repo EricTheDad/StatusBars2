@@ -8,5 +8,9 @@
 ## SavedVariablesPerCharacter: StatusBars2_Settings
 StatusBars2.lua
 StatusBars2_Groups.lua
+StatusBars2_AuraBar.lua
+StatusBars2_AuraStackBar.lua
+StatusBars2_EclipseBar.lua
+StatusBars2_RuneBar.lua
 StatusBars2_InterfacePanel.lua
 StatusBars2.xml

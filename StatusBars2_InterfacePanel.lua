@@ -1,5 +1,23 @@
 -- Rewritten by GopherYerguns from the original Status Bars by Wesslen. Mist of Pandaria updates by ???? on Wow Interface (integrated with permission) and EricTheDad
 
+local addonName, addonTable = ... --Pulls back the Addon-Local Variables and stores them locally
+
+
+-- Bar types
+local kHealth = addonTable.barTypes.kHealth;
+local kPower = addonTable.barTypes.kPower;
+local kAura = addonTable.barTypes.kAura;
+local kAuraStack = addonTable.barTypes.kAuraStack;
+local kCombo = addonTable.barTypes.kCombo;
+local kRune = addonTable.barTypes.kRune;
+local kDruidMana = addonTable.barTypes.kDruidMana;
+local kUnitPower = addonTable.barTypes.kUnitPower;
+local kEclipse = addonTable.barTypes.kEclipse;
+local kDemonicFury = addonTable.barTypes.kDemonicFury;
+
+local groups = addonTable.groups;
+local bars = addonTable.bars;
+
 -- Text display options
 local kAbbreviated      = 1;
 local kCommaSeparated   = 2;
@@ -14,13 +32,7 @@ local TextOptionLabels =
     "Hidden",
 }
 
-local FontInfo =
-{
-    { ["label"] = "Small", ["filename"] = "GameFontNormalSmall" },
-    { ["label"] = "Medium", ["filename"] = "GameFontNormal" },
-    { ["label"] = "Large", ["filename"] = "GameFontNormalLarge" },
-    { ["label"] = "Huge", ["filename"] = "GameFontNormalHuge" },
-}
+local FontInfo = addonTable.fontInfo;
 
 -------------------------------------------------------------------------------
 --
@@ -74,7 +86,7 @@ function StatusBars2_InitializeSettings( )
     end
 
     -- Create a structure for each bar type
-    for i, bar in ipairs( StatusBars2.bars ) do
+    for i, bar in ipairs( bars ) do
         if( StatusBars2_Settings.bars[ bar.key ] == nil ) then
             StatusBars2_Settings.bars[ bar.key ] = {};
         end
@@ -86,7 +98,7 @@ function StatusBars2_InitializeSettings( )
     end
 
     -- Create a structure for each bar group
-    for i, group in ipairs( StatusBars2.groups ) do
+    for i, group in ipairs( groups ) do
         if( StatusBars2_Settings.groups[ i ] == nil ) then
             StatusBars2_Settings.groups[ i ] = {};
         end
@@ -232,7 +244,7 @@ function StatisBars2_PruneSettings( )
 
     local tempBars = {};
     
-    for i, bar in ipairs( StatusBars2.bars ) do
+    for i, bar in ipairs( bars ) do
         tempBars[bar.key] = bar;
     end
 
@@ -246,7 +258,7 @@ function StatisBars2_PruneSettings( )
     end
     
     -- clear out any excess groups, since they seem to have sneaked in
-    for i = #StatusBars2.groups + 1, #StatusBars2_Settings.groups do
+    for i = #groups + 1, #StatusBars2_Settings.groups do
         StatusBars2_Settings.groups[ i ] = nil;
     end
 
@@ -265,7 +277,7 @@ end
 function StatusBars2_SetDefaultSettings( )
 
     -- Set defaults for the bars
-    for i, bar in ipairs( StatusBars2.bars ) do
+    for i, bar in ipairs( bars ) do
 
         -- Enable all bars by default
         if( StatusBars2_Settings.bars[ bar.key ].enabled == nil ) then
@@ -394,7 +406,7 @@ end
 function StatusBars2_Options_Configure_Bar_Options(  )
 
     -- Add a category for each bar
-    for i, bar in ipairs( StatusBars2.bars ) do
+    for i, bar in ipairs( bars ) do
 
         -- Create the option frame
         local frame = CreateFrame( "Frame", bar:GetName( ) .. "_OptionFrame", StatusBars2_Options, bar.optionsTemplate );
@@ -430,14 +442,14 @@ function StatusBars2_Options_OnOK( )
         StatusBars2_Settings.position.x = 0;
         StatusBars2_Settings.position.y = -100;
 
-        for i, group in ipairs( StatusBars2.groups ) do
+        for i, group in ipairs( groups ) do
             StatusBars2_Settings.groups[ i ].position = nil;
         end
     end
 
     if( StatusBars2_Options.resetBarPositions ) then
 
-        for i, bar in ipairs( StatusBars2.bars ) do
+        for i, bar in ipairs( bars ) do
             StatusBars2_Settings.bars[ bar.key ].position = nil;
         end
     end
@@ -1213,7 +1225,7 @@ function StatusBars2_Options_DoDataExchange( save )
     local fontMenu = StatusBars2_Options_TextSizeMenu;
 
     -- Exchange bar data
-    for i, bar in ipairs( StatusBars2.bars ) do
+    for i, bar in ipairs( bars ) do
         local frame = _G[ bar:GetName( ) .. "_OptionFrame" ];
         StatusBars2_BarOptions_DoDataExchange( save, frame );
     end

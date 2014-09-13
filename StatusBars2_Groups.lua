@@ -1,9 +1,15 @@
+-- Rewritten by GopherYerguns from the original Status Bars by Wesslen. Mist of Pandaria updates by ???? on Wow Interface (integrated with permission) and EricTheDad
+
+local addonName, addonTable = ... --Pulls back the Addon-Local Variables and stores them locally
+
 -- Group ids
 local kPlayerGroup              = 1;
 local kTargetGroup              = 2;
 local kFocusGroup               = 3;
 local kPetGroup                 = 4;
 
+local groups = addonTable.groups;
+local bars = addonTable.bars;
 
 -------------------------------------------------------------------------------
 --
@@ -44,7 +50,7 @@ function StatusBars2_CreateGroupFrame( name, key )
 
     -- Insert the group frame into the groups table for later reference.
     -- print("Creating group "..key);
-    table.insert( StatusBars2.groups, groupFrame );
+    table.insert( groups, groupFrame );
     
 end
 

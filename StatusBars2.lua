@@ -1,30 +1,26 @@
 -- Rewritten by GopherYerguns from the original Status Bars by Wesslen. Mist of Pandaria updates by ???? on Wow Interface (integrated with permission) and EricTheDad
 
+local addonName, addonTable = ... --Pulls back the Addon-Local Variables and stores them locally
 
--- Settings
-StatusBars2_Settings = { };
+-- Create bars and groups containers
+addonTable.groups = {};
+addonTable.bars = {};
 
--- Last flash time
-local lastFlashTime = 0;
-
--- Bar group spacing
-local kGroupSpacing = 18;
-
--- Text display options
-local kAbbreviated      = 1;
-local kCommaSeparated   = 2;
-local kUnformatted      = 3;
-local kHidden           = 4;
-
-local TextOptionLabels =
+addonTable.barTypes = 
 {
-    "Abbreviated",
-    "Thousand Separators Only",
-    "Unformatted",
-    "Hidden",
-}
+    ["kHealth"] = 0,
+    ["kPower"] = 1,
+    ["kAura"] = 2,
+    ["kAuraStack"] = 3,
+    ["kCombo"] = 4,
+    ["kRune"] = 5,
+    ["kDruidMana"] = 6,
+    ["kUnitPower"] = 7,
+    ["kEclipse"] = 9,
+    ["kDemonicFury"] = 13,
+};
 
-local FontInfo =
+addonTable.fontInfo =
 {
     { ["label"] = "Small", ["filename"] = "GameFontNormalSmall" },
     { ["label"] = "Medium", ["filename"] = "GameFontNormal" },
@@ -32,20 +28,31 @@ local FontInfo =
     { ["label"] = "Huge", ["filename"] = "GameFontNormalHuge" },
 }
 
--- Bar types
-local kHealth = 0;
-local kPower = 1;
-local kAura = 2;
-local kAuraStack = 3;
-local kCombo = 4;
-local kRune = 5;
-local kDruidMana = 6;
-local kUnitPower = 7;
-local kEclipse = 9;
-local kDemonicFury = 13;
+-- Settings
+StatusBars2_Settings = { };
 
--- Number of runes
-local kMaxRunes = 6;
+local groups = addonTable.groups;
+local bars = addonTable.bars;
+
+-- Last flash time
+local lastFlashTime = 0;
+
+-- Bar group spacing
+local kGroupSpacing = 18;
+
+-- Bar types
+local kHealth = addonTable.barTypes.kHealth;
+local kPower = addonTable.barTypes.kPower;
+local kAura = addonTable.barTypes.kAura;
+local kAuraStack = addonTable.barTypes.kAuraStack;
+local kCombo = addonTable.barTypes.kCombo;
+local kRune = addonTable.barTypes.kRune;
+local kDruidMana = addonTable.barTypes.kDruidMana;
+local kUnitPower = addonTable.barTypes.kUnitPower;
+local kEclipse = addonTable.barTypes.kEclipse;
+local kDemonicFury = addonTable.barTypes.kDemonicFury;
+
+local FontInfo = addonTable.fontInfo;
 
 -- Fade durations
 local kFadeInTime = 0.2;
@@ -96,10 +103,6 @@ local SPEC_SHAMAN_RESTORATION = 3;
 -------------------------------------------------------------------------------
 --
 function StatusBars2_OnLoad( self )
-
-    -- Create bars and groups containers
-    self.bars = {};
-    self.groups = {};
 
     -- Set scripts
     self:SetScript( "OnEvent", StatusBars2_OnEvent );
@@ -203,7 +206,7 @@ function StatusBars2_OnUpdate( self )
     local level = 1 - abs( delta - kFlashDuration * 0.5) / ( kFlashDuration * 0.5 );
 
     -- Update any flashing bars
-    for i, bar in ipairs( StatusBars2.bars ) do
+    for i, bar in ipairs( bars ) do
         StatusBars2_UpdateFlash( bar, level );
     end
 
@@ -293,7 +296,7 @@ end
 function StatusBars2_UpdateBars( )
 
     -- Hide the bars
-    for i, bar in ipairs( StatusBars2.bars ) do
+    for i, bar in ipairs( bars ) do
         StatusBars2_DisableBar( bar );
     end
 
@@ -301,7 +304,7 @@ function StatusBars2_UpdateBars( )
     local localizedClass, englishClass = UnitClass( "player" );
     local powerType = UnitPowerType( "player" );
 
-    for i, bar in ipairs( StatusBars2.bars ) do
+    for i, bar in ipairs( bars ) do
         if( bar.key == "playerHealth" ) then
             StatusBars2_EnableBar( bar, 1, 1 );
         elseif( bar.key == "playerPower" and ( englishClass ~= "DRUID" or powerType ~= SPELL_POWER_MANA ) ) then
@@ -417,7 +420,7 @@ function StatusBars2_EnableBar( bar, group, index, removeWhenHidden )
         bar:EnableMouse( not StatusBars2_Settings.locked and bar.type ~= kAura );
 
         -- Set the parent to the appropriate group frame
-        bar:SetParent( StatusBars2.groups[ group ] );
+        bar:SetParent( groups[ group ] );
 
         -- Set the scale
         bar:SetBarScale( StatusBars2_Settings.bars[ bar.key ].scale );
@@ -549,7 +552,7 @@ function StatusBars2_UpdateLayout( )
     local layoutBars = {}
 
     -- Build a list of bars to layout
-    for i, bar in ipairs( StatusBars2.bars ) do
+    for i, bar in ipairs( bars ) do
         -- If the bar has a group and index set include it in the layout
         if( bar.group ~= nil and bar.index ~= nil and ( not bar.removeWhenHidden or bar.visible ) ) then
             table.insert( layoutBars, bar );
@@ -560,7 +563,6 @@ function StatusBars2_UpdateLayout( )
     table.sort( layoutBars, StatusBars2_BarCompareFunction );
 
     -- Lay them out
-    local groups = StatusBars2.groups;
     local group = nil;
     local offset = 0;
     local group_offset = 0;
@@ -1670,979 +1672,6 @@ end
 
 -------------------------------------------------------------------------------
 --
---  Name:           StatusBars2_CreateEclipseBar
---
---  Description:    Create an eclipse bar
---
--------------------------------------------------------------------------------
---
-function StatusBars2_CreateEclipseBar( )
-
-    -- Create the bar
-    local bar = StatusBars2_CreateBar( "eclipse", "StatusBars2_EclipseBarTemplate", "player", ECLIPSE, kEclipse );
-
-    -- Set the event handlers
-    bar.OnEvent = StatusBars2_EclipseBar_OnEvent;
-    bar.OnEnable = StatusBars2_EclipseBar_OnEnable;
-    bar.OnUpdate = StatusBars2_EclipseBar_OnUpdate;
-
-    -- Register for events
-    bar:RegisterEvent( "UNIT_AURA" );
-    bar:RegisterEvent( "ECLIPSE_DIRECTION_CHANGE" );
-    bar:RegisterEvent( "PLAYER_REGEN_ENABLED" );
-    bar:RegisterEvent( "PLAYER_REGEN_DISABLED" );
-
-    return bar;
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_EclipseBar_OnEvent
---
---  Description:    Eclipse bar event handler
---
--------------------------------------------------------------------------------
---
-function StatusBars2_EclipseBar_OnEvent( self, event, ... )
-
-    if event == "UNIT_AURA" then
-        local arg1 = ...;
-        if arg1 ==  PlayerFrame.unit then
-            EclipseBar_CheckBuffs(self);
-        end
-    elseif event == "ECLIPSE_DIRECTION_CHANGE" then
-        local status = ...;
-        self.marker:SetTexCoord(unpack(ECLIPSE_MARKER_COORDS[status]));
-
-    -- Entering combat
-    elseif( event == "PLAYER_REGEN_DISABLED" ) then
-        self.inCombat = true;
-
-    -- Leaving combat
-    elseif( event == "PLAYER_REGEN_ENABLED" ) then
-        self.inCombat = false;
-    end
-
-    -- Update visibility
-    if( self:BarIsVisible( ) ) then
-        StatusBars2_ShowBar( self );
-    else
-        StatusBars2_HideBar( self );
-    end
-
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_EclipseBar_OnEnable
---
---  Description:    Eclipse bar enable handler
---
--------------------------------------------------------------------------------
---
-function StatusBars2_EclipseBar_OnEnable( self )
-
-    -- Update
-    StatusBars2_EclipseBar_OnUpdate( self )
-
-    -- Call the base method
-    StatusBars2_StatusBar_OnEnable( self );
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_EclipseBar_OnUpdate
---
---  Description:    Eclipse bar update handler
---
--------------------------------------------------------------------------------
---
-function StatusBars2_EclipseBar_OnUpdate( self )
-    local power = UnitPower( "player", SPELL_POWER_ECLIPSE );
-    local maxPower = UnitPowerMax( "player", SPELL_POWER_ECLIPSE );
-    if self.showPercent then
-        self.powerText:SetText(abs(power/maxPower*100).."%");
-    else
-        self.powerText:SetText(abs(power));
-    end
-
-    local xpos =  ECLIPSE_BAR_TRAVEL*(power/maxPower)
-    self.marker:SetPoint("CENTER", xpos, 0);
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_EclipseBar_OnShow
---
---  Description:    Eclipse bar show handler
---
--------------------------------------------------------------------------------
---
-function StatusBars2_EclipseBar_OnShow( self )
-
-    local direction = GetEclipseDirection();
-    if direction then
-        self.marker:SetTexCoord( unpack(ECLIPSE_MARKER_COORDS[direction]));
-    end
-
-    local hasLunarEclipse = false;
-    local hasSolarEclipse = false;
-
-    local unit = "player";
-    local j = 1;
-    local name, _, _, _, _, _, _, _, _, _, spellID = UnitBuff(unit, j);
-    while name do
-        if spellID == ECLIPSE_BAR_SOLAR_BUFF_ID then
-            hasSolarEclipse = true;
-        elseif spellID == ECLIPSE_BAR_LUNAR_BUFF_ID then
-            hasLunarEclipse = true;
-        end
-        j=j+1;
-        name, _, _, _, _, _, _, _, _, _, spellID = UnitBuff(unit, j);
-    end
-
-    if hasLunarEclipse then
-        self.glow:ClearAllPoints();
-        local glowInfo = ECLIPSE_ICONS["moon"].big;
-        self.glow:SetPoint("CENTER", self.moon, "CENTER", 0, 0);
-        self.glow:SetWidth(glowInfo.x);
-        self.glow:SetHeight(glowInfo.y);
-        self.glow:SetTexCoord(glowInfo.left, glowInfo.right, glowInfo.top, glowInfo.bottom);
-        self.sunBar:SetAlpha(0);
-        self.darkMoon:SetAlpha(0);
-        self.moonBar:SetAlpha(1);
-        self.darkSun:SetAlpha(1);
-        self.glow:SetAlpha(1);
-        self.glow.pulse:Play();
-    elseif hasSolarEclipse then
-        self.glow:ClearAllPoints();
-        local glowInfo = ECLIPSE_ICONS["sun"].big;
-        self.glow:SetPoint("CENTER", self.sun, "CENTER", 0, 0);
-        self.glow:SetWidth(glowInfo.x);
-        self.glow:SetHeight(glowInfo.y);
-        self.glow:SetTexCoord(glowInfo.left, glowInfo.right, glowInfo.top, glowInfo.bottom);
-        self.moonBar:SetAlpha(0);
-        self.darkSun:SetAlpha(0);
-        self.sunBar:SetAlpha(1);
-        self.darkMoon:SetAlpha(1);
-        self.glow:SetAlpha(1);
-        self.glow.pulse:Play();
-    else
-        self.sunBar:SetAlpha(0);
-        self.moonBar:SetAlpha(0);
-        self.darkSun:SetAlpha(0);
-        self.darkMoon:SetAlpha(0);
-        self.glow:SetAlpha(0);
-    end
-
-    self.hasLunarEclipse = hasLunarEclipse;
-    self.hasSolarEclipse = hasSolarEclipse;
-
-    StatusBars2_EclipseBar_OnUpdate(self);
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_CreateRuneBar
---
---  Description:    Create a rune bar
---
--------------------------------------------------------------------------------
---
-function StatusBars2_CreateRuneBar( )
-
-    -- Create the bar
-    local bar = StatusBars2_CreateBar( "rune", "StatusBars2_RuneFrameTemplate", "player", RUNES, kRune );
-    local name = bar:GetName( );
-
-    -- Create the rune table
-    bar.runes = {};
-
-    -- Initialize the rune buttons
-    local i;
-    for i = 1, 6 do
-        local rune = _G[ name .. '_RuneButton' .. i ];
-        rune.parentBar = bar;
-        RuneButton_Update( rune, i, true );
-    end
-
-    -- Set the event handlers
-    bar.OnEvent = StatusBars2_RuneBar_OnEvent;
-    bar.OnEnable = StatusBars2_RuneBar_OnEnable;
-    bar.IsDefault = StatusBars2_RuneBar_IsDefault;
-
-    -- Register for events
-    bar:RegisterEvent( "RUNE_POWER_UPDATE" );
-    bar:RegisterEvent( "RUNE_TYPE_UPDATE" );
-    bar:RegisterEvent( "PLAYER_REGEN_ENABLED" );
-    bar:RegisterEvent( "PLAYER_REGEN_DISABLED" );
-    bar:RegisterEvent( "PLAYER_ENTERING_WORLD" );
-
-    return bar;
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_RuneBar_OnEvent
---
---  Description:    Rune bar event handler
---
--------------------------------------------------------------------------------
---
-function StatusBars2_RuneBar_OnEvent( self, event, ... )
-
-    -- Entering combat
-    if( event == "PLAYER_REGEN_DISABLED" ) then
-        self.inCombat = true;
-
-    -- Leaving combat
-    elseif( event == "PLAYER_REGEN_ENABLED" ) then
-        self.inCombat = false;
-
-    -- Player entering world
-    elseif( event == "PLAYER_ENTERING_WORLD" ) then
-        StatusBars2_RuneBar_UpdateAllRunes( self );
-
-    -- Rune power update
-    elseif( event == "RUNE_POWER_UPDATE" ) then
-        local runeIndex, isEnergize = ...;
-        if runeIndex and runeIndex >= 1 and runeIndex <= kMaxRunes then
-            local runeButton = _G[ self:GetName( ) .. '_RuneButton' .. runeIndex ];
-            local cooldown = _G[runeButton:GetName().."Cooldown"];
-
-            local start, duration, runeReady = GetRuneCooldown(runeIndex);
-
-            if not runeReady  then
-                if start then
-                    CooldownFrame_SetTimer(cooldown, start, duration, 1);
-                end
-                runeButton.energize:Stop();
-            else
-                cooldown:Hide();
-                runeButton.shine:SetVertexColor(1, 1, 1);
-                RuneButton_ShineFadeIn(runeButton.shine)
-            end
-
-            if isEnergize  then
-                runeButton.energize:Play();
-            end
-        else
-            assert(false, "Bad rune index")
-        end
-
-    -- Rune type update
-    elseif ( event == "RUNE_TYPE_UPDATE" ) then
-        local runeIndex = ...;
-        if ( runeIndex and runeIndex >= 1 and runeIndex <= kMaxRunes ) then
-            RuneButton_Update(_G[ self:GetName( ) .. '_RuneButton' .. runeIndex ], runeIndex);
-        end
-    end
-
-    -- Update the bar visibility
-    if( self:BarIsVisible( ) ) then
-        StatusBars2_ShowBar( self );
-    else
-        StatusBars2_HideBar( self );
-    end
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_RuneBar_OnEnable
---
---  Description:    Rune bar enable handler
---
--------------------------------------------------------------------------------
---
-function StatusBars2_RuneBar_OnEnable( self )
-
-    -- Enable or disable moving
-    local i;
-    for i = 1, 6 do
-
-        -- Get the rune button
-        local rune = _G[ self:GetName( ) .. '_RuneButton' .. i ];
-
-        -- If not grouped or locked enable the mouse for moving
-        if( not StatusBars2_Settings.grouped and not StatusBars2_Settings.locked ) then
-            rune:EnableMouse( true );
-            rune:SetScript( "OnMouseDown", StatusBars2_RuneButton_OnMouseDown );
-            rune:SetScript( "OnMouseUp", StatusBars2_RuneButton_OnMouseUp );
-            rune:SetScript( "OnHide", StatusBars2_RuneButton_OnHide );
-        else
-            rune:EnableMouse( false );
-        end
-    end
-
-    -- Update the runes
-    StatusBars2_RuneBar_UpdateAllRunes( self );
-
-    -- Call the base method
-    StatusBars2_StatusBar_OnEnable( self );
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_RuneBar_UpdateAllRunes
---
---  Description:    Update all runes
---
--------------------------------------------------------------------------------
---
-function StatusBars2_RuneBar_UpdateAllRunes( self )
-
-    for i=1,kMaxRunes do
-        local runeButton = _G[ self:GetName( ) .. '_RuneButton' .. i ];
-        if runeButton then
-            RuneButton_Update( runeButton, i, true );
-        end
-    end
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_RuneButton_OnMouseDown
---
---  Description:    Called when the mouse button goes down in this frame
---
--------------------------------------------------------------------------------
---
-function StatusBars2_RuneButton_OnMouseDown( self, button )
-
-    StatusBars2_StatusBar_OnMouseDown( self.parentBar, button );
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_RuneButton_OnMouseUp
---
---  Description:    Called when the mouse goes up in this frame
---
--------------------------------------------------------------------------------
---
-function StatusBars2_RuneButton_OnMouseUp( self, button )
-
-    StatusBars2_StatusBar_OnMouseUp( self.parentBar, button );
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_RuneButton_OnHide
---
---  Description:    Called when the frame is hidden
---
--------------------------------------------------------------------------------
---
-function StatusBars2_RuneButton_OnHide( self )
-
-    StatusBars2_StatusBar_OnHide( self.parentBar );
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_RuneBar_IsDefault
---
---  Description:    Determine if a rune bar is at its default state
---a
--------------------------------------------------------------------------------
---
-function StatusBars2_RuneBar_IsDefault( self )
-
-    local isDefault = true;
-
-    -- Look for a rune that is not ready
-    local i;
-    for i = 1, 6 do
-        local start, duration, runeReady = GetRuneCooldown( i );
-        if( not runeReady ) then
-            isDefault = false;
-            break;
-        end
-    end
-
-    return isDefault;
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_CreateAuraStackBar
---
---  Description:    Create bar to track the stack size of a buff or debuff
---
--------------------------------------------------------------------------------
---
-function StatusBars2_CreateAuraStackBar( key, unit, spellID, auraType, count, auraID )
-
-    -- The player has a spell that is the pre-condition for the aura stack
-    -- We can match on the same name as the spell, but if we know it, the auraID is more efficient and reliable
-    local auraName = GetSpellInfo( auraID or spellID );
-     
-    -- We'll always use the triggering spell name as the display name
-    local displayName = GetSpellInfo( spellID );
-    
-    -- Create the bar
-    local bar = StatusBars2_CreateDiscreteBar( key, unit, displayName, kAuraStack, count );
-    StatusBars2_SetDiscreteBarBoxCount( bar, count );
-
-    -- Save the aura name and unit
-    bar.spellID = spellID;
-    bar.auraID = auraID;
-    bar.aura = auraName;
-    bar.auraType = auraType;
-
-    -- Set the event handlers
-    bar.OnEvent = StatusBars2_AuraStackBar_OnEvent;
-    bar.IsDefault = StatusBars2_AuraStackBar_IsDefault;
-
-    -- Default the bar to never visible
-    bar.defaultEnabled = "Never";
-
-    -- Register for events
-    bar:RegisterEvent( "PLAYER_TARGET_CHANGED" );
-    bar:RegisterEvent( "PLAYER_REGEN_ENABLED" );
-    bar:RegisterEvent( "PLAYER_REGEN_DISABLED" );
-    bar:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED" );
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_AuraStackBar_OnEvent
---
---  Description:    Aura stack bar event handler
---
--------------------------------------------------------------------------------
---
-function StatusBars2_AuraStackBar_OnEvent( self, event, ... )
-
-    -- Target changed
-    if( event == "PLAYER_TARGET_CHANGED" and self.unit == "target" ) then
-        StatusBars2_UpdateDiscreteBar( self, StatusBars2_GetAuraStack( self.unit, self.aura, self.auraType ) );
-
-    -- Entering combat
-    elseif( event == "PLAYER_REGEN_DISABLED" ) then
-        self.inCombat = true;
-
-    -- Leaving combat
-    elseif( event == "PLAYER_REGEN_ENABLED" ) then
-        self.inCombat = false;
-
-    -- Combat log event
-    elseif( event == "COMBAT_LOG_EVENT_UNFILTERED" ) then
-
-        -- Get the event type and flags
-        local eventType = select( 2, ... );
-        local destName = select( 9, ... );
-        local flags = select( 10, ... );
-
-        -- Only care about events for the unit we are tracking
-        if( ( self.unit == "target" and bit.band( flags, COMBATLOG_OBJECT_TARGET ) == COMBATLOG_OBJECT_TARGET ) or ( self.unit == "player" and destName == UnitName( "player" ) ) ) then
-
-            -- Look for spell aura events
-            if( eventType == "SPELL_AURA_APPLIED" or eventType == "SPELL_AURA_REMOVED" or eventType == "SPELL_AURA_APPLIED_DOSE" or eventType == "SPELL_AURA_REMOVED_DOSE" ) then
-
-                -- Look for the aura
-                local spellID = select( 12, ... );
-                local spellName = select( 13, ... );
-                local found = false;
-                
-                -- If we have the auraID, check that as it's faster and more reliable
-                if( self.auraID ) then
-                    if( self.auraID == spellID ) then 
-                        found = true; 
-                    end
-                -- Otherwise, see if the name matches
-                elseif( string.find( spellName, self.aura, 1, true )) then 
-                    found = true; 
-                end
-                
-                if( found ) then
-
-                    -- Applied
-                    if( eventType == "SPELL_AURA_APPLIED" ) then
-                        StatusBars2_UpdateDiscreteBar( self, 1 );
-
-                    -- Removed
-                    elseif( eventType == "SPELL_AURA_REMOVED" ) then
-                        StatusBars2_UpdateDiscreteBar( self, 0 );
-
-                    -- Dose changed
-                    else
-                        local amount = select( 16, ... );
-                        StatusBars2_UpdateDiscreteBar( self, amount );
-                    end
-                end
-            end
-        end
-    end
-
-    -- Update visibility
-    if( self:BarIsVisible( ) ) then
-        StatusBars2_ShowBar( self );
-    else
-        StatusBars2_HideBar( self );
-    end
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_AuraStackBar_IsDefault
---
---  Description:    Determine if an aura stack bar is in its default state
---
--------------------------------------------------------------------------------
---
-function StatusBars2_AuraStackBar_IsDefault( self )
-
-    return StatusBars2_GetAuraStack( self.unit, self.aura, self.auraType ) == 0;
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_CreateAuraBar
---
---  Description:    Create a bar to display the auras on a unit
---
--------------------------------------------------------------------------------
---
-function StatusBars2_CreateAuraBar( key, unit )
-
-    local barType = kAura;
-    local displayName = StatusBars2_ConstructDisplayName( unit, barType );
-
-    -- Create the bar
-    local bar = StatusBars2_CreateBar( key, "StatusBars2_AuraBarTemplate", unit, displayName, barType );
-
-    -- Set the options template
-    bar.optionsTemplate = "StatusBars2_AuraBarOptionsTemplate";
-
-    -- Initialize the button array
-    bar.buttons = {};
-
-    -- Set the event handlers
-    bar.OnEvent = StatusBars2_AuraBar_OnEvent;
-    bar.OnEnable = StatusBars2_AuraBar_OnEnable;
-    bar.BarIsVisible = StatusBars2_AuraBar_IsVisible;
-    bar.IsDefault = StatusBars2_AuraBar_IsDefault;
-    bar.SetBarScale = StatusBars2_AuraBar_SetScale;
-    bar.SetBarPosition = StatusBars2_AuraBar_SetPosition;
-    bar.GetBarHeight = StatusBars2_AuraBar_GetHeight;
-
-    -- Register for events
-    bar:RegisterEvent( "UNIT_AURA" );
-    bar:RegisterEvent( "PLAYER_REGEN_ENABLED" );
-    bar:RegisterEvent( "PLAYER_REGEN_DISABLED" );
-    if( unit == "target" ) then
-        bar:RegisterEvent( "PLAYER_TARGET_CHANGED" );
-    elseif( unit == "focus" ) then
-        bar:RegisterEvent( "PLAYER_FOCUS_CHANGED" );
-    elseif( unit == "pet" ) then
-        bar:RegisterEvent( "UNIT_PET" );
-    end
-
-    return bar;
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_AuraBar_OnEvent
---
---  Description:    Aura bar event handler
---
--------------------------------------------------------------------------------
---
-function StatusBars2_AuraBar_OnEvent( self, event, ... )
-
-    -- Aura changed
-    if( event == "UNIT_AURA" ) then
-        local arg1 = ...;
-        if( arg1 == self.unit ) then
-            StatusBars2_UpdateAuraBar( self );
-        end
-
-    -- Target changed
-    elseif( event == "PLAYER_TARGET_CHANGED" or event == "PLAYER_FOCUS_CHANGED" or event == "UNIT_PET" ) then
-        if( self:BarIsVisible( ) ) then
-            StatusBars2_UpdateAuraBar( self );
-        end
-
-    -- Entering combat
-    elseif( event == 'PLAYER_REGEN_DISABLED' ) then
-        self.inCombat = true;
-
-    -- Exiting combat
-    elseif( event == 'PLAYER_REGEN_ENABLED' ) then
-        self.inCombat = false;
-    end;
-
-    -- Update visibility
-    if( self:BarIsVisible( ) ) then
-        StatusBars2_ShowBar( self );
-    else
-        StatusBars2_HideBar( self );
-    end
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_AuraBar_OnEnable
---
---  Description:    Aura bar enable handler
---
--------------------------------------------------------------------------------
---
-function StatusBars2_AuraBar_OnEnable( self )
-
-    StatusBars2_UpdateAuraBar( self );
-    StatusBars2_StatusBar_OnEnable( self );
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_AuraBar_IsVisible
---
---  Description:    Determine if an aura bar is visible
---
--------------------------------------------------------------------------------
---
-function StatusBars2_AuraBar_IsVisible( self )
-
-    return StatusBars2_StatusBar_IsVisible( self ) and ( UnitExists( self.unit ) and not UnitIsDeadOrGhost( self.unit ) );
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_AuraBar_IsDefault
---
---  Description:    Determine if a bar is in its default state
---
--------------------------------------------------------------------------------
---
-function StatusBars2_AuraBar_IsDefault( self )
-
-    -- No need to check, if there are no auras the bar will be empty anyway
-    return false;
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_AuraBar_SetScale
---
---  Description:    Set the bar scale
---
--------------------------------------------------------------------------------
---
-function StatusBars2_AuraBar_SetScale( self, scale )
-
-    self:SetScale( scale );
- 
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_AuraBar_SetPosition
---
---  Description:    Set the bar position
---
--------------------------------------------------------------------------------
---
-function StatusBars2_AuraBar_SetPosition( self, x, y )
-
-        StatusBars2_StatusBar_SetPosition( self, x, y );
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_AuraBar_GetHeight
---
---  Description:    Get the bar height
---
--------------------------------------------------------------------------------
---
-function StatusBars2_AuraBar_GetHeight( self )
-
-    return self:GetHeight( );
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_UpdateAuraBar
---
---  Description:    Update an aura bar
---
--------------------------------------------------------------------------------
---
-function StatusBars2_UpdateAuraBar( self )
-
-    -- If dragging have to cancel before hiding the buttons
-    if( self.isMoving ) then
-        StatusBars2_StatusBar_OnMouseUp( self, "LeftButton" );
-    end
-
-    -- Button offset
-    local offset = 2;
-
-    -- Hide all the buttons
-    for name, button in pairs( self.buttons ) do
-        button:Hide( );
-    end
-
-    -- Buffs
-    if( StatusBars2_Settings.bars[ self.key ].showBuffs ) then
-        offset = StatusBars2_ShowAuraButtons( self, "Buff", UnitBuff, MAX_TARGET_BUFFS, StatusBars2_Settings.bars[ self.key ].onlyShowSelf, offset );
-    end
-
-    -- Debuffs
-    if( StatusBars2_Settings.bars[ self.key ].showDebuffs ) then
-
-        -- Add a space between the buffs and the debuffs
-        if( offset > 2 ) then
-            offset = offset + StatusBars2_GetAuraSize( self );
-        end
-
-        offset = StatusBars2_ShowAuraButtons( self, "Debuff", UnitDebuff, MAX_TARGET_DEBUFFS, StatusBars2_Settings.bars[ self.key ].onlyShowSelf, offset );
-
-    end
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_ShowAuraButtons
---
---  Description:    Show buff or debuff buttons (icons)
---
--------------------------------------------------------------------------------
---
-function StatusBars2_ShowAuraButtons( self, auraType, getAuraFunction, maxAuras, mineOnly, offset )
-
-    local playerIsTarget = UnitIsUnit(PlayerFrame.unit, self.unit);
-
-    -- Iterate over the unit auras
-    for i = 1, maxAuras do
-
-        -- Get the aura
-        local name, rank, icon, count, debuffType, duration, expirationTime, caster, isStealable = getAuraFunction( self.unit, i );
-
-        -- If the aura exists show it
-        if( icon ~= nil ) then
-
-            -- Determine if the button should be shown
-            if( ( caster == "player" or not mineOnly ) and ( duration > 0 or not StatusBars2_Settings.bars[ self.key ].onlyShowTimed ) ) then
-
-                if( not StatusBars2_Settings.bars[ self.key ].onlyShowListed
-                or ( StatusBars2_Settings.bars[ self.key ].auraFilter and StatusBars2_Settings.bars[ self.key ].auraFilter[ name ] )) then
-                    -- Get the button
-                    local buttonName = self:GetName( ) .. "_" .. auraType .. "Button" .. i;
-                    local button = StatusBars2_GetAuraButton( self, i, buttonName, "Target" .. auraType .. "FrameTemplate", name, rank, icon, count, debuffType, duration, expirationTime, offset );
-
-                    -- Update the offset
-                    offset = offset + button:GetWidth( ) + 2;
-                
-                    -- Show the button
-                    button:Show( );
-                end
-            end
-        else
-            break;
-        end
-    end
-
-    return offset;
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_GetAuraButton
---
---  Description:    Get an aura button for this bar
---
--------------------------------------------------------------------------------
---
-function StatusBars2_GetAuraButton( self, id, buttonName, template, auraName, auraRank, auraIcon, auraCount, debuffType, auraDuration, auraExpirationTime, offset )
-
-    -- Get the button
-    local button = self.buttons[ buttonName ];
-
-    -- If the button does not exist create it
-    if( button == nil ) then
-        button = CreateFrame( "Button", buttonName, self, template );
-        button:SetSize( StatusBars2_GetAuraSize( self ), StatusBars2_GetAuraSize( self ) );
-        button:SetScript( "OnMouseDown", StatusBars2_AuraButton_OnMouseDown );
-        button:SetScript( "OnMouseUp", StatusBars2_AuraButton_OnMouseUp );
-
-        button.DefaultOnEnter = button:GetScript( "OnEnter" );
-        button.DefaultOnLeave = button:GetScript( "OnLeave" );
-        button:SetScript( "OnEnter", StatusBars2_AuraButton_OnEnter );
-        button:SetScript( "OnLeave", StatusBars2_AuraButton_OnLeave );
-
-        -- Set the ID
-        button:SetID( id );
-
-        -- Set the parent bar
-        button.parentBar = self;
-
-        -- This prevents the icon text from falling off the button when we scale.
-        local buttonCount = _G[ buttonName .."Count" ];
-        buttonCount:SetAllPoints();
-        buttonCount:SetJustifyV("BOTTOM");
-
-        -- Add the finished button to the bar
-        self.buttons[ buttonName ] = button;
-    end
-
-    -- Set the unit
-    button.unit = self.unit;
-
-    -- Set the icon
-    local buttonIcon = _G[ buttonName .. "Icon" ];
-    buttonIcon:SetTexture( auraIcon );
-
-    -- Set the count
-    local buttonCount = _G[ buttonName .."Count" ];
-    if( auraCount > 1 ) then
-        buttonCount:SetText( auraCount );
-        buttonCount:Show( );
-    else
-        buttonCount:Hide( );
-    end
-
-    -- Set the cooldown
-    local buttonCooldown = _G[ buttonName .. "Cooldown" ];
-    if( auraDuration > 0 ) then
-        buttonCooldown:Show( );
-        CooldownFrame_SetTimer( buttonCooldown, auraExpirationTime - auraDuration, auraDuration, 1 );
-    else
-        buttonCooldown:Hide( );
-    end
-
-    -- Set the position
-    button:SetPoint( "TOPLEFT", self, "TOPLEFT", offset, 0 );
-
-    -- Enable/disable mouse for moving or tooltips
-    button:EnableMouse( StatusBars2_Settings.bars[ self.key ].enableTooltips or not StatusBars2_Settings.locked );
-
-    -- If its a debuff set the border size and color
-    if( template == "TargetDebuffFrameTemplate" ) then
-
-        -- Get debuff type color
-        local color = DebuffTypeColor[ "none" ];
-        if( debuffType ) then
-            color = DebuffTypeColor[ debuffType ];
-        end
-
-        -- Get the border
-        local border = _G[ buttonName .. "Border" ];
-
-        -- Set its size and color
-        border:SetAllPoints( );
-        border:SetVertexColor(color.r, color.g, color.b);
-    end
-
-    return button;
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_GetAuraSize
---
---  Description:    Get the size of an aura button
---
--------------------------------------------------------------------------------
---
-function StatusBars2_GetAuraSize( self )
-
-    return self:GetHeight( );
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_AuraButton_OnMouseDown
---
---  Description:    Called when the mouse button goes down in this frame
---
--------------------------------------------------------------------------------
---
-function StatusBars2_AuraButton_OnMouseDown( self, button )
-
-    if( not StatusBars2_Settings.locked ) then
-        StatusBars2_StatusBar_OnMouseDown( self.parentBar, button );
-    end
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_AuraButton_OnMouseUp
---
---  Description:    Called when the mouse goes up in this frame
---
--------------------------------------------------------------------------------
---
-function StatusBars2_AuraButton_OnMouseUp( self, button )
-
-    if( not StatusBars2_Settings.locked ) then
-        StatusBars2_StatusBar_OnMouseUp( self.parentBar, button );
-    end
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_AuraButton_OnEnter
---
---  Description:    Override for button template's OnEnter
---
--------------------------------------------------------------------------------
---
-function StatusBars2_AuraButton_OnEnter( self )
-
-    if( StatusBars2_Settings.bars[ self.parentBar.key ].enableTooltips ) then
-        self.DefaultOnEnter( self );
-    end
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_AuraButton_OnLeave
---
---  Description:    Override for button template's OnLeave
---
--------------------------------------------------------------------------------
---
-function StatusBars2_AuraButton_OnLeave( self )
-
-    if( StatusBars2_Settings.bars[ self.parentBar.key ].enableTooltips ) then
-        self.DefaultOnLeave( self );
-    end
-
-end
-
--------------------------------------------------------------------------------
---
 --  Name:           StatusBars2_CreateContinuousBar
 --
 --  Description:    Create a bar to display a range of values
@@ -3071,7 +2100,7 @@ function StatusBars2_CreateBar( key, template, unit, displayName, barType )
     bar.flashing = false;
 
     -- Save it in the bar collection
-    table.insert( StatusBars2.bars, bar );
+    table.insert( bars, bar );
 
     return bar;
 
@@ -3168,7 +2197,7 @@ function StatusBars2_StatusBar_OnMouseUp( self, button )
             -- Moving the bar de-anchored it from its group frame and anchored it to the screen.
             -- We don't want that, so re-anchor the bar to its group frame
             self:ClearAllPoints( );
-            self:SetPoint( "TOPLEFT", StatusBars2.groups[ self.group ], "TOPLEFT", xOffset * ( 1 / self:GetScale( ) ), yOffset * ( 1 / self:GetScale( ) ) );
+            self:SetPoint( "TOPLEFT", groups[ self.group ], "TOPLEFT", xOffset * ( 1 / self:GetScale( ) ), yOffset * ( 1 / self:GetScale( ) ) );
 
         end
     end
@@ -3242,7 +2271,7 @@ function StatusBars2_StatusBar_SetPosition( self, x, y )
 
     -- Set the bar position
     self:ClearAllPoints( );
-    self:SetPoint( "TOPLEFT", StatusBars2.groups[ self.group ], "TOPLEFT", xOffset, yOffset );
+    self:SetPoint( "TOPLEFT", groups[ self.group ], "TOPLEFT", xOffset, yOffset );
 
     -- if( self:IsVisible() ~= nil) then
     --     print("StatusBars2_StatusBar_SetPosition "..self:GetName().." x "..x.." y "..y.." xOffset "..xOffset.." yOffset "..yOffset.." vis "..self:IsVisible());
