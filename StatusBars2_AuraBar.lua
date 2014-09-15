@@ -253,7 +253,7 @@ function StatusBars2_ShowAuraButtons( self, auraType, getAuraFunction, maxAuras,
         -- If the aura exists show it
         if( icon ~= nil ) then
 
-            --print(name..": "..spellID);
+            -- print(name..": "..spellID);
 
             -- Determine if the button should be shown
             if( ( caster == "player" or not mineOnly ) and ( duration > 0 or not StatusBars2_Settings.bars[ self.key ].onlyShowTimed ) ) then

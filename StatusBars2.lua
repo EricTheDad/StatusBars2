@@ -74,15 +74,16 @@ local WARRIOR_SUNDER_ARMOR = 7386;
 local MAGE_ARCANE_CHARGE = 114664;
 local SHAMAN_MAELSTROM_WEAPON = 51530;
 local ROGUE_ANTICIPATION = 114015;
-local HUNTER_STEADY_SHOT = 56641;
+local HUNTER_BLACK_ARROW = 3674;
 
 -- Buff IDs Blizzard doesn't define
 local BUFF_FRENZY = 19615;
 local BUFF_ANTICIPATION = 115189;
 local BUFF_FINGERS_OF_FROST = 112965;
 local BUFF_MASTERY_ICICLES = 76613;
-local BUFF_LIGHTNING_SHIELD = 324;
 local BUFF_TIDAL_WAVE = 51564;
+local BUFF_LOCK_AND_LOAD = 168980;
+local BUFF_MAELSTROM_WEAPON = 53817;
 
 -- Debuff IDs Blizzard doesn't define
 local DEBUFF_WEAKENED_ARMOR = 113746;
@@ -265,6 +266,7 @@ function StatusBars2_CreateBars( )
         StatusBars2_CreateOrbsBar( );
     elseif( englishClass == "HUNTER" ) then
         StatusBars2_CreateAuraStackBar( "frenzy", "player", HUNTER_FOCUS_FIRE, "buff", 5, BUFF_FRENZY );
+        StatusBars2_CreateAuraStackBar( "lockAndLoad", "player", HUNTER_BLACK_ARROW, "buff", 5, BUFF_LOCK_AND_LOAD );
     elseif( englishClass == "WARRIOR" ) then
         StatusBars2_CreateAuraStackBar( "sunder", "target", WARRIOR_SUNDER_ARMOR, "debuff", 3, DEBUFF_WEAKENED_ARMOR );
     elseif( englishClass == "MAGE" ) then
@@ -273,8 +275,7 @@ function StatusBars2_CreateBars( )
         -- StatusBars2_CreateAuraStackBar( "fingersOfFrost", "player", BUFF_FINGERS_OF_FROST, "buff", 2, BUFF_FINGERS_OF_FROST );
         -- StatusBars2_CreateAuraStackBar( "masteryIcicles", "player", BUFF_MASTERY_ICICLES, "buff", 5, BUFF_MASTERY_ICICLES );
     elseif( englishClass == "SHAMAN" ) then
-        StatusBars2_CreateAuraStackBar( "maelstromWeapon", "player", SHAMAN_MAELSTROM_WEAPON, "buff", 5 );
-        StatusBars2_CreateAuraStackBar( "lightningShield", "player", BUFF_LIGHTNING_SHIELD, "buff", 7 );
+        StatusBars2_CreateAuraStackBar( "maelstromWeapon", "player", SHAMAN_MAELSTROM_WEAPON, "buff", 5, BUFF_MAELSTROM_WEAPON );
         -- Not sure this is actually useful.
         -- StatusBars2_CreateAuraStackBar( "tidalWave", "player", BUFF_TIDAL_WAVE, "buff", 2 );
     elseif( englishClass == "MONK" ) then
@@ -356,6 +357,8 @@ function StatusBars2_UpdateBars( )
         -- Special Hunter Bars
         elseif( bar.key == "frenzy" and IsSpellKnown( bar.spellID ) ) then
             StatusBars2_EnableBar( bar, 1, 18 );
+        elseif( bar.key == "lockAndLoad" and IsSpellKnown( bar.spellID ) ) then
+            StatusBars2_EnableBar( bar, 1, 19 );
         -- Special Warrior Bars
         elseif( bar.key == "sunder" and IsSpellKnown( bar.spellID ) ) then
             StatusBars2_EnableBar( bar, 1, 10 );
@@ -369,8 +372,6 @@ function StatusBars2_UpdateBars( )
         -- Special Shaman Bars
         elseif( bar.key == "maelstromWeapon" and IsSpellKnown( bar.spellID ) ) then
             StatusBars2_EnableBar( bar, 1, 9 );
-        elseif( bar.key == "lightningShield" and IsSpellKnown( bar.spellID ) ) then
-            StatusBars2_EnableBar( bar, 1, 10 );
         -- Special Monk Bars
         elseif( bar.key == "chi" ) then
             StatusBars2_EnableBar( bar, 1, 11 );
