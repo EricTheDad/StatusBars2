@@ -12,5 +12,7 @@ StatusBars2_AuraBar.lua
 StatusBars2_AuraStackBar.lua
 StatusBars2_EclipseBar.lua
 StatusBars2_RuneBar.lua
+StatusBars2_BaseBar.lua
 StatusBars2_InterfacePanel.lua
+StatusBars2_Debug.lua
 StatusBars2.xml
