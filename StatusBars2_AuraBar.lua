@@ -213,19 +213,19 @@ function StatusBars2_UpdateAuraBar( self )
     end
 
     -- Buffs
-    if( StatusBars2_Settings.bars[ self.key ].showBuffs ) then
-        offset = StatusBars2_ShowAuraButtons( self, "Buff", UnitBuff, MAX_TARGET_BUFFS, StatusBars2_Settings.bars[ self.key ].onlyShowSelf, offset );
+    if( self.settings.showBuffs ) then
+        offset = StatusBars2_ShowAuraButtons( self, "Buff", UnitBuff, MAX_TARGET_BUFFS, self.settings.onlyShowSelf, offset );
     end
 
     -- Debuffs
-    if( StatusBars2_Settings.bars[ self.key ].showDebuffs ) then
+    if( self.settings.showDebuffs ) then
 
         -- Add a space between the buffs and the debuffs
         if( offset > 2 ) then
             offset = offset + StatusBars2_GetAuraSize( self );
         end
 
-        offset = StatusBars2_ShowAuraButtons( self, "Debuff", UnitDebuff, MAX_TARGET_DEBUFFS, StatusBars2_Settings.bars[ self.key ].onlyShowSelf, offset );
+        offset = StatusBars2_ShowAuraButtons( self, "Debuff", UnitDebuff, MAX_TARGET_DEBUFFS, self.settings.onlyShowSelf, offset );
 
     end
 
@@ -256,10 +256,10 @@ function StatusBars2_ShowAuraButtons( self, auraType, getAuraFunction, maxAuras,
             -- print(name..": "..spellID);
 
             -- Determine if the button should be shown
-            if( ( caster == "player" or not mineOnly ) and ( duration > 0 or not StatusBars2_Settings.bars[ self.key ].onlyShowTimed ) ) then
+            if( ( caster == "player" or not mineOnly ) and ( duration > 0 or not self.settings.onlyShowTimed ) ) then
 
-                if( not StatusBars2_Settings.bars[ self.key ].onlyShowListed
-                or ( StatusBars2_Settings.bars[ self.key ].auraFilter and StatusBars2_Settings.bars[ self.key ].auraFilter[ name ] )) then
+                if( not self.settings.onlyShowListed
+                or ( self.settings.auraFilter and self.settings.auraFilter[ name ] )) then
                     -- Get the button
                     local buttonName = self:GetName( ) .. "_" .. auraType .. "Button" .. i;
                     local button = StatusBars2_GetAuraButton( self, i, buttonName, "Target" .. auraType .. "FrameTemplate", name, rank, icon, count, debuffType, duration, expirationTime, offset );
@@ -348,7 +348,7 @@ function StatusBars2_GetAuraButton( self, id, buttonName, template, auraName, au
     button:SetPoint( "TOPLEFT", self, "TOPLEFT", offset, 0 );
 
     -- Enable/disable mouse for moving or tooltips
-    button:EnableMouse( StatusBars2_Settings.bars[ self.key ].enableTooltips or not StatusBars2_Settings.locked );
+    button:EnableMouse( self.settings.enableTooltips or not StatusBars2_Settings.locked );
 
     -- If its a debuff set the border size and color
     if( template == "TargetDebuffFrameTemplate" ) then
@@ -427,7 +427,7 @@ end
 --
 function StatusBars2_AuraButton_OnEnter( self )
 
-    if( StatusBars2_Settings.bars[ self.parentBar.key ].enableTooltips ) then
+    if( self.parentBar.settings.enableTooltips ) then
         self.DefaultOnEnter( self );
     end
 
@@ -443,7 +443,7 @@ end
 --
 function StatusBars2_AuraButton_OnLeave( self )
 
-    if( StatusBars2_Settings.bars[ self.parentBar.key ].enableTooltips ) then
+    if( self.parentBar.settings.enableTooltips ) then
         self.DefaultOnLeave( self );
     end
 

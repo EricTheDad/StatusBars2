@@ -46,6 +46,7 @@ function StatusBars2_CreateBar( key, template, unit, displayName, barType )
     bar.displayName = displayName;
     bar.type = barType;
     bar.inCombat = false;
+    bar.settings = StatusBars2_Settings.bars[ key ];
 
     -- Set the default options template
     bar.optionsTemplate = "StatusBars2_BarOptionsTemplate";
@@ -160,9 +161,9 @@ function StatusBars2_StatusBar_OnMouseUp( self, button )
             local yOffset = top - parentFrame:GetTop( );
 
             -- Save the position in the settings
-            StatusBars2_Settings.bars[ self.key ].position = {};
-            StatusBars2_Settings.bars[ self.key ].position.x = xOffset;
-            StatusBars2_Settings.bars[ self.key ].position.y = yOffset;
+            self.settings.position = {};
+            self.settings.position.x = xOffset;
+            self.settings.position.y = yOffset;
 
             -- Moving the bar de-anchored it from its group frame and anchored it to the screen.
             -- We don't want that, so re-anchor the bar to its group frame
@@ -229,14 +230,14 @@ function StatusBars2_StatusBar_SetPosition( self, x, y )
     local yOffset;
 
     -- If the bar has a saved position use it
-    if( StatusBars2_Settings.bars[ self.key ].position ~= nil ) then
-        xOffset = StatusBars2_Settings.bars[ self.key ].position.x * ( 1 / self:GetScale( ) );
-        yOffset = StatusBars2_Settings.bars[ self.key ].position.y * ( 1 / self:GetScale( ) );
+    if( self.settings.position ~= nil ) then
+        xOffset = self.settings.position.x * ( 1 / self:GetScale( ) );
+        yOffset = self.settings.position.y * ( 1 / self:GetScale( ) );
 
     -- If using default positioning need to adjust for the scale
     else
-        xOffset = ( 85 * ( 1 / StatusBars2_Settings.bars[ self.key ].scale ) ) + ( -self:GetWidth( ) / 2 );
-        yOffset = y * ( 1 / StatusBars2_Settings.bars[ self.key ].scale );
+        xOffset = ( 85 * ( 1 / self.settings.scale ) ) + ( -self:GetWidth( ) / 2 );
+        yOffset = y * ( 1 / self.settings.scale );
     end
 
     -- Set the bar position
@@ -263,7 +264,7 @@ end
 --
 function StatusBars2_StatusBar_GetHeight( self )
 
-    return self:GetHeight( ) * StatusBars2_Settings.bars[ self.key ].scale;
+    return self:GetHeight( ) * self.settings.scale;
 
 end
 
@@ -278,7 +279,7 @@ end
 function StatusBars2_StatusBar_IsVisible( self )
 
     -- Get the enable type
-    local enabled = StatusBars2_Settings.bars[ self.key ].enabled;
+    local enabled = self.settings.enabled;
 
     local visible = false;
 

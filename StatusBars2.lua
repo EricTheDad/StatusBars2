@@ -312,28 +312,28 @@ function StatusBars2_UpdateBars( )
             StatusBars2_EnableBar( bar, 1, 1 );
         elseif( bar.key == "playerPower" and ( englishClass ~= "DRUID" or powerType ~= SPELL_POWER_MANA ) ) then
             StatusBars2_EnableBar( StatusBars2_playerPowerBar, 1, 2 );
-        elseif( bar.key == "playerAura" and ( StatusBars2_Settings.bars.playerAura.showBuffs or StatusBars2_Settings.bars.playerAura.showDebuffs ) ) then
+        elseif( bar.key == "playerAura" and ( bar.settings.showBuffs or bar.settings.showDebuffs ) ) then
             StatusBars2_EnableBar( bar, 1, 20 );
         elseif( bar.key == "targetHealth" ) then
             StatusBars2_EnableBar( bar, 2, 1 );
         elseif( bar.key == "targetPower" ) then
             StatusBars2_EnableBar( bar, 2, 2, true );
-        elseif( bar.key == "targetAura" and ( StatusBars2_Settings.bars.targetAura.showBuffs or StatusBars2_Settings.bars.targetAura.showDebuffs ) ) then
+        elseif( bar.key == "targetAura" and ( bar.settings.showBuffs or bar.settings.showDebuffs ) ) then
             StatusBars2_EnableBar( bar, 2, 3 );
         elseif( bar.key == "focusHealth" ) then
             StatusBars2_EnableBar( bar, 3, 1 );
         elseif( bar.key == "focusPower" ) then
             StatusBars2_EnableBar( bar, 3, 2, true );
-        elseif( bar.key == "focusAura" and ( StatusBars2_Settings.bars.focusAura.showBuffs or StatusBars2_Settings.bars.focusAura.showDebuffs ) ) then
+        elseif( bar.key == "focusAura" and ( bar.settings.showBuffs or bar.settings.focusAura.showDebuffs ) ) then
             StatusBars2_EnableBar( bar, 3, 3 );
         elseif( bar.key == "petHealth" ) then
             StatusBars2_EnableBar( bar, 4, 1 );
         elseif( bar.key == "petPower" ) then
             StatusBars2_EnableBar( bar, 4, 2 );
-        elseif( bar.key == "petAura" and ( StatusBars2_Settings.bars.petAura.showBuffs or StatusBars2_Settings.bars.petAura.showDebuffs ) ) then
+        elseif( bar.key == "petAura" and ( bar.settings.showBuffs or bar.settings.showDebuffs ) ) then
             StatusBars2_EnableBar( bar, 4, 3 );
         -- Special Druid Bars
-        elseif( bar.key == "druidMana" and ( StatusBars2_Settings.bars.druidMana.showInAllForms or powerType == SPELL_POWER_MANA ) ) then
+        elseif( bar.key == "druidMana" and ( bar.settings.showInAllForms or powerType == SPELL_POWER_MANA ) ) then
             StatusBars2_EnableBar( bar, 1, 3 );
         elseif( bar.key == "eclipse" and powerType == SPELL_POWER_MANA and GetSpecialization() == 1 ) then
             StatusBars2_EnableBar( bar, 1, 8 );
@@ -481,7 +481,7 @@ end
 function StatusBars2_EnableBar( bar, group, index, removeWhenHidden )
 
     -- Check if the bar type is enabled
-    if( StatusBars2_Settings.bars[ bar.key ].enabled ~= "Never" ) then
+    if( bar.settings.enabled ~= "Never" ) then
 
         -- Set the layout properties
         bar.group = group;
@@ -503,10 +503,10 @@ function StatusBars2_EnableBar( bar, group, index, removeWhenHidden )
         bar:SetParent( groups[ group ] );
 
         -- Set the scale
-        bar:SetBarScale( StatusBars2_Settings.bars[ bar.key ].scale );
+        bar:SetBarScale( bar.settings.scale );
 
         -- Set maximum opacity
-        bar.maxAlpha = StatusBars2_Settings.bars[ bar.key ].alpha or 1.0;
+        bar.maxAlpha = bar.settings.alpha or 1.0;
 
         -- Notify the bar is is enabled
         bar:OnEnable( );
@@ -1125,7 +1125,7 @@ function StatusBars2_PowerBar_OnEvent( self, event, ... )
         StatusBars2_UpdatePowerBar( self );
 
     -- Casting started
-    elseif( select( 1, ... ) == self.unit and ( event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_CHANNEL_START" or event == "UNIT_SPELLCAST_CHANNEL_UPDATE"  ) and StatusBars2_Settings.bars[ self.key ].showSpell ) then
+    elseif( select( 1, ... ) == self.unit and ( event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_CHANNEL_START" or event == "UNIT_SPELLCAST_CHANNEL_UPDATE"  ) and self.settings.showSpell ) then
 
         -- Set to casting mode
         StatusBars2_PowerBar_StartCasting( self );
@@ -1975,7 +1975,7 @@ function StatusBars2_UpdateContinuousBar( self, current, max )
         self.percentText:SetText( StatusBars2_Round( current / max * 100 ) .. "%" );
 
         -- If below the flash threshold start the bar flashing, otherwise end flashing
-        if( StatusBars2_Settings.bars[ self.key ].flash and current / max <= StatusBars2_Settings.bars[ self.key ].flashThreshold ) then
+        if( self.settings.flash and current / max <= self.settings.flashThreshold ) then
             StatusBars2_StartFlash( self );
         else
             StatusBars2_EndFlash( self );
@@ -2006,11 +2006,11 @@ end
 function StatusBars2_ContinuousBar_OnEnable( self )
 
     -- Set the percentage text location
-    if( StatusBars2_Settings.bars[ self.key ].percentText == 'Hide' ) then
+    if( self.settings.percentText == 'Hide' ) then
         self.percentText:Hide( );
     else
         self.percentText:Show( );
-        if( StatusBars2_Settings.bars[  self.key ].percentText == 'Left' ) then
+        if( self.settings.percentText == 'Left' ) then
             self.percentText:SetPoint( "CENTER", self, "CENTER", -104, 1 );
         else
             self.percentText:SetPoint( "CENTER", self, "CENTER", 102, 1 );
@@ -2248,8 +2248,8 @@ end
 --
 function StatusBars2_GetDiscreteBarColor( bar, boxIndex )
 
-    if( StatusBars2_Settings.bars[ bar.key ].color ) then
-        return unpack(StatusBars2_Settings.bars[ bar.key ].color);
+    if( bar.settings.color ) then
+        return unpack(bar.settings.color);
     elseif( bar.type == kCombo ) then
         return 1, 0, 0;
     elseif( bar.type == kAuraStack ) then
