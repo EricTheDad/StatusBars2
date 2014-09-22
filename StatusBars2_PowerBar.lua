@@ -1,0 +1,575 @@
+-- Rewritten by GopherYerguns from the original Status Bars by Wesslen. Mist of Pandaria updates by ???? on Wow Interface (integrated with permission) and EricTheDad
+
+local addonName, addonTable = ... --Pulls back the Addon-Local Variables and stores them locally
+
+
+local groups = addonTable.groups;
+local bars = addonTable.bars;
+
+-- Bar types
+local kHealth = addonTable.barTypes.kHealth;
+local kPower = addonTable.barTypes.kPower;
+local kAura = addonTable.barTypes.kAura;
+local kAuraStack = addonTable.barTypes.kAuraStack;
+local kCombo = addonTable.barTypes.kCombo;
+local kRune = addonTable.barTypes.kRune;
+local kDruidMana = addonTable.barTypes.kDruidMana;
+local kUnitPower = addonTable.barTypes.kUnitPower;
+local kEclipse = addonTable.barTypes.kEclipse;
+local kDemonicFury = addonTable.barTypes.kDemonicFury;
+
+local kDefaultPowerBarColor = addonTable.kDefaultPowerBarColor;
+
+local FontInfo = addonTable.fontInfo;
+
+
+-- Max flash alpha
+local kFlashAlpha = 0.8;
+
+
+-------------------------------------------------------------------------------
+--
+--  Name:           Config_PowerBar_OnEnable
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+local function Config_PowerBar_OnEnable( self )
+
+    -- Hide the casting bar in case there was a spell being cast when we switched to config mode
+    StatusBars2_PowerBar_EndCasting( self );
+
+    -- Leave the color for the player and pet
+    if( self.unit == "player" or self.unit == "pet" ) then
+        StatusBars2_SetPowerBarColor( self );
+    else
+        self.status:SetStatusBarColor( kDefaultPowerBarColor );
+    end
+
+    -- Call the base method
+    self:ContinuousBar_OnEnable( );
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           SetNormalPowerBarHandlers
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+local function SetNormalPowerBarHandlers( bar )
+
+    -- Call base method
+    bar:ContinuousBar_SetNormalHandlers( );
+   
+    -- Set up methods for config mode bar operation
+    bar.OnUpdate = StatusBars2_PowerBar_OnUpdate;
+
+    -- Register for events
+    bar:RegisterEvent( "PLAYER_REGEN_DISABLED" );
+    bar:RegisterEvent( "PLAYER_REGEN_ENABLED" );
+    bar:RegisterEvent( "UNIT_POWER" );
+    bar:RegisterEvent( "UNIT_MAXPOWER" );
+
+    if( bar.unit == "target" ) then
+        bar:RegisterEvent( "PLAYER_TARGET_CHANGED" );
+        bar:RegisterEvent( "UNIT_SPELLCAST_START" );
+        bar:RegisterEvent( "UNIT_SPELLCAST_STOP" );
+        bar:RegisterEvent( "UNIT_SPELLCAST_FAILED" );
+        bar:RegisterEvent( "UNIT_SPELLCAST_INTERRUPTED" );
+        bar:RegisterEvent( "UNIT_SPELLCAST_DELAYED" );
+        bar:RegisterEvent( "UNIT_SPELLCAST_CHANNEL_START" );
+        bar:RegisterEvent( "UNIT_SPELLCAST_CHANNEL_UPDATE" );
+        bar:RegisterEvent( "UNIT_SPELLCAST_CHANNEL_STOP" );
+    elseif( bar.unit == "focus" ) then
+        bar:RegisterEvent( "PLAYER_FOCUS_CHANGED" );
+    elseif( bar.unit == "pet" ) then
+        bar:RegisterEvent( "UNIT_PET" );
+    end
+
+    if( bar.powerType == nil ) then
+        bar:RegisterEvent( "UNIT_DISPLAYPOWER" );
+    elseif( bar:IsEventRegistered( "UNIT_DISPLAYPOWER" ) ) then
+        bar:UnregisterEvent( "UNIT_DISPLAYPOWER" );
+    end
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           SetConfigPowerBarHandelrs
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+local function SetConfigPowerBarHandelrs( bar )
+
+    -- Call base method
+    bar:ContinuousBar_SetConfigHandlers( );
+
+    -- Set up methods for config mode bar operation
+    bar.OnEnable = Config_PowerBar_OnEnable;
+
+    -- Don't process the events while in config mode
+    bar:UnregisterEvent( "PLAYER_TARGET_CHANGED" );
+    bar:UnregisterEvent( "UNIT_SPELLCAST_START" );
+    bar:UnregisterEvent( "UNIT_SPELLCAST_STOP" );
+    bar:UnregisterEvent( "UNIT_SPELLCAST_FAILED" );
+    bar:UnregisterEvent( "UNIT_SPELLCAST_INTERRUPTED" );
+    bar:UnregisterEvent( "UNIT_SPELLCAST_DELAYED" );
+    bar:UnregisterEvent( "UNIT_SPELLCAST_CHANNEL_START" );
+    bar:UnregisterEvent( "UNIT_SPELLCAST_CHANNEL_UPDATE" );
+    bar:UnregisterEvent( "UNIT_SPELLCAST_CHANNEL_STOP" );
+    bar:UnregisterEvent( "PLAYER_FOCUS_CHANGED" );
+    bar:UnregisterEvent( "UNIT_PET" );
+    bar:UnregisterEvent( "UNIT_DISPLAYPOWER" );
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_CreatePowerBar
+--
+--  Description:    Create a power bar
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_CreatePowerBar( key, unit, barType, powerType )
+
+    if( not barType ) then barType = kPower end
+    
+    local displayName = StatusBars2_ConstructDisplayName( unit, barType );
+
+    -- Create the power bar
+    local bar = StatusBars2_CreateContinuousBar( key, unit, displayName, barType, 1, 1, 0 );
+
+    -- If its the druid mana bar use a special options template
+    if( barType == kDruidMana ) then
+        bar.optionsTemplate = "StatusBars2_DruidManaBarOptionsTemplate";
+    -- If its a target power bar use a special options template
+    elseif( bar.unit == "target" ) then
+        bar.optionsTemplate = "StatusBars2_TargetPowerBarOptionsTemplate";
+    end
+
+    bar.powerType = powerType;
+
+    -- Set the functions to switch between normal and config modes
+    bar.SetNormalHandlers = SetNormalPowerBarHandlers;
+    bar.SetConfigHandlers = SetConfigPowerBarHandelrs;
+
+    -- Set the bar to normal mode
+    bar:SetNormalHandlers( );
+
+    -- Set the event handlers
+    bar.OnEvent = StatusBars2_PowerBar_OnEvent;
+    bar.OnEnable = StatusBars2_PowerBar_OnEnable;
+    bar.BarIsVisible = StatusBars2_PowerBar_IsVisible;
+    bar.IsDefault = StatusBars2_PowerBar_IsDefault;
+
+    return bar;
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_PowerBar_OnEvent
+--
+--  Description:    Power bar event handler
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_PowerBar_OnEvent( self, event, ... )
+
+    -- Target changed
+    if( event == "PLAYER_TARGET_CHANGED" ) then
+
+        -- Bar is visible
+        if( self:BarIsVisible( ) ) then
+
+            -- Update the casting bar if applicable
+            StatusBars2_PowerBar_StartCasting( self );
+
+            -- If not in casting mode update as normal
+            if( not self.casting and not self.channeling ) then
+                StatusBars2_SetPowerBarColor( self );
+                self.status:SetMinMaxValues( 0, UnitPowerMax( self.unit, StatusBars2_GetPowerType( self ) ) );
+            end
+
+            -- Show the bar and update the layout
+            StatusBars2_ShowBar( self );
+            StatusBars2_UpdateLayout( );
+
+        -- Bar is not visible
+        else
+            local unitExists = UnitExists( self.unit );
+            StatusBars2_HideBar( self, unitExists );
+            if( unitExists ) then
+                StatusBars2_UpdateLayout( );
+            end
+        end
+
+    -- Show the bar when power ticks
+    elseif( event == "UNIT_POWER" ) then
+
+        if( self:BarIsVisible( ) and not self.visible ) then
+            StatusBars2_SetPowerBarColor( self );
+            StatusBars2_ShowBar( self );
+            StatusBars2_UpdateLayout( );
+        end
+
+    -- Update max power
+    elseif( event == "UNIT_MAXPOWER" and not self.casting and not self.channeling ) then
+        self.status:SetMinMaxValues( 0, UnitPowerMax( self.unit, StatusBars2_GetPowerType( self ) ) );
+
+    -- Show when entering combat
+    elseif( event == 'PLAYER_REGEN_DISABLED' ) then
+        self.inCombat = true;
+        if( self:BarIsVisible( ) and not self.visible ) then
+            StatusBars2_SetPowerBarColor( self );
+            StatusBars2_ShowBar( self );
+            StatusBars2_UpdateLayout( );
+        end
+
+    -- Exiting combat
+    elseif( event == 'PLAYER_REGEN_ENABLED' ) then
+        self.inCombat = false;
+
+    -- Pet changed
+    elseif( event == "UNIT_PET" or event == "PLAYER_FOCUS_CHANGED") then
+        if( self:BarIsVisible( ) ) then
+            StatusBars2_SetPowerBarColor( self );
+            StatusBars2_ShowBar( self );
+            StatusBars2_UpdatePowerBar( self );
+            StatusBars2_UpdateLayout( );
+        -- Bar is not visible
+        else
+            local unitExists = UnitExists( self.unit );
+            StatusBars2_HideBar( self, unitExists );
+            if( unitExists ) then
+                StatusBars2_UpdateLayout( );
+            end
+        end
+
+    -- Unit shapeshifted
+    elseif( event == "UNIT_DISPLAYPOWER" and select( 1, ... ) == self.unit ) then
+        StatusBars2_SetPowerBarColor( self );
+        StatusBars2_UpdatePowerBar( self );
+
+    -- Casting started
+    elseif( select( 1, ... ) == self.unit and ( event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_CHANNEL_START" or event == "UNIT_SPELLCAST_CHANNEL_UPDATE"  ) and self.settings.showSpell ) then
+
+        -- Set to casting mode
+        StatusBars2_PowerBar_StartCasting( self );
+
+        -- If the bar is currently hidden show it and update the layout
+        if not self.visible then
+            StatusBars2_ShowBar( self );
+            StatusBars2_UpdateLayout( );
+        end
+
+    -- Casting ended
+    elseif( event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_INTERRUPTED" or event == "UNIT_SPELLCAST_CHANNEL_STOP" ) then
+
+        if( select( 1, ... ) == self.unit and ( event == "UNIT_SPELLCAST_CHANNEL_STOP" or select( 4, ... ) == self.castID ) ) then
+
+            -- End casting mode
+            StatusBars2_PowerBar_EndCasting( self );
+
+            -- If the bar should no longer be visible hide it and update the layout
+            if( not self:BarIsVisible( ) ) then
+                self:Hide( );
+                self.visible = false;
+                StatusBars2_UpdateLayout( );
+            end
+
+        end
+
+    end
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_PowerBar_OnUpdate
+--
+--  Description:    Power bar update handler
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_PowerBar_OnUpdate( self, elapsed )
+
+    -- Casting mode
+    if( self.casting or self.channeling ) then
+
+        -- Update the current value
+        if( self.casting ) then
+            self.value = self.value + elapsed;
+        else
+            self.value = self.value - elapsed;
+        end
+
+        -- Casting finished
+        if( ( self.casting and self.value >= self.maxValue ) or ( self.value <= 0 ) ) then
+            StatusBars2_PowerBar_EndCasting( self );
+
+        -- Casting continuing
+        else
+            self.status:SetValue( self.value );
+            self.spark:SetPoint( "CENTER", self.status, "LEFT", ( self.value / self.maxValue ) * self.status:GetWidth( ), 0 );
+            self.percentText:SetText( StatusBars2_Round( self.value / self.maxValue * 100 ) .. "%" );
+        end
+
+    -- Normal mode
+    else
+        StatusBars2_UpdatePowerBar( self );
+    end
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_PowerBar_StartCasting
+--
+--  Description:    Start spell casting
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_PowerBar_StartCasting( self )
+
+        -- Get spell info
+        local name, nameSubtext, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible = UnitCastingInfo( self.unit );
+
+        -- If that failed try getting channeling info
+        channeling = false;
+        if( name == nil ) then
+            name, nameSubtext, text, texture, startTime, endTime, isTradeSkill, notInterruptible = UnitChannelInfo( self.unit );
+            channeling = true;
+        end
+
+        -- If the unit is casting a spell update the power bar
+        if( name ~= nil ) then
+
+            -- Get the current and max values
+            if( not channeling ) then
+                self.value = GetTime( ) - ( startTime / 1000 );
+                self.maxValue = ( endTime - startTime ) / 1000;
+                self.castID = castID;
+            else
+                self.value = ( ( endTime / 1000 ) - GetTime( ) );
+                self.maxValue = ( endTime - startTime ) / 1000;
+            end
+
+            -- Set the bar min, max and current values
+            self.status:SetMinMaxValues( 0, self.maxValue );
+            self.status:SetValue( self.value );
+
+            -- Set the text
+            self.text:SetText( name );
+
+            -- Show the bar spark
+            self.spark:Show( );
+
+            -- Set the bar color
+            if( notInterruptible ) then
+                self.status:SetStatusBarColor( 1.0, 0.0, 0.0 );
+            elseif( channeling ) then
+                self.status:SetStatusBarColor( 1.0, 0.7, 0.0 );
+            else
+                self.status:SetStatusBarColor( 0.0, 1.0, 0.0 );
+            end
+
+            -- Enter channeling mode
+            self.casting = not channeling;
+            self.channeling = channeling;
+        end
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_PowerBar_EndCasting
+--
+--  Description:    End spell casting
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_PowerBar_EndCasting( self )
+
+    -- Exit casting mode
+    self.casting = false;
+    self.channeling = false;
+    self.castID = nil;
+
+    -- Reset the min and max values
+    self.status:SetMinMaxValues( 0, UnitPowerMax( self.unit, StatusBars2_GetPowerType( self ) ) );
+
+    -- Hide the bar spark
+    self.spark:Hide( );
+
+    -- Reset the color
+    StatusBars2_SetPowerBarColor( self );
+
+    -- Update the bar
+    StatusBars2_UpdatePowerBar( self );
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_PowerBar_OnEnable
+--
+--  Description:    Power bar enable handler
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_PowerBar_OnEnable( self )
+
+    -- Set the color
+    StatusBars2_SetPowerBarColor( self );
+
+    -- Update
+    StatusBars2_UpdatePowerBar( self );
+
+    -- Call the base method
+    self:ContinuousBar_OnEnable( );
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_PowerBar_IsVisible
+--
+--  Description:    Determine if a power bar should be visible
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_PowerBar_IsVisible( self )
+
+    return StatusBars2_ContinuousBar_IsVisible( self ) and ( UnitPowerMax( self.unit, StatusBars2_GetPowerType( self ) ) > 0 or self.casting or self.channeling );
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_PowerBar_IsDefault
+--
+--  Description:    Determine if a power bar is at its default level
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_PowerBar_IsDefault( self )
+
+    local isDefault = true;
+
+    -- If casting the bar is not at the default level
+    if self.casting or self.channeling then
+        isDefault = false
+
+    -- Otherwise check the power level
+    else
+
+        -- Get the power type
+        local powerType = StatusBars2_GetPowerType( self );
+
+        -- Get the current power
+        local power = UnitPower( self.unit, powerType );
+
+        -- Determine if power is at it's default state
+        if( powerType == SPELL_POWER_RAGE or powerType == SPELL_POWER_RUNIC_POWER ) then
+            isDefault = ( power == 0 );
+        elseif( powerType == SPELL_POWER_DEMONIC_FURY ) then
+            isDefault = ( power == 200 );
+        else
+            local maxPower = UnitPowerMax( self.unit, powerType );
+            isDefault = ( power == maxPower );
+        end
+    end
+
+    return isDefault;
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_UpdatePowerBar
+--
+--  Description:    Update a power bar
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_UpdatePowerBar( self )
+
+    -- Get the current and max power
+    local power = UnitPower( self.unit, StatusBars2_GetPowerType( self ) );
+    local maxPower = UnitPowerMax( self.unit, StatusBars2_GetPowerType( self ) );
+
+    -- Update the bar
+    self:ContinuousBar_Update( power, maxPower );
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_GetPowerType
+--
+--  Description:    Get the power type that a power bar is displaying
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_GetPowerType( self )
+
+    if( self.powerType ~= nil ) then
+        return self.powerType;
+    else
+        return UnitPowerType( self.unit );
+    end
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_GetPowerBarColor
+--
+--  Description:    Set the color of a power bar
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_GetPowerBarColor( powerToken )
+
+    -- PowerBarColor defined by Blizzard unit frame
+    local color = PowerBarColor[powerToken];
+    
+    if( not color ) then 
+        if( powerToken == SPELL_POWER_DEMONIC_FURY or powerToken == "DEMONIC_FURY" ) then
+            color = { r = 0.57, g = 0.12, b = 1 };
+        elseif( powerToken == SPELL_POWER_BURNING_EMBERS or powerToken == "BURNING_EMBERS") then
+            color = { r = 1, g = 0.33, b = 0 };
+        elseif( powerToken == SPELL_POWER_SHADOW_ORBS or powerToken == "SHADOW_ORBS") then
+            color = { r = 162/255, g = 51/255, b = 209/255 };
+        else
+            color = kDefaultPowerBarColor; 
+        end
+    end
+    
+    return color.r, color.g, color.b;
+        
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_SetPowerBarColor
+--
+--  Description:    Set the color of a power bar
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_SetPowerBarColor( self )
+
+    local powerType = StatusBars2_GetPowerType( self );
+    self.status:SetStatusBarColor( StatusBars2_GetPowerBarColor( powerType ) );
+
+end
+

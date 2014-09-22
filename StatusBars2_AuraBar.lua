@@ -15,6 +15,87 @@ local kUnitPower = addonTable.barTypes.kUnitPower;
 local kEclipse = addonTable.barTypes.kEclipse;
 local kDemonicFury = addonTable.barTypes.kDemonicFury;
 
+local FontInfo = addonTable.fontInfo;
+
+-------------------------------------------------------------------------------
+--
+--  Name:           Config_AuraBar_Update
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+local function Config_AuraBar_OnEnable( self )
+
+    -- Hide all the buttons
+    for name, button in pairs( self.buttons ) do
+        button:Hide( );
+    end
+
+    -- Show a backdrop so we can see the bar
+    self:Bar_ShowBackdrop( );
+
+    -- Call the base method
+    self:Bar_OnEnable( );
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           SetNormalAuraBarHandlers
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+local function SetNormalAuraBarHandlers( bar )
+
+    -- Call base method
+    bar:Bar_SetNormalHandlers( );
+   
+    -- Set up methods for config mode bar operation
+    bar.OnEnable = StatusBars2_AuraBar_OnEnable;
+
+    -- Register for events
+    bar:RegisterEvent( "UNIT_AURA" );
+    bar:RegisterEvent( "PLAYER_REGEN_ENABLED" );
+    bar:RegisterEvent( "PLAYER_REGEN_DISABLED" );
+    if( bar.unit == "target" ) then
+        bar:RegisterEvent( "PLAYER_TARGET_CHANGED" );
+    elseif( bar.unit == "focus" ) then
+        bar:RegisterEvent( "PLAYER_FOCUS_CHANGED" );
+    elseif( bar.unit == "pet" ) then
+        bar:RegisterEvent( "UNIT_PET" );
+    end
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           SetConfigAuraBarHandelrs
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+local function SetConfigAuraBarHandelrs( bar )
+
+    -- Call base method
+    bar:Bar_SetConfigHandlers( );
+
+    -- Set up methods for config mode bar operation
+    bar.OnEnable = Config_AuraBar_OnEnable;
+
+    -- Don't process the events while in config mode
+    bar:UnregisterEvent( "UNIT_AURA" );
+    bar:UnregisterEvent( "PLAYER_REGEN_ENABLED" );
+    bar:UnregisterEvent( "PLAYER_REGEN_DISABLED" );
+    bar:UnregisterEvent( "PLAYER_TARGET_CHANGED" );
+    bar:UnregisterEvent( "PLAYER_FOCUS_CHANGED" );
+    bar:UnregisterEvent( "UNIT_PET" );
+
+end
+
 -------------------------------------------------------------------------------
 --
 --  Name:           StatusBars2_CreateAuraBar
@@ -37,26 +118,20 @@ function StatusBars2_CreateAuraBar( key, unit )
     -- Initialize the button array
     bar.buttons = {};
 
+    -- Set the functions to switch between normal and config modes
+    bar.SetNormalHandlers = SetNormalAuraBarHandlers;
+    bar.SetConfigHandlers = SetConfigAuraBarHandelrs;
+
+    -- Set the bar to normal mode
+    bar:SetNormalHandlers( );
+
     -- Set the event handlers
     bar.OnEvent = StatusBars2_AuraBar_OnEvent;
-    bar.OnEnable = StatusBars2_AuraBar_OnEnable;
     bar.BarIsVisible = StatusBars2_AuraBar_IsVisible;
     bar.IsDefault = StatusBars2_AuraBar_IsDefault;
     bar.SetBarScale = StatusBars2_AuraBar_SetScale;
     bar.SetBarPosition = StatusBars2_AuraBar_SetPosition;
     bar.GetBarHeight = StatusBars2_AuraBar_GetHeight;
-
-    -- Register for events
-    bar:RegisterEvent( "UNIT_AURA" );
-    bar:RegisterEvent( "PLAYER_REGEN_ENABLED" );
-    bar:RegisterEvent( "PLAYER_REGEN_DISABLED" );
-    if( unit == "target" ) then
-        bar:RegisterEvent( "PLAYER_TARGET_CHANGED" );
-    elseif( unit == "focus" ) then
-        bar:RegisterEvent( "PLAYER_FOCUS_CHANGED" );
-    elseif( unit == "pet" ) then
-        bar:RegisterEvent( "UNIT_PET" );
-    end
 
     return bar;
 
@@ -113,8 +188,14 @@ end
 --
 function StatusBars2_AuraBar_OnEnable( self )
 
+    -- Hide the backdrop if we showed it for config mode
+    self:Bar_HideBackdrop( );
+
+    -- Update the bar
     StatusBars2_UpdateAuraBar( self );
-    StatusBars2_StatusBar_OnEnable( self );
+
+    -- Call the base method
+    self:Bar_OnEnable( );
 
 end
 
@@ -171,7 +252,7 @@ end
 --
 function StatusBars2_AuraBar_SetPosition( self, x, y )
 
-        StatusBars2_StatusBar_SetPosition( self, x, y );
+    StatusBars2_StatusBar_SetPosition( self, x, y );
 
 end
 
@@ -185,7 +266,13 @@ end
 --
 function StatusBars2_AuraBar_GetHeight( self )
 
-    return self:GetHeight( );
+    button = self.buttons[0];
+
+    if( button ) then
+        return button:GetHeight( );
+    else
+        return self:GetHeight( );
+    end
 
 end
 

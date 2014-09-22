@@ -1201,7 +1201,7 @@ function StatusBars2_Options_ToggleMoveBars_OnClick( self )
     if( config_mode ) then
         for i, bar in ipairs( bars ) do
             if( bar.SetNormalHandlers ) then
-                print("Setting Normal Handlers for "..bar.key);
+                --print("Setting Normal Handlers for "..bar.key);
                 bar:SetNormalHandlers( );
                 config_mode = false;
             end
@@ -1209,13 +1209,14 @@ function StatusBars2_Options_ToggleMoveBars_OnClick( self )
     else
         for i, bar in ipairs( bars ) do
             if( bar.SetConfigHandlers ) then
-                print("Setting Config Handlers for "..bar.key);
+                --print("Setting Config Handlers for "..bar.key);
                 bar:SetConfigHandlers( );
                 config_mode = true;
             end
         end
     end;
 
+    print("Config Mode = "..printBool(config_mode));
     StatusBars2_UpdateBars( );
 
 end

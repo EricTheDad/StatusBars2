@@ -17,6 +17,43 @@ local kDemonicFury = addonTable.barTypes.kDemonicFury;
 
 -------------------------------------------------------------------------------
 --
+--  Name:           StatusBars2_GetAuraStack
+--
+--  Description:    Get the stack size of the specified aura
+--
+-------------------------------------------------------------------------------
+--
+local function StatusBars2_GetAuraStack( unit, aura, auraType )
+
+    local stack = 0;
+
+    -- Iterate over the auras on the target
+    local i;
+    for i = 1, 40 do
+
+        -- Get the aura
+        local name, rank, texture, count;
+        if( auraType == "buff" ) then
+            name, rank, texture, count = UnitBuff( unit, i );
+        else
+            name, rank, texture, count = UnitDebuff( unit, i );
+        end
+
+        -- Check the name
+        if( name == nil ) then
+            break;
+        elseif( string.find( name, aura, 1, true ) ) then
+            stack = count;
+            break;
+        end;
+    end
+
+    return stack;
+
+end
+
+-------------------------------------------------------------------------------
+--
 --  Name:           StatusBars2_CreateAuraStackBar
 --
 --  Description:    Create bar to track the stack size of a buff or debuff
@@ -40,6 +77,13 @@ function StatusBars2_CreateAuraStackBar( key, unit, spellID, auraType, count, au
     bar.auraID = auraID;
     bar.aura = auraName;
     bar.auraType = auraType;
+
+    -- Setup functions for config and normal modes
+    bar.SetNormalHandlers = bar.SetNormalDiscreteBarHandlers;
+    bar.SetConfigHandlers = bar.SetConfigDiscreteBarHandlers;
+
+    -- Setup for Normal mode
+    bar:SetNormalHandlers( );
 
     -- Set the event handlers
     bar.OnEvent = StatusBars2_AuraStackBar_OnEvent;

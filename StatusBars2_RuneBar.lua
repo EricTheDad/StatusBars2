@@ -158,7 +158,7 @@ function StatusBars2_RuneBar_OnEnable( self )
     StatusBars2_RuneBar_UpdateAllRunes( self );
 
     -- Call the base method
-    StatusBars2_StatusBar_OnEnable( self );
+    self:Bar_OnEnable( );
 
 end
 

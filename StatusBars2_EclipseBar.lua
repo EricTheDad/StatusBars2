@@ -95,7 +95,7 @@ function StatusBars2_EclipseBar_OnEnable( self )
     StatusBars2_EclipseBar_OnUpdate( self )
 
     -- Call the base method
-    StatusBars2_StatusBar_OnEnable( self );
+    self:Bar_OnEnable( );
 
 end
 

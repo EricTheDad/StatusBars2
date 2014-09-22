@@ -28,6 +28,242 @@ local kFlashAlpha = 0.8;
 
 -------------------------------------------------------------------------------
 --
+--  Name:           StatusBars2_ConstructDisplayName
+--
+--  Description:    Construct the appropriate display name for a bar
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_ConstructDisplayName( unit, barType )
+
+    local barTypeText;
+    
+    if( barType == kDruidMana ) then
+        local localizedClass = UnitClass( unit );
+        return localizedClass.." "..MANA;
+    elseif( barType == kDemonicFury ) then
+        return DEMONIC_FURY;
+    elseif( barType == kHealth ) then
+        barTypeText = HEALTH;
+    elseif( barType == kPower ) then
+        -- A little odd, but as far as Blizzard defined strings go, the text for PET_BATTLE_STAT_POWER 
+        -- probably best embodies a generic power bar for all languages
+        barTypeText = PET_BATTLE_STAT_POWER;
+    elseif( barType == kAura ) then
+        barTypeText = AURAS;
+    else
+        assert( false, "unknown bar type");
+    end
+    
+    local unitText;
+    
+    if( unit == "player" ) then
+        unitText = STATUS_TEXT_PLAYER;
+    elseif( unit == "target" ) then
+        unitText = STATUS_TEXT_TARGET;
+    elseif( unit == "focus" ) then
+        unitText = FOCUS;
+    elseif( unit == "pet" ) then
+        unitText = STATUS_TEXT_PET;
+    else
+        assert( false, "Unknown unit type" );
+    end
+
+    return unitText.." "..barTypeText;
+    
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           Bar_ShowBackdrop
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+local function Bar_ShowBackdrop( self )
+
+    -- Set an edge so we can see the aura self
+    local backdropInfo = { 
+        bgFile = "Interface/Tooltips/UI-Tooltip-Background", 
+        edgeFile = "Interface/Tooltips/UI-Tooltip-Border", 
+        edgeSize = 16,
+        insets = {
+            left = 5,
+            right = 5,
+            top = 5,
+            bottom = 5 
+        }
+    };
+
+    self:SetBackdrop( backdropInfo );
+    self:SetBackdropColor( 0, 0, 0, 0.85 );
+
+    -- Create a font string if we don't have one
+    if( self.text == nil ) then
+        self.text = self:CreateFontString( );
+        self.text:SetPoint("CENTER",0,0);
+    end
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           Bar_ShowBackdrop
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+local function Bar_HideBackdrop( self )
+
+    -- Get rid of the edge if it was added in config mode
+    self:SetBackdrop( nil );
+    
+    -- Hide the text if it was displayed from config mode
+    if ( self.text ) then
+        self.text:Hide( );
+    end
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           Config_Bar_OnEnable
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+local function Config_Bar_OnEnable( self )
+
+    -- Set the text
+    if ( self.text ) then
+        self.text:SetFontObject(FontInfo[StatusBars2_Settings.font].filename);
+        self.text:SetText( self.displayName );
+        self.text:SetTextColor( 1, 1, 1 );
+        self.text:Show( );
+    end
+
+    -- In config mode, the mouse is always enabled
+    self:EnableMouse( true );
+    StatusBars2_ShowBar( self );
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           Config_Bar_OnMouseDown
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+local function Config_Bar_OnMouseDown( self, button )
+
+    -- Move on left button down
+    if( button == 'LeftButton' ) then
+
+        -- print("StatusBars2_StatusBar_OnMouseDown "..self:GetName().." x "..self:GetLeft().." y "..self:GetTop().." parent "..self:GetParent():GetName());
+        -- point, relativeTo, relativePoint, xOfs, yOfs = self:GetPoint()
+        -- print("Anchor "..relativePoint.." of "..relativeTo:GetName().." to "..point.." xoff "..xOfs.." yoff "..yOfs);
+
+        -- If grouped move the main frame
+        if( StatusBars2_Settings.grouped == true ) then
+            self:GetParent( ):OnMouseDown( button );
+            -- StatusBars2_OnMouseDown( StatusBars2, button );
+
+        -- Otherwise move this bar
+        else
+            self:StartMoving( );
+            self.isMoving = true;
+        end
+
+    end
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           Config_Bar_OnMouseUp
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+local function Config_Bar_OnMouseUp( self, button )
+
+    -- Move with left button
+    if( button == 'LeftButton' ) then
+
+        local parentFrame = self:GetParent( );
+
+        -- If grouped move the main frame
+        if( StatusBars2_Settings.grouped == true ) then
+            parentFrame:OnMouseUp( button );
+            -- StatusBars2_OnMouseUp( StatusBars2, button );
+
+        -- Otherwise move this bar
+        elseif( self.isMoving ) then
+
+            -- End moving
+            self:StopMovingOrSizing( );
+            self.isMoving = false;
+
+            -- Moving the bar de-anchored it from its group frame and anchored it to the screen.
+            -- We don't want that, so re-anchor the bar to its group frame
+            self:ClearAllPoints( );
+            self:SetPoint( "TOPLEFT", groups[ self.group ], "TOPLEFT", xOffset * ( 1 / self:GetScale( ) ), yOffset * ( 1 / self:GetScale( ) ) );
+
+        end
+    end
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           Bar_SetNormalHandlers
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+local function Bar_SetNormalHandlers( bar )
+
+    -- Base methods for subclasses to call
+    bar.Bar_OnEnable = StatusBars2_StatusBar_OnEnable;
+    bar.Bar_OnMouseDown = StatusBars2_StatusBar_OnMouseDown;
+    bar.Bar_OnMouseUp = StatusBars2_StatusBar_OnMouseUp;
+
+    -- Set the mouse event handlers
+    bar:SetScript( "OnMouseDown", StatusBars2_StatusBar_OnMouseDown );
+    bar:SetScript( "OnMouseUp", StatusBars2_StatusBar_OnMouseUp );
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           Bar_SetConfigHandlers
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+local function Bar_SetConfigHandlers( bar )
+
+    -- Base methods for subclasses to call
+    bar.Bar_OnEnable = Config_Bar_OnEnable;
+    bar.Bar_OnMouseDown = Config_Bar_OnMouseDown;
+    bar.Bar_OnMouseUp = Config_Bar_OnMouseUp;
+
+    -- Set the mouse event handlers
+    bar:SetScript( "OnMouseDown", Config_Bar_OnMouseDown );
+    bar:SetScript( "OnMouseUp", Config_Bar_OnMouseUp );
+
+end
+
+-------------------------------------------------------------------------------
+--
 --  Name:           StatusBars2_CreateBar
 --
 --  Description:    Create a status bar
@@ -51,6 +287,13 @@ function StatusBars2_CreateBar( key, template, unit, displayName, barType )
     -- Set the default options template
     bar.optionsTemplate = "StatusBars2_BarOptionsTemplate";
 
+    -- Set the functions to switch between normal and config modes
+    bar.Bar_SetNormalHandlers = Bar_SetNormalHandlers;
+    bar.Bar_SetConfigHandlers = Bar_SetConfigHandlers;
+
+    -- Set the bar to normal mode
+    bar:Bar_SetNormalHandlers( );
+
     -- Set the default methods
     bar.OnEnable = StatusBars2_StatusBar_OnEnable;
     bar.BarIsVisible = StatusBars2_StatusBar_IsVisible;
@@ -58,10 +301,10 @@ function StatusBars2_CreateBar( key, template, unit, displayName, barType )
     bar.SetBarScale = StatusBars2_StatusBar_SetScale;
     bar.SetBarPosition = StatusBars2_StatusBar_SetPosition;
     bar.GetBarHeight = StatusBars2_StatusBar_GetHeight;
+    bar.Bar_ShowBackdrop = Bar_ShowBackdrop;
+    bar.Bar_HideBackdrop = Bar_HideBackdrop;
 
     -- Set the mouse event handlers
-    bar:SetScript( "OnMouseDown", StatusBars2_StatusBar_OnMouseDown );
-    bar:SetScript( "OnMouseUp", StatusBars2_StatusBar_OnMouseUp );
     bar:SetScript( "OnHide", StatusBars2_StatusBar_OnHide );
 
     -- Default the bar to Auto enabled
@@ -87,9 +330,25 @@ end
 --
 function StatusBars2_StatusBar_OnEnable( self )
 
-    if( self:BarIsVisible( ) ) then
-        StatusBars2_ShowBar( self );
-    end;
+    -- Check if the bar type is enabled
+    -- Signing up for events if the bar isn't enable wastes performance needlessly
+    if( self.settings.enabled ~= "Never" ) then
+
+        -- Initialize the inCombat flag
+        self.inCombat = UnitAffectingCombat( "player" );
+
+        -- Enable the event and update handlers
+        self:SetScript( "OnEvent", self.OnEvent );
+        self:SetScript( "OnUpdate", self.OnUpdate );
+
+        -- If not locked enable the mouse for moving
+        -- Don't enable mouse on aura bars, we only want the mouse to be able to grab active icons
+        self:EnableMouse( not StatusBars2_Settings.locked and self.type ~= kAura );
+
+        if( self:BarIsVisible( ) ) then
+            StatusBars2_ShowBar( self );
+        end
+    end
 
 end
 
@@ -414,53 +673,6 @@ end
 
 -------------------------------------------------------------------------------
 --
---  Name:           StatusBars2_ConstructDisplayName
---
---  Description:    Construct the appropriate display name for a bar
---
--------------------------------------------------------------------------------
---
-function StatusBars2_ConstructDisplayName( unit, barType )
-
-    local barTypeText;
-    
-    if( barType == kDruidMana ) then
-        local localizedClass = UnitClass( unit );
-        return localizedClass.." "..MANA;
-    elseif( barType == kDemonicFury ) then
-        return DEMONIC_FURY;
-    elseif( barType == kHealth ) then
-        barTypeText = HEALTH;
-    elseif( barType == kPower ) then
-        -- A little odd, but as far as Blizzard defined strings go, the text for PET_BATTLE_STAT_POWER 
-        -- probably best embodies a generic power bar for all languages
-        barTypeText = PET_BATTLE_STAT_POWER;
-    elseif( barType == kAura ) then
-        barTypeText = AURAS;
-    else
-        assert( false, "unknown bar type");
-    end
-    
-    local unitText;
-    
-    if( unit == "player" ) then
-        unitText = STATUS_TEXT_PLAYER;
-    elseif( unit == "target" ) then
-        unitText = STATUS_TEXT_TARGET;
-    elseif( unit == "focus" ) then
-        unitText = FOCUS;
-    elseif( unit == "pet" ) then
-        unitText = STATUS_TEXT_PET;
-    else
-        assert( false, "Unknown unit type" );
-    end
-
-    return unitText.." "..barTypeText;
-    
-end
-
--------------------------------------------------------------------------------
---
 --  Name:           StatusBars2_GetComboPoints
 --
 --  Description:    Get the number of combo points for the current player
@@ -478,39 +690,3 @@ function StatusBars2_GetComboPoints( )
 
 end
 
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_GetAuraStack
---
---  Description:    Get the stack size of the specified aura
---
--------------------------------------------------------------------------------
---
-function StatusBars2_GetAuraStack( unit, aura, auraType )
-
-    local stack = 0;
-
-    -- Iterate over the auras on the target
-    local i;
-    for i = 1, 40 do
-
-        -- Get the aura
-        local name, rank, texture, count;
-        if( auraType == "buff" ) then
-            name, rank, texture, count = UnitBuff( unit, i );
-        else
-            name, rank, texture, count = UnitDebuff( unit, i );
-        end
-
-        -- Check the name
-        if( name == nil ) then
-            break;
-        elseif( string.find( name, aura, 1, true ) ) then
-            stack = count;
-            break;
-        end;
-    end
-
-    return stack;
-
-end

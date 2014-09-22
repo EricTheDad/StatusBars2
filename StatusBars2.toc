@@ -12,6 +12,10 @@ StatusBars2_AuraBar.lua
 StatusBars2_AuraStackBar.lua
 StatusBars2_EclipseBar.lua
 StatusBars2_RuneBar.lua
+StatusBars2_HealthBar.lua
+StatusBars2_PowerBar.lua
+StatusBars2_DiscreteBar.lua
+StatusBars2_ContinuousBar.lua
 StatusBars2_BaseBar.lua
 StatusBars2_InterfacePanel.lua
 StatusBars2_Debug.lua
