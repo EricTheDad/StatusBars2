@@ -33,11 +33,11 @@ function StatusBars2_CreateEclipseBar( )
     bar.OnEnable = StatusBars2_EclipseBar_OnEnable;
     bar.OnUpdate = StatusBars2_EclipseBar_OnUpdate;
 
-    -- Register for events
-    bar:RegisterEvent( "UNIT_AURA" );
-    bar:RegisterEvent( "ECLIPSE_DIRECTION_CHANGE" );
-    bar:RegisterEvent( "PLAYER_REGEN_ENABLED" );
-    bar:RegisterEvent( "PLAYER_REGEN_DISABLED" );
+    -- Events to register for on enable
+    bar.eventsToRegister["UNIT_AURA"] = true;
+    bar.eventsToRegister["ECLIPSE_DIRECTION_CHANGE"] = true;
+    bar.eventsToRegister["PLAYER_REGEN_ENABLED"] = true;
+    bar.eventsToRegister["PLAYER_REGEN_DISABLED"] = true;
 
     return bar;
 
@@ -53,14 +53,19 @@ end
 --
 function StatusBars2_EclipseBar_OnEvent( self, event, ... )
 
-    if event == "UNIT_AURA" then
+    if (event == "UNIT_AURA") then
         local arg1 = ...;
         if arg1 ==  PlayerFrame.unit then
             EclipseBar_CheckBuffs(self);
         end
-    elseif event == "ECLIPSE_DIRECTION_CHANGE" then
+    elseif (event == "ECLIPSE_DIRECTION_CHANGE") then
         local status = ...;
-        self.marker:SetTexCoord(unpack(ECLIPSE_MARKER_COORDS[status]));
+        if (status == "none") then
+            self.Marker:SetAtlas("DruidEclipse-Diamond");
+        else
+            self.Marker:SetAtlas("DruidEclipse-Arrow");
+            self.Marker:SetTexCoord(unpack(ECLIPSE_MARKER_COORDS[status]));
+        end
 
     -- Entering combat
     elseif( event == "PLAYER_REGEN_DISABLED" ) then
@@ -110,14 +115,14 @@ end
 function StatusBars2_EclipseBar_OnUpdate( self )
     local power = UnitPower( "player", SPELL_POWER_ECLIPSE );
     local maxPower = UnitPowerMax( "player", SPELL_POWER_ECLIPSE );
-    if self.showPercent then
-        self.powerText:SetText(abs(power/maxPower*100).."%");
-    else
-        self.powerText:SetText(abs(power));
+    if (maxPower == 0) then
+        return;--catch divide by zero
     end
-
+     
+    self.PowerText:SetText(abs(power));
+     
     local xpos =  ECLIPSE_BAR_TRAVEL*(power/maxPower)
-    self.marker:SetPoint("CENTER", xpos, 0);
+    self.Marker:SetPoint("CENTER", xpos, 0);
 end
 
 -------------------------------------------------------------------------------
@@ -131,62 +136,63 @@ end
 function StatusBars2_EclipseBar_OnShow( self )
 
     local direction = GetEclipseDirection();
-    if direction then
-        self.marker:SetTexCoord( unpack(ECLIPSE_MARKER_COORDS[direction]));
+    if (not direction or direction == "none") then
+        self.Marker:SetAtlas("DruidEclipse-Diamond");
+    else
+        self.Marker:SetAtlas("DruidEclipse-Arrow");
+        self.Marker:SetTexCoord(unpack(ECLIPSE_MARKER_COORDS[direction]));
     end
-
+     
     local hasLunarEclipse = false;
     local hasSolarEclipse = false;
-
-    local unit = "player";
+     
+    local unit = PlayerFrame.unit;
     local j = 1;
     local name, _, _, _, _, _, _, _, _, _, spellID = UnitBuff(unit, j);
     while name do
-        if spellID == ECLIPSE_BAR_SOLAR_BUFF_ID then
+        if (spellID == ECLIPSE_BAR_SOLAR_BUFF_ID) then
             hasSolarEclipse = true;
-        elseif spellID == ECLIPSE_BAR_LUNAR_BUFF_ID then
+        elseif (spellID == ECLIPSE_BAR_LUNAR_BUFF_ID) then
             hasLunarEclipse = true;
         end
         j=j+1;
         name, _, _, _, _, _, _, _, _, _, spellID = UnitBuff(unit, j);
     end
-
-    if hasLunarEclipse then
-        self.glow:ClearAllPoints();
-        local glowInfo = ECLIPSE_ICONS["moon"].big;
-        self.glow:SetPoint("CENTER", self.moon, "CENTER", 0, 0);
-        self.glow:SetWidth(glowInfo.x);
-        self.glow:SetHeight(glowInfo.y);
-        self.glow:SetTexCoord(glowInfo.left, glowInfo.right, glowInfo.top, glowInfo.bottom);
-        self.sunBar:SetAlpha(0);
-        self.darkMoon:SetAlpha(0);
-        self.moonBar:SetAlpha(1);
-        self.darkSun:SetAlpha(1);
-        self.glow:SetAlpha(1);
-        self.glow.pulse:Play();
-    elseif hasSolarEclipse then
-        self.glow:ClearAllPoints();
-        local glowInfo = ECLIPSE_ICONS["sun"].big;
-        self.glow:SetPoint("CENTER", self.sun, "CENTER", 0, 0);
-        self.glow:SetWidth(glowInfo.x);
-        self.glow:SetHeight(glowInfo.y);
-        self.glow:SetTexCoord(glowInfo.left, glowInfo.right, glowInfo.top, glowInfo.bottom);
-        self.moonBar:SetAlpha(0);
-        self.darkSun:SetAlpha(0);
-        self.sunBar:SetAlpha(1);
-        self.darkMoon:SetAlpha(1);
-        self.glow:SetAlpha(1);
-        self.glow.pulse:Play();
+     
+    if (hasLunarEclipse) then
+        EclipseBar_SetGlow(self, "moon");
+        self.SunBar:SetAlpha(0);
+        self.DarkMoon:SetAlpha(0);
+        self.MoonBar:SetAlpha(1);
+        self.DarkSun:SetAlpha(1);
+        self.Glow:SetAlpha(1);
+        self.SunCover:SetAlpha(1);
+        if (IsPlayerSpell(EQUINOX_TALENT_SPELL_ID)) then
+            self.SunCover:Show();
+        end
+        self.pulse:Play(); 
+    elseif (hasSolarEclipse) then
+        EclipseBar_SetGlow(self, "sun");
+        self.MoonBar:SetAlpha(0);
+        self.DarkSun:SetAlpha(0);
+        self.SunBar:SetAlpha(1);
+        self.DarkMoon:SetAlpha(1);
+        self.Glow:SetAlpha(1);
+        self.MoonCover:SetAlpha(1);
+        if (IsPlayerSpell(EQUINOX_TALENT_SPELL_ID)) then
+            self.MoonCover:Show();
+        end
+        self.pulse:Play();
     else
-        self.sunBar:SetAlpha(0);
-        self.moonBar:SetAlpha(0);
-        self.darkSun:SetAlpha(0);
-        self.darkMoon:SetAlpha(0);
-        self.glow:SetAlpha(0);
+        self.SunBar:SetAlpha(0);
+        self.MoonBar:SetAlpha(0);
+        self.DarkSun:SetAlpha(0);
+        self.DarkMoon:SetAlpha(0);
+        self.Glow:SetAlpha(0);
     end
-
+     
     self.hasLunarEclipse = hasLunarEclipse;
     self.hasSolarEclipse = hasSolarEclipse;
-
+     
     StatusBars2_EclipseBar_OnUpdate(self);
 end

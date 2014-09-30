@@ -120,123 +120,12 @@
 
     </Frame>
 
-    <!-- Rune button template. -->
-    <Button name="StatusBars2_RuneButtonTemplate" virtual="true" hidden="false">
-
-    <Size>
-      <AbsDimension x="22" y="22"/>
-    </Size>
-    <Frames>
-		<Cooldown name="$parentCooldown" drawEdge="true" frameStrata="LOW">
-			<Size x="19" y="19"/>
-			<Anchors>
-			  <Anchor point="CENTER">
-				<Offset>
-				  <AbsDimension x="0" y="-1"/>
-				</Offset>
-			  </Anchor>
-			</Anchors>
-		</Cooldown>
-		<Frame name="$parentBorder" frameStrata="LOW">
-			<Size x="28" y="28"/>
-			<Anchors>
-				<Anchor point="CENTER">
-					<Offset x="0" y="-1"/>
-				</Anchor>
-			</Anchors>
-			<Layers>
-				<Layer level="OVERLAY">
-					<Texture name="$parentTexture" file="Interface\PlayerFrame\UI-PlayerFrame-Deathknight-Ring">
-						<Color r=".6" g=".6" b=".6" a="1"/>
-					</Texture>
-				</Layer>
-			</Layers>
-			<Scripts>
-				<OnLoad>
-					RaiseFrameLevel(self);
-				</OnLoad>
-			</Scripts>
-		</Frame>
-		<Frame frameStrata="MEDIUM" setAllPoints="true" name="$parentShine">
-			<Layers>
-				<Layer level="OVERLAY">
-					<Texture name="$parentTexture" urgency="5" file="Interface\ComboFrame\ComboPoint" alphaMode="ADD" hidden="true">
-						<Size x="60" y="35"/>
-						<Anchors>
-							<Anchor point="CENTER">
-								<Offset x="0" y="0"/>
-							</Anchor>
-						</Anchors>
-						<TexCoords left="0.5625" right="1" top="0" bottom="1"/>
-					</Texture>
-				</Layer>
-			</Layers>
-		</Frame>
-		<Frame frameStrata="HIGH" setAllPoints="true">
-			<Layers>
-				<Layer level="OVERLAY" textureSublevel = "-1">
-					<Texture name="$parentRuneWhiteGlow" file="Interface\PlayerFrame\Deathknight-Energize-White" alpha="0">
-						<Size x="8" y="8"/>
-						<Anchors>
-							<Anchor point="CENTER" x="0" y="-1"/>
-						</Anchors>
-					</Texture>
-				</Layer>
-				<Layer level="OVERLAY">
-					<Texture name="$parentRuneColorGlow" file="Interface\PlayerFrame\Deathknight-Energize-Blood" alpha="0">
-						<Size x="32" y="32"/>
-						<Anchors>
-							<Anchor point="CENTER" x="0" y="-1"/>
-						</Anchors>
-					</Texture>
-				</Layer>
-			</Layers>
-		</Frame>
-    </Frames>
-    <Layers>
-		<Layer level="ARTWORK">
-			<Texture name="$parentRune" file="Interface\PlayerFrame\UI-PlayerFrame-Deathknight-Blood" parentKey="rune">
-				<Size>
-					<AbsDimension x="28" y="28"/>
-				</Size>
-				<Anchors>
-					<Anchor point="CENTER">
-						<Offset>
-							<AbsDimension x="0" y="-1"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Texture>
-		</Layer>
-    </Layers>
-	<Animations>
-		<AnimationGroup parentKey="energize">
-			<Scale target="$parentRuneWhiteGlow" endDelay="1" duration="0.15"  scaleX="4" scaleY="4" order="1"/>
-			<Alpha target="$parentRuneWhiteGlow" endDelay="1" change="1.0" duration="0.2" order="1" />
-			<Alpha target="$parentRuneColorGlow" startDelay="0.3" endDelay="4" change="1.0" duration="0.1" order="1" smoothing="IN_OUT"/>
-			<Alpha target="$parentRuneWhiteGlow" change="-1.0" duration="0.1" order="2" smoothing="IN_OUT"/>
-			<Alpha target="$parentRuneColorGlow" change="-1.0" duration="0.1" order="2" smoothing="IN_OUT"/>
-		</AnimationGroup>
-	</Animations>
-    <Scripts>
-		<OnLoad>
-			RuneButton_OnLoad(self);
-		</OnLoad>
-		<OnEnter>
-			RuneButton_OnEnter(self, motion);
-		</OnEnter>
-		<OnLeave>
-			RuneButton_OnLeave(self, motion);
-		</OnLeave>
-    </Scripts>
-  </Button>
-
     <!-- Rune bar template. -->
     <Frame name="StatusBars2_RuneFrameTemplate" virtual="true" movable="true" >
 
         <Size x="170" y="28" />
         <Frames>
-            <Button name="$parent_RuneButton1" inherits="StatusBars2_RuneButtonTemplate" id="1">
+            <Button name="$parent_RuneButton1" inherits="RuneButtonIndividualTemplate" id="1">
                 <Anchors>
                     <Anchor point="LEFT" relativeTo="$Parent" relativePoint="LEFT">
                         <Offset>
@@ -246,7 +135,7 @@
                 </Anchors>
             </Button>
 
-            <Button name="$parent_RuneButton2" inherits="StatusBars2_RuneButtonTemplate" id="2">
+            <Button name="$parent_RuneButton2" inherits="RuneButtonIndividualTemplate" id="2">
                 <Anchors>
                     <Anchor point="LEFT" relativeTo="$Parent" relativePoint="LEFT">
                         <Offset>
@@ -256,7 +145,7 @@
                 </Anchors>
             </Button>
 
-            <Button name="$parent_RuneButton5" inherits="StatusBars2_RuneButtonTemplate" id="5">
+            <Button name="$parent_RuneButton5" inherits="RuneButtonIndividualTemplate" id="5">
                 <Anchors>
                     <Anchor point="LEFT" relativeTo="$Parent" relativePoint="LEFT">
                         <Offset>
@@ -266,7 +155,7 @@
                 </Anchors>
             </Button>
 
-            <Button name="$parent_RuneButton6" inherits="StatusBars2_RuneButtonTemplate" id="6">
+            <Button name="$parent_RuneButton6" inherits="RuneButtonIndividualTemplate" id="6">
                 <Anchors>
                     <Anchor point="LEFT" relativeTo="$Parent" relativePoint="LEFT">
                         <Offset>
@@ -276,7 +165,7 @@
                 </Anchors>
             </Button>
 
-            <Button name="$parent_RuneButton3" inherits="StatusBars2_RuneButtonTemplate" id="3">
+            <Button name="$parent_RuneButton3" inherits="RuneButtonIndividualTemplate" id="3">
                 <Anchors>
                     <Anchor point="LEFT" relativeTo="$Parent" relativePoint="LEFT">
                         <Offset>
@@ -286,7 +175,7 @@
                 </Anchors>
             </Button>
 
-            <Button name="$parent_RuneButton4" inherits="StatusBars2_RuneButtonTemplate" id="4">
+            <Button name="$parent_RuneButton4" inherits="RuneButtonIndividualTemplate" id="4">
                 <Anchors>
                     <Anchor point="LEFT" relativeTo="$Parent" relativePoint="LEFT">
                         <Offset>
@@ -301,14 +190,6 @@
     <!-- Aura bar template -->
     <Frame name="StatusBars2_AuraBarTemplate" movable="true" virtual="true" >
         <Size x="170" y="20" />
-        <!-- <Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-            <EdgeSize>
-                <AbsValue val="16" />
-            </EdgeSize>
-            <TileSize>
-                <AbsValue val="16" />
-            </TileSize>
-        </Backdrop> -->
     </Frame>
 
     <!-- Eclipse bar template -->
@@ -392,84 +273,73 @@
         </HitRectInsets>
         <Layers>
             <Layer level="ARTWORK">
-                <Texture name="$parentBar" file="Interface\PlayerFrame\UI-DruidEclipse">
-                    <Size x="140" y="38"/>
+                <Texture name="$parentBar" atlas="DruidEclipse-BaseBar" useAtlasSize="true">
                     <Anchors>
                         <Anchor point="CENTER"/>
                     </Anchors>
-                    <TexCoords left="0.00390625" right="0.55078125" top="0.63281250" bottom="0.92968750"/>
                 </Texture>
             </Layer>
             <Layer level="BACKGROUND">
-                <Texture name="$parentSun" file="Interface\PlayerFrame\UI-DruidEclipse" parentKey="sun">
-                    <Size x="23" y="23"/>
+                <Texture parentKey="Sun" name="$parentSun" atlas="DruidEclipse-BaseSun" useAtlasSize="true">
                     <Anchors>
                         <Anchor point="CENTER" relativeTo="$parentBar"  relativePoint="RIGHT" x="-17" y="1"/>
                     </Anchors>
-                    <TexCoords left="0.65625000" right="0.74609375" top="0.37500000" bottom="0.55468750"/>
                 </Texture>
-                <Texture name="$parentMoon" file="Interface\PlayerFrame\UI-DruidEclipse" parentKey="moon">
-                    <Size x="23" y="23"/>
+                <Texture parentKey="Moon" name="$parentMoon" atlas="DruidEclipse-BaseMoon" useAtlasSize="true">
                     <Anchors>
                         <Anchor point="CENTER" relativeTo="$parentBar" relativePoint="LEFT" x="17" y="1"/>
                     </Anchors>
-                    <TexCoords left="0.55859375" right="0.64843750" top="0.57031250" bottom="0.75000000"/>
                 </Texture>
             </Layer>
             <Layer level="BACKGROUND" textureSubLevel="1">
-                <Texture name="$parentDarkSun" file="Interface\PlayerFrame\UI-DruidEclipse" parentKey="darkSun">
-                    <Size x="23" y="23"/>
+                <Texture parentKey="DarkSun" name="$parentDarkSun" atlas="DruidEclipse-LunarSun" useAtlasSize="true">
                     <Anchors>
                         <Anchor point="CENTER" relativeTo="$parentSun"/>
                     </Anchors>
-                    <TexCoords left="0.55859375" right="0.64843750" top="0.76562500" bottom="0.94531250"/>
                 </Texture>
-                <Texture name="$parentDarkMoon" file="Interface\PlayerFrame\UI-DruidEclipse" parentKey="darkMoon">
-                    <Size x="23" y="23"/>
+                <Texture parentKey="DarkMoon" name="$parentDarkMoon" atlas="DruidEclipse-SolarMoon" useAtlasSize="true">
                     <Anchors>
                         <Anchor point="CENTER" relativeTo="$parentMoon"/>
                     </Anchors>
-                    <TexCoords left="0.55859375" right="0.64843750" top="0.37500000" bottom="0.55468750"/>
                 </Texture>
             </Layer>
             <Layer level="ARTWORK" textureSubLevel="1">
-                <Texture name="$parentSunBar" file="Interface\PlayerFrame\UI-DruidEclipse" parentKey="sunBar">
-                    <Size x="140" y="38"/>
+                <Texture parentKey="SunBar" name="$parentSunBar" atlas="DruidEclipse-SolarBar" useAtlasSize="true">
                     <Anchors>
-                        <Anchor point="CENTER"/>
+                        <Anchor point="CENTER" x="15"/>
                     </Anchors>
-                    <TexCoords left="0.00390625" right="0.55078125" top="0.32031250" bottom="0.61718750"/>
                 </Texture>
-                <Texture name="$parentMoonBar" file="Interface\PlayerFrame\UI-DruidEclipse" parentKey="moonBar">
-                    <Size x="140" y="38"/>
+                <Texture parentKey="MoonBar" name="$parentMoonBar" atlas="DruidEclipse-LunarBar" useAtlasSize="true">
                     <Anchors>
-                        <Anchor point="CENTER"/>
+                        <Anchor point="CENTER" x="-15"/>
                     </Anchors>
-                    <TexCoords left="0.00390625" right="0.55078125" top="0.00781250" bottom="0.30468750"/>
+                </Texture>
+            </Layer>
+            <Layer level="OVERLAY" textureSubLevel="-1">
+                <Texture parentKey="MoonCover" name="$parentMoonCover" atlas="DruidEclipse-SolarCover" useAtlasSize="true" hidden="true">
+                    <Anchors>
+                        <Anchor point="LEFT" x="20" y="1"/>
+                    </Anchors>
+                </Texture>
+                <Texture parentKey="SunCover" name="$parentSunCover" atlas="DruidEclipse-LunarCover" useAtlasSize="true" hidden="true">
+                    <Anchors>
+                        <Anchor point="RIGHT" x="-30"/>
+                    </Anchors>
                 </Texture>
             </Layer>
             <Layer level="OVERLAY">
-                <Texture name="$parentMarker" file="Interface\PlayerFrame\UI-DruidEclipse" parentKey="marker" alphaMode="ADD">
-                    <Size x="20" y="20"/>
+                <Texture parentKey="Marker" name="$parentMarker" atlas="DruidEclipse-Arrow" useAtlasSize="true" alphaMode="ADD">
                     <Anchors>
                         <Anchor point="CENTER" y="2"/>
                     </Anchors>
-                    <TexCoords left="1.0" right="0.914" top="0.82" bottom="1.0"/>
                 </Texture>
-                <Texture name="$parentGlow" file="Interface\PlayerFrame\UI-DruidEclipse" parentKey="glow" >
-                    <Animations>
-                        <AnimationGroup looping="repeat" parentKey="pulse">
-                            <Scale scaleX="1.08" scaleY="1.08" duration="0.5" smoothing="IN_OUT" order="1"/>
-                            <Scale scaleX="0.9259" scaleY="0.9259" duration="0.5" smoothing="IN_OUT" order="2"/>
-                        </AnimationGroup>
-                    </Animations>
+                <Texture parentKey="Glow" name="$parentGlow" atlas="DruidEclipse-SolarSun">
                     <Size x="43" y="45"/>
                     <Anchors>
                         <Anchor point="CENTER"/>
                     </Anchors>
-                    <TexCoords left="0.55859375" right="0.72656250" top="0.00781250" bottom="0.35937500"/>
                 </Texture>
-                <FontString name="$parentPowertext" inherits="TextStatusBarText" parentKey="powerText" >
+                <FontString name="$parentPowertext" inherits="TextStatusBarText" justifyH="CENTER" parentKey="PowerText" hidden="true">
                     <Anchors>
                         <Anchor point="CENTER" x="0" y="0"/>
                     </Anchors>
@@ -566,7 +436,7 @@
             </Layer>
         </Layers>
         <Frames>
-            <Frame name="$parent_EnabledMenu" inherits="UIDropDownMenuTemplate" >
+            <Frame name="$parent_EnabledMenu" parentKey="enabledMenu" inherits="UIDropDownMenuTemplate" >
                 <Size x="70" y="17"/>
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeTo="$parent_EnabledLabel" relativePoint="TOPRIGHT" >
@@ -581,7 +451,7 @@
                     </OnLoad>
                 </Scripts>
             </Frame>
-            <Slider name="$parent_ScaleSlider" parentKey="slider" inherits="OptionsSliderTemplate" minValue="0.25" maxValue="3.0" valueStep="0.05" >
+            <Slider name="$parent_ScaleSlider" parentKey="scaleSlider" inherits="OptionsSliderTemplate" minValue="0.25" maxValue="3.0" valueStep="0.05" >
                 <Size x="200" y="17"/>
                 <Anchors>
                     <Anchor point="LEFT" relativeTo="$parent_ScaleSliderLabel" relativePoint="LEFT" >
@@ -612,7 +482,7 @@
                     </OnValueChanged>
                 </Scripts>
             </Slider>
-            <Slider name="$parent_AlphaSlider" inherits="OptionsSliderTemplate" minValue="0.2" maxValue="1.0" valueStep="0.1" >
+            <Slider name="$parent_AlphaSlider" parentKey="alphaSlider" inherits="OptionsSliderTemplate" minValue="0.2" maxValue="1.0" valueStep="0.1" >
                 <Size x="200" y="17"/>
                 <Anchors>
                     <Anchor point="LEFT" relativeTo="$parent_AlphaSliderLabel" relativePoint="LEFT" >
@@ -763,7 +633,7 @@
     </Frame>
 
     <!-- Aura Bar options frame template -->
-    <Button name="StatusBar2_ListEntryButtonTemplate" virtual="true" >
+    <Button name="StatusBar2_AuraListEntryButtonTemplate" virtual="true" >
         <ButtonText name="$parentText">
             <Size x="140" y="13"/>
             <Anchors>
@@ -1014,7 +884,7 @@
                     <OnLoad>
                         HybridScrollFrame_OnLoad(self);
                         self.update = StatusBars2_BarOptions_AuraListUpdate;
-                        HybridScrollFrame_CreateButtons(self, "StatusBar2_ListEntryButtonTemplate");
+                        HybridScrollFrame_CreateButtons(self, "StatusBar2_AuraListEntryButtonTemplate");
                     </OnLoad>
                     <OnShow>
                         StatusBars2_BarOptions_AuraListUpdate( self );    
@@ -1348,6 +1218,513 @@
                     </OnValueChanged>
                 </Scripts>
             </Slider>
+        </Frames>
+    </Frame>
+
+    <!-- Base bar configuration frame template -->
+    <Frame name="StatusBars2_BarConfigTemplate" hidden="false" virtual="true" >
+        <Size x="550" y="250" />
+		<Layers>
+			<Layer level="BACKGROUND">
+                <FontString name="$parent_EnabledLabel" inherits="GameFontNormalSmallLeft" text="Enabled" >
+                    <Size x="64" y="20"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$Parent" >
+                            <Offset>
+                                <AbsDimension x="0" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parent_ScaleSliderLabel" inherits="GameFontNormalSmallLeft" text="Scale">
+                    <Size x="64" y="14"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parent_EnabledLabel" relativePoint="BOTTOMLEFT">
+                            <Offset x="0" y="-15" />
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parent_AlphaSliderLabel" inherits="GameFontNormalSmallLeft" text="Opacity">
+                    <Size x="64" y="14"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parent_ScaleSliderLabel" relativePoint="BOTTOMLEFT">
+                            <Offset x="0" y="-15" />
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Frame name="$parent_EnabledMenu" parentKey="enabledMenu" inherits="UIDropDownMenuTemplate" >
+                <Size x="70" y="17"/>
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="$parent_EnabledLabel" relativePoint="RIGHT" >
+                        <Offset x="0" y="-3" />
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        UIDropDownMenu_Initialize( self, StatusBars2_BarEnabledMenu_Initialize );
+                        UIDropDownMenu_SetWidth(self, self:GetWidth());
+                        UIDropDownMenu_SetButtonWidth(self, "TEXT");
+                    </OnLoad>
+                </Scripts>
+            </Frame>
+            <Slider name="$parent_ScaleSlider" parentKey="scaleSlider" inherits="OptionsSliderTemplate" minValue="0.25" maxValue="3.0" valueStep="0.05" >
+                <Size x="200" y="17"/>
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="$parent_ScaleSliderLabel" relativePoint="LEFT" >
+                        <Offset x="64" y="0" />
+                    </Anchor>
+                </Anchors>
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <FontString name="$parentValueLabel" inherits="GameFontNormalSmallLeft" >
+                            <Anchors>
+                                <Anchor point="LEFT" relativeTo="$Parent" relativePoint="RIGHT">
+                                    <Offset>
+                                        <AbsDimension x="10" y="0"/>
+                                    </Offset>
+                                </Anchor>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+                <Scripts>
+                    <OnLoad>
+                        self.type = CONTROLTYPE_SLIDER;
+                        getglobal( self:GetName( ) .. "Low" ):SetText( "0.25" );
+                        getglobal( self:GetName( ) .. "High" ):SetText( "3.0" );
+                        getglobal( self:GetName( ) .. "Low" ):Hide();
+                        getglobal( self:GetName( ) .. "High" ):Hide();
+                    </OnLoad>
+                    <OnValueChanged>
+                        getglobal( self:GetName( ) .. "ValueLabel" ):SetText( StatusBars2_Round( value, 2 ) );
+                    </OnValueChanged>
+                </Scripts>
+            </Slider>
+            <Slider name="$parent_AlphaSlider" parentKey="alphaSlider" inherits="OptionsSliderTemplate" minValue="0.2" maxValue="1.0" valueStep="0.1" >
+                <Size x="200" y="17"/>
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="$parent_AlphaSliderLabel" relativePoint="LEFT" >
+                        <Offset x="64" y="0" />
+                    </Anchor>
+                </Anchors>
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <FontString name="$parentValueLabel" inherits="GameFontNormalSmallLeft" >
+                            <Anchors>
+                                <Anchor point="LEFT" relativeTo="$Parent" relativePoint="RIGHT">
+                                    <Offset>
+                                        <AbsDimension x="15" y="0"/>
+                                    </Offset>
+                                </Anchor>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+                <Scripts>
+                    <OnLoad>
+                        self.type = CONTROLTYPE_SLIDER;
+                        getglobal( self:GetName( ) .. "Low" ):SetText( "20%" );
+                        getglobal( self:GetName( ) .. "High" ):SetText( "100%" );
+                        getglobal( self:GetName( ) .. "Low" ):Hide();
+                        getglobal( self:GetName( ) .. "High" ):Hide();
+                    </OnLoad>
+                    <OnValueChanged>
+                        getglobal( self:GetName( ) .. "ValueLabel" ):SetText( StatusBars2_Round( value, 2 ) * 100 .. "%" );
+                    </OnValueChanged>
+                </Scripts>
+            </Slider>
+        </Frames>
+    </Frame>
+
+    <!-- Continuous Bar configuration frame template -->
+    <Frame name="StatusBars2_ContinuousBarConfigTemplate" inherits="StatusBars2_BarConfigTemplate" virtual="true" >
+        <Frames>
+            <CheckButton name="$parent_FlashButton" inherits="OptionsSmallCheckButtonTemplate" >
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeto="$parent_AlphaSliderLabel" relativePoint="BOTTOMLEFT">
+                        <Offset x="0" y="-15" />
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal( self:GetName( ) .. "Text" ):SetText( "Flash when below" );
+                    </OnLoad>
+                </Scripts>
+            </CheckButton>
+            <Slider name="$parent_FlashThresholdSlider" inherits="OptionsSliderTemplate" minValue="0" maxValue="1.0" valueStep="0.01" >
+                <Size x="200" y="17"/>
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="$parent_FlashButton" relativePoint="RIGHT" >
+                        <Offset x="120" y="0" />
+                    </Anchor>
+                </Anchors>
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <FontString name="$parentValueLabel" inherits="GameFontNormalSmallLeft" >
+                            <Anchors>
+                                <Anchor point="LEFT" relativeTo="$Parent" relativePoint="RIGHT">
+                                    <Offset>
+                                        <AbsDimension x="10" y="0"/>
+                                    </Offset>
+                                </Anchor>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+                <Scripts>
+                    <OnLoad>
+                        self.type = CONTROLTYPE_SLIDER;
+                        getglobal( self:GetName( ) .. "Low" ):SetText( "0" );
+                        getglobal( self:GetName( ) .. "High" ):SetText( "100%" );
+                        getglobal( self:GetName( ) .. "Low" ):Hide();
+                        getglobal( self:GetName( ) .. "High" ):Hide();
+                    </OnLoad>
+                    <OnValueChanged>
+                        getglobal( self:GetName( ) .. "ValueLabel" ):SetText( StatusBars2_Round( value, 2 ) * 100 .. "%" );
+                    </OnValueChanged>
+                </Scripts>
+            </Slider>
+        </Frames>
+		<Layers>
+			<Layer level="BACKGROUND">
+                <FontString name="$parent_PercentTextLabel" inherits="GameFontNormalSmallLeft" text="Percent Text" >
+                    <Size x="70" y="17"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parent_FlashButton" relativePoint="BOTTOMLEFT">
+                            <Offset>
+                                <AbsDimension x="0" y="-10"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Frame name="$parent_PercentTextMenu" inherits="UIDropDownMenuTemplate" id="16790" >
+                <Size x="60" y="17"/>
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parent_PercentTextLabel" relativePoint="TOPRIGHT" >
+                        <Offset x="5" y="3" />
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        UIDropDownMenu_Initialize( self, StatusBars2_PercentTextMenu_Initialize );
+                        UIDropDownMenu_SetWidth(self, self:GetWidth());
+                        UIDropDownMenu_SetButtonWidth(self, "TEXT");
+                    </OnLoad>
+                </Scripts>
+            </Frame>
+        </Frames>
+    </Frame>
+
+    <!-- Druid mana bar options frame template -->
+    <Frame name="StatusBars2_DruidManaBarConfigTemplate" inherits="StatusBars2_ContinuousBarConfigTemplate" virtual="true" >
+        <Frames>
+            <CheckButton name="$parent_ShowInAllForms" inherits="OptionsSmallCheckButtonTemplate" >
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeto="$parent_PercentTextLabel" relativePoint="BOTTOMLEFT" >
+                        <Offset x="0" y="-10" />
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal( self:GetName( ) .. "Text" ):SetText( "Show in all forms" );
+                    </OnLoad>
+                </Scripts>
+            </CheckButton>
+        </Frames>
+    </Frame>
+
+    <!-- Target power bar options frame template -->
+    <Frame name="StatusBars2_TargetPowerBarConfigTemplate" inherits="StatusBars2_ContinuousBarConfigTemplate" virtual="true" >
+        <Frames>
+            <CheckButton name="$parent_ShowSpellButton" inherits="OptionsSmallCheckButtonTemplate" >
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeto="$parent_PercentTextLabel" relativePoint="BOTTOMLEFT" >
+                        <Offset x="0" y="-10" />
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal( self:GetName( ) .. "Text" ):SetText( "Show target spell" );
+                    </OnLoad>
+                </Scripts>
+            </CheckButton>
+        </Frames>
+    </Frame>
+
+
+    <!-- Scroll frame entry button template -->
+    <Button name="StatusBar2_BarListEntryButtonTemplate" virtual="true" >
+        <ButtonText name="$parentText">
+            <Size x="140" y="13"/>
+            <Anchors>
+                <Anchor point="LEFT" relativeTo="$parent" >
+                    <Offset>
+                        <AbsDimension x="10" y="1"/>
+                    </Offset>
+                </Anchor>
+            </Anchors>
+        </ButtonText>
+
+        <DisabledFont style="GameFontDisableLeft"/>
+        <HighlightFont style="GameFontHighlightLeft"/>
+        <HighlightTexture file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD"/>
+        <NormalFont style="GameFontNormalLeft"/>
+
+        <Scripts>
+            <OnClick>
+                StatusBars2_BarOptions_ListEntryButton_OnClick( self );
+            </OnClick>
+            <OnEnter>
+                if ( self:GetText( ) ) then
+                    GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_RIGHT", 0, -self:GetHeight( ));
+                    GameTooltip:SetText(self:GetText( ), nil, nil, nil, nil, 1);
+                end
+            </OnEnter>
+            <OnLeave>
+                GameTooltip:Hide( );
+            </OnLeave>
+        </Scripts>
+        <Size x="150" y="20" />
+    </Button>
+
+	<Frame name="StatusBars2_Config" toplevel="true" parent="UIParent" hidden="true" enableMouse="true" frameStrata="DIALOG">
+		<Size>
+			<AbsDimension x="550" y="250"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOP"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="11" top="12" bottom="10"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+        <TitleRegion>
+            <Size x="300" y="68"/>
+            <Anchors><Anchor point="TOP"/></Anchors>
+        </TitleRegion>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentHeader" urgency="5" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="300" y="68"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentHeaderText" inherits="GameFontNormal" text="StatusBars2 Config">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentHeader">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+                <FontString name="$parent_BarSelectLabel" inherits="GameFontNormalSmallLeft" text="Bar Select" justifyH="RIGHT" >
+                    <Size x="70" y="25"/>
+                </FontString>
+			</Layer>
+		</Layers>
+        <Frames>
+            <!--<ScrollFrame name="$parent_BarSelectScrollFrame" parentKey="barSelectScrollFrame" inherits="FauxScrollFrameTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="20" y="-20"/>
+                        </Offset>
+                    </Anchor>
+                    <Anchor point="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="20" y="45"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Layers>
+                    <Layer level="BACKGROUND">
+                        <Texture name="$parentTopLeft" file="Interface\Common\Common-Input-Border-TL">
+                            <Size>
+                                <AbsDimension x="8" y="8"/>
+                            </Size>
+                            <Anchors>
+                                <Anchor point="TOPLEFT">
+                                    <Offset x="-5" y="5"/>
+                                </Anchor>
+                            </Anchors>
+                        </Texture>
+                        <Texture name="$parentTopRight" file="Interface\Common\Common-Input-Border-TR">
+                            <Size>
+                                <AbsDimension x="8" y="8"/>
+                            </Size>
+                            <Anchors>
+                                <Anchor point="TOPRIGHT">
+                                    <Offset x="0" y="5"/>
+                                </Anchor>
+                            </Anchors>
+                        </Texture>
+                        <Texture name="$parentTop" file="Interface\Common\Common-Input-Border-T">
+                            <Anchors>
+                                <Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="TOPRIGHT"/>
+                                <Anchor point="BOTTOMRIGHT" relativeTo="$parentTopRight" relativePoint="BOTTOMLEFT"/>
+                            </Anchors>
+                        </Texture>
+                        <Texture name="$parentBottomLeft" file="Interface\Common\Common-Input-Border-BL">
+                            <Size>
+                                <AbsDimension x="8" y="8"/>
+                            </Size>
+                            <Anchors>
+                                <Anchor point="BOTTOMLEFT">
+                                    <Offset x="-5" y="-5"/>
+                                </Anchor>
+                            </Anchors>
+                        </Texture>
+                        <Texture name="$parentBottomRight" file="Interface\Common\Common-Input-Border-BR">
+                            <Size>
+                                <AbsDimension x="8" y="8"/>
+                            </Size>
+                            <Anchors>
+                                <Anchor point="BOTTOMRIGHT">
+                                    <Offset x="0" y="-5"/>
+                                </Anchor>
+                            </Anchors>
+                        </Texture>
+                        <Texture name="$parentBottom" file="Interface\Common\Common-Input-Border-B">
+                            <Anchors>
+                                <Anchor point="TOPLEFT" relativeTo="$parentBottomLeft" relativePoint="TOPRIGHT"/>
+                                <Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="BOTTOMLEFT"/>
+                            </Anchors>
+                        </Texture>
+                        <Texture name="$parentLeft" file="Interface\Common\Common-Input-Border-L">
+                            <Anchors>
+                                <Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="BOTTOMLEFT"/>
+                                <Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomLeft" relativePoint="TOPRIGHT"/>
+                            </Anchors>
+                        </Texture>
+                        <Texture name="$parentRight" file="Interface\Common\Common-Input-Border-R">
+                            <Anchors>
+                                <Anchor point="TOPLEFT" relativeTo="$parentTopRight" relativePoint="BOTTOMLEFT"/>
+                                <Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="TOPRIGHT"/>
+                            </Anchors>
+                        </Texture>
+                        <Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border-M">
+                            <Anchors>
+                                <Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT"/>
+                                <Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT"/>
+                            </Anchors>
+                        </Texture>
+                    </Layer>
+                </Layers>
+                <Scripts>
+                    <OnVerticalScroll>
+                        FauxScrollFrame_OnVerticalScroll(self, offset, 16, StatusBars2Config_BarSelectScrollBar_Update); 
+                    </OnVerticalScroll>
+                    <OnShow>
+                        StatusBars2Config_BarSelectScrollBar_Update()
+                    </OnShow>
+                </Scripts>
+                <Size x="100" y="250"/>
+            </ScrollFrame>  -->          
+            <Button name="$parent_DefaultsButton" parentKey="defaultsButton" inherits="UIPanelButtonTemplate" text="DEFAULTS">
+                <Size>
+                    <AbsDimension x="96" y="22"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="16" y="16"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        <!--tinsert(UISpecialFrames, self:GetName());-->
+                    </OnLoad>
+					<OnClick function="StatusBars2Config_DefaultButton_OnClick"/>
+                </Scripts>
+            </Button>
+	        <Button name="$parentCancelButton" parentKey="cancelButton" inherits="UIPanelButtonTemplate" text="REVERT">
+                <Size>
+                    <AbsDimension x="96" y="22"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="BOTTOMRIGHT">
+                        <Offset>
+                            <AbsDimension x="-16" y="16"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+					<OnClick function="StatusBars2Config_CancelButton_OnClick"/>
+                </Scripts>
+            </Button>
+            <Button name="$parentOkayButton" parentKey="okayButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
+                <Size>
+                    <AbsDimension x="96" y="22"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$parentCancelButton" relativePoint="BOTTOMLEFT"/>
+                </Anchors>
+                <Scripts>
+					<OnClick function="StatusBars2Config_OKButton_OnClick"/>
+                </Scripts>
+            </Button>
+            <Frame name="$parent_BarSelectMenu" parentKey="barSelectMenu" inherits="UIDropDownMenuTemplate" >
+                <Size x="130" y="16"/>
+                <Anchors>
+                    <Anchor point="BOTTOM" >
+                        <Offset x="0" y="8" />
+                    </Anchor>
+                    <Anchor point="RIGHT" relativeTo="$parentOkayButton" relativePoint="LEFT" >
+                        <Offset x="10" y="0" />
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        StatusBars2_Config_BarSelectLabel:ClearAllPoints( );
+                        StatusBars2_Config_BarSelectLabel:SetPoint("RIGHT", self, "LEFT", 10, 2);
+                        UIDropDownMenu_Initialize( self, StatusBars2Config_BarSelect_Initialize );
+                        UIDropDownMenu_SetWidth(self, self:GetWidth());
+                        UIDropDownMenu_SetButtonWidth(self, "TEXT");
+                    </OnLoad>
+                </Scripts>
+            </Frame>
+            <Frame parentKey="inlayFrame" >
+                <Anchors>
+                    <Anchor point="LEFT">
+                        <Offset>
+                            <AbsDimension x="20" y="0"/>
+                        </Offset>
+                    </Anchor>
+                    <Anchor point="RIGHT">
+                        <Offset>
+                            <AbsDimension x="-20" y="0"/>
+                        </Offset>
+                    </Anchor>
+                    <Anchor point="TOP" >
+                        <Offset x="0" y="-20" />
+                    </Anchor>
+                    <Anchor point="BOTTOM" relativeTo="$parent_DefaultsButton" relativePoint="TOP" >
+                        <Offset x="0" y="20" />
+                    </Anchor>
+                </Anchors>                
+            </Frame>
         </Frames>
     </Frame>
 

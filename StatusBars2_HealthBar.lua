@@ -29,81 +29,6 @@ local kFlashAlpha = 0.8;
 
 -------------------------------------------------------------------------------
 --
---  Name:           Config_HealthBar_OnEnable
---
---  Description:    
---
--------------------------------------------------------------------------------
---
-local function Config_HealthBar_OnEnable( self )
-
-    self.status:SetStatusBarColor( 0, 1, 0 );
-
-    -- Call the base method
-    self:ContinuousBar_OnEnable( );
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           SetNormalHealthBarHandlers
---
---  Description:    
---
--------------------------------------------------------------------------------
---
-local function SetNormalHealthBarHandlers( bar )
-
-    -- Call base method
-    bar:ContinuousBar_SetNormalHandlers( );
-    
-    -- Set up methods for normal mode bar operation
-    bar.OnEnable = StatusBars2_HealthBar_OnEnable;
-
-    -- Register for events
-    bar:RegisterEvent( "UNIT_HEALTH" );
-    bar:RegisterEvent( "UNIT_MAXHEALTH" );
-    bar:RegisterEvent( "PLAYER_REGEN_DISABLED" );
-    bar:RegisterEvent( "PLAYER_REGEN_ENABLED" );
-    if( bar.unit == "target" ) then
-        bar:RegisterEvent( "PLAYER_TARGET_CHANGED" );
-    elseif( bar.unit == "focus" ) then
-        bar:RegisterEvent( "PLAYER_FOCUS_CHANGED" );
-    elseif( bar.unit == "pet" ) then
-        bar:RegisterEvent( "UNIT_PET" );
-    end
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           SetConfigHealthBarHandlers
---
---  Description:    
---
--------------------------------------------------------------------------------
---
-local function SetConfigHealthBarHandelrs( bar )
-
-    -- Call base method
-    bar:ContinuousBar_SetConfigHandlers( );
-
-    -- Set up methods for config mode bar operation
-    bar.OnEnable = Config_HealthBar_OnEnable;
-
-    -- Don't process the events while in config mode
-    bar:UnregisterEvent( "UNIT_HEALTH" );
-    bar:UnregisterEvent( "UNIT_MAXHEALTH" );
-    bar:UnregisterEvent( "PLAYER_REGEN_DISABLED" );
-    bar:UnregisterEvent( "PLAYER_REGEN_ENABLED" );
-    bar:UnregisterEvent( "PLAYER_TARGET_CHANGED" );
-    bar:UnregisterEvent( "PLAYER_FOCUS_CHANGED" );
-    bar:UnregisterEvent( "UNIT_PET" );
-
-end
-
--------------------------------------------------------------------------------
---
 --  Name:           StatusBars2_CreateHealthBar
 --
 --  Description:    Create a health bar
@@ -118,16 +43,23 @@ function StatusBars2_CreateHealthBar( key, unit )
     -- Create the bar
     local bar = StatusBars2_CreateContinuousBar( key, unit, displayName, barType, 1, 0, 0 );
 
-    -- Set the functions to switch between normal and config modes
-    bar.SetNormalHandlers = SetNormalHealthBarHandlers;
-    bar.SetConfigHandlers = SetConfigHealthBarHandelrs;
-
-    -- Set the bar to normal mode
-    bar:SetNormalHandlers( );
-
     -- Set the event handlers
     bar.OnEvent = StatusBars2_HealthBar_OnEvent;
+    bar.OnEnable = StatusBars2_HealthBar_OnEnable;
     bar.IsDefault = StatusBars2_HealthBar_IsDefault;
+
+    -- Events to register for on enable
+    bar.eventsToRegister["UNIT_HEALTH"] = true;
+    bar.eventsToRegister["UNIT_MAXHEALTH"] = true;
+    bar.eventsToRegister["PLAYER_REGEN_DISABLED"] = true;
+    bar.eventsToRegister["PLAYER_REGEN_ENABLED"] = true;
+    if( bar.unit == "target" ) then
+        bar.eventsToRegister["PLAYER_TARGET_CHANGED"] = true;
+    elseif( bar.unit == "focus" ) then
+        bar.eventsToRegister["PLAYER_FOCUS_CHANGED"] = true;
+    elseif( bar.unit == "pet" ) then
+        bar.eventsToRegister["UNIT_PET"] = true;
+    end
 
     return bar;
 
@@ -167,8 +99,12 @@ end
 --
 function StatusBars2_HealthBar_OnEnable( self )
 
-    -- Update
-    StatusBars2_UpdateHealthBar( self );
+    if( StatusBars2.configMode ) then
+        self.status:SetStatusBarColor( 0, 1, 0 );
+    else
+        -- Update
+        StatusBars2_UpdateHealthBar( self );
+    end
 
     -- Call the base method
     self:ContinuousBar_OnEnable( );

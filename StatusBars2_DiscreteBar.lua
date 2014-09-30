@@ -23,63 +23,6 @@ local kDefaultPowerBarColor = addonTable.kDefaultPowerBarColor;
 
 -------------------------------------------------------------------------------
 --
---  Name:           Config_DiscreteBar_OnEnable
---
---  Description:    
---
--------------------------------------------------------------------------------
---
-local function Config_DiscreteBar_OnEnable( self )
-
-    -- Hide all the boxes
-    for i, box in ipairs( { self:GetChildren( ) } ) do
-        box:Hide( );
-    end
-
-    -- Show a backdrop so we can see the bar
-    self:Bar_ShowBackdrop( );
-
-    -- Call the base method
-    self:Bar_OnEnable( );
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           Bar_SetNormalHandlers
---
---  Description:    
---
--------------------------------------------------------------------------------
---
-local function SetNormalDiscreteBarHandlers( bar )
-
-    bar:Bar_SetNormalHandlers( );
-
-    -- Override default methods as needed
-    bar.OnEnable = StatusBars2_DiscreteBar_OnEnable;
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           Bar_SetConfigHandlers
---
---  Description:    
---
--------------------------------------------------------------------------------
---
-local function SetConfigDiscreteBarHandlers( bar )
-
-    bar:Bar_SetConfigHandlers( );
-
-    -- Override default methods as needed
-    bar.OnEnable = Config_DiscreteBar_OnEnable;
-
-end
-
--------------------------------------------------------------------------------
---
 --  Name:           StatusBars2_CreateDiscreteBar
 --
 --  Description:    Create a bar to track a discrete number of values.
@@ -94,11 +37,11 @@ function StatusBars2_CreateDiscreteBar( key, unit, displayName, barType, boxCoun
     -- Set custom options template
     bar.optionsTemplate = "StatusBars2_AuraStatckBarOptionsTemplate";
 
-    -- Setup functions for config and normal modes
-    bar.SetNormalDiscreteBarHandlers = SetNormalDiscreteBarHandlers;
-    bar.SetConfigDiscreteBarHandlers = SetConfigDiscreteBarHandlers;
+    -- Base methods for subclasses to call
+    bar.DiscreteBar_OnEnable = StatusBars2_DiscreteBar_OnEnable;
 
-    -- Save the color in the settings.  I'll make this editable in the future.
+    -- Override default methods as needed
+    bar.OnEnable = StatusBars2_DiscreteBar_OnEnable;
     bar.GetColor = StatusBars2_GetDiscreteBarColor;
 
     -- Bar starts off with no boxes created.
@@ -284,8 +227,8 @@ end
 --
 function StatusBars2_GetDiscreteBarColor( bar, boxIndex )
 
-    if( bar.settings.color ) then
-        return unpack(bar.settings.color);
+    if( bar.color ) then
+        return unpack(bar.color);
     elseif( bar.type == kCombo ) then
         return 1, 0, 0;
     elseif( bar.type == kAuraStack ) then
@@ -314,17 +257,34 @@ end
 --
 function StatusBars2_DiscreteBar_OnEnable( self )
 
-    -- Hide the backdrop if we showed it for config mode
-    self:Bar_HideBackdrop( );
+    if( StatusBars2.configMode ) then
 
-    -- Show all boxes that should be active in case they were hidden by config mode
-    for i, box in ipairs( { self:GetChildren( ) } ) do
-        if( i <= self.boxCount ) then
-            box:Show( );
+        -- Show a backdrop so we can see the bar
+        self:Bar_ShowBackdrop( );
+
+        local r, g, b = self:GetColor( );
+        self:SetBackdropColor( r, g, b, 1.0 );
+
+        -- Hide all the boxes
+        for i, box in ipairs( { self:GetChildren( ) } ) do
+            box:Hide( );
         end
-    end
 
-    StatusBars2_UpdateDiscreteBarBoxColors( self );
+    else
+
+        -- Hide the backdrop if we showed it for config mode
+        self:Bar_HideBackdrop( );
+
+        -- Show all boxes that should be active in case they were hidden by config mode
+        for i, box in ipairs( { self:GetChildren( ) } ) do
+            if( i <= self.boxCount ) then
+                box:Show( );
+            end
+        end
+
+        StatusBars2_UpdateDiscreteBarBoxColors( self );
+
+    end
 
     -- Call the base method
     self:Bar_OnEnable( );

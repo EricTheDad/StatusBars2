@@ -15,6 +15,7 @@ local kUnitPower = addonTable.barTypes.kUnitPower;
 local kEclipse = addonTable.barTypes.kEclipse;
 local kDemonicFury = addonTable.barTypes.kDemonicFury;
 
+
 -------------------------------------------------------------------------------
 --
 --  Name:           StatusBars2_GetAuraStack
@@ -78,13 +79,6 @@ function StatusBars2_CreateAuraStackBar( key, unit, spellID, auraType, count, au
     bar.aura = auraName;
     bar.auraType = auraType;
 
-    -- Setup functions for config and normal modes
-    bar.SetNormalHandlers = bar.SetNormalDiscreteBarHandlers;
-    bar.SetConfigHandlers = bar.SetConfigDiscreteBarHandlers;
-
-    -- Setup for Normal mode
-    bar:SetNormalHandlers( );
-
     -- Set the event handlers
     bar.OnEvent = StatusBars2_AuraStackBar_OnEvent;
     bar.IsDefault = StatusBars2_AuraStackBar_IsDefault;
@@ -92,11 +86,11 @@ function StatusBars2_CreateAuraStackBar( key, unit, spellID, auraType, count, au
     -- Default the bar to never visible
     bar.defaultEnabled = "Never";
 
-    -- Register for events
-    bar:RegisterEvent( "PLAYER_TARGET_CHANGED" );
-    bar:RegisterEvent( "PLAYER_REGEN_ENABLED" );
-    bar:RegisterEvent( "PLAYER_REGEN_DISABLED" );
-    bar:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED" );
+    -- Events to register for on enable
+    bar.eventsToRegister["PLAYER_TARGET_CHANGED"] = true;
+    bar.eventsToRegister["PLAYER_REGEN_ENABLED"] = true;
+    bar.eventsToRegister["PLAYER_REGEN_DISABLED"] = true;
+    bar.eventsToRegister["COMBAT_LOG_EVENT_UNFILTERED"] = true;
 
 end
 

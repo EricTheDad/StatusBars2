@@ -48,337 +48,6 @@ local currentColorSwatch = nil;
 
 -------------------------------------------------------------------------------
 --
---  Name:           StatusBars2_LoadSettings
---
---  Description:    Load settings
---
--------------------------------------------------------------------------------
---
-function StatusBars2_LoadSettings( )
-
-    -- Initialize the bar settings
-    StatusBars2_InitializeSettings( );
-
-    -- Import old settings
-    StatusBars2_ImportSettings( );
-
-    -- Get rid of old setting we no longer care about
-    StatisBars2_PruneSettings( );
-    
-    -- Set default settings
-    StatusBars2_SetDefaultSettings( );
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_InitializeSettings
---
---  Description:    Initialize the settings object
---
--------------------------------------------------------------------------------
---
-function StatusBars2_InitializeSettings( )
-
-    -- If the bar array does not exist create it
-    if( StatusBars2_Settings.bars == nil ) then
-        StatusBars2_Settings.bars = {};
-    end
-
-    -- Create a structure for each bar type
-    for i, bar in ipairs( bars ) do
-        if( StatusBars2_Settings.bars[ bar.key ] == nil ) then
-            StatusBars2_Settings.bars[ bar.key ] = {};
-        end
-    end
-
-    -- Create the group array, if necessary
-    if( StatusBars2_Settings.groups == nil ) then
-        StatusBars2_Settings.groups = {};
-    end
-
-    -- Create a structure for each bar group
-    for i, group in ipairs( groups ) do
-        if( StatusBars2_Settings.groups[ i ] == nil ) then
-            StatusBars2_Settings.groups[ i ] = {};
-        end
-    end
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_ImportSettings
---
---  Description:    Import old settings
---
--------------------------------------------------------------------------------
---
-function StatusBars2_ImportSettings( )
-
-    -- Import old bar enable settings
-    StatusBars2_ImportEnableSetting( "ShowPlayerHealth", "playerHealth" );
-    StatusBars2_ImportEnableSetting( "ShowPlayerPower", "playerPower" );
-    StatusBars2_ImportEnableSetting( "ShowDruidMana", "druidMana" );
-    StatusBars2_ImportEnableSetting( "ShowTargetHealth", "targetHealth" );
-    StatusBars2_ImportEnableSetting( "ShowTargetPower", "targetPower" );
-    StatusBars2_ImportEnableSetting( "ShowPetHealth", "petHealth" );
-    StatusBars2_ImportEnableSetting( "ShowPetPower", "petPower" );
-    StatusBars2_ImportEnableSetting( "ShowComboPoints", "combo" );
-    StatusBars2_ImportEnableSetting( "ShowRunes", "rune" );
-    StatusBars2_ImportEnableSetting( "ShowDeadlyPoison", "deadlyPoison" );
-    StatusBars2_ImportEnableSetting( "ShowSunderArmor", "sunder" );
-    StatusBars2_ImportEnableSetting( "ShowMaelstromWeapon", "maelstromWeapon" );
-
-    -- Player buffs
-    if( StatusBars2_Settings.ShowPlayerBuffs ~= nil ) then
-        StatusBars2_Settings.bars.playerAura.showBuffs = StatusBars2_Settings.ShowPlayerBuffs;
-        StatusBars2_Settings.ShowPlayerBuffs = nil;
-    end
-
-    -- Player debuffs
-    if( StatusBars2_Settings.ShowPlayerDebuffs ~= nil ) then
-        StatusBars2_Settings.bars.playerAura.showDebuffs = StatusBars2_Settings.ShowPlayerDebuffs;
-        StatusBars2_Settings.ShowPlayerDebuffs = nil;
-    end
-
-    -- Target buffs
-    if( StatusBars2_Settings.ShowTargetBuffs ~= nil ) then
-        StatusBars2_Settings.bars.targetAura.showBuffs = StatusBars2_Settings.ShowTargetBuffs;
-        StatusBars2_Settings.ShowTargetBuffs = nil
-    end
-
-    -- Target debuffs
-    if( StatusBars2_Settings.ShowTargetDebuffs ~= nil ) then
-        StatusBars2_Settings.bars.targetAura.showDebuffs = StatusBars2_Settings.ShowTargetDebuffs;
-        StatusBars2_Settings.ShowTargetDebuffs = nil
-    end
-
-    -- Pet buffs
-    if( StatusBars2_Settings.ShowPetBuffs ~= nil ) then
-        StatusBars2_Settings.bars.petAura.showBuffs = StatusBars2_Settings.ShowPetBuffs;
-        StatusBars2_Settings.ShowPetBuffs = nil;
-    end
-
-    -- Pet debuffs
-    if( StatusBars2_Settings.ShowPetDebuffs ~= nil ) then
-        StatusBars2_Settings.bars.petAura.showDebuffs = StatusBars2_Settings.ShowPetDebuffs;
-        StatusBars2_Settings.ShowPetDebuffs = nil;
-    end
-
-    -- Only show self auras
-    if( StatusBars2_Settings.OnlyShowSelfAuras ~= nil ) then
-        StatusBars2_Settings.OnlyShowSelfAuras = nil;
-    end
-
-    -- Only show auras with a duration
-    if( StatusBars2_Settings.OnlyShowAurasWithDuration ~= nil ) then
-        StatusBars2_Settings.OnlyShowAurasWithDuration = nil;
-    end
-
-    -- Only show in combat
-    if( StatusBars2_Settings.OnlyShowInCombat ~= nil ) then
-        StatusBars2_Settings.OnlyShowInCombat = nil;
-    end
-
-    -- Always show target
-    if( StatusBars2_Settings.AlwaysShowTarget ~= nil ) then
-        StatusBars2_Settings.AlwaysShowTarget = nil;
-    end
-
-    -- Target spell
-    if( StatusBars2_Settings.ShowTargetSpell ~= nil ) then
-        StatusBars2_Settings.bars.playerPower.showSpell = StatusBars2_Settings.ShowTargetSpell;
-        StatusBars2_Settings.ShowTargetSpell = nil;
-    end
-
-    -- Locked
-    if( StatusBars2_Settings.Locked ~= nil ) then
-        StatusBars2_Settings.locked = StatusBars2_Settings.Locked;
-        StatusBars2_Settings.Locked = nil;
-    end
-
-    -- Scale
-    if( StatusBars2_Settings.Scale ~= nil ) then
-        StatusBars2_Settings.scale = StatusBars2_Settings.Scale;
-        StatusBars2_Settings.Scale = nil;
-    end
-
-    -- Aura size
-    if( StatusBars2_Settings.AuraSize ~= nil ) then
-        StatusBars2_Settings.AuraSize = nil;
-    end
-    
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_ImportEnableSetting
---
---  Description:    Import an old enabled setting
---
--------------------------------------------------------------------------------
---
-function StatusBars2_ImportEnableSetting( old, new )
-
-    if( StatusBars2_Settings[ old ] ~= nil ) then
-        if( StatusBars2_Settings[ old ] ) then
-            StatusBars2_Settings.bars[ new ].enabled = "Auto"
-        else
-            StatusBars2_Settings.bars[ new ].enabled = "Never"
-        end
-        StatusBars2_Settings[ old ] = nil;
-    end
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatisBars2_PruneSettings
---
---  Description:    Get rid of old setting we no longer care about
---
--------------------------------------------------------------------------------
---
-function StatisBars2_PruneSettings( )
-
-    local tempBars = {};
-    
-    for i, bar in ipairs( bars ) do
-        tempBars[bar.key] = bar;
-    end
-
-    local barSettings = StatusBars2_Settings.bars;
-
-    -- Clear out all the old bar settings for bars that aren't supported by the current class anyway
-    for key, barSetting in pairs( barSettings ) do
-        if( not tempBars[key] ) then
-            barSettings[key] = nil;
-        end
-    end
-    
-    -- clear out any excess groups, since they seem to have sneaked in
-    for i = #groups + 1, #StatusBars2_Settings.groups do
-        StatusBars2_Settings.groups[ i ] = nil;
-    end
-
-    StatusBars2_Options.moveBars = nil;
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_SetDefaultSettings
---
---  Description:    Set default settings
---
--------------------------------------------------------------------------------
---
-function StatusBars2_SetDefaultSettings( )
-
-    -- Set defaults for the bars
-    for i, bar in ipairs( bars ) do
-
-        -- Enable all bars by default
-        if( StatusBars2_Settings.bars[ bar.key ].enabled == nil ) then
-            StatusBars2_Settings.bars[ bar.key ].enabled = bar.defaultEnabled;
-        end
-
-        -- Flash player and pet health and mana bars
-        if( StatusBars2_Settings.bars[ bar.key ].flash == nil and ( bar.optionsTemplate == "StatusBars2_ContinuousBarOptionsTemplate" or bar.optionsTemplate == "StatusBars2_DruidManaBarOptionsTemplate" ) ) then
-            if( ( bar.unit == "player" or bar.unit == "pet" ) and bar.type == kHealth ) then
-                StatusBars2_Settings.bars[ bar.key ].flash = true;
-            elseif( ( bar.unit == "player" or bar.unit == "pet" ) and bar.type == kPower ) then
-                local localizedClass, englishClass = UnitClass( "player" );
-                StatusBars2_Settings.bars[ bar.key ].flash = ( bar.unit == "player" and englishClass ~= "ROGUE" and englishClass ~= "WARRIOR" and englishClass ~= "DEATHKNIGHT" and englishClass ~= "MONK" and englishClass ~= "DRUID" ) or ( bar.unit == "pet" and englishClass == "WARLOCK" );
-            elseif( bar.type == kDruidMana ) then
-                StatusBars2_Settings.bars[ bar.key ].flash = true;
-            else
-                StatusBars2_Settings.bars[ bar.key ].flash = false;
-            end
-        end
-
-        -- Place continuous bar percent text on the right side
-        if( StatusBars2_Settings.bars[ bar.key ].percentText == nil and ( bar.optionsTemplate == "StatusBars2_ContinuousBarOptionsTemplate" or bar.optionsTemplate == "StatusBars2_DruidManaBarOptionsTemplate" or bar.optionsTemplate == "StatusBars2_TargetPowerBarOptionsTemplate" ) ) then
-            StatusBars2_Settings.bars[ bar.key ].percentText = "Right";
-        end
-
-        -- Set flash threshold to 40%
-        if( StatusBars2_Settings.bars[ bar.key ].flashThreshold == nil ) then
-            StatusBars2_Settings.bars[ bar.key ].flashThreshold = 0.40;
-        end
-
-        -- Enable buffs
-        if( StatusBars2_Settings.bars[ bar.key ].showBuffs == nil and bar.type == kAura ) then
-            StatusBars2_Settings.bars[ bar.key ].showBuffs = true;
-        end
-
-        -- Enable debuffs
-        if( StatusBars2_Settings.bars[ bar.key ].showDebuffs == nil and bar.type == kAura ) then
-            StatusBars2_Settings.bars[ bar.key ].showDebuffs = true;
-        end
-
-        -- Set scale to 1.0
-        if( StatusBars2_Settings.bars[ bar.key ].scale == nil or StatusBars2_Settings.bars[ bar.key ].scale <= 0 ) then
-            StatusBars2_Settings.bars[ bar.key ].scale = 1.0;
-        end
-
-        -- Show target spell
-        if( bar.type == kPower and bar.unit == "target" and StatusBars2_Settings.bars[ bar.key ].showSpell == nil ) then
-            StatusBars2_Settings.bars[ bar.key ].showSpell = true;
-        end
-
-        -- Show in all forms
-        if( bar.type == kDruidMana and StatusBars2_Settings.bars[ bar.key ].showInAllForms == nil ) then
-            StatusBars2_Settings.bars[ bar.key ].showInAllForms = true;
-        end
-
-    end
-
-    -- Text display options
-    if( StatusBars2_Settings.textDisplayOption == nil or StatusBars2_Settings.textDisplayOption < kAbbreviated or StatusBars2_Settings.textDisplayOption > kHidden) then
-        StatusBars2_Settings.textDisplayOption = kAbbreviated;
-    end
-
-    -- Text Size
-    if( StatusBars2_Settings.font == nil or not FontInfo[StatusBars2_Settings.font] ) then
-        StatusBars2_Settings.font = 1;
-    end
-
-    -- Fade
-    if( StatusBars2_Settings.fade == nil ) then
-        StatusBars2_Settings.fade = true;
-    end
-
-    -- Locked
-    if( StatusBars2_Settings.locked == nil ) then
-        StatusBars2_Settings.locked = true;
-    end
-
-    -- Bars locked to groups
-    if( StatusBars2_Settings.grouped == nil ) then
-        StatusBars2_Settings.grouped = true;
-    end
-
-    -- Groups locked together
-    if( StatusBars2_Settings.groupsLocked == nil ) then
-        StatusBars2_Settings.groupsLocked = true;
-    end
-
-    -- Scale
-    if( StatusBars2_Settings.scale == nil or StatusBars2_Settings.scale <= 0 ) then
-        StatusBars2_Settings.scale = 1.0;
-    end
-
-    -- Opacity
-    if( StatusBars2_Settings.alpha == nil or StatusBars2_Settings.alpha <= 0 or StatusBars2_Settings.alpha > 1.0 ) then
-        StatusBars2_Settings.alpha = 1.0;
-    end
-
-end;
-
--------------------------------------------------------------------------------
---
 --  Name:           StatusBars2_Options_OnLoad
 --
 --  Description:    Options frame OnLoad handler
@@ -438,9 +107,7 @@ function StatusBars2_Options_OnOK( )
 
     -- If the reset position button was pressed null out the position data
     if( StatusBars2_Options.resetGroupPositions ) then
-
-        StatusBars2_Settings.position.x = 0;
-        StatusBars2_Settings.position.y = -100;
+        StatusBars2_Settings.position = nil;
 
         for i, group in ipairs( groups ) do
             StatusBars2_Settings.groups[ i ].position = nil;
@@ -448,11 +115,13 @@ function StatusBars2_Options_OnOK( )
     end
 
     if( StatusBars2_Options.resetBarPositions ) then
-
         for i, bar in ipairs( bars ) do
             StatusBars2_Settings.bars[ bar.key ].position = nil;
         end
     end
+
+    -- Apply the settings to the active bars
+    StatusBars2_Settings_Apply_Settings( false, StatusBars2_Settings );
 
     -- Update the bar visibility and location
     StatusBars2_UpdateBars( );
@@ -460,6 +129,7 @@ function StatusBars2_Options_OnOK( )
     -- Reset the position flag
     StatusBars2_Options.resetGroupPositions = false;
     StatusBars2_Options.resetBarPositions = false;
+
 
 end
 
@@ -547,12 +217,14 @@ end
 --
 function StatusBars2_FontMenu_Initialize( self )
 
+    local entry = UIDropDownMenu_CreateInfo();
+
     for i, info in ipairs( FontInfo ) do
-        local entry = UIDropDownMenu_CreateInfo();
         entry.func = StatusBars2_FontMenu_OnClick;
         entry.arg1 = self;
         entry.value = i;
         entry.text = info.label;
+        entry.checked = UIDropDownMenu_GetSelectedValue( self ) == i;
         UIDropDownMenu_AddButton( entry );
     end
 
@@ -1074,7 +746,7 @@ function StatusBars2_BarOptions_DoDataExchange( save, frame )
             StatusBars2_Settings.bars[ frame.bar.key ].showInAllForms = showInAllFormsButton:GetChecked( );
         end
         if( percentTextMenu ) then
-            StatusBars2_Settings.bars[ frame.bar.key ].percentText = UIDropDownMenu_GetSelectedName( percentTextMenu );
+            StatusBars2_Settings.bars[ frame.bar.key ].percentDisplayOption = UIDropDownMenu_GetSelectedName( percentTextMenu );
         end
         if( auraList ) then
             if( auraList.allEntries and #auraList.allEntries > 0 ) then
@@ -1091,10 +763,10 @@ function StatusBars2_BarOptions_DoDataExchange( save, frame )
     else
         UIDropDownMenu_SetSelectedName( enabledMenu, StatusBars2_Settings.bars[ frame.bar.key ].enabled );
         UIDropDownMenu_SetText( enabledMenu, StatusBars2_Settings.bars[ frame.bar.key ].enabled );
-        scaleSlider:SetValue( StatusBars2_Settings.bars[ frame.bar.key ].scale );
+        scaleSlider:SetValue( StatusBars2_Settings.bars[ frame.bar.key ].scale or 1 );
 
         if( alphaSlider ) then
-            alphaSlider:SetValue( StatusBars2_Settings.bars[ frame.bar.key ].alpha or StatusBars2_Settings.alpha or 1.0);
+            alphaSlider:SetValue( StatusBars2_Settings.bars[ frame.bar.key ].alpha or StatusBars2_Settings.alpha or 1 );
         end
         if( customColorButton and colorSwatch ) then
             local customColorEnabled = StatusBars2_Settings.bars[ frame.bar.key ].color ~= nil;
@@ -1132,8 +804,8 @@ function StatusBars2_BarOptions_DoDataExchange( save, frame )
             showInAllFormsButton:SetChecked( StatusBars2_Settings.bars[ frame.bar.key ].showInAllForms );
         end
         if( percentTextMenu ) then
-            UIDropDownMenu_SetSelectedName( percentTextMenu, StatusBars2_Settings.bars[ frame.bar.key ].percentText );
-            UIDropDownMenu_SetText( percentTextMenu, StatusBars2_Settings.bars[ frame.bar.key ].percentText );
+            UIDropDownMenu_SetSelectedName( percentTextMenu, StatusBars2_Settings.bars[ frame.bar.key ].percentDisplayOption );
+            UIDropDownMenu_SetText( percentTextMenu, StatusBars2_Settings.bars[ frame.bar.key ].percentDisplayOption );
         end
         if ( auraList ) then
             local auraFilter = StatusBars2_Settings.bars[ frame.bar.key ].auraFilter;
@@ -1186,7 +858,6 @@ function StatusBars2_Options_ResetGroupPositionButton_OnClick( self )
 
 end
 
-local config_mode = false;
 -------------------------------------------------------------------------------
 --
 --  Name:           StatusBars2_Options_ToggleMoveBars_OnClick
@@ -1197,27 +868,14 @@ local config_mode = false;
 --
 function StatusBars2_Options_ToggleMoveBars_OnClick( self )
 
-    -- Set a flag and reset the positions if the OK button is clicked
-    if( config_mode ) then
-        for i, bar in ipairs( bars ) do
-            if( bar.SetNormalHandlers ) then
-                --print("Setting Normal Handlers for "..bar.key);
-                bar:SetNormalHandlers( );
-                config_mode = false;
-            end
-        end
-    else
-        for i, bar in ipairs( bars ) do
-            if( bar.SetConfigHandlers ) then
-                --print("Setting Config Handlers for "..bar.key);
-                bar:SetConfigHandlers( );
-                config_mode = true;
-            end
-        end
-    end;
+    -- Close the interface options panel
+    HideUIPanel(InterfaceOptionsFrame);
+    -- Close the game frame menu in case the player opened the interface options 
+    -- panel from there, in which case it will re-open
+    HideUIPanel(GameMenuFrame);
 
-    print("Config Mode = "..printBool(config_mode));
-    StatusBars2_UpdateBars( );
+    -- Enable config mode
+    StatusBars2Config_SetConfigMode( true );
 
 end
 
@@ -1234,6 +892,10 @@ function StatusBars2_Options_DoDataExchange( save )
     -- Get controls
     local textOptionsMenu = StatusBars2_Options_TextDisplayOptionsMenu;
     local fontMenu = StatusBars2_Options_TextSizeMenu;
+
+    if not save then
+        StatusBars2_Settings_Apply_Settings( true, StatusBars2_Settings );
+    end
 
     -- Exchange bar data
     for i, bar in ipairs( bars ) do
@@ -1260,8 +922,8 @@ function StatusBars2_Options_DoDataExchange( save )
         StatusBars2_Options_LockedButton:SetChecked( StatusBars2_Settings.locked );
         StatusBars2_Options_GroupedButton:SetChecked( StatusBars2_Settings.grouped );
         StatusBars2_Options_LockGroupsTogetherButton:SetChecked( StatusBars2_Settings.groupsLocked );
-        StatusBars2_Options_ScaleSlider:SetValue( StatusBars2_Settings.scale );
-        StatusBars2_Options_AlphaSlider:SetValue( StatusBars2_Settings.alpha );
+        StatusBars2_Options_ScaleSlider:SetValue( StatusBars2_Settings.scale or 1.0 );
+        StatusBars2_Options_AlphaSlider:SetValue( StatusBars2_Settings.alpha or 1.0 );
     end
 
 end

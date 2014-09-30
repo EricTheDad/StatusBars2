@@ -49,12 +49,12 @@ function StatusBars2_CreateRuneBar( )
     bar.OnEnable = StatusBars2_RuneBar_OnEnable;
     bar.IsDefault = StatusBars2_RuneBar_IsDefault;
 
-    -- Register for events
-    bar:RegisterEvent( "RUNE_POWER_UPDATE" );
-    bar:RegisterEvent( "RUNE_TYPE_UPDATE" );
-    bar:RegisterEvent( "PLAYER_REGEN_ENABLED" );
-    bar:RegisterEvent( "PLAYER_REGEN_DISABLED" );
-    bar:RegisterEvent( "PLAYER_ENTERING_WORLD" );
+    -- Events to register for on enable
+    bar.eventsToRegister["RUNE_POWER_UPDATE"] = true;
+    bar.eventsToRegister["RUNE_TYPE_UPDATE"] = true;
+    bar.eventsToRegister["PLAYER_REGEN_ENABLED"] = true;
+    bar.eventsToRegister["PLAYER_REGEN_DISABLED"] = true;
+    bar.eventsToRegister["PLAYER_ENTERING_WORLD"] = true;
 
     return bar;
 
@@ -144,7 +144,7 @@ function StatusBars2_RuneBar_OnEnable( self )
         local rune = _G[ self:GetName( ) .. '_RuneButton' .. i ];
 
         -- If not grouped or locked enable the mouse for moving
-        if( not StatusBars2_Settings.grouped and not StatusBars2_Settings.locked ) then
+        if( not StatusBars2.grouped and not StatusBars2.locked ) then
             rune:EnableMouse( true );
             rune:SetScript( "OnMouseDown", StatusBars2_RuneButton_OnMouseDown );
             rune:SetScript( "OnMouseUp", StatusBars2_RuneButton_OnMouseUp );

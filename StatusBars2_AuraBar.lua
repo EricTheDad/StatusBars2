@@ -19,85 +19,6 @@ local FontInfo = addonTable.fontInfo;
 
 -------------------------------------------------------------------------------
 --
---  Name:           Config_AuraBar_Update
---
---  Description:    
---
--------------------------------------------------------------------------------
---
-local function Config_AuraBar_OnEnable( self )
-
-    -- Hide all the buttons
-    for name, button in pairs( self.buttons ) do
-        button:Hide( );
-    end
-
-    -- Show a backdrop so we can see the bar
-    self:Bar_ShowBackdrop( );
-
-    -- Call the base method
-    self:Bar_OnEnable( );
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           SetNormalAuraBarHandlers
---
---  Description:    
---
--------------------------------------------------------------------------------
---
-local function SetNormalAuraBarHandlers( bar )
-
-    -- Call base method
-    bar:Bar_SetNormalHandlers( );
-   
-    -- Set up methods for config mode bar operation
-    bar.OnEnable = StatusBars2_AuraBar_OnEnable;
-
-    -- Register for events
-    bar:RegisterEvent( "UNIT_AURA" );
-    bar:RegisterEvent( "PLAYER_REGEN_ENABLED" );
-    bar:RegisterEvent( "PLAYER_REGEN_DISABLED" );
-    if( bar.unit == "target" ) then
-        bar:RegisterEvent( "PLAYER_TARGET_CHANGED" );
-    elseif( bar.unit == "focus" ) then
-        bar:RegisterEvent( "PLAYER_FOCUS_CHANGED" );
-    elseif( bar.unit == "pet" ) then
-        bar:RegisterEvent( "UNIT_PET" );
-    end
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           SetConfigAuraBarHandelrs
---
---  Description:    
---
--------------------------------------------------------------------------------
---
-local function SetConfigAuraBarHandelrs( bar )
-
-    -- Call base method
-    bar:Bar_SetConfigHandlers( );
-
-    -- Set up methods for config mode bar operation
-    bar.OnEnable = Config_AuraBar_OnEnable;
-
-    -- Don't process the events while in config mode
-    bar:UnregisterEvent( "UNIT_AURA" );
-    bar:UnregisterEvent( "PLAYER_REGEN_ENABLED" );
-    bar:UnregisterEvent( "PLAYER_REGEN_DISABLED" );
-    bar:UnregisterEvent( "PLAYER_TARGET_CHANGED" );
-    bar:UnregisterEvent( "PLAYER_FOCUS_CHANGED" );
-    bar:UnregisterEvent( "UNIT_PET" );
-
-end
-
--------------------------------------------------------------------------------
---
 --  Name:           StatusBars2_CreateAuraBar
 --
 --  Description:    Create a bar to display the auras on a unit
@@ -118,20 +39,24 @@ function StatusBars2_CreateAuraBar( key, unit )
     -- Initialize the button array
     bar.buttons = {};
 
-    -- Set the functions to switch between normal and config modes
-    bar.SetNormalHandlers = SetNormalAuraBarHandlers;
-    bar.SetConfigHandlers = SetConfigAuraBarHandelrs;
-
-    -- Set the bar to normal mode
-    bar:SetNormalHandlers( );
-
     -- Set the event handlers
     bar.OnEvent = StatusBars2_AuraBar_OnEvent;
+    bar.OnEnable = StatusBars2_AuraBar_OnEnable;
     bar.BarIsVisible = StatusBars2_AuraBar_IsVisible;
     bar.IsDefault = StatusBars2_AuraBar_IsDefault;
-    bar.SetBarScale = StatusBars2_AuraBar_SetScale;
-    bar.SetBarPosition = StatusBars2_AuraBar_SetPosition;
     bar.GetBarHeight = StatusBars2_AuraBar_GetHeight;
+
+    -- Events to register for on enable
+    bar.eventsToRegister["UNIT_AURA"] = true;
+    bar.eventsToRegister["PLAYER_REGEN_ENABLED"] = true;
+    bar.eventsToRegister["PLAYER_REGEN_DISABLED"] = true;
+    if( bar.unit == "target" ) then
+        bar.eventsToRegister["PLAYER_TARGET_CHANGED"] = true;
+    elseif( bar.unit == "focus" ) then
+        bar.eventsToRegister["PLAYER_FOCUS_CHANGED"] = true;
+    elseif( bar.unit == "pet" ) then
+        bar.eventsToRegister["UNIT_PET"] = true;
+    end
 
     return bar;
 
@@ -188,11 +113,25 @@ end
 --
 function StatusBars2_AuraBar_OnEnable( self )
 
-    -- Hide the backdrop if we showed it for config mode
-    self:Bar_HideBackdrop( );
+    if( StatusBars2.configMode ) then
 
-    -- Update the bar
-    StatusBars2_UpdateAuraBar( self );
+        -- Show a backdrop so we can see the bar
+        self:Bar_ShowBackdrop( );
+
+        -- Hide all the buttons
+        for name, button in pairs( self.buttons ) do
+            button:Hide( );
+        end
+
+    else
+
+        -- Hide the backdrop if we showed it for config mode
+        self:Bar_HideBackdrop( );
+
+        -- Update the bar
+        StatusBars2_UpdateAuraBar( self );
+
+    end
 
     -- Call the base method
     self:Bar_OnEnable( );
@@ -226,20 +165,6 @@ function StatusBars2_AuraBar_IsDefault( self )
     -- No need to check, if there are no auras the bar will be empty anyway
     return false;
 
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_AuraBar_SetScale
---
---  Description:    Set the bar scale
---
--------------------------------------------------------------------------------
---
-function StatusBars2_AuraBar_SetScale( self, scale )
-
-    self:SetScale( scale );
- 
 end
 
 -------------------------------------------------------------------------------
@@ -300,19 +225,19 @@ function StatusBars2_UpdateAuraBar( self )
     end
 
     -- Buffs
-    if( self.settings.showBuffs ) then
-        offset = StatusBars2_ShowAuraButtons( self, "Buff", UnitBuff, MAX_TARGET_BUFFS, self.settings.onlyShowSelf, offset );
+    if( self.showBuffs ) then
+        offset = StatusBars2_ShowAuraButtons( self, "Buff", UnitBuff, MAX_TARGET_BUFFS, self.onlyShowSelf, offset );
     end
 
     -- Debuffs
-    if( self.settings.showDebuffs ) then
+    if( self.showDebuffs ) then
 
         -- Add a space between the buffs and the debuffs
         if( offset > 2 ) then
             offset = offset + StatusBars2_GetAuraSize( self );
         end
 
-        offset = StatusBars2_ShowAuraButtons( self, "Debuff", UnitDebuff, MAX_TARGET_DEBUFFS, self.settings.onlyShowSelf, offset );
+        offset = StatusBars2_ShowAuraButtons( self, "Debuff", UnitDebuff, MAX_TARGET_DEBUFFS, self.onlyShowSelf, offset );
 
     end
 
@@ -343,10 +268,10 @@ function StatusBars2_ShowAuraButtons( self, auraType, getAuraFunction, maxAuras,
             -- print(name..": "..spellID);
 
             -- Determine if the button should be shown
-            if( ( caster == "player" or not mineOnly ) and ( duration > 0 or not self.settings.onlyShowTimed ) ) then
+            if( ( caster == "player" or not mineOnly ) and ( duration > 0 or not self.onlyShowTimed ) ) then
 
-                if( not self.settings.onlyShowListed
-                or ( self.settings.auraFilter and self.settings.auraFilter[ name ] )) then
+                if( not self.onlyShowListed
+                or ( self.auraFilter and self.auraFilter[ name ] )) then
                     -- Get the button
                     local buttonName = self:GetName( ) .. "_" .. auraType .. "Button" .. i;
                     local button = StatusBars2_GetAuraButton( self, i, buttonName, "Target" .. auraType .. "FrameTemplate", name, rank, icon, count, debuffType, duration, expirationTime, offset );
@@ -435,7 +360,7 @@ function StatusBars2_GetAuraButton( self, id, buttonName, template, auraName, au
     button:SetPoint( "TOPLEFT", self, "TOPLEFT", offset, 0 );
 
     -- Enable/disable mouse for moving or tooltips
-    button:EnableMouse( self.settings.enableTooltips or not StatusBars2_Settings.locked );
+    button:EnableMouse( self.enableTooltips or not StatusBars2.locked );
 
     -- If its a debuff set the border size and color
     if( template == "TargetDebuffFrameTemplate" ) then
@@ -482,9 +407,7 @@ end
 --
 function StatusBars2_AuraButton_OnMouseDown( self, button )
 
-    if( not StatusBars2_Settings.locked ) then
-        StatusBars2_StatusBar_OnMouseDown( self.parentBar, button );
-    end
+    StatusBars2_StatusBar_OnMouseDown( self.parentBar, button );
 
 end
 
@@ -498,7 +421,7 @@ end
 --
 function StatusBars2_AuraButton_OnMouseUp( self, button )
 
-    if( not StatusBars2_Settings.locked ) then
+    if( not StatusBars2.locked ) then
         StatusBars2_StatusBar_OnMouseUp( self.parentBar, button );
     end
 
@@ -514,7 +437,7 @@ end
 --
 function StatusBars2_AuraButton_OnEnter( self )
 
-    if( self.parentBar.settings.enableTooltips ) then
+    if( self.parentBar.enableTooltips ) then
         self.DefaultOnEnter( self );
     end
 
@@ -530,7 +453,7 @@ end
 --
 function StatusBars2_AuraButton_OnLeave( self )
 
-    if( self.parentBar.settings.enableTooltips ) then
+    if( self.parentBar.enableTooltips ) then
         self.DefaultOnLeave( self );
     end
 

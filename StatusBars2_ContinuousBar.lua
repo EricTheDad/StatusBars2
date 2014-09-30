@@ -29,62 +29,6 @@ local kFlashAlpha = 0.8;
 
 -------------------------------------------------------------------------------
 --
---  Name:           Config_ContinuousBar_OnEnable
---
---  Description:    
---
--------------------------------------------------------------------------------
---
-local function Config_ContinuousBar_OnEnable ( self )
-
-    -- Set the bar current and max values
-    self.status:SetMinMaxValues( 0, 1 );
-    self.status:SetValue( 1 );
-
-    -- Set the percent text
-    self.percentText:SetText( "Pct%" );
-
-    -- As it happens, we want to do everything that we do for normal OnEnable here, too
-    StatusBars2_ContinuousBar_OnEnable( self );
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           ContinuousBar_SetNormalHandlers
---
---  Description:    
---
--------------------------------------------------------------------------------
---
-local function ContinuousBar_SetNormalHandlers( bar )
-
-    -- Base methods for subclasses to call
-    bar.ContinuousBar_OnEnable = StatusBars2_ContinuousBar_OnEnable;
-
-    bar:Bar_SetNormalHandlers( );
-
-end
-    
--------------------------------------------------------------------------------
---
---  Name:           ContinuousBar_SetConfigHandlers
---
---  Description:    
---
--------------------------------------------------------------------------------
---
-local function ContinuousBar_SetConfigHandlers( bar )
-
-    -- Base methods for subclasses to call
-    bar.ContinuousBar_OnEnable = Config_ContinuousBar_OnEnable;
-
-    bar:Bar_SetConfigHandlers( );
-
-end
-    
--------------------------------------------------------------------------------
---
 --  Name:           StatusBars2_CreateContinuousBar
 --
 --  Description:    Create a bar to display a range of values
@@ -107,18 +51,15 @@ function StatusBars2_CreateContinuousBar( key, unit, displayName, barType, r, g,
     -- Set the options template
     bar.optionsTemplate = "StatusBars2_ContinuousBarOptionsTemplate";
 
-    -- Set the functions to switch between normal and config modes
-    bar.ContinuousBar_SetNormalHandlers = ContinuousBar_SetNormalHandlers;
-    bar.ContinuousBar_SetConfigHandlers = ContinuousBar_SetConfigHandlers;
+    -- Set the default configuration template
+    bar.configTemplate = "StatusBars2_ContinuousBarConfigTemplate";
 
-    -- Set the bar to normal mode
-    bar:ContinuousBar_SetNormalHandlers( );
-    
     -- Set the visibility handler
     bar.BarIsVisible = StatusBars2_ContinuousBar_IsVisible;
 
     -- Base methods for subclasses to call
     bar.ContinuousBar_Update = StatusBars2_ContinuousBar_Update;
+    bar.ContinuousBar_OnEnable = StatusBars2_ContinuousBar_OnEnable;
 
     -- Set the background color
     bar.status:SetBackdropColor( 0, 0, 0, 0.85 );
@@ -153,6 +94,7 @@ function StatusBars2_ContinuousBar_Update( self, current, max )
 
     -- If the bar should not be visible, hide it
     if( not self:BarIsVisible( ) ) then
+
         StatusBars2_HideBar( self );
 
     -- Otherwise update the bar
@@ -169,23 +111,24 @@ function StatusBars2_ContinuousBar_Update( self, current, max )
         self.percentText:SetText( StatusBars2_Round( current / max * 100 ) .. "%" );
 
         -- If below the flash threshold start the bar flashing, otherwise end flashing
-        if( self.settings.flash and current / max <= self.settings.flashThreshold ) then
+        if( self.flash and current / max <= self.flashThreshold ) then
             StatusBars2_StartFlash( self );
         else
             StatusBars2_EndFlash( self );
         end
 
         -- Abbreviate the numbers for display, if desired
-        if( StatusBars2_Settings.textDisplayOption == kAbbreviated ) then
+        if( self.textDisplayOption == kAbbreviated ) then
             current = AbbreviateLargeNumbers( current );
             max = AbbreviateLargeNumbers( max );
-        elseif( StatusBars2_Settings.textDisplayOption == kCommaSeparated ) then
+        elseif( self.textDisplayOption == kCommaSeparated ) then
             current = BreakUpLargeNumbers( current );
             max = BreakUpLargeNumbers( max );
         end
             
         -- Set the text
         self.text:SetText( current .. ' / ' .. max );
+
      end   
 end
 
@@ -199,25 +142,36 @@ end
 --
 function StatusBars2_ContinuousBar_OnEnable( self )
 
+    -- Set to a static state if we are in config mode
+    if( StatusBars2.configMode ) then
+        -- Set the bar current and max values
+        self.status:SetMinMaxValues( 0, 1 );
+        self.status:SetValue( 1 );
+
+        -- Set the percent text
+        self.percentText:SetText( "Pct%" );
+    end
+
     -- Set the percentage text location
-    if( self.settings.percentText == 'Hide' ) then
+    if( self.percentDisplayOption == 'Hide' ) then
         self.percentText:Hide( );
     else
         self.percentText:Show( );
-        if( self.settings.percentText == 'Left' ) then
+        if( self.percentDisplayOption == 'Left' ) then
             self.percentText:SetPoint( "CENTER", self, "CENTER", -104, 1 );
         else
             self.percentText:SetPoint( "CENTER", self, "CENTER", 102, 1 );
         end
     end
 
-    if( StatusBars2_Settings.textDisplayOption == kHidden ) then
+    if( StatusBars2.textDisplayOption == kHidden ) then
         self.text:Hide( );
     else
         self.text:Show( );
+        self.textDisplayOption = StatusBars2.textDisplayOption
     end
 
-    self.text:SetFontObject(FontInfo[StatusBars2_Settings.font].filename);
+    self.text:SetFontObject(FontInfo[StatusBars2.font].filename);
 
     -- Call the base method
     self:Bar_OnEnable( );

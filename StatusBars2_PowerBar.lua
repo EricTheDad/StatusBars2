@@ -29,109 +29,6 @@ local kFlashAlpha = 0.8;
 
 -------------------------------------------------------------------------------
 --
---  Name:           Config_PowerBar_OnEnable
---
---  Description:    
---
--------------------------------------------------------------------------------
---
-local function Config_PowerBar_OnEnable( self )
-
-    -- Hide the casting bar in case there was a spell being cast when we switched to config mode
-    StatusBars2_PowerBar_EndCasting( self );
-
-    -- Leave the color for the player and pet
-    if( self.unit == "player" or self.unit == "pet" ) then
-        StatusBars2_SetPowerBarColor( self );
-    else
-        self.status:SetStatusBarColor( kDefaultPowerBarColor );
-    end
-
-    -- Call the base method
-    self:ContinuousBar_OnEnable( );
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           SetNormalPowerBarHandlers
---
---  Description:    
---
--------------------------------------------------------------------------------
---
-local function SetNormalPowerBarHandlers( bar )
-
-    -- Call base method
-    bar:ContinuousBar_SetNormalHandlers( );
-   
-    -- Set up methods for config mode bar operation
-    bar.OnUpdate = StatusBars2_PowerBar_OnUpdate;
-
-    -- Register for events
-    bar:RegisterEvent( "PLAYER_REGEN_DISABLED" );
-    bar:RegisterEvent( "PLAYER_REGEN_ENABLED" );
-    bar:RegisterEvent( "UNIT_POWER" );
-    bar:RegisterEvent( "UNIT_MAXPOWER" );
-
-    if( bar.unit == "target" ) then
-        bar:RegisterEvent( "PLAYER_TARGET_CHANGED" );
-        bar:RegisterEvent( "UNIT_SPELLCAST_START" );
-        bar:RegisterEvent( "UNIT_SPELLCAST_STOP" );
-        bar:RegisterEvent( "UNIT_SPELLCAST_FAILED" );
-        bar:RegisterEvent( "UNIT_SPELLCAST_INTERRUPTED" );
-        bar:RegisterEvent( "UNIT_SPELLCAST_DELAYED" );
-        bar:RegisterEvent( "UNIT_SPELLCAST_CHANNEL_START" );
-        bar:RegisterEvent( "UNIT_SPELLCAST_CHANNEL_UPDATE" );
-        bar:RegisterEvent( "UNIT_SPELLCAST_CHANNEL_STOP" );
-    elseif( bar.unit == "focus" ) then
-        bar:RegisterEvent( "PLAYER_FOCUS_CHANGED" );
-    elseif( bar.unit == "pet" ) then
-        bar:RegisterEvent( "UNIT_PET" );
-    end
-
-    if( bar.powerType == nil ) then
-        bar:RegisterEvent( "UNIT_DISPLAYPOWER" );
-    elseif( bar:IsEventRegistered( "UNIT_DISPLAYPOWER" ) ) then
-        bar:UnregisterEvent( "UNIT_DISPLAYPOWER" );
-    end
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           SetConfigPowerBarHandelrs
---
---  Description:    
---
--------------------------------------------------------------------------------
---
-local function SetConfigPowerBarHandelrs( bar )
-
-    -- Call base method
-    bar:ContinuousBar_SetConfigHandlers( );
-
-    -- Set up methods for config mode bar operation
-    bar.OnEnable = Config_PowerBar_OnEnable;
-
-    -- Don't process the events while in config mode
-    bar:UnregisterEvent( "PLAYER_TARGET_CHANGED" );
-    bar:UnregisterEvent( "UNIT_SPELLCAST_START" );
-    bar:UnregisterEvent( "UNIT_SPELLCAST_STOP" );
-    bar:UnregisterEvent( "UNIT_SPELLCAST_FAILED" );
-    bar:UnregisterEvent( "UNIT_SPELLCAST_INTERRUPTED" );
-    bar:UnregisterEvent( "UNIT_SPELLCAST_DELAYED" );
-    bar:UnregisterEvent( "UNIT_SPELLCAST_CHANNEL_START" );
-    bar:UnregisterEvent( "UNIT_SPELLCAST_CHANNEL_UPDATE" );
-    bar:UnregisterEvent( "UNIT_SPELLCAST_CHANNEL_STOP" );
-    bar:UnregisterEvent( "PLAYER_FOCUS_CHANGED" );
-    bar:UnregisterEvent( "UNIT_PET" );
-    bar:UnregisterEvent( "UNIT_DISPLAYPOWER" );
-
-end
-
--------------------------------------------------------------------------------
---
 --  Name:           StatusBars2_CreatePowerBar
 --
 --  Description:    Create a power bar
@@ -150,25 +47,51 @@ function StatusBars2_CreatePowerBar( key, unit, barType, powerType )
     -- If its the druid mana bar use a special options template
     if( barType == kDruidMana ) then
         bar.optionsTemplate = "StatusBars2_DruidManaBarOptionsTemplate";
+        bar.configTemplate = "StatusBars2_DruidManaBarConfigTemplate";
     -- If its a target power bar use a special options template
     elseif( bar.unit == "target" ) then
         bar.optionsTemplate = "StatusBars2_TargetPowerBarOptionsTemplate";
+        bar.configTemplate = "StatusBars2_TargetPowerBarConfigTemplate";
     end
 
     bar.powerType = powerType;
 
-    -- Set the functions to switch between normal and config modes
-    bar.SetNormalHandlers = SetNormalPowerBarHandlers;
-    bar.SetConfigHandlers = SetConfigPowerBarHandelrs;
-
-    -- Set the bar to normal mode
-    bar:SetNormalHandlers( );
-
     -- Set the event handlers
     bar.OnEvent = StatusBars2_PowerBar_OnEvent;
     bar.OnEnable = StatusBars2_PowerBar_OnEnable;
+    bar.OnUpdate = StatusBars2_PowerBar_OnUpdate;
     bar.BarIsVisible = StatusBars2_PowerBar_IsVisible;
     bar.IsDefault = StatusBars2_PowerBar_IsDefault;
+
+    -- Events to register for on enable
+    bar.eventsToRegister["PLAYER_REGEN_DISABLED"] = true;
+    bar.eventsToRegister["PLAYER_REGEN_ENABLED"] = true;
+    bar.eventsToRegister["UNIT_POWER"] = true;
+    bar.eventsToRegister["UNIT_MAXPOWER"] = true;
+
+    if( bar.unit == "target" ) then
+        bar.eventsToRegister["PLAYER_TARGET_CHANGED"] = true;
+        bar.eventsToRegister["UNIT_SPELLCAST_START"] = true;
+        bar.eventsToRegister["UNIT_SPELLCAST_STOP"] = true;
+        bar.eventsToRegister["UNIT_SPELLCAST_FAILED"] = true;
+        bar.eventsToRegister["UNIT_SPELLCAST_INTERRUPTED"] = true;
+        bar.eventsToRegister["UNIT_SPELLCAST_DELAYED"] = true;
+        bar.eventsToRegister["UNIT_SPELLCAST_CHANNEL_START"] = true;
+        bar.eventsToRegister["UNIT_SPELLCAST_CHANNEL_UPDATE"] = true;
+        bar.eventsToRegister["UNIT_SPELLCAST_CHANNEL_STOP"] = true;
+    elseif( bar.unit == "focus" ) then
+        bar.eventsToRegister["PLAYER_FOCUS_CHANGED"] = true;
+    elseif( bar.unit == "pet" ) then
+        bar.eventsToRegister["UNIT_PET"] = true;
+    end
+
+    if( bar.powerType == nil ) then
+        bar.eventsToRegister["UNIT_DISPLAYPOWER"] = true;
+    -- Not sure how this could even happen
+    elseif( bar:IsEventRegistered( "UNIT_DISPLAYPOWER" ) or bar.eventsToRegister["UNIT_DISPLAYPOWER"] ) then
+        bar.eventsToRegister["UNIT_DISPLAYPOWER"] = nil;
+        bar:UnregisterEvent( "UNIT_DISPLAYPOWER" );
+    end
 
     return bar;
 
@@ -260,7 +183,7 @@ function StatusBars2_PowerBar_OnEvent( self, event, ... )
         StatusBars2_UpdatePowerBar( self );
 
     -- Casting started
-    elseif( select( 1, ... ) == self.unit and ( event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_CHANNEL_START" or event == "UNIT_SPELLCAST_CHANNEL_UPDATE"  ) and self.settings.showSpell ) then
+    elseif( select( 1, ... ) == self.unit and ( event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_CHANNEL_START" or event == "UNIT_SPELLCAST_CHANNEL_UPDATE"  ) and self.showSpell ) then
 
         -- Set to casting mode
         StatusBars2_PowerBar_StartCasting( self );
@@ -428,11 +351,23 @@ end
 --
 function StatusBars2_PowerBar_OnEnable( self )
 
-    -- Set the color
-    StatusBars2_SetPowerBarColor( self );
+    if( StatusBars2.configMode ) then
+        -- Hide the casting bar in case there was a spell being cast when we switched to config mode
+        StatusBars2_PowerBar_EndCasting( self );
 
-    -- Update
-    StatusBars2_UpdatePowerBar( self );
+        -- Leave the color for the player and pet
+        if( self.unit == "player" or self.unit == "pet" ) then
+            StatusBars2_SetPowerBarColor( self );
+        else
+            self.status:SetStatusBarColor( kDefaultPowerBarColor );
+        end
+    else
+        -- Set the color
+        StatusBars2_SetPowerBarColor( self );
+
+        -- Update
+        StatusBars2_UpdatePowerBar( self );
+    end
 
     -- Call the base method
     self:ContinuousBar_OnEnable( );
