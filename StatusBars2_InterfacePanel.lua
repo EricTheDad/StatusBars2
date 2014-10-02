@@ -77,6 +77,7 @@ function StatusBars2_Options_Configure_Bar_Options(  )
     -- Add a category for each bar
     for i, bar in ipairs( bars ) do
 
+        --[[
         -- Create the option frame
         local frame = CreateFrame( "Frame", bar:GetName( ) .. "_OptionFrame", StatusBars2_Options, bar.optionsTemplate );
 
@@ -87,6 +88,7 @@ function StatusBars2_Options_Configure_Bar_Options(  )
 
         -- Add it
         InterfaceOptions_AddCategory( frame );
+        --]]
 
     end
 
@@ -405,8 +407,8 @@ function StatusBars2_BarOptions_Check_Enable_Aura_List_Buttons( scrollFrame )
         num_entries = #scrollFrame.allEntries;
     end
 
-    local deleteEntryButton = _G[ scrollFrame:GetParent( ):GetName( ) .. "_DeleteAuraListEntryButton" ];
-    local clearListButton = _G[ scrollFrame:GetParent( ):GetName( ) .. "_ClearAuraListButton" ];
+    local deleteEntryButton = scrollFrame:GetParent( ).deleteEntryButton;
+    local clearListButton = scrollFrame:GetParent( ).clearListButton
 
     -- Buttons are nil on the initial update because the buttons get created after the list
     if( deleteEntryButton and clearListButton ) then
@@ -438,8 +440,11 @@ end
 --
 function StatusBars2_BarOptions_Enable_Aura_List( frame, is_enabled )
 
-    local aura_list = _G[ frame:GetName( ) .. "_AuraFilterList" ];
-    local aura_editbox = _G[ frame:GetName( ) .. "_AuraNameInput" ];
+    local aura_list = frame.auraList
+    local aura_editbox = frame.auraNameInput
+
+    print(StatusBars2_BarOptions_Enable_Aura_List);
+    print(aura_list, aura_editbox);
 
     aura_list.isEnabled = is_enabled;
     local buttons = aura_list.buttons;
@@ -472,7 +477,7 @@ end
 --
 function StatusBars2_BarOptions_AddAuraFilterEntry( self )
 
-    local aura_list = _G[ self:GetParent():GetName( ) .. "_AuraFilterList" ];
+    local aura_list = self:GetParent().auraList;
     local buttons = aura_list.buttons;
 
     if aura_list.allEntries == nil then
@@ -573,7 +578,7 @@ end
 --
 function StatusBars2_BarOptions_DeleteAuraFilterListEntry_OnClick( self )
 
-    local aura_list = _G[ self:GetParent():GetName( ) .. "_AuraFilterList" ];
+    local aura_list = self:GetParent().auraList;
 
     if aura_list.selectedIndex then
         table.remove(aura_list.allEntries, aura_list.selectedIndex);
@@ -594,7 +599,7 @@ end
 --
 function StatusBars2_BarOptions_ClearAuraFilterList_OnClick( self )
 
-    local aura_list = _G[ self:GetParent():GetName( ) .. "_AuraFilterList" ];
+    local aura_list = self:GetParent().auraList;
     aura_list.allEntries = nil;
     StatusBars2_BarOptions_AuraListUpdate( aura_list );
 
@@ -610,7 +615,7 @@ end
 --
 function StatusBars2_BarOptions_Enable_ColorSelectButton( frame, is_enabled )
 
-    local color_select_button = _G[ frame:GetName( ) .. "_PickColorButton" ];
+    local color_select_button = frame.pickColorButton;
 
     if( is_enabled ) then
         color_select_button:Enable( );
@@ -652,7 +657,7 @@ end
 --
 function StatusBars2_Options_SetBarColorButton_OnClick( frame )
 
-    local colorSwatch = _G[ frame:GetName( ) .. "_ColorSwatch" ];
+    local colorSwatch = frame.colorSwatch;
     local r,g,b = colorSwatch:GetBackdropColor( );
 
     -- ColorPickerFrame:SetColorRGB will call ColorPickerFrame:func, so the color
@@ -680,6 +685,7 @@ end
 --
 function StatusBars2_BarOptions_DoDataExchange( save, frame )
 
+    --[[
     -- Get controls
     local enabledMenu = _G[ frame:GetName( ) .. "_EnabledMenu" ];
     local scaleSlider = _G[ frame:GetName( ) .. "_ScaleSlider" ];
@@ -826,6 +832,7 @@ function StatusBars2_BarOptions_DoDataExchange( save, frame )
             StatusBars2_BarOptions_AuraListUpdate( auraList );
         end
     end
+    --]]
 end
 
 -------------------------------------------------------------------------------

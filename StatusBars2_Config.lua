@@ -82,6 +82,7 @@ function StatusBars2Config_Configure_Bar_Options( )
 
         -- Create the option frame
         -- local frame = CreateFrame( "Frame", bar:GetName( ) .. "_OptionFrame", StatusBars2_Config, bar.optionsTemplate );
+        print (bar.displayName, bar.configTemplate);
         local frame = CreateFrame( "Frame", bar:GetName( ) .. "_ConfigFrame", StatusBars2_Config, bar.configTemplate );
         --local frame = CreateFrame( "Frame", bar:GetName( ) .. "_ConfigFrame", StatusBars2_Config, "StatusBars2_BarOptionsTemplate");
 
@@ -90,7 +91,7 @@ function StatusBars2Config_Configure_Bar_Options( )
         -- Initialize the frame
         frame.bar = bar;
         bar.panel = frame;
-
+        print(bar.key.." "..(bar.panel and bar.panel:GetName() or "nil"));
     end
 end
 
@@ -110,7 +111,10 @@ function StatusBars2Config_Setup_BarPanel( bar )
 
     StatusBars2_Config.activePanel = bar.panel;
 
-    bar.panel:SetAllPoints( StatusBars2_Config.inlayFrame );
+    bar.panel:SetAllPoints( StatusBars2_Config.optionsTabPage );
+
+    print(bar.key);
+    print(bar.panel);
     StatusBars2Config_Bar_DoDataExchange( false, bar.panel, bar );
     bar.panel:Show( );
 end
@@ -297,6 +301,64 @@ end
 
 -------------------------------------------------------------------------------
 --
+--  Name:           StatusBars2_TabButtonOnClick
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_TabButtonOnClick( self )
+
+    print (self:GetName())
+    local parent = self:GetParent( );
+
+    if ( self == parent.tabButtonLayout ) then
+        parent.layoutTabPage:Show();
+        parent.optionsTabPage:Hide();
+    else
+        parent.layoutTabPage:Hide();
+        parent.optionsTabPage:Show();
+    end
+   
+    PanelTemplates_SetTab(parent, self:GetID());
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBar2_TabContainer_OnLoad
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+function StatusBar2_TabContainer_OnLoad( self )
+
+    print("StatusBar2_TabContainer_OnLoad");
+    PanelTemplates_SetNumTabs(self, 2);
+    PanelTemplates_SetTab(self, 1);
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBar2_TabContainer_OnShow
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+function StatusBar2_TabContainer_OnShow( self )
+
+    PlaySound("UChatScrollButton");
+    PanelTemplates_SetTab(self, 1);
+    self.layoutTabPage:Show()
+    self.optionsTabPage:Hide()
+
+end
+
+-------------------------------------------------------------------------------
+--
 --  Name:           StatusBars2Config_Bar_DoDataExchange
 --
 --  Description:    Exchange data between settings and controls
@@ -304,6 +366,9 @@ end
 -------------------------------------------------------------------------------
 --
 function StatusBars2Config_Bar_DoDataExchange( save, frame, bar )
+
+    print("StatusBars2Config_Bar_DoDataExchange");
+    print(save, frame, bar)
 
     -- Exchange data
     if( save ) then
@@ -420,9 +485,9 @@ function StatusBars2Config_Bar_DoDataExchange( save, frame, bar )
                     i = i + 1;
                 end
                 
-                table.sort(auraList.allEntries);
+                table.sort(frame.auraList.allEntries);
             else
-                auraList.allEntries = nil;
+                frame.auraList.allEntries = nil;
             end
 
             StatusBars2_BarOptions_AuraListUpdate( frame.auraList );

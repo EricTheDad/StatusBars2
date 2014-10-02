@@ -908,7 +908,7 @@
                     </Slider>
                 </Frames>
             </ScrollFrame>
-            <Button name="$parent_DeleteAuraListEntryButton" inherits="OptionsButtonTemplate" text="Delete Entry">
+            <Button name="$parent_DeleteAuraListEntryButton" parentKey="deleteEntryButton" inherits="OptionsButtonTemplate" text="Delete Entry">
                 <Size x="150" y="21"/>
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeto="$parent_AuraFilterList" relativepoint="TOPRIGHT" >
@@ -921,7 +921,7 @@
                     </OnClick>
                 </Scripts>
             </Button>
-            <Button name="$parent_ClearAuraListButton" inherits="OptionsButtonTemplate" text="Clear List">
+            <Button name="$parent_ClearAuraListButton" parentKey="clearListButton" inherits="OptionsButtonTemplate" text="Clear List">
                 <Size x="150" y="21"/>
                 <Anchors>
                     <Anchor point="BOTTOMLEFT" relativeto="$parent_AuraFilterList" relativepoint="BOTTOMRIGHT" >
@@ -971,7 +971,7 @@
                 </Backdrop>
                <Size x="25" y="25" />
             </Frame>
-            <Button name="$parent_PickColorButton" inherits="OptionsButtonTemplate" text="Set Color">
+            <Button name="$parent_PickColorButton" parentKey="pickColorButton" inherits="OptionsButtonTemplate" text="Set Color">
                 <Size x="90" y="21"/>
                 <Anchors>
                     <Anchor point="LEFT" relativeto="$parent_ColorSwatch" relativePoint="RIGHT" >
@@ -1221,55 +1221,119 @@
         </Frames>
     </Frame>
 
-    <!-- Base bar configuration frame template -->
-    <Frame name="StatusBars2_BarConfigTemplate" hidden="false" virtual="true" >
-        <Size x="550" y="250" />
+    <Frame name="StatusBars2_BorderedFrameTemplate" virtual="true" >
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="11" top="12" bottom="10"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+    </Frame>
+
+    <Frame name="StatusBars2_DialogFrameTemplete" inherits="StatusBars2_BorderedFrameTemplate" virtual="true">
 		<Layers>
-			<Layer level="BACKGROUND">
-                <FontString name="$parent_EnabledLabel" inherits="GameFontNormalSmallLeft" text="Enabled" >
-                    <Size x="64" y="20"/>
+			<Layer level="ARTWORK">
+				<Texture name="$parentHeader" urgency="5" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="300" y="68"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentHeaderText" inherits="GameFontNormal" text="StatusBars2 Config">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentHeader">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+    </Frame>
+
+    <Frame name="StatusBars2_ConfigTabFrameTemplate" virtual="true">
+        <Anchors>
+            <Anchor point="TOPLEFT">
+                <Offset>
+                    <AbsDimension x="15" y="-15"/>
+                </Offset>
+            </Anchor>
+            <Anchor point="TOPRIGHT">
+                <Offset>
+                    <AbsDimension x="-15" y="-15"/>
+                </Offset>
+            </Anchor>
+            <Anchor point="BOTTOM" relativeTo="$parent_DefaultsButton" relativePoint="TOP" >
+                <Offset x="0" y="10" />
+            </Anchor>
+        </Anchors>
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture name="$parentBottomLeft" file="Interface\Common\Common-Input-Border-BL">
+                    <Size>
+                        <AbsDimension x="8" y="8"/>
+                    </Size>
                     <Anchors>
-                        <Anchor point="TOPLEFT" relativeTo="$Parent" >
-                            <Offset>
-                                <AbsDimension x="0" y="0"/>
-                            </Offset>
+                        <Anchor point="BOTTOMLEFT">
+                            <Offset x="-5" y="-5"/>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <Texture name="$parentBottomRight" file="Interface\Common\Common-Input-Border-BR">
+                    <Size>
+                        <AbsDimension x="8" y="8"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="BOTTOMRIGHT">
+                            <Offset x="5" y="-5"/>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <Texture name="$parentBottom" file="Interface\Common\Common-Input-Border-B">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parentBottomLeft" relativePoint="TOPRIGHT"/>
+                        <Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="BOTTOMLEFT"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+        </Layers>
+    </Frame>
+
+    <!-- Base bar configuration frame template -->
+    <Frame name="StatusBars2_LayoutConfigTemplate" inherits="StatusBars2_ConfigTabFrameTemplate" hidden="false" virtual="true" >
+        <Layers>
+			<Layer level="BACKGROUND">
+                <FontString name="$parent_AlphaSliderLabel" inherits="GameFontNormalSmallLeft" text="Opacity">
+                    <Size x="64" y="14"/>
+                    <Anchors>
+                        <Anchor point="BOTTOMLEFT" >
+                            <Offset x="0" y="15" />
                         </Anchor>
                     </Anchors>
                 </FontString>
                 <FontString name="$parent_ScaleSliderLabel" inherits="GameFontNormalSmallLeft" text="Scale">
                     <Size x="64" y="14"/>
                     <Anchors>
-                        <Anchor point="TOPLEFT" relativeTo="$parent_EnabledLabel" relativePoint="BOTTOMLEFT">
-                            <Offset x="0" y="-15" />
-                        </Anchor>
-                    </Anchors>
-                </FontString>
-                <FontString name="$parent_AlphaSliderLabel" inherits="GameFontNormalSmallLeft" text="Opacity">
-                    <Size x="64" y="14"/>
-                    <Anchors>
-                        <Anchor point="TOPLEFT" relativeTo="$parent_ScaleSliderLabel" relativePoint="BOTTOMLEFT">
-                            <Offset x="0" y="-15" />
+                        <Anchor point="BOTTOMLEFT" relativeTo="$parent_AlphaSliderLabel" relativePoint="TOPLEFT">
+                            <Offset x="0" y="15" />
                         </Anchor>
                     </Anchors>
                 </FontString>
             </Layer>
         </Layers>
         <Frames>
-            <Frame name="$parent_EnabledMenu" parentKey="enabledMenu" inherits="UIDropDownMenuTemplate" >
-                <Size x="70" y="17"/>
-                <Anchors>
-                    <Anchor point="LEFT" relativeTo="$parent_EnabledLabel" relativePoint="RIGHT" >
-                        <Offset x="0" y="-3" />
-                    </Anchor>
-                </Anchors>
-                <Scripts>
-                    <OnLoad>
-                        UIDropDownMenu_Initialize( self, StatusBars2_BarEnabledMenu_Initialize );
-                        UIDropDownMenu_SetWidth(self, self:GetWidth());
-                        UIDropDownMenu_SetButtonWidth(self, "TEXT");
-                    </OnLoad>
-                </Scripts>
-            </Frame>
             <Slider name="$parent_ScaleSlider" parentKey="scaleSlider" inherits="OptionsSliderTemplate" minValue="0.25" maxValue="3.0" valueStep="0.05" >
                 <Size x="200" y="17"/>
                 <Anchors>
@@ -1339,12 +1403,48 @@
         </Frames>
     </Frame>
 
+    <!-- Base bar configuration frame template -->
+    <Frame name="StatusBars2_BarConfigTemplate" hidden="false" virtual="true" >
+        <Size x="550" y="250" />
+		<Layers>
+			<Layer level="BACKGROUND">
+                <FontString name="$parent_EnabledLabel" inherits="GameFontNormalSmallLeft" text="Enabled" >
+                    <Size x="64" y="20"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$Parent" >
+                            <Offset>
+                                <AbsDimension x="0" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Frame name="$parent_EnabledMenu" parentKey="enabledMenu" inherits="UIDropDownMenuTemplate" >
+                <Size x="70" y="17"/>
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="$parent_EnabledLabel" relativePoint="RIGHT" >
+                        <Offset x="0" y="-3" />
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        UIDropDownMenu_Initialize( self, StatusBars2_BarEnabledMenu_Initialize );
+                        UIDropDownMenu_SetWidth(self, self:GetWidth());
+                        UIDropDownMenu_SetButtonWidth(self, "TEXT");
+                    </OnLoad>
+                </Scripts>
+            </Frame>
+        </Frames>
+    </Frame>
+
     <!-- Continuous Bar configuration frame template -->
     <Frame name="StatusBars2_ContinuousBarConfigTemplate" inherits="StatusBars2_BarConfigTemplate" virtual="true" >
         <Frames>
-            <CheckButton name="$parent_FlashButton" inherits="OptionsSmallCheckButtonTemplate" >
+            <CheckButton name="$parent_FlashButton" parentKey="flashButton" inherits="OptionsSmallCheckButtonTemplate" >
                 <Anchors>
-                    <Anchor point="TOPLEFT" relativeto="$parent_AlphaSliderLabel" relativePoint="BOTTOMLEFT">
+                    <Anchor point="TOPLEFT" relativeto="$parent_EnabledLabel" relativePoint="BOTTOMLEFT">
                         <Offset x="0" y="-15" />
                     </Anchor>
                 </Anchors>
@@ -1354,7 +1454,7 @@
                     </OnLoad>
                 </Scripts>
             </CheckButton>
-            <Slider name="$parent_FlashThresholdSlider" inherits="OptionsSliderTemplate" minValue="0" maxValue="1.0" valueStep="0.01" >
+            <Slider name="$parent_FlashThresholdSlider" parentKey="flashThresholdSlider" inherits="OptionsSliderTemplate" minValue="0" maxValue="1.0" valueStep="0.01" >
                 <Size x="200" y="17"/>
                 <Anchors>
                     <Anchor point="LEFT" relativeTo="$parent_FlashButton" relativePoint="RIGHT" >
@@ -1403,7 +1503,7 @@
             </Layer>
         </Layers>
         <Frames>
-            <Frame name="$parent_PercentTextMenu" inherits="UIDropDownMenuTemplate" id="16790" >
+            <Frame name="$parent_PercentTextMenu" parentKey="percentTextMenu" inherits="UIDropDownMenuTemplate" id="16790" >
                 <Size x="60" y="17"/>
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeTo="$parent_PercentTextLabel" relativePoint="TOPRIGHT" >
@@ -1424,7 +1524,7 @@
     <!-- Druid mana bar options frame template -->
     <Frame name="StatusBars2_DruidManaBarConfigTemplate" inherits="StatusBars2_ContinuousBarConfigTemplate" virtual="true" >
         <Frames>
-            <CheckButton name="$parent_ShowInAllForms" inherits="OptionsSmallCheckButtonTemplate" >
+            <CheckButton name="$parent_ShowInAllForms" parentKey="showInAllFormsButton" inherits="OptionsSmallCheckButtonTemplate" >
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeto="$parent_PercentTextLabel" relativePoint="BOTTOMLEFT" >
                         <Offset x="0" y="-10" />
@@ -1442,7 +1542,7 @@
     <!-- Target power bar options frame template -->
     <Frame name="StatusBars2_TargetPowerBarConfigTemplate" inherits="StatusBars2_ContinuousBarConfigTemplate" virtual="true" >
         <Frames>
-            <CheckButton name="$parent_ShowSpellButton" inherits="OptionsSmallCheckButtonTemplate" >
+            <CheckButton name="$parent_ShowSpellButton" parentKey="showSpellButton" inherits="OptionsSmallCheckButtonTemplate" >
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeto="$parent_PercentTextLabel" relativePoint="BOTTOMLEFT" >
                         <Offset x="0" y="-10" />
@@ -1457,6 +1557,352 @@
         </Frames>
     </Frame>
 
+    <Frame name="StatusBars2_AuraBarConfigTemplate" inherits="StatusBars2_BarConfigTemplate" virtual="true" >
+        <Frames>
+            <CheckButton name="$parent_ShowBuffsButton" parentKey="showBuffsButton" inherits="OptionsCheckButtonTemplate" >
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeto="$parent_AlphaSliderLabel" relativePoint="BOTTOMLEFT" >
+                        <Offset x="0" y="-5" />
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal( self:GetName( ) .. "Text" ):SetText( "Show Buffs" );
+                    </OnLoad>
+                </Scripts>
+            </CheckButton>
+            <CheckButton name="$parent_ShowDebuffsButton" parentKey="showDebuffsButton" inherits="OptionsCheckButtonTemplate" >
+                <Anchors>
+                    <Anchor point="TOP" relativeto="$parent_ShowBuffsButton" relativePoint="BOTTOM">
+                        <Offset x="0" y="0" />
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal( self:GetName( ) .. "Text" ):SetText( "Show Debuffs" );
+                    </OnLoad>
+                </Scripts>
+            </CheckButton>
+            <CheckButton name="$parent_OnlyShowSelfAurasButton" parentKey="onlyShowSelfAurasButton" inherits="OptionsCheckButtonTemplate" >
+                <Anchors>
+                    <Anchor point="TOP" relativeto="$parent_ShowDebuffsButton" relativePoint="BOTTOM" >
+                        <Offset x="0" y="0" />
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal( self:GetName( ) .. "Text" ):SetText( "Only show my auras" );
+                    </OnLoad>
+                </Scripts>
+            </CheckButton>
+            <CheckButton name="$parent_OnlyShowTimedAurasButton" parentKey="onlyShowTimedAurasButton" inherits="OptionsCheckButtonTemplate" >
+                <Anchors>
+                    <Anchor point="TOP" relativeto="$parent_OnlyShowSelfAurasButton" relativePoint="BOTTOM" >
+                        <Offset x="0" y="0" />
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal( self:GetName( ) .. "Text" ):SetText( "Only show auras with a duration" );
+                    </OnLoad>
+                </Scripts>
+            </CheckButton>
+            <CheckButton name="$parent_EnableTooltips" parentKey="enableTooltipsButton" inherits="OptionsCheckButtonTemplate" >
+                <Anchors>
+                    <Anchor point="LEFT" relativeto="$parent_ShowBuffsButton" relativePoint="RIGHT">
+                        <Offset x="120" y="0" />
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal( self:GetName( ) .. "Text" ):SetText( "Enable Aura Tooltips" );
+                    </OnLoad>
+                </Scripts>
+            </CheckButton>
+            <Button name="$parent_AddAuraListEntryButton" parentKey="addEntryButton" inherits="OptionsButtonTemplate" text="Add Entry">
+                <Size x="180" y="21"/>
+                <Anchors>
+                    <Anchor point="TOPRIGHT">
+                        <Offset x="0" y="0" />
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                        StatusBars2_BarOptions_AddAuraFilterEntry( self:GetParent( ).auraNameInput );
+                    </OnClick>
+                </Scripts>
+            </Button>
+            <Button name="$parent_ClearAuraListButton" parentKey="clearListButton" inherits="OptionsButtonTemplate" text="Clear">
+                <Size x="72" y="21"/>
+                <Anchors>
+                    <Anchor point="BOTTOMRIGHT" >
+                        <Offset x="0" y="0" />
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                        StatusBars2_BarOptions_ClearAuraFilterList_OnClick( self );
+                    </OnClick>
+                </Scripts>
+            </Button>
+            <Button name="$parent_DeleteAuraListEntryButton" parentKey="deleteEntryButton" inherits="OptionsButtonTemplate" text="Delete Entry">
+                <Size x="104" y="21"/>
+                <Anchors>
+                    <Anchor point="RIGHT" relativeto="$parent_ClearAuraListButton" relativepoint="LEFT" >
+                        <Offset x="0" y="0" />
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                        StatusBars2_BarOptions_DeleteAuraFilterListEntry_OnClick( self );
+                    </OnClick>
+                </Scripts>
+            </Button>
+            <EditBox name="$parent_AuraNameInput" parentKey="auraNameInput" autoFocus="false" inherits="InputBoxTemplate" >
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parent_AddAuraListEntryButton" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="8" y="0"/>
+                        </Offset>
+                    </Anchor>
+                    <Anchor point="TOPRIGHT" relativeTo="$parent_AddAuraListEntryButton" relativePoint="BOTTOMRIGHT">
+                        <Offset>
+                            <AbsDimension x="0" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <FontString inherits="GameFontNormalLeft" />
+                <Scripts>
+                    <OnEnter>
+                        GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_TOPLEFT", 0, 0);
+                        GameTooltip:SetText('Type the name of the buff/debuff you want to add to the list here and click the "Add Entry" button.\nYou must type the name exactly as it appears in the tooltip.  Capitalization is important!');
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide( );
+                    </OnLeave>
+                    <OnTextChanged>
+                        local addButton = self:GetParent( ).addEntryButton;
+
+                        if( self:GetText( ) == "" ) then
+                            addButton:Disable( );
+                        else
+                            addButton:Enable( );
+                        end
+                    </OnTextChanged>
+                    <OnEditFocusLost>
+                        self:SetText( "" );
+                    </OnEditFocusLost>
+                    <OnEnterPressed>
+                        StatusBars2_BarOptions_AddAuraFilterEntry(self);
+                    </OnEnterPressed>
+                </Scripts>
+                <Size x="180" y="32" />
+            </EditBox >
+            <ScrollFrame name="$parent_AuraFilterList" parentKey="auraList" inherits="HybridScrollFrameTemplate" >
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parent_AuraNameInput" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="0"/>
+                        </Offset>
+                    </Anchor>
+                    <Anchor point="TOPRIGHT" relativeTo="$parent_AuraNameInput" relativePoint="BOTTOMRIGHT">
+                        <Offset>
+                            <AbsDimension x="0" y="0"/>
+                        </Offset>
+                    </Anchor>
+                    <Anchor point="BOTTOM" relativeTo="$parent_ClearAuraListButton" relativePoint="TOP">
+                        <Offset>
+                            <AbsDimension x="0" y="8"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Layers>
+                    <Layer level="BACKGROUND">
+                        <Texture name="$parentTopLeft" file="Interface\Common\Common-Input-Border-TL">
+                            <Size>
+                                <AbsDimension x="8" y="8"/>
+                            </Size>
+                            <Anchors>
+                                <Anchor point="TOPLEFT">
+                                    <Offset x="-5" y="5"/>
+                                </Anchor>
+                            </Anchors>
+                        </Texture>
+                        <Texture name="$parentTopRight" file="Interface\Common\Common-Input-Border-TR">
+                            <Size>
+                                <AbsDimension x="8" y="8"/>
+                            </Size>
+                            <Anchors>
+                                <Anchor point="TOPRIGHT">
+                                    <Offset x="0" y="5"/>
+                                </Anchor>
+                            </Anchors>
+                        </Texture>
+                        <Texture name="$parentTop" file="Interface\Common\Common-Input-Border-T">
+                            <Anchors>
+                                <Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="TOPRIGHT"/>
+                                <Anchor point="BOTTOMRIGHT" relativeTo="$parentTopRight" relativePoint="BOTTOMLEFT"/>
+                            </Anchors>
+                        </Texture>
+                        <Texture name="$parentBottomLeft" file="Interface\Common\Common-Input-Border-BL">
+                            <Size>
+                                <AbsDimension x="8" y="8"/>
+                            </Size>
+                            <Anchors>
+                                <Anchor point="BOTTOMLEFT">
+                                    <Offset x="-5" y="-5"/>
+                                </Anchor>
+                            </Anchors>
+                        </Texture>
+                        <Texture name="$parentBottomRight" file="Interface\Common\Common-Input-Border-BR">
+                            <Size>
+                                <AbsDimension x="8" y="8"/>
+                            </Size>
+                            <Anchors>
+                                <Anchor point="BOTTOMRIGHT">
+                                    <Offset x="0" y="-5"/>
+                                </Anchor>
+                            </Anchors>
+                        </Texture>
+                        <Texture name="$parentBottom" file="Interface\Common\Common-Input-Border-B">
+                            <Anchors>
+                                <Anchor point="TOPLEFT" relativeTo="$parentBottomLeft" relativePoint="TOPRIGHT"/>
+                                <Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="BOTTOMLEFT"/>
+                            </Anchors>
+                        </Texture>
+                        <Texture name="$parentLeft" file="Interface\Common\Common-Input-Border-L">
+                            <Anchors>
+                                <Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="BOTTOMLEFT"/>
+                                <Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomLeft" relativePoint="TOPRIGHT"/>
+                            </Anchors>
+                        </Texture>
+                        <Texture name="$parentRight" file="Interface\Common\Common-Input-Border-R">
+                            <Anchors>
+                                <Anchor point="TOPLEFT" relativeTo="$parentTopRight" relativePoint="BOTTOMLEFT"/>
+                                <Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="TOPRIGHT"/>
+                            </Anchors>
+                        </Texture>
+                        <Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border-M">
+                            <Anchors>
+                                <Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT"/>
+                                <Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT"/>
+                            </Anchors>
+                        </Texture>
+                    </Layer>
+                </Layers>
+                <Scripts>
+                    <OnLoad>
+                        HybridScrollFrame_OnLoad(self);
+                        self.update = StatusBars2_BarOptions_AuraListUpdate;
+                        HybridScrollFrame_CreateButtons(self, "StatusBar2_AuraListEntryButtonTemplate");
+                    </OnLoad>
+                    <OnShow>
+                        StatusBars2_BarOptions_AuraListUpdate( self );    
+                    </OnShow>
+                </Scripts>
+                <Size x="180" y="200" />
+                <Frames>
+                    <Slider name="$parentScrollBar" parentKey="scrollBar" inherits="HybridScrollBarTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+                                <Offset>
+                                    <AbsDimension x="-23" y="-14"/>
+                                </Offset>
+                            </Anchor>
+                            <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+                                <Offset>
+                                    <AbsDimension x="-23" y="11"/>
+                                </Offset>
+                            </Anchor>
+                        </Anchors>
+                    </Slider>
+                </Frames>
+            </ScrollFrame>
+            <CheckButton name="$parent_OnlyShowListedAurasButton" parentKey="onlyShowListedAurasButton" inherits="OptionsCheckButtonTemplate" >
+                <Anchors>
+                    <Anchor point="RIGHT" relativeto="$parent_AuraFilterList" relativePoint="LEFT" >
+                        <Offset x="-5" y="0" />
+                    </Anchor>
+                    <Anchor point="TOP" relativeto="$parent_OnlyShowSelfAurasButton" relativePoint="TOP" >
+                        <Offset x="0" y="0" />
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal( self:GetName( ) .. "Text" ):SetText( "Only show auras listed" );
+                        getglobal( self:GetName( ) .. "Text" ):ClearAllPoints( );
+                        getglobal( self:GetName( ) .. "Text" ):SetPoint("RIGHT", self, "LEFT");
+                        getglobal( self:GetName( ) .. "Text" ):SetJustifyH("RIGHT");
+                    </OnLoad>
+					<OnClick>
+                        StatusBars2_BarOptions_Enable_Aura_List( self:GetParent( ), self:GetChecked( ) );
+					</OnClick>
+                    <OnEnter>
+                        GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_TOPLEFT", 0, 0);
+                        GameTooltip:SetText("Hides all buffs/debuffs except for the ones you add to the list below.\nHowever, the check marks above still affect which auras are displayed.\nFor example, if you type in the name of a buff but don't have the\n\"Show Buffs\" checkbox checked, the buff still won't be displayed.");
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide( );
+                    </OnLeave>
+                </Scripts>
+            </CheckButton>
+        </Frames>
+    </Frame>
+
+    <!-- Aura Stack bar config frame template -->
+    <Frame name="StatusBars2_AuraStackBarConfigTemplate" inherits="StatusBars2_BarConfigTemplate" virtual="true" >
+        <Frames>
+            <CheckButton name="$parent_CustomColorButton" inherits="OptionsCheckButtonTemplate" >
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeto="$parent_AlphaSliderLabel" relativePoint="BOTTOMLEFT" >
+                        <Offset x="0" y="-15" />
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal( self:GetName( ) .. "Text" ):SetText( "Custom Color" );
+                    </OnLoad>
+					<OnClick>
+                        StatusBars2_BarOptions_Enable_ColorSelectButton( self:GetParent( ), self:GetChecked( ) );
+					</OnClick>
+                </Scripts>
+            </CheckButton>
+            <Frame name="$parent_ColorSwatch" parentKey="colorSwatch">
+                <Anchors>
+                    <Anchor point="LEFT" relativeto="$parent_CustomColorButton" relativePoint="RIGHT" >
+                        <Offset x="100" y="0" />
+                    </Anchor>
+                </Anchors>
+                <Backdrop bgFile="Interface\ChatFrame\ChatFrameColorSwatch" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="false">
+                    <EdgeSize>
+                        <AbsValue val="16" />
+                    </EdgeSize>
+                    <TileSize>
+                        <AbsValue val="16" />
+                    </TileSize>
+                </Backdrop>
+                <Scripts>
+                    <OnClick>
+                        StatusBars2_Options_SetBarColorButton_OnClick( self:GetParent( ) );
+                    </OnClick>
+                </Scripts>
+               <Size x="25" y="25" />
+            </Frame>
+            <Button name="$parent_PickColorButton" parentKey="pickColorButton" inherits="OptionsButtonTemplate" text="Set Color">
+                <Size x="90" y="21"/>
+                <Anchors>
+                    <Anchor point="LEFT" relativeto="$parent_ColorSwatch" relativePoint="RIGHT" >
+                        <Offset x="20" y="0" />
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                        StatusBars2_Options_SetBarColorButton_OnClick( self:GetParent( ) );
+                    </OnClick>
+                </Scripts>
+            </Button>
+        </Frames>
+    </Frame>
 
     <!-- Scroll frame entry button template -->
     <Button name="StatusBar2_BarListEntryButtonTemplate" virtual="true" >
@@ -1470,12 +1916,10 @@
                 </Anchor>
             </Anchors>
         </ButtonText>
-
         <DisabledFont style="GameFontDisableLeft"/>
         <HighlightFont style="GameFontHighlightLeft"/>
         <HighlightTexture file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD"/>
         <NormalFont style="GameFontNormalLeft"/>
-
         <Scripts>
             <OnClick>
                 StatusBars2_BarOptions_ListEntryButton_OnClick( self );
@@ -1493,57 +1937,136 @@
         <Size x="150" y="20" />
     </Button>
 
-	<Frame name="StatusBars2_Config" toplevel="true" parent="UIParent" hidden="true" enableMouse="true" frameStrata="DIALOG">
+    <Button name="StatusBars2_ConfigTabButtonTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
+        <Scripts>
+            <OnClick>
+                StatusBars2_TabButtonOnClick(self);
+            </OnClick>
+        </Scripts>
+    </Button>
+
+	<Frame name="StatusBars2_Config" toplevel="true" inherits="StatusBars2_DialogFrameTemplete" parent="UIParent" hidden="true" enableMouse="true" frameStrata="DIALOG">
 		<Size>
 			<AbsDimension x="550" y="250"/>
 		</Size>
-		<Anchors>
-			<Anchor point="TOP"/>
-		</Anchors>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="11" top="12" bottom="10"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
         <TitleRegion>
             <Size x="300" y="68"/>
             <Anchors><Anchor point="TOP"/></Anchors>
         </TitleRegion>
+		<Anchors>
+			<Anchor point="TOP"/>
+		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="$parentHeader" urgency="5" file="Interface\DialogFrame\UI-DialogBox-Header">
-					<Size>
-						<AbsDimension x="300" y="68"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="12"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-				<FontString name="$parentHeaderText" inherits="GameFontNormal" text="StatusBars2 Config">
-					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentHeader">
-							<Offset>
-								<AbsDimension x="0" y="-14"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
                 <FontString name="$parent_BarSelectLabel" inherits="GameFontNormalSmallLeft" text="Bar Select" justifyH="RIGHT" >
                     <Size x="70" y="25"/>
                 </FontString>
 			</Layer>
 		</Layers>
         <Frames>
+            <Button name="$parent_DefaultsButton" parentKey="defaultsButton" inherits="UIPanelButtonTemplate" text="DEFAULTS">
+                <Size>
+                    <AbsDimension x="96" y="22"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="16" y="16"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        <!--tinsert(UISpecialFrames, self:GetName());-->
+                    </OnLoad>
+					<OnClick function="StatusBars2Config_DefaultButton_OnClick"/>
+                </Scripts>
+            </Button>
+	        <Button name="$parentCancelButton" parentKey="cancelButton" inherits="UIPanelButtonTemplate" text="REVERT">
+                <Size>
+                    <AbsDimension x="96" y="22"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="BOTTOMRIGHT">
+                        <Offset>
+                            <AbsDimension x="-16" y="16"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+					<OnClick function="StatusBars2Config_CancelButton_OnClick"/>
+                </Scripts>
+            </Button>
+            <Button name="$parentOkayButton" parentKey="okayButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
+                <Size>
+                    <AbsDimension x="96" y="22"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$parentCancelButton" relativePoint="BOTTOMLEFT"/>
+                </Anchors>
+                <Scripts>
+					<OnClick function="StatusBars2Config_OKButton_OnClick"/>
+                </Scripts>
+            </Button>
+            <Frame name="$parent_BarSelectMenu" parentKey="barSelectMenu" inherits="UIDropDownMenuTemplate" >
+                <Size x="130" y="16"/>
+                <Anchors>
+                    <Anchor point="BOTTOM" >
+                        <Offset x="0" y="8" />
+                    </Anchor>
+                    <Anchor point="RIGHT" relativeTo="$parentOkayButton" relativePoint="LEFT" >
+                        <Offset x="10" y="0" />
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        StatusBars2_Config_BarSelectLabel:ClearAllPoints( );
+                        StatusBars2_Config_BarSelectLabel:SetPoint("RIGHT", self, "LEFT", 10, 2);
+                        UIDropDownMenu_Initialize( self, StatusBars2Config_BarSelect_Initialize );
+                        UIDropDownMenu_SetWidth(self, self:GetWidth());
+                        UIDropDownMenu_SetButtonWidth(self, "TEXT");
+                    </OnLoad>
+                </Scripts>
+            </Frame>
+            <Frame name="$parentLayoutTabPage" parentKey="layoutTabPage" inherits="StatusBars2_LayoutConfigTemplate" hidden="false">
+                <Size x="400" y="200"/>
+            </Frame>   
+            <Frame name="$parentOptionsTabPage" parentKey="optionsTabPage" inherits="StatusBars2_ConfigTabFrameTemplate" hidden="true">
+                <Frames>
+                </Frames> 
+            </Frame>
+            <Button name="$parentTab1" parentKey="tabButtonLayout" inherits="StatusBars2_ConfigTabButtonTemplate" id="1" text="Layout">
+                <Anchors>
+                    <Anchor point="CENTER" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="60" y="-8"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="$parentTab2" parentKey="tabButtonOptions" inherits="StatusBars2_ConfigTabButtonTemplate" id="2" text="Options">
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="-16" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+        </Frames>
+        <Scripts>
+            <OnLoad>
+                StatusBar2_TabContainer_OnLoad( self )
+            </OnLoad>
+            <OnShow>
+                StatusBar2_TabContainer_OnShow( self )
+            </OnShow>
+            <OnHide>
+                PlaySound("UChatScrollButton");
+            </OnHide>
+        </Scripts>
+    </Frame>
+
             <!--<ScrollFrame name="$parent_BarSelectScrollFrame" parentKey="barSelectScrollFrame" inherits="FauxScrollFrameTemplate">
                 <Anchors>
                     <Anchor point="TOPLEFT">
@@ -1641,91 +2164,5 @@
                 </Scripts>
                 <Size x="100" y="250"/>
             </ScrollFrame>  -->          
-            <Button name="$parent_DefaultsButton" parentKey="defaultsButton" inherits="UIPanelButtonTemplate" text="DEFAULTS">
-                <Size>
-                    <AbsDimension x="96" y="22"/>
-                </Size>
-                <Anchors>
-                    <Anchor point="BOTTOMLEFT">
-                        <Offset>
-                            <AbsDimension x="16" y="16"/>
-                        </Offset>
-                    </Anchor>
-                </Anchors>
-                <Scripts>
-                    <OnLoad>
-                        <!--tinsert(UISpecialFrames, self:GetName());-->
-                    </OnLoad>
-					<OnClick function="StatusBars2Config_DefaultButton_OnClick"/>
-                </Scripts>
-            </Button>
-	        <Button name="$parentCancelButton" parentKey="cancelButton" inherits="UIPanelButtonTemplate" text="REVERT">
-                <Size>
-                    <AbsDimension x="96" y="22"/>
-                </Size>
-                <Anchors>
-                    <Anchor point="BOTTOMRIGHT">
-                        <Offset>
-                            <AbsDimension x="-16" y="16"/>
-                        </Offset>
-                    </Anchor>
-                </Anchors>
-                <Scripts>
-					<OnClick function="StatusBars2Config_CancelButton_OnClick"/>
-                </Scripts>
-            </Button>
-            <Button name="$parentOkayButton" parentKey="okayButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
-                <Size>
-                    <AbsDimension x="96" y="22"/>
-                </Size>
-                <Anchors>
-                    <Anchor point="BOTTOMRIGHT" relativeTo="$parentCancelButton" relativePoint="BOTTOMLEFT"/>
-                </Anchors>
-                <Scripts>
-					<OnClick function="StatusBars2Config_OKButton_OnClick"/>
-                </Scripts>
-            </Button>
-            <Frame name="$parent_BarSelectMenu" parentKey="barSelectMenu" inherits="UIDropDownMenuTemplate" >
-                <Size x="130" y="16"/>
-                <Anchors>
-                    <Anchor point="BOTTOM" >
-                        <Offset x="0" y="8" />
-                    </Anchor>
-                    <Anchor point="RIGHT" relativeTo="$parentOkayButton" relativePoint="LEFT" >
-                        <Offset x="10" y="0" />
-                    </Anchor>
-                </Anchors>
-                <Scripts>
-                    <OnLoad>
-                        StatusBars2_Config_BarSelectLabel:ClearAllPoints( );
-                        StatusBars2_Config_BarSelectLabel:SetPoint("RIGHT", self, "LEFT", 10, 2);
-                        UIDropDownMenu_Initialize( self, StatusBars2Config_BarSelect_Initialize );
-                        UIDropDownMenu_SetWidth(self, self:GetWidth());
-                        UIDropDownMenu_SetButtonWidth(self, "TEXT");
-                    </OnLoad>
-                </Scripts>
-            </Frame>
-            <Frame parentKey="inlayFrame" >
-                <Anchors>
-                    <Anchor point="LEFT">
-                        <Offset>
-                            <AbsDimension x="20" y="0"/>
-                        </Offset>
-                    </Anchor>
-                    <Anchor point="RIGHT">
-                        <Offset>
-                            <AbsDimension x="-20" y="0"/>
-                        </Offset>
-                    </Anchor>
-                    <Anchor point="TOP" >
-                        <Offset x="0" y="-20" />
-                    </Anchor>
-                    <Anchor point="BOTTOM" relativeTo="$parent_DefaultsButton" relativePoint="TOP" >
-                        <Offset x="0" y="20" />
-                    </Anchor>
-                </Anchors>                
-            </Frame>
-        </Frames>
-    </Frame>
 
 </Ui>
