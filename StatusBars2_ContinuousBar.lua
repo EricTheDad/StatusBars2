@@ -52,7 +52,7 @@ function StatusBars2_CreateContinuousBar( key, unit, displayName, barType, r, g,
     bar.optionsTemplate = "StatusBars2_ContinuousBarOptionsTemplate";
 
     -- Set the default configuration template
-    bar.configTemplate = "StatusBars2_ContinuousBarConfigTemplate";
+    bar.configTemplate = "continuousBarOptionsTabPage";
 
     -- Set the visibility handler
     bar.BarIsVisible = StatusBars2_ContinuousBar_IsVisible;

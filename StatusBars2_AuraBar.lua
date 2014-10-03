@@ -35,7 +35,7 @@ function StatusBars2_CreateAuraBar( key, unit )
 
     -- Set the options template
     bar.optionsTemplate = "StatusBars2_AuraBarOptionsTemplate";
-    bar.configTemplate = "StatusBars2_AuraBarConfigTemplate";
+    bar.configTemplate = "auraBarOptionsTabPage";
 
     -- Initialize the button array
     bar.buttons = {};

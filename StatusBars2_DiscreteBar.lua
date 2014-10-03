@@ -36,7 +36,7 @@ function StatusBars2_CreateDiscreteBar( key, unit, displayName, barType, boxCoun
 
     -- Set custom options template
     bar.optionsTemplate = "StatusBars2_AuraStatckBarOptionsTemplate";
-    bar.configTemplate = "StatusBars2_AuraStackBarConfigTemplate";
+    bar.configTemplate = "auraStackBarOptionsTabPage";
 
     -- Base methods for subclasses to call
     bar.DiscreteBar_OnEnable = StatusBars2_DiscreteBar_OnEnable;

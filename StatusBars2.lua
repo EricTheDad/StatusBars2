@@ -190,9 +190,6 @@ function StatusBars2_OnEvent( self, event, ... )
             StatusBars2_Options_Configure_Bar_Options( );
             StatusBars2_Options_DoDataExchange( false );
 
-            -- Initialize the config panel
-            StatusBars2Config_Configure_Bar_Options( );
-
             -- Install slash command handler
             SlashCmdList["STATUSBARS2"] = Slash_Cmd_Handler;
 
