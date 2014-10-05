@@ -155,7 +155,7 @@ function StatusBars2_CreateBar( key, template, unit, displayName, barType )
     bar.optionsTemplate = "StatusBars2_BarOptionsTemplate";
 
     -- Set the default configuration template
-    bar.configTemplate = "barOptionsTabPage";
+    bar.optionsPanelKey = "barOptionsTabPage";
 
     -- Set the default methods
     bar.OnEnable = StatusBars2_StatusBar_OnEnable;
