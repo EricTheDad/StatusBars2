@@ -435,85 +435,11 @@
             </Layer>
         </Layers>
         <Frames>
-            <CheckButton name="$parent_FadeButton" inherits="OptionsCheckButtonTemplate" >
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeto="$parent" >
-                        <Offset x="10" y="-10" />
-                    </Anchor>
-                </Anchors>
-                <Scripts>
-                    <OnLoad>
-                        getglobal( self:GetName( ) .. "Text" ):SetText( "Fade bars in and out" );
-                    </OnLoad>
-                </Scripts>
-            </CheckButton>
-            <CheckButton name="$parent_LockedButton" inherits="OptionsCheckButtonTemplate" >
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeto="$parent_FadeButton" >
-                        <Offset x="0" y="-24" />
-                    </Anchor>
-                </Anchors>
-                <Scripts>
-                    <OnLoad>
-                        getglobal( self:GetName( ) .. "Text" ):SetText( "Lock bar positions" );
-                    </OnLoad>
-                </Scripts>
-            </CheckButton>
-            <CheckButton name="$parent_GroupedButton" inherits="OptionsCheckButtonTemplate" >
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeto="$parent_LockedButton" >
-                        <Offset x="0" y="-24" />
-                    </Anchor>
-                </Anchors>
-                <Scripts>
-                    <OnLoad>
-                        getglobal( self:GetName( ) .. "Text" ):SetText( "Lock bars to groups" );
-                    </OnLoad>
-                </Scripts>
-            </CheckButton>
-            <CheckButton name="$parent_LockGroupsTogetherButton" inherits="OptionsCheckButtonTemplate" >
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeto="$parent_GroupedButton" >
-                        <Offset x="0" y="-24" />
-                    </Anchor>
-                </Anchors>
-                <Scripts>
-                    <OnLoad>
-                        getglobal( self:GetName( ) .. "Text" ):SetText( "Lock groups together" );
-                    </OnLoad>
-                </Scripts>
-            </CheckButton>
-            <Button name="$parent_ResetBarPositionButton" inherits="OptionsButtonTemplate" text="Snap Bars To Group">
-                <Size x="150" y="21"/>
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeto="$parent_LockGroupsTogetherButton" >
-                        <Offset x="0" y="-24" />
-                    </Anchor>
-                </Anchors>
-                <Scripts>
-                    <OnClick>
-                        StatusBars2_Options_ResetBarPositionButton_OnClick( self );
-                    </OnClick>
-                </Scripts>
-            </Button>
-            <Button name="$parent_ResetGroupPositionButton" inherits="OptionsButtonTemplate" text="Reset Group Positions">
-                <Size x="150" y="21"/>
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeto="$parent_ResetBarPositionButton" >
-                        <Offset x="0" y="-24" />
-                    </Anchor>
-                </Anchors>
-                <Scripts>
-                    <OnClick>
-                        StatusBars2_Options_ResetGroupPositionButton_OnClick( self );
-                    </OnClick>
-                </Scripts>
-            </Button>
 			<Button name="$parent_MoveBarsButton" inherits="OptionsButtonTemplate" text="Configure Bars">
 				<Size x="150" y="21"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeto="$parent_ResetGroupPositionButton" >
-						<Offset x="0" y="-24" />
+					<Anchor point="TOPLEFT" relativeto="$parent" >
+						<Offset x="32" y="-48" />
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -552,88 +478,6 @@
                     </OnLoad>
                 </Scripts>
             </Frame>
-			<Slider name="$parent_ScaleSlider" inherits="OptionsSliderTemplate" minValue="0.25" maxValue="3.0" valueStep="0.05" >
-                <Size x="200" y="17"/>
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="$Parent" >
-                        <Offset x="85" y="-330" />
-                    </Anchor>
-                </Anchors>
-                <Layers>
-                    <Layer level="ARTWORK">
-                        <FontString name="$parentLabel" inherits="GameFontNormalSmallLeft" text="Scale">
-                            <Size x="64" y="14"/>
-                            <Anchors>
-                                <Anchor point="RIGHT" relativePoint="LEFT">
-                                    <Offset>
-                                        <AbsDimension x="-4" y="1"/>
-                                    </Offset>
-                                </Anchor>
-                            </Anchors>
-                        </FontString>
-                        <FontString name="$parentValueLabel" inherits="GameFontNormalSmallLeft" >
-                            <Anchors>
-                                <Anchor point="LEFT" relativeTo="$Parent" relativePoint="RIGHT">
-                                    <Offset>
-                                        <AbsDimension x="20" y="0"/>
-                                    </Offset>
-                                </Anchor>
-                            </Anchors>
-                        </FontString>
-                    </Layer>
-                </Layers>
-                <Scripts>
-                    <OnLoad>
-                        self.type = CONTROLTYPE_SLIDER;
-                        getglobal( self:GetName( ) .. "Low" ):SetText( "0.25" );
-                        getglobal( self:GetName( ) .. "High" ):SetText( "3.0" );
-                    </OnLoad>
-                    <OnValueChanged>
-                        getglobal( self:GetName( ) .. "ValueLabel" ):SetText( StatusBars2_Round( value, 2 ) );
-                    </OnValueChanged>
-                </Scripts>
-            </Slider>
-            <Slider name="$parent_AlphaSlider" parentKey="slider" inherits="OptionsSliderTemplate" minValue="0.2" maxValue="1.0" valueStep="0.1" >
-                <Size x="200" y="17"/>
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="$Parent" >
-                        <Offset x="85" y="-370" />
-                    </Anchor>
-                </Anchors>
-                <Layers>
-                    <Layer level="ARTWORK">
-                        <FontString name="$parentLabel" inherits="GameFontNormalSmallLeft" text="Opacity">
-                            <Size x="64" y="14"/>
-                            <Anchors>
-                                <Anchor point="RIGHT" relativePoint="LEFT">
-                                    <Offset>
-                                        <AbsDimension x="-4" y="1"/>
-                                    </Offset>
-                                </Anchor>
-                            </Anchors>
-                        </FontString>
-                        <FontString name="$parentValueLabel" inherits="GameFontNormalSmallLeft" >
-                            <Anchors>
-                                <Anchor point="LEFT" relativeTo="$Parent" relativePoint="RIGHT">
-                                    <Offset>
-                                        <AbsDimension x="20" y="0"/>
-                                    </Offset>
-                                </Anchor>
-                            </Anchors>
-                        </FontString>
-                    </Layer>
-                </Layers>
-                <Scripts>
-                    <OnLoad>
-                        self.type = CONTROLTYPE_SLIDER;
-                        getglobal( self:GetName( ) .. "Low" ):SetText( "20%" );
-                        getglobal( self:GetName( ) .. "High" ):SetText( "100%" );
-                    </OnLoad>
-                    <OnValueChanged>
-                        getglobal( self:GetName( ) .. "ValueLabel" ):SetText( StatusBars2_Round( value * 100, 0 ).."%" );
-                    </OnValueChanged>
-                </Scripts>
-            </Slider>
         </Frames>
     </Frame>
 

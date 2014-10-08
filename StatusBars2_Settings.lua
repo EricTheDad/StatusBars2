@@ -429,8 +429,8 @@ end;
 local function StatusBars2_Settings_Apply_BarSettings( save, bar, barSettings )
 
     if( save ) then
-        barSettings.scale = bar.scale < 1 and bar.scale or nil;
-        barSettings.alpha = bar.maxAlpha < 1 and bar.maxAlpha or nil;
+        barSettings.scale = bar.scale ~= 1 and bar.scale or nil;
+        barSettings.alpha = bar.alpha and bar.alpha < 1 and bar.alpha or nil;
 
         barSettings.position = bar.position and ( barSettings.position or {} ) or nil;
 
@@ -455,7 +455,7 @@ local function StatusBars2_Settings_Apply_BarSettings( save, bar, barSettings )
         barSettings.auraFilter = shallowCopy( bar.auraFilter );
     else
         bar.scale = barSettings.scale or 1.0;
-        bar.maxAlpha = barSettings.alpha or 1.0;
+        bar.alpha = barSettings.alpha or 1.0;
 
         bar.position = barSettings.position and ( bar.position or {} ) or nil;
 
@@ -479,6 +479,7 @@ local function StatusBars2_Settings_Apply_BarSettings( save, bar, barSettings )
         bar.percentTextOpt = barSettings.percentTextOpt;
         bar.auraFilter = barSettings.auraFilter and shallowCopy( barSettings.auraFilter ) or nil;
     end
+
 end
 
 -------------------------------------------------------------------------------
@@ -492,8 +493,8 @@ end
 local function StatusBars2_Settings_Apply_GroupSettings( save, group, groupSettings )
 
     if( save ) then
-        groupSettings.scale = group.scale < 1 and group.scale or nil;
-        groupSettings.alpha = group.maxAlpha < 1 and group.maxAlpha or nil;
+        groupSettings.scale = group.scale ~= 1 and group.scale or nil;
+        groupSettings.alpha = group.alpha and group.alpha < 1 and group.alpha or nil;
 
         groupSettings.position = group.position and ( groupSettings.position or {} ) or nil;
 
@@ -504,7 +505,7 @@ local function StatusBars2_Settings_Apply_GroupSettings( save, group, groupSetti
 
     else
         group.scale = groupSettings.scale or 1.0;
-        group.maxAlpha = groupSettings.alpha or 1.0;
+        group.alpha = groupSettings.alpha or 1.0;
 
         group.position = groupSettings.position and ( group.position or {} ) or nil;
 
@@ -527,12 +528,14 @@ end
 --
 function StatusBars2_Settings_Apply_Settings( save, settings )
 
+    print("StatusBars2_Settings_Apply_Settings ", save);
+
     local rnd = StatusBars2_Round;
 
     -- Exchange options data
     if( save ) then
-        settings.scale = StatusBars2.scale < 1 and StatusBars2.scale or nil;
-        settings.alpha = StatusBars2.maxAlpha < 1 and StatusBars2.maxAlpha or nil;
+        settings.scale = StatusBars2.scale ~= 1 and StatusBars2.scale or nil;
+        settings.alpha = StatusBars2.alpha < 1 and StatusBars2.alpha or nil;
 
         settings.position = StatusBars2.position and ( settings.position or {} ) or nil;
 
@@ -549,7 +552,7 @@ function StatusBars2_Settings_Apply_Settings( save, settings )
         settings.groupsLocked = StatusBars2.groupsLocked;
     else
         StatusBars2.scale = settings.scale or 1.0;
-        StatusBars2.maxAlpha = settings.alpha or 1.0;
+        StatusBars2.alpha = settings.alpha or 1.0;
 
         StatusBars2.position = StatusBars2.position or {};
         StatusBars2.position.x = settings.position and settings.position.x or kDefaultFramePosition.x;

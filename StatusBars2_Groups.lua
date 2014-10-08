@@ -67,7 +67,8 @@ function StatusBars2_Group_OnMouseUp( self, button )
             -- Moving the frame clears the points and attaches it to the UIParent frame
             -- This will re-attach it to it's group frame
             local x, y = self:GetCenter( );
-            StatusBars2_StatusBar_SetPosition( self, x, y, true );
+            y = self:GetTop( );
+            StatusBars2_StatusBar_SetPosition( self, x * self:GetScale( ), y * self:GetScale( ), true );
         end
     end
     

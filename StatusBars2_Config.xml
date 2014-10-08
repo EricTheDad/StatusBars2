@@ -105,7 +105,10 @@
                 <Scripts>
                     <OnEditFocusLost>
                         local slider = self:GetParent( );
-                        slider:OnValueChanged( slider:GetValue( ) );
+                        local OnValueChangedScript = slider:GetScript( "OnValueChanged" );
+                        if OnValueChangedScript then
+                            OnValueChangedScript( slider, slider:GetValue( ) );
+                        end
                     </OnEditFocusLost>
                     <OnEnterPressed>
                         local slider = self:GetParent( );
@@ -124,7 +127,7 @@
         </Frames>
         <Scripts>
             <OnValueChanged>
-                self:OnValueChanged( value );
+                self.editBox:SetText( string.format("%.02f", value) );
             </OnValueChanged>
         </Scripts>
     </Slider>
@@ -215,8 +218,14 @@
                         getglobal( self:GetName( ) .. "Low" ):SetText( string.format("%.0f", min) );
                         getglobal( self:GetName( ) .. "High" ):SetText( string.format("%.0f", max) );
                         self:SetObeyStepOnDrag( true );
-                        self.OnValueChanged = function ( self, value ) self.editBox:SetText( string.format("%.02f", value) ); end
                     </OnLoad>
+                    <OnValueChanged>
+                        self.editBox:SetText( string.format("%.02f", value) );
+                        if self.applyToFrame and self.applyToFrame.scale ~= value then
+                            self.applyToFrame.scale = value;
+                            StatusBars2_UpdateFullLayout( );
+                        end
+                    </OnValueChanged>
                 </Scripts>
             </Slider>
             <Slider name="$parent_AlphaSlider" parentKey="alphaSlider" inherits="EditBoxSlider" minValue="20" maxValue="100" valueStep="5" >
@@ -246,8 +255,15 @@
                         getglobal( self:GetName( ) .. "Low" ):SetText( string.format("%.0f%%", min) );
                         getglobal( self:GetName( ) .. "High" ):SetText( string.format("%.0f%%", max) );
                         self:SetObeyStepOnDrag( true );
-                        self.OnValueChanged = function ( self, value ) self.editBox:SetText( string.format("%3d", value) ); end
                     </OnLoad>
+                    <OnValueChanged>
+                        self.editBox:SetText( string.format("%3d", value) );
+                        local realValue = value * 0.01
+                        if self.applyToFrame then
+                            self.applyToFrame.alpha = realValue;
+                            self.applyToFrame:SetAlpha( realValue );
+                        end
+                    </OnValueChanged>
                 </Scripts>
             </Slider>
         </Frames>
@@ -949,7 +965,6 @@
                 </Anchors>
                 <Scripts>
                     <OnLoad>
-                        <!-- tinsert(UISpecialFrames, self:GetName());-->
                     </OnLoad>
 					<OnClick function="StatusBars2Config_DefaultButton_OnClick"/>
                 </Scripts>
@@ -1069,6 +1084,7 @@
         </Frames>
         <Scripts>
             <OnLoad>
+                tinsert(UISpecialFrames, self:GetName());
                 PanelTemplates_SetNumTabs(self, 4);
                 PanelTemplates_SetTab(self, 1);
             </OnLoad>
@@ -1078,6 +1094,7 @@
             </OnShow>
             <OnHide>
                 PlaySound("UChatScrollButton");
+                StatusBars2Config_SetConfigMode( false );
             </OnHide>
         </Scripts>
     </Frame>

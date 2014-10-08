@@ -33,6 +33,8 @@ local TextOptionLabels =
 }
 
 local FontInfo = addonTable.fontInfo;
+local kDefaultFramePosition = addonTable.kDefaultFramePosition;
+
 
 -------------------------------------------------------------------------------
 --
@@ -683,8 +685,13 @@ end
 function StatusBars2_Options_ResetBarPositionButton_OnClick( self )
 
     -- Set a flag and reset the positions if the OK button is clicked
-    StatusBars2_Options.resetBarPositions = true;
+    --StatusBars2_Options.resetBarPositions = true;
+    for i, bar in ipairs( bars ) do
+        bar.position = nil;
+    end
 
+    StatusBars2_UpdateBars( );
+    
 end
 
 -------------------------------------------------------------------------------
@@ -698,7 +705,14 @@ end
 function StatusBars2_Options_ResetGroupPositionButton_OnClick( self )
 
     -- Set a flag and reset the positions if the OK button is clicked
-    StatusBars2_Options.resetGroupPositions = true;
+    --StatusBars2_Options.resetGroupPositions = true;
+    for i, group in ipairs( groups ) do
+        group.position = nil;
+    end
+
+    local x, y = UIParent:GetCenter( );
+    StatusBars2_StatusBar_SetPosition( StatusBars2, x + kDefaultFramePosition.x, y + kDefaultFramePosition.y, true );
+    StatusBars2_UpdateBars( );
 
 end
 
@@ -745,23 +759,11 @@ function StatusBars2_Options_DoDataExchange( save )
     if( save ) then
         StatusBars2_Settings.textDisplayOption = UIDropDownMenu_GetSelectedValue( textOptionsMenu );
         StatusBars2_Settings.font = UIDropDownMenu_GetSelectedValue( fontMenu );
-        StatusBars2_Settings.fade = StatusBars2_Options_FadeButton:GetChecked( );
-        StatusBars2_Settings.locked = StatusBars2_Options_LockedButton:GetChecked( );
-        StatusBars2_Settings.grouped = StatusBars2_Options_GroupedButton:GetChecked( );
-        StatusBars2_Settings.groupsLocked = StatusBars2_Options_LockGroupsTogetherButton:GetChecked( );
-        StatusBars2_Settings.scale = StatusBars2_Options_ScaleSlider:GetValue( );
-        StatusBars2_Settings.alpha = StatusBars2_Options_AlphaSlider:GetValue( );
     else
         UIDropDownMenu_SetSelectedValue( textOptionsMenu, StatusBars2_Settings.textDisplayOption );
         UIDropDownMenu_SetText( textOptionsMenu, TextOptionLabels[StatusBars2_Settings.textDisplayOption] );
         UIDropDownMenu_SetSelectedValue( fontMenu, StatusBars2_Settings.font );
         UIDropDownMenu_SetText( fontMenu, FontInfo[UIDropDownMenu_GetSelectedValue(fontMenu)].label );
-        StatusBars2_Options_FadeButton:SetChecked( StatusBars2_Settings.fade );
-        StatusBars2_Options_LockedButton:SetChecked( StatusBars2_Settings.locked );
-        StatusBars2_Options_GroupedButton:SetChecked( StatusBars2_Settings.grouped );
-        StatusBars2_Options_LockGroupsTogetherButton:SetChecked( StatusBars2_Settings.groupsLocked );
-        StatusBars2_Options_ScaleSlider:SetValue( StatusBars2_Settings.scale or 1.0 );
-        StatusBars2_Options_AlphaSlider:SetValue( StatusBars2_Settings.alpha or 1.0 );
     end
 
 end

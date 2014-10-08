@@ -101,6 +101,6 @@ end
 --
 function StatusBars2_Round( x, places )
     local mult = 10 ^  ( places or 0 )
-    return floor( x * mult + 0.5 ) / mult
+    return x and (floor( x * mult + 0.5 ) / mult) or x;
 end
 

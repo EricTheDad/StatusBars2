@@ -150,6 +150,10 @@ function StatusBars2_CreateBar( key, template, unit, displayName, barType )
 
     -- Base methods for subclasses to call
     bar.Bar_OnEnable = StatusBars2_StatusBar_OnEnable;
+    bar.Bar_OnMouseDown = StatusBars2_StatusBar_OnMouseDown;
+    bar.Bar_OnMouseUp = StatusBars2_StatusBar_OnMouseUp;
+    bar.Bar_ShowBackdrop = Bar_ShowBackdrop;
+    bar.Bar_HideBackdrop = Bar_HideBackdrop;
 
     -- Set the default options template
     bar.optionsTemplate = "StatusBars2_BarOptionsTemplate";
@@ -164,8 +168,8 @@ function StatusBars2_CreateBar( key, template, unit, displayName, barType )
     bar.SetBarScale = StatusBars2_StatusBar_SetScale;
     bar.SetBarPosition = StatusBars2_StatusBar_SetPosition;
     bar.GetBarHeight = StatusBars2_StatusBar_GetHeight;
-    bar.Bar_ShowBackdrop = Bar_ShowBackdrop;
-    bar.Bar_HideBackdrop = Bar_HideBackdrop;
+    bar.OnMouseDown = bar.Bar_OnMouseDown;
+    bar.OnMouseUp = bar.Bar_OnMouseUp;
 
     -- Set the mouse event handlers
     bar:SetScript( "OnHide", StatusBars2_StatusBar_OnHide );
@@ -286,7 +290,8 @@ function StatusBars2_StatusBar_OnMouseUp( self, button )
             -- Moving the frame clears the points and attaches it to the UIParent frame
             -- This will re-attach it to it's group frame
             local x, y = self:GetCenter( );
-            StatusBars2_StatusBar_SetPosition( self, x, y, true );
+            y = self:GetTop( );
+            StatusBars2_StatusBar_SetPosition( self, x * self:GetScale( ), y * self:GetScale( ), true );
         end
     end
 end
@@ -323,6 +328,14 @@ function StatusBars2_StatusBar_OnEnable( self )
         StatusBars2_ShowBar( self );
 
     else
+
+        -- Base methods for subclasses to call
+        self.Bar_OnMouseDown = StatusBars2_StatusBar_OnMouseDown;
+        self.Bar_OnMouseUp = StatusBars2_StatusBar_OnMouseUp;
+
+        self.ShouldPassClickToParent = NormalShouldPassClickToParent;
+        self.ShouldProcessClick = NormalShouldProcessClick;
+
         -- Check if the bar type is enabled
         -- Signing up for events if the bar isn't enable wastes performance needlessly
         if( self.enabled ~= "Never" ) then
@@ -334,13 +347,6 @@ function StatusBars2_StatusBar_OnEnable( self )
             self:SetScript( "OnEvent", self.OnEvent );
             self:SetScript( "OnUpdate", self.OnUpdate );
 
-            -- Base methods for subclasses to call
-            self.Bar_OnMouseDown = StatusBars2_StatusBar_OnMouseDown;
-            self.Bar_OnMouseUp = StatusBars2_StatusBar_OnMouseUp;
-
-            self.ShouldPassClickToParent = NormalShouldPassClickToParent;
-            self.ShouldProcessClick = NormalShouldProcessClick;
-
             -- Register for events
             for event, v in pairs ( self.eventsToRegister ) do
                 self:RegisterEvent( event );
@@ -348,7 +354,8 @@ function StatusBars2_StatusBar_OnEnable( self )
 
             -- If not locked enable the mouse for moving
             -- Don't enable mouse on aura bars, we only want the mouse to be able to grab active icons
-            self:EnableMouse( not StatusBars2.locked and self.type ~= kAura );
+            -- self:EnableMouse( not StatusBars2.locked and self.type ~= kAura );
+            self:EnableMouse( not StatusBars2.locked );
 
             if( self:BarIsVisible( ) ) then
                 StatusBars2_ShowBar( self );
@@ -356,9 +363,14 @@ function StatusBars2_StatusBar_OnEnable( self )
         end
     end
 
-    -- Set the mouse event handlers
-    self:SetScript( "OnMouseDown", self.Bar_OnMouseDown );
-    self:SetScript( "OnMouseUp", self.Bar_OnMouseUp );
+    self.OnMouseDown = self.Bar_OnMouseDown;
+    self.OnMouseUp = self.Bar_OnMouseUp;
+
+    if( self:IsMouseEnabled( ) ) then
+        -- Set the mouse event handlers
+        self:SetScript( "OnMouseDown", self.OnMouseDown );
+        self:SetScript( "OnMouseUp", self.OnMouseUp );
+    end
 
 end
 
@@ -400,6 +412,11 @@ end
 --
 function StatusBars2_StatusBar_SetScale( self, scale )
 
+    if self.key == "playerHealth" then
+        print(self.key, " setting scale to ", scale);
+        print(debugstack(1, 4));
+    end
+
     self:SetScale( scale );
 
 end
@@ -421,17 +438,26 @@ function StatusBars2_StatusBar_SetPosition( self, x, y, savePosition )
 
     local parentFrame = self:GetParent( );
     local px, py = parentFrame:GetCenter( );
+    local relativeTo;
+
+    if ( parentFrame == UIParent ) then 
+        relativeTo = "CENTER";
+    else
+        py = parentFrame:GetTop( );
+        relativeTo = "TOP";
+    end
 
     local scale = self.scale;
     local inv_scale = 1 / scale;
 
-    local nx = x * scale;
-    local ny = y * scale;
+    local nx = x;
+    local ny = y;
 
     local dx = nx - px;
     local dy = ny - py;
 
     if savePosition then
+        print("Saving Position");
         self.position = self.position or {};
         self.position.x = dx;
         self.position.y = dy;
@@ -442,18 +468,30 @@ function StatusBars2_StatusBar_SetPosition( self, x, y, savePosition )
     local yOffset = ( self.position and self.position.y or dy ) * invScale;
 
     --[[
-    if self.position then
-        print("Pos x:"..(self.position.x).." y:"..(self.position.y));
-    end
+    if( self.key == "playerHealth" ) then
+    --if true then
+        print("StatusBars2_StatusBar_SetPosition");
+        print((self.key or "Main"), " x:", rnd(x), " y:", rnd(y));
 
-    print((self.key or "Main").." x:"..rnd(x).." y:"..rnd(y).." xoff:"..rnd(xOffset).." yoff:"..rnd(yOffset));
-    print("px: "..rnd(px).." py:"..rnd(py));
+        print("Saving Position = ", savePosition);
+        print("scale:", scale);
+
+        if self.position then
+            print("Saved Pos x:", rnd(self.position.x), " y:", rnd(self.position.y));
+        else
+            print("No saved pos");
+        end
+
+        print("nx: ", rnd(nx), " ny:", rnd(ny));
+        print("px: ", rnd(px), " py:", rnd(py));
+        print("dx: ", rnd(dx), " dy:", rnd(dy), "relTo:", relativeTo);
+        print("xoff:", rnd(xOffset), " yoff:", rnd(yOffset));
+    end
     --]]
 
     -- Set the bar position
     self:ClearAllPoints( );
-    self:SetPoint( "CENTER", parentFrame, "CENTER", xOffset, yOffset );
-
+    self:SetPoint( "TOP", parentFrame, relativeTo, xOffset, yOffset );
 end
 
 -------------------------------------------------------------------------------

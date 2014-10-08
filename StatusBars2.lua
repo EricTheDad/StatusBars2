@@ -32,7 +32,7 @@ addonTable.kDefaultPowerBarColor = { r = 0.75, g = 0.75, b = 0.75 }
 
 addonTable.debugLayout = true;
 
-addonTable.kDefaultFramePosition = { x = 0, y = -150 };
+addonTable.kDefaultFramePosition = { x = 0, y = 0 };
 
 -- Settings
 StatusBars2_Settings = { };
@@ -427,15 +427,8 @@ function StatusBars2_UpdateBars( )
         group:OnEnable( );
     end
 
-    -- Set the Main Frame scale and alpha
-    StatusBars2:SetScale( StatusBars2.scale );
-    StatusBars2:SetAlpha( StatusBars2.maxAlpha );
-
-    -- Set Main Frame Position
-    StatusBars2_StatusBar_SetPosition( StatusBars2, kDefaultFramePosition.x, kDefaultFramePosition.y );
-
     -- Update the layout
-    StatusBars2_UpdateLayout( );
+    StatusBars2_UpdateFullLayout( )
 
 end
 
@@ -479,10 +472,13 @@ function StatusBars2_UpdateLayout( )
     table.sort( layoutBars, StatusBars2_BarCompareFunction );
 
     -- Lay them out
-    local groupFrame;
     local group;
-    local gxOffset, gyOffset;
-    local bxOffset, byOffset;
+    local groupFrame;
+    local px, py = StatusBars2:GetCenter( );
+    py = StatusBars2:GetTop( );
+    local gx, gy = px, py;
+    local offset = 0;
+    local group_offset = 0;
 
     for i, bar in ipairs( layoutBars ) do
 
@@ -490,31 +486,61 @@ function StatusBars2_UpdateLayout( )
         if( group ~= bar.group ) then
             group = bar.group;
             groupFrame = groups[ group ];
-
-            if group == 1 then
-                groupFrame:SetPoint( "TOP", StatusBars2, "TOP" );
-                gxOffset, gyOffset = groupFrame:GetCenter( );
-            else
-                gyOffset = byOffset - kGroupSpacing;
-                --print("gy:"..rnd(gyOffset).." by:"..rnd(byOffset).." gs:"..rnd(kGroupSpacing))
-            end
-
-            StatusBars2_StatusBar_SetPosition( groupFrame, gxOffset, gyOffset );
-            bar:SetPoint( "TOP", groupFrame, "TOP" );
-            bxOffset, byOffset = bar:GetCenter( );
+            group_offset = group_offset + offset;
+            gx = px;
+            gy = py + group_offset;
+            StatusBars2_StatusBar_SetPosition( groupFrame, gx, gy);
+            gx, gy = groupFrame:GetCenter( );
+            gy = groupFrame:GetTop( );
+            group_offset = group_offset - kGroupSpacing;
+            offset = 0;
         end
 
         -- Aura bars need a bit more space
         if( bar.type == kAura ) then
-            byOffset = byOffset - 1;
+            offset = offset - 1;
         end
 
-        -- Position the bar
-        bar:SetBarPosition( bxOffset, byOffset );
+        bar:SetBarPosition( gx, gy + offset );
 
         -- Update the offset
-        byOffset = byOffset - ( bar:GetBarHeight( ) - 2 );
+        offset = offset - ( bar:GetBarHeight( ) - 2 );
     end
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_UpdateLayout
+--
+--  Description:    Update the layout of the bars
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_UpdateFullLayout( )
+
+    -- Set the Main Frame scale and alpha
+    StatusBars2:SetScale( StatusBars2.scale );
+    StatusBars2:SetAlpha( StatusBars2.alpha );
+
+    -- Set Main Frame Position
+    StatusBars2_StatusBar_SetPosition( StatusBars2, kDefaultFramePosition.x, kDefaultFramePosition.y );
+
+    -- Set group scale and alpha
+    for i, group in ipairs( groups ) do
+        group:SetScale( group.scale or 1 );
+        group:SetAlpha( group.alpha or 1 );
+    end
+
+    for i, bar in ipairs( bars ) do
+        -- Set the scale
+        bar:SetBarScale( bar.scale );
+
+        -- Set maximum opacity
+        bar.alpha = bar.alpha or 1.0;
+    end
+
+    StatusBars2_UpdateLayout( );
 
 end
 
@@ -536,12 +562,6 @@ function StatusBars2_EnableBar( bar, group, index, removeWhenHidden )
     -- Set the parent to the appropriate group frame
     bar:SetParent( groups[ group ] );
 
-    -- Set the scale
-    bar:SetBarScale( bar.scale );
-
-    -- Set maximum opacity
-    bar.maxAlpha = bar.alpha or 1.0;
-
     -- Notify the bar is is enabled
     bar:OnEnable( );
 
@@ -556,6 +576,9 @@ end
 -------------------------------------------------------------------------------
 --
 function StatusBars2_DisableBar( bar )
+
+    -- If the frame was being dragged, drop it.
+    bar:OnMouseUp( "LeftButton" );
 
     -- Remove the event and update handlers
     bar:SetScript( "OnEvent", nil );
@@ -593,7 +616,7 @@ function StatusBars2_HideBar( bar, immediate )
             local fadeInfo = {};
             fadeInfo.mode = "OUT";
             fadeInfo.timeToFade = kFadeOutTime;
-            fadeInfo.startAlpha = bar.maxAlpha;
+            fadeInfo.startAlpha = bar.alpha;
             fadeInfo.endAlpha = 0;
             fadeInfo.finishedFunc = StatusBars2_FadeOutFinished;
             fadeInfo.finishedArg1 = bar;
@@ -632,9 +655,12 @@ function StatusBars2_ShowBar( bar )
 
     if( not bar.visible ) then
         if( StatusBars2.fade ) then
-            UIFrameFadeIn( bar, kFadeInTime, 0, bar.maxAlpha );
+            UIFrameFadeIn( bar, kFadeInTime, 0, bar.alpha );
         else
-            bar:SetAlpha( bar.maxAlpha );
+            if bar.alpha < 0 or bar.alpha > 1 then
+                print( bar.alpha );
+            end
+            bar:SetAlpha( bar.alpha );
             bar:Show( );
         end
         bar.visible = true;
@@ -732,7 +758,8 @@ function StatusBars2_OnMouseUp( self, button )
         -- Moving the frame clears the points and attaches it to the UIParent frame
         -- This will re-attach it to it's group frame
         local x, y = self:GetCenter( );
-        StatusBars2_StatusBar_SetPosition( self, x, y, true );
+        y = self:GetTop( );
+        StatusBars2_StatusBar_SetPosition( self, x * self:GetScale( ), y * self:GetScale( ), true );
     end
 
 end

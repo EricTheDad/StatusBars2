@@ -170,20 +170,6 @@ end
 
 -------------------------------------------------------------------------------
 --
---  Name:           StatusBars2_AuraBar_SetPosition
---
---  Description:    Set the bar position
---
--------------------------------------------------------------------------------
---
-function StatusBars2_AuraBar_SetPosition( self, x, y )
-
-    StatusBars2_StatusBar_SetPosition( self, x, y );
-
-end
-
--------------------------------------------------------------------------------
---
 --  Name:           StatusBars2_AuraBar_GetHeight
 --
 --  Description:    Get the bar height
@@ -314,8 +300,8 @@ function StatusBars2_GetAuraButton( self, id, buttonName, template, auraName, au
 
         button.DefaultOnEnter = button:GetScript( "OnEnter" );
         button.DefaultOnLeave = button:GetScript( "OnLeave" );
-        button:SetScript( "OnEnter", StatusBars2_AuraButton_OnEnter );
-        button:SetScript( "OnLeave", StatusBars2_AuraButton_OnLeave );
+        button.DefaultOnUpdate = button:GetScript( "OnUpdate" );
+        button:SetScript( "OnUpdate", StatusBars2_AuraButton_OnUpdate );
 
         -- Set the ID
         button:SetID( id );
@@ -361,7 +347,8 @@ function StatusBars2_GetAuraButton( self, id, buttonName, template, auraName, au
     button:SetPoint( "TOPLEFT", self, "TOPLEFT", offset, 0 );
 
     -- Enable/disable mouse for moving or tooltips
-    button:EnableMouse( self.enableTooltips or not StatusBars2.locked );
+    -- button:EnableMouse( self.enableTooltips or not StatusBars2.locked );
+    button:EnableMouse( not StatusBars2.locked );
 
     -- If its a debuff set the border size and color
     if( template == "TargetDebuffFrameTemplate" ) then
@@ -408,7 +395,9 @@ end
 --
 function StatusBars2_AuraButton_OnMouseDown( self, button )
 
-    StatusBars2_StatusBar_OnMouseDown( self.parentBar, button );
+    if( not StatusBars2.locked ) then
+        StatusBars2_StatusBar_OnMouseDown( self.parentBar, button );
+    end
 
 end
 
@@ -430,32 +419,24 @@ end
 
 -------------------------------------------------------------------------------
 --
---  Name:           StatusBars2_AuraButton_OnEnter
+--  Name:           StatusBars2_AuraButton_OnUpdate
 --
---  Description:    Override for button template's OnEnter
+--  Description:    Override for button template's OnUpdate
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_AuraButton_OnEnter( self )
+function StatusBars2_AuraButton_OnUpdate( self )
 
-    if( self.parentBar.enableTooltips ) then
-        self.DefaultOnEnter( self );
+    -- Not setting scripts for OnEnter and OnLeave because those require us to enable the
+    -- mouse which would stop mouse clicks from "clicking through"
+    if( self:IsMouseOver( ) ) then
+        if ( self.parentBar.enableTooltips and not GameTooltip:IsOwned(self) ) then
+            self:DefaultOnEnter( );
+        end
+    elseif( GameTooltip:IsOwned(self) ) then
+        self:DefaultOnLeave( );
     end
-
+    
+    self:DefaultOnUpdate( );
 end
 
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_AuraButton_OnLeave
---
---  Description:    Override for button template's OnLeave
---
--------------------------------------------------------------------------------
---
-function StatusBars2_AuraButton_OnLeave( self )
-
-    if( self.parentBar.enableTooltips ) then
-        self.DefaultOnLeave( self );
-    end
-
-end

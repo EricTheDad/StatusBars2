@@ -61,12 +61,15 @@ function StatusBars2Config_SetConfigMode( enable )
     if( enable ) then
         StatusBars2_Settings_Apply_Settings( false, StatusBars2_Settings )
         StatusBars2.configMode = true;
-        StatusBars2_Config:Show( );
+        --StatusBars2_Config:Show( );
+        ShowUIPanel( StatusBars2_Config );
     else
         StatusBars2.configMode = false;
-        StatusBars2_Config:Hide( );
+        --StatusBars2_Config:Hide( );
+        HideUIPanel( StatusBars2_Config );
     end
 
+    print("=======Config mode:", StatusBars2.configMode, "=========");
     -- Update the bar visibility and location
     StatusBars2_UpdateBars( );
 
@@ -120,7 +123,9 @@ end
 --
 local function StatusBars2Config_Bar_DoDataExchange( configPanel, bar, save )
 
+    local rnd = StatusBars2_Round;
     local frame = bar.optionsPanel;
+    local group = groups[bar.group];
     local enabledMenu = frame.enabledMenu;
     local scaleSlider = configPanel.barLayoutTabPage.scaleSlider;
     local alphaSlider = configPanel.barLayoutTabPage.alphaSlider;
@@ -141,12 +146,14 @@ local function StatusBars2Config_Bar_DoDataExchange( configPanel, bar, save )
 
     -- Exchange data
     if( save ) then
+        print("Saving ", bar.key, " old scale = ", rnd(bar.scale));
         bar.enabled = UIDropDownMenu_GetSelectedName( enabledMenu );
         bar.scale = StatusBars2_Round( scaleSlider:GetValue( ), 2 );
+        print("Scale = ", rnd(bar.scale));
 
         if( alphaSlider ) then
             local alphaValue = StatusBars2_Round( alphaSlider:GetValue( ) / 100, 2 );
-            bar.alpha = alphaValue < 1 and alphaValue or nil;
+            bar.alpha = alphaValue;
         end
        if( customColorButton and colorSwatch ) then
             if( customColorButton:GetChecked( )) then
@@ -201,10 +208,12 @@ local function StatusBars2Config_Bar_DoDataExchange( configPanel, bar, save )
     else
         UIDropDownMenu_SetSelectedName( enabledMenu, bar.enabled );
         UIDropDownMenu_SetText( enabledMenu, bar.enabled );
+        scaleSlider.applyToFrame = bar;
         scaleSlider:SetValue( bar.scale or 1 );
 
         if( alphaSlider ) then
-            alphaSlider:SetValue( ( bar.alpha or StatusBars2.alpha or 1 ) * 100 );
+            alphaSlider.applyToFrame = bar;
+            alphaSlider:SetValue( ( bar.alpha or group.alpha or StatusBars2.alpha or 1 ) * 100 );
         end
         if( customColorButton and colorSwatch ) then
             local customColorEnabled = bar.color ~= nil;
@@ -266,6 +275,40 @@ end
 
 -------------------------------------------------------------------------------
 --
+--  Name:           StatusBars2Config_Group_DoDataExchange
+--
+--  Description:    Exchange data between settings and controls
+--
+-------------------------------------------------------------------------------
+--
+local function StatusBars2Config_Group_DoDataExchange( configPanel, bar, save )
+
+    print("DDE group ", bar.group);
+    local group = groups[bar.group];
+    local scaleSlider = configPanel.groupConfigTabPage.scaleSlider;
+    local alphaSlider = configPanel.groupConfigTabPage.alphaSlider;
+
+    -- Exchange data
+    if( save ) then
+        group.scale = StatusBars2_Round( scaleSlider:GetValue( ), 2 );
+
+        if( alphaSlider ) then
+            local alphaValue = StatusBars2_Round( alphaSlider:GetValue( ) / 100, 2 );
+            group.alpha = alphaValue;
+        end
+    else
+        scaleSlider.applyToFrame = group;
+        scaleSlider:SetValue( group.scale or 1 );
+
+        if( alphaSlider ) then
+            alphaSlider.applyToFrame = group;
+            alphaSlider:SetValue( ( group.alpha or StatusBars2.alpha or 1 ) * 100 );
+        end
+    end
+end
+
+-------------------------------------------------------------------------------
+--
 --  Name:           StatusBars2Config_DoDataExchange
 --
 --  Description:    Exchange data between settings and controls
@@ -293,7 +336,7 @@ local function StatusBars2Config_DoDataExchange( configPanel, bar, save )
         StatusBars2.grouped = groupedButton:GetChecked( );
         StatusBars2.groupsLocked = groupsLockedTogetherButton:GetChecked( );
         StatusBars2.scale = scaleSlider:GetValue( );
-        StatusBars2.alpha = alphaSlider:GetValue( );
+        StatusBars2.alpha = StatusBars2_Round( alphaSlider:GetValue( ) / 100, 2 );
     else
         UIDropDownMenu_SetSelectedValue( textOptionsMenu, StatusBars2.textDisplayOption );
         UIDropDownMenu_SetText( textOptionsMenu, TextOptionLabels[StatusBars2.textDisplayOption] );
@@ -303,10 +346,13 @@ local function StatusBars2Config_DoDataExchange( configPanel, bar, save )
         lockedButton:SetChecked( StatusBars2.locked );
         groupedButton:SetChecked( StatusBars2.grouped );
         groupsLockedTogetherButton:SetChecked( StatusBars2.groupsLocked );
+        scaleSlider.applyToFrame = StatusBars2;
         scaleSlider:SetValue( StatusBars2.scale or 1.0 );
-        alphaSlider:SetValue( StatusBars2.alpha or 1.0 );
+        alphaSlider.applyToFrame = StatusBars2;
+        alphaSlider:SetValue( (StatusBars2.alpha or 1.0 ) * 100 );
     end
 
+    StatusBars2Config_Group_DoDataExchange( configPanel, bar, save );
     StatusBars2Config_Bar_DoDataExchange( configPanel, bar, save );
 
 end
@@ -361,9 +407,10 @@ function StatusBars2Config_SetBar( config_panel, bar )
     local activeBar = UIDropDownMenu_GetSelectedValue( barMenu );
 
     if( activeBar ) then
+        print("Saving bar ", activeBar.key);
         -- Save the settings for the previously active bar.
         -- Skip this step if the previously active bar is null (happens on initial OnShow)
-        StatusBars2Config_Bar_DoDataExchange( config_panel, activeBar, true );
+        StatusBars2Config_DoDataExchange( config_panel, activeBar, true );
     end
 
     -- bar == nil occurs when this is called from tab select, since no new bar is chosen
@@ -371,7 +418,8 @@ function StatusBars2Config_SetBar( config_panel, bar )
         if( bar ) then
             UIDropDownMenu_SetSelectedValue( barMenu, bar );
             UIDropDownMenu_SetText( barMenu, bar.displayName );
-            StatusBars2Config_Bar_DoDataExchange( config_panel, bar, false );
+            print("Loading bar ", bar.key);
+            StatusBars2Config_DoDataExchange( config_panel, bar, false );
         end
     end
 
@@ -428,6 +476,8 @@ end
 -------------------------------------------------------------------------------
 --
 function StatusBars2Config_OKButton_OnClick( self )
+
+    print("======= Config mode: StatusBars2Config_OKButton_OnClick =========");
 
     -- Pull the settings from the panel into the bars
     local activeBar = UIDropDownMenu_GetSelectedValue( self:GetParent( ).barSelectMenu );
