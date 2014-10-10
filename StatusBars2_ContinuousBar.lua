@@ -18,13 +18,7 @@ local kUnitPower = addonTable.barTypes.kUnitPower;
 local kEclipse = addonTable.barTypes.kEclipse;
 local kDemonicFury = addonTable.barTypes.kDemonicFury;
 
-local kDefaultPowerBarColor = addonTable.kDefaultPowerBarColor;
-
 local FontInfo = addonTable.fontInfo;
-
-
--- Max flash alpha
-local kFlashAlpha = 0.8;
 
 
 -------------------------------------------------------------------------------
@@ -46,7 +40,7 @@ function StatusBars2_CreateContinuousBar( key, unit, displayName, barType, r, g,
     bar.text = _G[ name .. "_Text" ];
     bar.percentText = _G[ name .. "_PercentText" ];
     bar.spark = _G[ name .. "_Spark" ];
-    bar.flash = _G[ name .. "_FlashOverlay" ];
+    bar.flashtexture = _G[ name .. "_FlashOverlay" ];
     
     -- Set the options template
     bar.optionsTemplate = "StatusBars2_ContinuousBarOptionsTemplate";

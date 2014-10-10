@@ -18,13 +18,7 @@ local kUnitPower = addonTable.barTypes.kUnitPower;
 local kEclipse = addonTable.barTypes.kEclipse;
 local kDemonicFury = addonTable.barTypes.kDemonicFury;
 
-local kDefaultPowerBarColor = addonTable.kDefaultPowerBarColor;
-
 local FontInfo = addonTable.fontInfo;
-
-
--- Max flash alpha
-local kFlashAlpha = 0.8;
 
 
 -------------------------------------------------------------------------------
@@ -359,7 +353,7 @@ function StatusBars2_PowerBar_OnEnable( self )
         if( self.unit == "player" or self.unit == "pet" ) then
             StatusBars2_SetPowerBarColor( self );
         else
-            self.status:SetStatusBarColor( kDefaultPowerBarColor );
+            self.status:SetStatusBarColor( addonTable.kDefaultPowerBarColor );
         end
     else
         -- Set the color
@@ -472,7 +466,7 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_GetPowerBarColor( powerToken )
+function StatusBars2_GetPowerBarColor( powerToken, doprint )
 
     -- PowerBarColor defined by Blizzard unit frame
     local color = PowerBarColor[powerToken];
@@ -485,10 +479,17 @@ function StatusBars2_GetPowerBarColor( powerToken )
         elseif( powerToken == SPELL_POWER_SHADOW_ORBS or powerToken == "SHADOW_ORBS") then
             color = { r = 162/255, g = 51/255, b = 209/255 };
         else
-            color = kDefaultPowerBarColor; 
+            if doprint then
+                print("Getting default");
+            end
+            color = addonTable.kDefaultPowerBarColor; 
         end
     end
     
+    if doprint then
+        print("PBcolor: ", color.r, color.g, color.b);
+    end
+
     return color.r, color.g, color.b;
         
 end

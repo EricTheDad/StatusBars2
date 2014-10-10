@@ -18,9 +18,6 @@ local kUnitPower = addonTable.barTypes.kUnitPower;
 local kEclipse = addonTable.barTypes.kEclipse;
 local kDemonicFury = addonTable.barTypes.kDemonicFury;
 
-local kDefaultPowerBarColor = addonTable.kDefaultPowerBarColor;
-
-
 -------------------------------------------------------------------------------
 --
 --  Name:           StatusBars2_CreateDiscreteBar
@@ -244,6 +241,7 @@ function StatusBars2_GetDiscreteBarColor( bar, boxIndex )
         return StatusBars2_GetPowerBarColor( bar.powerToken );
     end
 
+    local kDefaultPowerBarColor = addonTable.kDefaultPowerBarColor;
     return kDefaultPowerBarColor.r, kDefaultPowerBarColor.g, kDefaultPowerBarColor.b;
 
 end

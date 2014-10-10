@@ -18,13 +18,8 @@ local kUnitPower = addonTable.barTypes.kUnitPower;
 local kEclipse = addonTable.barTypes.kEclipse;
 local kDemonicFury = addonTable.barTypes.kDemonicFury;
 
-local kDefaultPowerBarColor = addonTable.kDefaultPowerBarColor;
-
 local FontInfo = addonTable.fontInfo;
 
-
--- Max flash alpha
-local kFlashAlpha = 0.8;
 
 -------------------------------------------------------------------------------
 --
@@ -298,6 +293,38 @@ end
 
 -------------------------------------------------------------------------------
 --
+--  Name:           StatusBars2_StatusBar_OnEnter
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+local function StatusBars2_StatusBar_OnEnter( self )
+
+    if( StatusBars2.configMode ) then
+        GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_BOTTOMRIGHT", 0, -30);
+        GameTooltip:SetText('Hold down "Shift" to move an individual bar\nHold down "Ctrl" to move a whole group\nHold down "Alt" to move all the bars at once');
+    end
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_StatusBar_OnLeave
+--
+--  Description:    
+-------------------------------------------------------------------------------
+--
+local function StatusBars2_StatusBar_OnLeave( self )
+
+    if( GameTooltip:IsOwned(self) ) then
+        GameTooltip:Hide( );
+    end
+
+end
+
+-------------------------------------------------------------------------------
+--
 --  Name:           StatusBars2_StatusBar_OnEnable
 --
 --  Description:    Called when a status bar is enabled
@@ -326,6 +353,9 @@ function StatusBars2_StatusBar_OnEnable( self )
         -- In config mode, the mouse is always enabled
         self:EnableMouse( true );
         StatusBars2_ShowBar( self );
+
+        self:SetScript( "OnEnter", StatusBars2_StatusBar_OnEnter );
+        self:SetScript( "OnLeave", StatusBars2_StatusBar_OnLeave );
 
     else
 
@@ -412,11 +442,6 @@ end
 --
 function StatusBars2_StatusBar_SetScale( self, scale )
 
-    if self.key == "playerHealth" then
-        print(self.key, " setting scale to ", scale);
-        print(debugstack(1, 4));
-    end
-
     self:SetScale( scale );
 
 end
@@ -457,7 +482,7 @@ function StatusBars2_StatusBar_SetPosition( self, x, y, savePosition )
     local dy = ny - py;
 
     if savePosition then
-        print("Saving Position");
+        --print("Saving Position");
         self.position = self.position or {};
         self.position.x = dx;
         self.position.y = dy;

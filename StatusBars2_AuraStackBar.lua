@@ -90,7 +90,9 @@ function StatusBars2_CreateAuraStackBar( key, unit, spellID, auraType, count, au
     bar.eventsToRegister["PLAYER_TARGET_CHANGED"] = true;
     bar.eventsToRegister["PLAYER_REGEN_ENABLED"] = true;
     bar.eventsToRegister["PLAYER_REGEN_DISABLED"] = true;
-    bar.eventsToRegister["COMBAT_LOG_EVENT_UNFILTERED"] = true;
+
+    bar.eventsToRegister["UNIT_AURA"] = true;
+    --bar.eventsToRegister["COMBAT_LOG_EVENT_UNFILTERED"] = true;
 
 end
 
@@ -115,6 +117,20 @@ function StatusBars2_AuraStackBar_OnEvent( self, event, ... )
     -- Leaving combat
     elseif( event == "PLAYER_REGEN_ENABLED" ) then
         self.inCombat = false;
+
+    elseif( event == "UNIT_AURA" ) then
+        local arg1 = ...;
+        if( arg1 == self.unit ) then
+
+            -- UnitAura doesn't seem to be returning debuffs right now
+            local _,_,_,amount = UnitAura( self.unit, self.aura );
+
+            if not amount then
+                _,_,_,amount = UnitDebuff( self.unit, self.aura );
+            end
+
+            StatusBars2_UpdateDiscreteBar( self, amount or 0 );
+        end
 
     -- Combat log event
     elseif( event == "COMBAT_LOG_EVENT_UNFILTERED" ) then
@@ -150,6 +166,11 @@ function StatusBars2_AuraStackBar_OnEvent( self, event, ... )
                     -- Applied
                     if( eventType == "SPELL_AURA_APPLIED" ) then
                         local _,_,_,amount = UnitAura( self.unit, spellName );
+
+                        if not amount then
+                            _,_,_,amount = UnitDebuff( self.unit, spellName );
+                        end
+
                         StatusBars2_UpdateDiscreteBar( self, amount );
 
                     -- Removed

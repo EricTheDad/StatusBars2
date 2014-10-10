@@ -30,9 +30,11 @@ addonTable.fontInfo =
 
 addonTable.kDefaultPowerBarColor = { r = 0.75, g = 0.75, b = 0.75 }
 
-addonTable.debugLayout = true;
+addonTable.debugLayout = false;
 
 addonTable.kDefaultFramePosition = { x = 0, y = 0 };
+
+addonTable.saveDataVersion = 1.0;
 
 -- Settings
 StatusBars2_Settings = { };
@@ -91,6 +93,7 @@ local BUFF_MASTERY_ICICLES = 76613;
 local BUFF_TIDAL_WAVE = 51564;
 local BUFF_LOCK_AND_LOAD = 168980;
 local BUFF_MAELSTROM_WEAPON = 53817;
+local BUFF_TASTE_FOR_BLOOD = 56636;
 
 -- Debuff IDs Blizzard doesn't define
 local DEBUFF_WEAKENED_ARMOR = 113746;
@@ -178,7 +181,7 @@ function StatusBars2_OnEvent( self, event, ... )
 
             -- If we have a power bar we don't have a blizzard color for, we'll use the class color.
             local _, englishClass = UnitClass( "player" );
-            kDefaultPowerBarColor = RAID_CLASS_COLORS[englishClass];
+            addonTable.kDefaultPowerBarColor = shallowCopy(RAID_CLASS_COLORS[englishClass]);
 
             StatusBars2_CreateGroups( );
             StatusBars2_CreateBars( );
@@ -188,6 +191,8 @@ function StatusBars2_OnEvent( self, event, ... )
 
             -- Initialize the option panel controls
             StatusBars2_Options_Configure_Bar_Options( );
+
+            -- Push the current bar data out to the interface panel
             StatusBars2_Options_DoDataExchange( false );
 
             -- Install slash command handler
@@ -657,9 +662,6 @@ function StatusBars2_ShowBar( bar )
         if( StatusBars2.fade ) then
             UIFrameFadeIn( bar, kFadeInTime, 0, bar.alpha );
         else
-            if bar.alpha < 0 or bar.alpha > 1 then
-                print( bar.alpha );
-            end
             bar:SetAlpha( bar.alpha );
             bar:Show( );
         end
@@ -667,6 +669,9 @@ function StatusBars2_ShowBar( bar )
     end
 
 end
+
+-- Max flash alpha
+local kFlashAlpha = 0.8;
 
 -------------------------------------------------------------------------------
 --
@@ -683,8 +688,8 @@ function StatusBars2_UpdateFlash( self, level )
 
         -- Set the bar backdrop level
         self:SetBackdropColor( level, 0, 0, level * kFlashAlpha );
-        self.flash:SetVertexColor( level * kFlashAlpha, 0, 0 );
-        self.flash:Show( );
+        self.flashtexture:SetVertexColor( level * kFlashAlpha, 0, 0 );
+        self.flashtexture:Show( );
 
     end
 
@@ -718,7 +723,7 @@ function StatusBars2_EndFlash( self )
 
     if( self.flashing ) then
         self.flashing = false;
-        self.flash:Hide( );
+        self.flashtexture:Hide( );
         self:SetBackdropColor( 0, 0, 0, 0 );
     end
 

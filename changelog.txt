@@ -1,4 +1,7 @@
-﻿2.10.04b
+﻿3.00.00b
+Huge new configuration interface.  Added slash commands /statusbars2 and /sb2.  Optional parameter "config" opens the new configuration panel directly instead of having to go through the Blizzard Options Panel first.
+
+2.10.04b
 Fixed Hunter Frenzy stacks not enabling
 
 2.10.03b

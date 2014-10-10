@@ -32,6 +32,7 @@ local TextOptionLabels =
     "Hidden",
 }
 
+local SaveDataVersion = addonTable.saveDataVersion;
 local FontInfo = addonTable.fontInfo;
 local kDefaultFramePosition = addonTable.kDefaultFramePosition;
 
@@ -58,17 +59,22 @@ local StatusBars2_Settings = nil;
 --
 function StatusBars2_LoadSettings( settings )
 
-    -- Initialize the bar settings
-    StatusBars2_InitializeSettings( settings );
+    if( settings.SaveDataVersion ~= SaveDataVersion ) then
+        -- Initialize the bar settings
+        StatusBars2_InitializeSettings( settings );
 
-    -- Import old settings
-    StatusBars2_ImportSettings( settings );
+        -- Import old settings
+        StatusBars2_ImportSettings( settings );
 
-    -- Get rid of old setting we no longer care about
-    StatisBars2_PruneSettings( settings );
-    
-    -- Set default settings
-    StatusBars2_SetDefaultSettings( settings );
+        -- Get rid of old setting we no longer care about
+        StatisBars2_PruneSettings( settings );
+        
+        -- Set default settings
+        StatusBars2_SetDefaultSettings( settings );
+
+        -- We are now up to date, update the version number
+        settings.SaveDataVersion = SaveDataVersion;
+    end
 
     -- Apply the settings to the bars
     StatusBars2_Settings_Apply_Settings( false, settings );
@@ -451,7 +457,7 @@ local function StatusBars2_Settings_Apply_BarSettings( save, bar, barSettings )
         barSettings.enableTooltips = bar.enableTooltips;
         barSettings.showSpell = bar.showSpell;
         barSettings.showInAllForms = bar.showInAllForms;
-        barSettings.percentTextOpt = bar.percentTextOpt;
+        barSettings.percentDisplayOption = bar.percentDisplayOption;
         barSettings.auraFilter = shallowCopy( bar.auraFilter );
     else
         bar.scale = barSettings.scale or 1.0;
@@ -476,7 +482,7 @@ local function StatusBars2_Settings_Apply_BarSettings( save, bar, barSettings )
         bar.enableTooltips = barSettings.enableTooltips;
         bar.showSpell = barSettings.showSpell;
         bar.showInAllForms = barSettings.showInAllForms;
-        bar.percentTextOpt = barSettings.percentTextOpt;
+        bar.percentDisplayOption = barSettings.percentDisplayOption;
         bar.auraFilter = barSettings.auraFilter and shallowCopy( barSettings.auraFilter ) or nil;
     end
 
@@ -527,8 +533,6 @@ end
 -------------------------------------------------------------------------------
 --
 function StatusBars2_Settings_Apply_Settings( save, settings )
-
-    print("StatusBars2_Settings_Apply_Settings ", save);
 
     local rnd = StatusBars2_Round;
 

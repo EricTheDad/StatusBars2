@@ -222,8 +222,7 @@
                     <OnValueChanged>
                         self.editBox:SetText( string.format("%.02f", value) );
                         if self.applyToFrame and self.applyToFrame.scale ~= value then
-                            self.applyToFrame.scale = value;
-                            StatusBars2_UpdateFullLayout( );
+                            StatusBars2_Config.doUpdate = true;
                         end
                     </OnValueChanged>
                 </Scripts>
@@ -1096,6 +1095,12 @@
                 PlaySound("UChatScrollButton");
                 StatusBars2Config_SetConfigMode( false );
             </OnHide>
+            <OnUpdate>
+                if (self.doUpdate) then
+                    self.doUpdate = false;
+                    StatusBars2Config_OnUpdate( self );
+                end
+            </OnUpdate>
         </Scripts>
     </Frame>
 

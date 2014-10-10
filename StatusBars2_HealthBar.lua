@@ -18,13 +18,7 @@ local kUnitPower = addonTable.barTypes.kUnitPower;
 local kEclipse = addonTable.barTypes.kEclipse;
 local kDemonicFury = addonTable.barTypes.kDemonicFury;
 
-local kDefaultPowerBarColor = addonTable.kDefaultPowerBarColor;
-
 local FontInfo = addonTable.fontInfo;
-
-
--- Max flash alpha
-local kFlashAlpha = 0.8;
 
 
 -------------------------------------------------------------------------------

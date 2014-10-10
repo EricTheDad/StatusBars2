@@ -69,7 +69,6 @@ function StatusBars2Config_SetConfigMode( enable )
         HideUIPanel( StatusBars2_Config );
     end
 
-    print("=======Config mode:", StatusBars2.configMode, "=========");
     -- Update the bar visibility and location
     StatusBars2_UpdateBars( );
 
@@ -121,7 +120,7 @@ end
 --
 -------------------------------------------------------------------------------
 --
-local function StatusBars2Config_Bar_DoDataExchange( configPanel, bar, save )
+local function StatusBars2Config_Bar_DoDataExchange( configPanel, save, bar )
 
     local rnd = StatusBars2_Round;
     local frame = bar.optionsPanel;
@@ -146,10 +145,8 @@ local function StatusBars2Config_Bar_DoDataExchange( configPanel, bar, save )
 
     -- Exchange data
     if( save ) then
-        print("Saving ", bar.key, " old scale = ", rnd(bar.scale));
         bar.enabled = UIDropDownMenu_GetSelectedName( enabledMenu );
         bar.scale = StatusBars2_Round( scaleSlider:GetValue( ), 2 );
-        print("Scale = ", rnd(bar.scale));
 
         if( alphaSlider ) then
             local alphaValue = StatusBars2_Round( alphaSlider:GetValue( ) / 100, 2 );
@@ -238,21 +235,21 @@ local function StatusBars2Config_Bar_DoDataExchange( configPanel, bar, save )
             onlyShowTimedAurasButton:SetChecked( bar.onlyShowTimed );
         end
         if( onlyShowListedAurasButton ) then
-            onlyShowListedAurasButton:SetChecked( StatusBars2_Settings.bars[ bar.key ].onlyShowListed );
-            StatusBars2_BarOptions_Enable_Aura_List( frame, StatusBars2_Settings.bars[ bar.key ].onlyShowListed );
+            onlyShowListedAurasButton:SetChecked( bar.onlyShowListed );
+            StatusBars2_BarOptions_Enable_Aura_List( frame, bar.onlyShowListed );
         end
         if( enableTooltipsButton ) then
-            enableTooltipsButton:SetChecked( StatusBars2_Settings.bars[ bar.key ].enableTooltips );
+            enableTooltipsButton:SetChecked( bar.enableTooltips );
         end
         if( showSpellButton ) then
-            showSpellButton:SetChecked( StatusBars2_Settings.bars[ bar.key ].showSpell );
+            showSpellButton:SetChecked( bar.showSpell );
         end
         if( showInAllFormsButton ) then
-            showInAllFormsButton:SetChecked( StatusBars2_Settings.bars[ bar.key ].showInAllForms );
+            showInAllFormsButton:SetChecked( bar.showInAllForms );
         end
         if( percentTextMenu ) then
-            UIDropDownMenu_SetSelectedName( percentTextMenu, StatusBars2_Settings.bars[ bar.key ].percentDisplayOption );
-            UIDropDownMenu_SetText( percentTextMenu, StatusBars2_Settings.bars[ bar.key ].percentDisplayOption );
+            UIDropDownMenu_SetSelectedName( percentTextMenu, bar.percentDisplayOption );
+            UIDropDownMenu_SetText( percentTextMenu, bar.percentDisplayOption );
         end
         if ( auraList ) then
             if( bar.auraFilter ) then
@@ -281,9 +278,8 @@ end
 --
 -------------------------------------------------------------------------------
 --
-local function StatusBars2Config_Group_DoDataExchange( configPanel, bar, save )
+local function StatusBars2Config_Group_DoDataExchange( configPanel, save, bar )
 
-    print("DDE group ", bar.group);
     local group = groups[bar.group];
     local scaleSlider = configPanel.groupConfigTabPage.scaleSlider;
     local alphaSlider = configPanel.groupConfigTabPage.alphaSlider;
@@ -315,7 +311,9 @@ end
 --
 -------------------------------------------------------------------------------
 --
-local function StatusBars2Config_DoDataExchange( configPanel, bar, save )
+local function StatusBars2Config_DoDataExchange( configPanel, save, bar )
+
+    local bar = bar or UIDropDownMenu_GetSelectedValue( configPanel.barSelectMenu );
 
     -- Get controls
     local textOptionsMenu = configPanel.globalConfigTabPage.textDisplayOptionsMenu;
@@ -352,10 +350,25 @@ local function StatusBars2Config_DoDataExchange( configPanel, bar, save )
         alphaSlider:SetValue( (StatusBars2.alpha or 1.0 ) * 100 );
     end
 
-    StatusBars2Config_Group_DoDataExchange( configPanel, bar, save );
-    StatusBars2Config_Bar_DoDataExchange( configPanel, bar, save );
+    StatusBars2Config_Group_DoDataExchange( configPanel, save, bar );
+    StatusBars2Config_Bar_DoDataExchange( configPanel, save, bar );
 
 end
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2Config_OnUpdate
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2Config_OnUpdate( self )
+
+    StatusBars2Config_DoDataExchange( self, true, activeBar );
+    StatusBars2_UpdateFullLayout( );
+
+end
+
 -------------------------------------------------------------------------------
 --
 --  Name:           StatusBars2Config_ShowActivePanel
@@ -407,10 +420,9 @@ function StatusBars2Config_SetBar( config_panel, bar )
     local activeBar = UIDropDownMenu_GetSelectedValue( barMenu );
 
     if( activeBar ) then
-        print("Saving bar ", activeBar.key);
         -- Save the settings for the previously active bar.
         -- Skip this step if the previously active bar is null (happens on initial OnShow)
-        StatusBars2Config_DoDataExchange( config_panel, activeBar, true );
+        StatusBars2Config_DoDataExchange( config_panel, true, activeBar );
     end
 
     -- bar == nil occurs when this is called from tab select, since no new bar is chosen
@@ -418,8 +430,7 @@ function StatusBars2Config_SetBar( config_panel, bar )
         if( bar ) then
             UIDropDownMenu_SetSelectedValue( barMenu, bar );
             UIDropDownMenu_SetText( barMenu, bar.displayName );
-            print("Loading bar ", bar.key);
-            StatusBars2Config_DoDataExchange( config_panel, bar, false );
+            StatusBars2Config_DoDataExchange( config_panel, false, bar );
         end
     end
 
@@ -446,7 +457,7 @@ function StatusBar2_TabContainer_OnShow( self )
         desiredActiveBar = StatusBars2Config_Configure_Bar_Options( self );
     end
 
-    StatusBars2Config_DoDataExchange( self, desiredActiveBar, false );
+    StatusBars2Config_DoDataExchange( self, false, desiredActiveBar );
     StatusBars2Config_SetBar( self, desiredActiveBar );
 
 end
@@ -477,11 +488,8 @@ end
 --
 function StatusBars2Config_OKButton_OnClick( self )
 
-    print("======= Config mode: StatusBars2Config_OKButton_OnClick =========");
-
     -- Pull the settings from the panel into the bars
-    local activeBar = UIDropDownMenu_GetSelectedValue( self:GetParent( ).barSelectMenu );
-    StatusBars2Config_DoDataExchange( self:GetParent( ), activeBar, true );
+    StatusBars2Config_DoDataExchange( self:GetParent( ), true );
 
     -- Now push the settings from the bars to the saved settings
     StatusBars2_Settings_Apply_Settings( true, StatusBars2_Settings );

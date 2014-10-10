@@ -109,31 +109,11 @@ function StatusBars2_Options_OnOK( )
     -- Update the settings
     StatusBars2_Options_DoDataExchange( true );
 
-    -- If the reset position button was pressed null out the position data
-    if( StatusBars2_Options.resetGroupPositions ) then
-        StatusBars2_Settings.position = nil;
-
-        for i, group in ipairs( groups ) do
-            StatusBars2_Settings.groups[ i ].position = nil;
-        end
-    end
-
-    if( StatusBars2_Options.resetBarPositions ) then
-        for i, bar in ipairs( bars ) do
-            StatusBars2_Settings.bars[ bar.key ].position = nil;
-        end
-    end
-
-    -- Apply the settings to the active bars
-    StatusBars2_Settings_Apply_Settings( false, StatusBars2_Settings );
+    -- Now push the settings from the bars to the saved settings
+    StatusBars2_Settings_Apply_Settings( true, StatusBars2_Settings );
 
     -- Update the bar visibility and location
     StatusBars2_UpdateBars( );
-
-    -- Reset the position flag
-    StatusBars2_Options.resetGroupPositions = false;
-    StatusBars2_Options.resetBarPositions = false;
-
 
 end
 
@@ -147,8 +127,6 @@ end
 --
 function StatusBars2_Options_OnCancel( )
 
-    -- Revert changes
-    StatusBars2_Options.resetBarPositions = false;
     StatusBars2_Options_DoDataExchange( false );
 
 end
@@ -751,18 +729,14 @@ function StatusBars2_Options_DoDataExchange( save )
     local textOptionsMenu = StatusBars2_Options_TextDisplayOptionsMenu;
     local fontMenu = StatusBars2_Options_TextSizeMenu;
 
-    if not save then
-        StatusBars2_Settings_Apply_Settings( true, StatusBars2_Settings );
-    end
-
     -- Exchange options data
     if( save ) then
-        StatusBars2_Settings.textDisplayOption = UIDropDownMenu_GetSelectedValue( textOptionsMenu );
-        StatusBars2_Settings.font = UIDropDownMenu_GetSelectedValue( fontMenu );
+        StatusBars2.textDisplayOption = UIDropDownMenu_GetSelectedValue( textOptionsMenu );
+        StatusBars2.font = UIDropDownMenu_GetSelectedValue( fontMenu );
     else
-        UIDropDownMenu_SetSelectedValue( textOptionsMenu, StatusBars2_Settings.textDisplayOption );
-        UIDropDownMenu_SetText( textOptionsMenu, TextOptionLabels[StatusBars2_Settings.textDisplayOption] );
-        UIDropDownMenu_SetSelectedValue( fontMenu, StatusBars2_Settings.font );
+        UIDropDownMenu_SetSelectedValue( textOptionsMenu, StatusBars2.textDisplayOption );
+        UIDropDownMenu_SetText( textOptionsMenu, TextOptionLabels[StatusBars2.textDisplayOption] );
+        UIDropDownMenu_SetSelectedValue( fontMenu, StatusBars2.font );
         UIDropDownMenu_SetText( fontMenu, FontInfo[UIDropDownMenu_GetSelectedValue(fontMenu)].label );
     end
 
