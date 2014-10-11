@@ -519,17 +519,20 @@ end
 
 -------------------------------------------------------------------------------
 --
---  Name:           StatusBars2Config_DefaultButton_OnClick
+--  Name:           StatusBars2Config_RevertButton_OnClick
 --
 --  Description:    
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2Config_DefaultButton_OnClick( self )
+function StatusBars2Config_RevertButton_OnClick( self )
 
-    -- Disable config mode
-    StatusBars2Config_SetConfigMode( false );
+    -- Reset the bars to the last saved state.
+    StatusBars2_Settings_Apply_Settings( false, StatusBars2_Settings );
 
+	-- Unlike cancel, don't close config mode, just update layouts
+	self:GetParent( ).doUpdate = true;
+	
 end
 
 -------------------------------------------------------------------------------

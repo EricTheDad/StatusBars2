@@ -54,7 +54,7 @@
                     <AbsDimension x="-15" y="-15"/>
                 </Offset>
             </Anchor>
-            <Anchor point="BOTTOM" relativeTo="$parent_DefaultsButton" relativePoint="TOP" >
+            <Anchor point="BOTTOM" relativeTo="$parent_RevertButton" relativePoint="TOP" >
                 <Offset x="0" y="10" />
             </Anchor>
         </Anchors>
@@ -951,7 +951,7 @@
 			</Layer>
 		</Layers>
         <Frames>
-            <Button name="$parent_DefaultsButton" parentKey="defaultsButton" inherits="UIPanelButtonTemplate" text="DEFAULTS">
+            <Button name="$parent_RevertButton" parentKey="revertButton" inherits="UIPanelButtonTemplate" text="REVERT">
                 <Size>
                     <AbsDimension x="96" y="22"/>
                 </Size>
@@ -965,10 +965,10 @@
                 <Scripts>
                     <OnLoad>
                     </OnLoad>
-					<OnClick function="StatusBars2Config_DefaultButton_OnClick"/>
+					<OnClick function="StatusBars2Config_RevertButton_OnClick"/>
                 </Scripts>
             </Button>
-	        <Button name="$parentCancelButton" parentKey="cancelButton" inherits="UIPanelButtonTemplate" text="REVERT">
+	        <Button name="$parentCancelButton" parentKey="cancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
                 <Size>
                     <AbsDimension x="96" y="22"/>
                 </Size>
