@@ -559,12 +559,17 @@ function StatusBars2Config_BarSelect_Initialize( self )
     local entry = SB2Config_DropdownInfo;
 
     for i, bar in ipairs( bars ) do
-        entry.func = StatusBars2Config_BarSelect_OnClick;
-        entry.arg1 = self;
-        entry.value = bar;
-        entry.text = bar.displayName;
-        entry.checked = UIDropDownMenu_GetSelectedValue( self ) == entry.value;
-        UIDropDownMenu_AddButton( entry );
+		-- Bars with a nil group are not enabled (wrong spec, not high enough level etc.
+		-- We won't show them because we don't want to have bars that could be in the same place 
+		-- for different specs cluttering things up
+		if( bar.group ) then
+			entry.func = StatusBars2Config_BarSelect_OnClick;
+			entry.arg1 = self;
+			entry.value = bar;
+			entry.text = bar.displayName;
+			entry.checked = UIDropDownMenu_GetSelectedValue( self ) == entry.value;
+			UIDropDownMenu_AddButton( entry );
+		end
     end
     
 end
