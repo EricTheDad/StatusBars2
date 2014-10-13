@@ -19,18 +19,14 @@ local groups = addonTable.groups;
 local bars = addonTable.bars;
 
 -- Text display options
-local kAbbreviated      = 1;
-local kCommaSeparated   = 2;
-local kUnformatted      = 3;
-local kHidden           = 4;
+local kAbbreviated      = addonTable.textDisplayOptions.kAbbreviated;
+local kCommaSeparated   = addonTable.textDisplayOptions.kCommaSeparated;
+local kUnformatted      = addonTable.textDisplayOptions.kUnformatted;
+local kHidden           = addonTable.textDisplayOptions.kHidden;
 
-local TextOptionLabels =
-{
-    "Abbreviated",
-    "Thousand Separators Only",
-    "Unformatted",
-    "Hidden",
-}
+local FontInfo = addonTable.fontInfo;
+local kDefaultFramePosition = addonTable.kDefaultFramePosition;
+
 
 -- Tab buttons
 local kGlobal       = 1;
@@ -38,11 +34,43 @@ local kGroup        = 2;
 local kBarLayout    = 3;
 local kBarOptions   = 4;
 
-local FontInfo = addonTable.fontInfo;
+-------------------------------------------------------------------------------
+--
+--  Name:           Setting variables
+--
+--  Description:    Global variables needed for the settings
+--
+-------------------------------------------------------------------------------
+--
+local oldOffset = 0;
+local currentScrollFrame = nil;
+local currentColorSwatch = nil;
 
 local SB2Config_DropdownInfo = UIDropDownMenu_CreateInfo();  -- We only need one of these, we'll use it everywhere for efficiency
-
 local ScrollBarButtons = {}
+
+local TextOptions  =
+{
+    { label = "Abbreviated",                value = kAbbreviated },
+    { label = "Thousand Separators Only",   value = kCommaSeparated },
+    { label = "Unformatted",                value = kUnformatted },
+    { label = "Hidden",                     value = kHidden },
+}
+
+local EnableInfo =
+{
+    { label = "Auto",     value = "Auto" },
+    { label = "Combat",   value = "Combat" },
+    { label = "Always",   value = "Always" },
+    { label = "Never",    value = "Never" },
+}
+
+local PercentTextInfo =
+{
+    { label = "Left",   value = "Left" },
+    { label = "Right",  value = "Right" },
+    { label = "Hide",   value = "Hide" },
+}
 
 -------------------------------------------------------------------------------
 --
@@ -145,7 +173,7 @@ local function StatusBars2Config_Bar_DoDataExchange( configPanel, save, bar )
 
     -- Exchange data
     if( save ) then
-        bar.enabled = UIDropDownMenu_GetSelectedName( enabledMenu );
+        bar.enabled = UIDropDownMenu_GetSelectedValue( enabledMenu );
         bar.scale = StatusBars2_Round( scaleSlider:GetValue( ), 2 );
 
         if( alphaSlider ) then
@@ -188,7 +216,7 @@ local function StatusBars2Config_Bar_DoDataExchange( configPanel, save, bar )
             bar.showInAllForms = showInAllFormsButton:GetChecked( );
         end
         if( percentTextMenu ) then
-            bar.percentDisplayOption = UIDropDownMenu_GetSelectedName( percentTextMenu );
+            bar.percentDisplayOption = UIDropDownMenu_GetSelectedValue( percentTextMenu );
         end
         if( auraList ) then
             if( auraList.allEntries and #auraList.allEntries > 0 ) then
@@ -203,7 +231,7 @@ local function StatusBars2Config_Bar_DoDataExchange( configPanel, save, bar )
         end
 
     else
-        UIDropDownMenu_SetSelectedName( enabledMenu, bar.enabled );
+        UIDropDownMenu_SetSelectedValue( enabledMenu, bar.enabled );
         UIDropDownMenu_SetText( enabledMenu, bar.enabled );
         scaleSlider.applyToFrame = bar;
         scaleSlider:SetValue( bar.scale or 1 );
@@ -248,7 +276,7 @@ local function StatusBars2Config_Bar_DoDataExchange( configPanel, save, bar )
             showInAllFormsButton:SetChecked( bar.showInAllForms );
         end
         if( percentTextMenu ) then
-            UIDropDownMenu_SetSelectedName( percentTextMenu, bar.percentDisplayOption );
+            UIDropDownMenu_SetSelectedValue( percentTextMenu, bar.percentDisplayOption );
             UIDropDownMenu_SetText( percentTextMenu, bar.percentDisplayOption );
         end
         if ( auraList ) then
@@ -337,7 +365,7 @@ local function StatusBars2Config_DoDataExchange( configPanel, save, bar )
         StatusBars2.alpha = StatusBars2_Round( alphaSlider:GetValue( ) / 100, 2 );
     else
         UIDropDownMenu_SetSelectedValue( textOptionsMenu, StatusBars2.textDisplayOption );
-        UIDropDownMenu_SetText( textOptionsMenu, TextOptionLabels[StatusBars2.textDisplayOption] );
+        UIDropDownMenu_SetText( textOptionsMenu, TextOptions[StatusBars2.textDisplayOption].label );
         UIDropDownMenu_SetSelectedValue( fontMenu, StatusBars2.font );
         UIDropDownMenu_SetText( fontMenu, FontInfo[UIDropDownMenu_GetSelectedValue(fontMenu)].label );
         fadeButton:SetChecked( StatusBars2.fade );
@@ -537,48 +565,6 @@ end
 
 -------------------------------------------------------------------------------
 --
---  Name:           StatusBars2Config_BarSelect_OnClick
---
---  Description:    
---
--------------------------------------------------------------------------------
---
-local function StatusBars2Config_BarSelect_OnClick( self, menu  )
-
-    StatusBars2Config_SetBar( menu:GetParent( ), self.value );
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2Config_BarSelect_Initialize
---
---  Description:    
---
--------------------------------------------------------------------------------
---
-function StatusBars2Config_BarSelect_Initialize( self )
-
-    local entry = SB2Config_DropdownInfo;
-
-    for i, bar in ipairs( bars ) do
-		-- Bars with a nil group are not enabled (wrong spec, not high enough level etc.
-		-- We won't show them because we don't want to have bars that could be in the same place 
-		-- for different specs cluttering things up
-		if( bar.group ) then
-			entry.func = StatusBars2Config_BarSelect_OnClick;
-			entry.arg1 = self;
-			entry.value = bar;
-			entry.text = bar.displayName;
-			entry.checked = UIDropDownMenu_GetSelectedValue( self ) == entry.value;
-			UIDropDownMenu_AddButton( entry );
-		end
-    end
-    
-end
-
--------------------------------------------------------------------------------
---
 --  Name:           Config_Bar_OnMouseDown
 --
 --  Description:    
@@ -614,6 +600,519 @@ addonTable.Config_Bar_OnMouseDown = Config_Bar_OnMouseDown;
 
 -------------------------------------------------------------------------------
 --
+--  Name:           StatusBars2Config_BarSelect_Initialize
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2Config_BarSelect_Initialize( self )
+
+    local entry = SB2Config_DropdownInfo;
+
+    for i, bar in ipairs( bars ) do
+		-- Bars with a nil group are not enabled (wrong spec, not high enough level etc.
+		-- We won't show them because we don't want to have bars that could be in the same place 
+		-- for different specs cluttering things up
+		if( bar.group ) then
+			entry.func = StatusBars2Config_BarSelect_OnClick;
+			entry.arg1 = self;
+			entry.value = bar;
+			entry.text = bar.displayName;
+			entry.checked = UIDropDownMenu_GetSelectedValue( self ) == entry.value;
+			UIDropDownMenu_AddButton( entry );
+		end
+    end
+    
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2Config_BarSelect_OnClick
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+local function StatusBars2Config_BarSelect_OnClick( self, menu  )
+
+    StatusBars2Config_SetBar( menu:GetParent( ), self.value );
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_TextDisplayOptionsMenu_Initialize
+--
+--  Description:    Initialize the text display options drop down menu
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_TextDisplayOptionsMenu_Initialize( self )
+
+    local entry = SB2Config_DropdownInfo;
+
+    for i, opt in ipairs( TextOptions ) do
+        entry.func = StatusBars2_TextDisplayOptionsMenu_OnClick;
+        entry.arg1 = self;
+        entry.value = opt.value;
+        entry.text = opt.label;
+        entry.checked = UIDropDownMenu_GetSelectedValue( self ) == entry.value;
+        UIDropDownMenu_AddButton( entry );
+    end
+    
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_TextDisplayOptionsMenu_OnClick
+--
+--  Description:    Called when a menu item is clicked
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_TextDisplayOptionsMenu_OnClick( self, menu )
+
+    UIDropDownMenu_SetSelectedValue( menu, self.value );
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_FontMenu_Initialize
+--
+--  Description:    Initialize the text display options drop down menu
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_FontMenu_Initialize( self )
+
+    local entry = SB2Config_DropdownInfo;
+
+    for i, info in ipairs( FontInfo ) do
+        entry.func = StatusBars2_FontMenu_OnClick;
+        entry.arg1 = self;
+        entry.value = i;
+        entry.text = info.label;
+        entry.checked = UIDropDownMenu_GetSelectedValue( self ) == i;
+        UIDropDownMenu_AddButton( entry );
+    end
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_FontMenu_OnClick
+--
+--  Description:    Called when a menu item is clicked
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_FontMenu_OnClick( self, menu )
+
+    UIDropDownMenu_SetSelectedValue( menu, self.value );
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_BarEnabledMenu_Initialize
+--
+--  Description:    Initialize the enabled drop down menu
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_BarEnabledMenu_Initialize( self )
+
+    local entry = SB2Config_DropdownInfo;
+
+    for i, info in ipairs( EnableInfo ) do
+        entry.func = StatusBars2_FontMenu_OnClick;
+        entry.arg1 = self;
+        entry.value = info.value;
+        entry.text = info.label;
+        entry.checked = UIDropDownMenu_GetSelectedValue( self ) == i;
+        UIDropDownMenu_AddButton( entry );
+    end
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_BarEnabledMenu_OnClick
+--
+--  Description:    Called when a menu item is clicked
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_BarEnabledMenu_OnClick( self, menu )
+
+    UIDropDownMenu_SetSelectedValue( menu, self.value );
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_PercentTextMenu_Initialize
+--
+--  Description:    Initialize the percent text drop down menu
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_PercentTextMenu_Initialize( self )
+
+    local entry = SB2Config_DropdownInfo;
+
+    for i, info in ipairs( PercentTextInfo ) do
+        entry.func = StatusBars2_FontMenu_OnClick;
+        entry.arg1 = self;
+        entry.value = info.value;
+        entry.text = info.label;
+        entry.checked = UIDropDownMenu_GetSelectedValue( self ) == i;
+        UIDropDownMenu_AddButton( entry );
+    end
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_PercentTextMenu_OnClick
+--
+--  Description:    Called when a menu item is clicked
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_PercentTextMenu_OnClick( self, menu )
+
+    UIDropDownMenu_SetSelectedValue( menu, self.value );
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_BarOptions_Check_Enable_Aura_List_Buttons
+--
+--  Description:    Enable / disable buttons that perform operations on the aura list depending on if they are currently usable.
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_BarOptions_Check_Enable_Aura_List_Buttons( scrollFrame )
+
+    local num_entries = 0;
+    if scrollFrame.allEntries then
+        num_entries = #scrollFrame.allEntries;
+    end
+
+    local deleteEntryButton = scrollFrame:GetParent( ).deleteEntryButton;
+    local clearListButton = scrollFrame:GetParent( ).clearListButton
+
+    -- Buttons are nil on the initial update because the buttons get created after the list
+    if( deleteEntryButton and clearListButton ) then
+        local should_enable_clear_button = num_entries > 0 and scrollFrame.isEnabled;
+        local should_enabled_delete_button = should_enable_clear_button and scrollFrame.selectedIndex;
+
+        if( should_enable_clear_button ) then
+            clearListButton:Enable( );
+        else
+            clearListButton:Disable( );
+        end
+
+        if( should_enabled_delete_button ) then
+            deleteEntryButton:Enable( );
+        else
+            deleteEntryButton:Disable( );
+        end
+    end
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_BarOptions_Enable_Aura_List
+--
+--  Description:    Enable / disable user input for the aura list
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_BarOptions_Enable_Aura_List( frame, is_enabled )
+
+    local aura_list = frame.auraList
+    local aura_editbox = frame.auraNameInput
+
+    aura_list.isEnabled = is_enabled;
+    local buttons = aura_list.buttons;
+
+    for i, entry in ipairs(buttons) do
+        if is_enabled then
+            entry:Enable();
+        else
+            entry:Disable();
+        end
+    end
+
+    if( is_enabled ) then
+        aura_editbox:Enable( );
+    else
+        aura_editbox:Disable( );
+    end
+
+    StatusBars2_BarOptions_Check_Enable_Aura_List_Buttons( aura_list );
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_BarOptions_AddAuraFilterEntry
+--
+--  Description:    Add an aura name to the aura filter list
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_BarOptions_AddAuraFilterEntry( self )
+
+    local aura_list = self:GetParent().auraList;
+    local buttons = aura_list.buttons;
+
+    if aura_list.allEntries == nil then
+        aura_list.allEntries = {};
+    end
+
+    local numEntries = #aura_list.allEntries;
+    local aura_name = self:GetText( );
+    
+    aura_list.allEntries[numEntries+1] = aura_name;
+    table.sort(aura_list.allEntries);
+    StatusBars2_BarOptions_AuraListUpdate( aura_list );
+
+    self:ClearFocus();
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_BarOptions_AuraListUpdate
+--
+--  Description:    Select an item in the list of aura names
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_BarOptions_AuraListUpdate( self )
+
+    if self then
+        currentScrollFrame = self;
+    end
+
+    if currentScrollFrame then
+
+        local scrollFrame = currentScrollFrame;
+        local offset = HybridScrollFrame_GetOffset(scrollFrame);
+
+        if self or offset ~= oldOffset then
+            oldOffset = offset;
+
+            local buttons = scrollFrame.buttons;
+            local button_height = buttons[1]:GetHeight();
+
+            for i, entry in ipairs(buttons) do
+                local index = i + offset;
+
+                if scrollFrame.allEntries and scrollFrame.allEntries[index] then
+                    entry:SetText( scrollFrame.allEntries[index] );
+                    entry:Show();
+                    entry.index = index;
+
+                    if scrollFrame.selectedIndex == index then
+                        entry:LockHighlight( );
+                    else
+                        entry:UnlockHighlight( );
+                    end
+
+                else
+                    entry:Hide();
+                end
+            end
+
+            local num_entries = 0;
+            if scrollFrame.allEntries then
+                num_entries = #scrollFrame.allEntries;
+            end
+
+            StatusBars2_BarOptions_Check_Enable_Aura_List_Buttons( scrollFrame );
+            HybridScrollFrame_Update(scrollFrame, num_entries * button_height, scrollFrame:GetHeight());
+        end
+    end
+    
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_BarOptions_ListEntryButton_OnClick
+--
+--  Description:    Select an item in the list of aura names
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_BarOptions_ListEntryButton_OnClick( self )
+
+    local aura_list = self:GetParent():GetParent();
+
+    aura_list.selectedIndex = self.index;
+    StatusBars2_BarOptions_AuraListUpdate( aura_list );
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_BarOptions_DeleteAuraFilterListEntry_OnClick
+--
+--  Description:    Delete an aura name from the aura filter list
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_BarOptions_DeleteAuraFilterListEntry_OnClick( self )
+
+    local aura_list = self:GetParent().auraList;
+
+    if aura_list.selectedIndex then
+        table.remove(aura_list.allEntries, aura_list.selectedIndex);
+    end
+
+    aura_list.selectedIndex = nil;
+    StatusBars2_BarOptions_AuraListUpdate( aura_list );
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_BarOptions_ClearAuraFilterList_OnClick
+--
+--  Description:    Add an aura name to the aura filter list
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_BarOptions_ClearAuraFilterList_OnClick( self )
+
+    local aura_list = self:GetParent().auraList;
+    aura_list.allEntries = nil;
+    StatusBars2_BarOptions_AuraListUpdate( aura_list );
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_BarOptions_Enable_ColorSelectButton
+--
+--  Description:    Enable / disable user input for the color select button
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_BarOptions_Enable_ColorSelectButton( frame, is_enabled )
+
+    local color_select_button = frame.pickColorButton;
+
+    if( is_enabled ) then
+        color_select_button:Enable( );
+    else
+        color_select_button:Disable( );
+    end
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_Options_OnSetBarColor
+--
+--  Description:    Called when the set bar color button is clicked
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_Options_OnSetBarColor( restore )
+
+    if( currentColorSwatch ) then
+        local r,g,b;
+
+        if( restore ) then
+            r,g,b = unpack( restore )
+        else
+            r,g,b = ColorPickerFrame:GetColorRGB( );
+        end
+
+        currentColorSwatch:SetBackdropColor( r, g, b );
+    end
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_Options_SetBarColorButton_OnClick
+--
+--  Description:    Called when the set bar color button is clicked
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_Options_SetBarColorButton_OnClick( frame )
+
+    local colorSwatch = frame.colorSwatch;
+    local r,g,b = colorSwatch:GetBackdropColor( );
+
+    -- ColorPickerFrame:SetColorRGB will call ColorPickerFrame:func, so the color
+    -- swatch needs to be set before we call SetColorRGB
+    currentColorSwatch = colorSwatch;
+    ColorPickerFrame.func = StatusBars2_Options_OnSetBarColor;
+    ColorPickerFrame.opacityFunc = StatusBars2_Options_OnSetBarColor;
+    ColorPickerFrame.cancelFunc = StatusBars2_Options_OnSetBarColor;
+    ColorPickerFrame:SetColorRGB(r,g,b);
+    ColorPickerFrame.hasOpacity = false;
+    ColorPickerFrame.opacity = 1;
+    ColorPickerFrame.previousValues = {r,g,b};
+
+    ShowUIPanel(ColorPickerFrame);
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_Options_ResetBarPositionButton_OnClick
+--
+--  Description:    Called when the reset bar positions button is clicked
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_Options_ResetBarPositionButton_OnClick( self )
+
+    -- Set a flag and reset the positions if the OK button is clicked
+    --StatusBars2_Options.resetBarPositions = true;
+    for i, bar in ipairs( bars ) do
+        bar.position = nil;
+    end
+
+	self:GetParent( ).doUpdate = true;
+    
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_Options_ResetGroupPositionButton_OnClick
+--
+--  Description:    Called when the reset group positions button is clicked
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_Options_ResetGroupPositionButton_OnClick( self )
+
+    -- Set a flag and reset the positions if the OK button is clicked
+    --StatusBars2_Options.resetGroupPositions = true;
+    for i, group in ipairs( groups ) do
+        group.position = nil;
+    end
+
+    local x, y = UIParent:GetCenter( );
+    StatusBars2_StatusBar_SetPosition( StatusBars2, x + kDefaultFramePosition.x, y + kDefaultFramePosition.y, true );
+	self:GetParent( ).doUpdate = true;
+
+end
+
+--[[
+-------------------------------------------------------------------------------
+--
 --  Name:           StatusBars2Config_BarSelectScrollBar_Update
 --
 --  Description:    
@@ -632,17 +1131,17 @@ function StatusBars2Config_BarSelectScrollBar_Update()
     local list_length = #bars;
 
     num_buttons_needed = num_buttons_needed < list_length and num_buttons_needed or list_length;
-    ---[[
+
     for i = num_buttons + 1, num_buttons_needed do
         button_frame = CreateFrame("Button", "ScrollButton"..i, StatusBars2_Config_BarSelectScrollFrame, StatusBar2_BarListEntryButtonTemplate);
         table.insert( ScrollBarButtons, button_frame );
     end
-    --]]
+
 
     num_buttons = #ScrollBarButtons;
 
     local offset = FauxScrollFrame_GetOffset(StatusBars2_Config_BarSelectScrollFrame);
-    --[[
+
     for i = 1, num_buttons_needed do
         lineplusoffset = i + offset;
 
@@ -655,10 +1154,10 @@ function StatusBars2Config_BarSelectScrollBar_Update()
             button_frame:Hide( );
         end
     end
-    --]]
 
     --FauxScrollFrame_Update(StatusBars2_Config_BarSelectScrollFrame, list_length, num_buttons_needed, button_height);
     FauxScrollFrame_Update(StatusBars2_Config_BarSelectScrollFrame,list_length,14,15);
 
 end
+--]]
 

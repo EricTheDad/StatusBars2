@@ -412,22 +412,98 @@
         </Scripts>
         <Layers>
             <Layer level="BACKGROUND">
-                <FontString name="$parent_TextDisplayOptionsLabel" inherits="GameFontNormalSmallLeft" text="Text Display Options" >
-                    <Size x="200" y="17"/>
+                <FontString 
+                    name="$parent_Title" 
+                    inherits="GameFontNormalLarge" 
+                    text="StatusBars2" >
+                    <Size x="200" y="50"/>
                     <Anchors>
-                        <Anchor point="TOPRIGHT" relativeTo="$Parent" >
+                        <Anchor point="TOP" relativeTo="$parent" >
                             <Offset>
-                                <AbsDimension x="-140" y="-20"/>
+                                <AbsDimension x="0" y="-20"/>
                             </Offset>
                         </Anchor>
                     </Anchors>
                 </FontString>
-                <FontString name="$parent_TextSizeLabel" inherits="GameFontNormalSmallLeft" text="Text Size" >
+                <FontString 
+                    name="$parent_Credits1" 
+                    inherits="GameFontNormalSmallLeft" 
+                    text="Original Addon by Wesslen" >
                     <Size x="200" y="17"/>
                     <Anchors>
-                        <Anchor point="TOPRIGHT" relativeTo="$parent_TextDisplayOptionsLabel" >
+                        <Anchor point="TOP" relativeTo="$parent_Title" relativePoint="BOTTOM" >
                             <Offset>
-                                <AbsDimension x="0" y="-60"/>
+                                <AbsDimension x="0" y="-20"/>
+                            </Offset>
+                        </Anchor>
+                        <Anchor point="LEFT" relativeTo="$parent" >
+                            <Offset>
+                                <AbsDimension x="20" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString 
+                    name="$parent_Credits2" 
+                    inherits="GameFontNormalSmallLeft" 
+                    text="Version 2 rewrite by GopherYerguns" >
+                    <Size x="400" y="17"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parent_Credits1" relativePoint="BOTTOMLEFT">
+                            <Offset>
+                                <AbsDimension x="0" y="-5"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString 
+                    name="$parent_Credits3" 
+                    inherits="GameFontNormalSmallLeft" 
+                    text="Mists of Pandaria updates by ???? and EricTheDad" >
+                    <Size x="400" y="17"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parent_Credits2" relativePoint="BOTTOMLEFT" >
+                            <Offset>
+                                <AbsDimension x="0" y="-5"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString 
+                    name="$parent_Credits4" 
+                    inherits="GameFontNormalSmallLeft" 
+                    text="Ongoing maintenance, Warlords of Draenor update and new configuration interface by EricTheDad" >
+                    <Size x="600" y="17"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parent_Credits3" relativePoint="BOTTOMLEFT" >
+                            <Offset>
+                                <AbsDimension x="0" y="-5"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString 
+                    name="$parent_slash_command_help1" 
+                    inherits="GameFontNormalSmallLeft" 
+                    text='Show this screen by typing "/statusbars2" or "/sb2" in the chat input.' >
+                    <Size x="600" y="17"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parent_Credits4" relativePoint="BOTTOMLEFT" >
+                            <Offset>
+                                <AbsDimension x="0" y="-25"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString 
+                    name="$parent_slash_command_help2" 
+                    inherits="GameFontNormalSmallLeft" 
+                    text='Enable configuration mode by typing in "/statusbars2 config" or "/sb2 config" or clicking the button below' >
+                    <Size x="600" y="17"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parent_slash_command_help1" relativePoint="BOTTOMLEFT" >
+                            <Offset>
+                                <AbsDimension x="0" y="-5"/>
                             </Offset>
                         </Anchor>
                     </Anchors>
@@ -435,11 +511,11 @@
             </Layer>
         </Layers>
         <Frames>
-			<Button name="$parent_MoveBarsButton" inherits="OptionsButtonTemplate" text="Configure Bars">
-				<Size x="150" y="21"/>
+			<Button name="$parent_MoveBarsButton" inherits="OptionsButtonTemplate" text="Configure Statusbars2">
+				<Size x="200" y="21"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeto="$parent" >
-						<Offset x="32" y="-48" />
+					<Anchor point="CENTER" relativeto="$parent" >
+						<Offset x="0" y="0" />
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -448,36 +524,6 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-            <Frame name="$parent_TextDisplayOptionsMenu" inherits="UIDropDownMenuTemplate" >
-                <Size x="170" y="17"/>
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="$parent_TextDisplayOptionsLabel" relativePoint="BOTTOMLEFT" >
-                        <Offset x="-12" y="-3" />
-                    </Anchor>
-                </Anchors>
-                <Scripts>
-                    <OnLoad>
-                        UIDropDownMenu_Initialize( self, StatusBars2_TextDisplayOptionsMenu_Initialize );
-                        UIDropDownMenu_SetWidth(self, self:GetWidth());
-                        UIDropDownMenu_SetButtonWidth(self, "TEXT");
-                    </OnLoad>
-                </Scripts>
-            </Frame>
-            <Frame name="$parent_TextSizeMenu" inherits="UIDropDownMenuTemplate" >
-                <Size x="170" y="17"/>
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="$parent_TextSizeLabel" relativePoint="BOTTOMLEFT" >
-                        <Offset x="-12" y="-3" />
-                    </Anchor>
-                </Anchors>
-                <Scripts>
-                    <OnLoad>
-                        UIDropDownMenu_Initialize( self, StatusBars2_FontMenu_Initialize );
-                        UIDropDownMenu_SetWidth(self, self:GetWidth());
-                        UIDropDownMenu_SetButtonWidth(self, "TEXT");
-                    </OnLoad>
-                </Scripts>
-            </Frame>
         </Frames>
     </Frame>
 

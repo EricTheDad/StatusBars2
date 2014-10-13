@@ -20,6 +20,12 @@ local kDemonicFury = addonTable.barTypes.kDemonicFury;
 
 local FontInfo = addonTable.fontInfo;
 
+-- Text display options
+local kAbbreviated      = addonTable.textDisplayOptions.kAbbreviated;
+local kCommaSeparated   = addonTable.textDisplayOptions.kCommaSeparated;
+local kUnformatted      = addonTable.textDisplayOptions.kUnformated;
+local kHidden           = addonTable.textDisplayOptions.kHidden;
+
 
 -------------------------------------------------------------------------------
 --

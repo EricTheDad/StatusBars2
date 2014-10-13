@@ -15,22 +15,14 @@ local kUnitPower = addonTable.barTypes.kUnitPower;
 local kEclipse = addonTable.barTypes.kEclipse;
 local kDemonicFury = addonTable.barTypes.kDemonicFury;
 
+-- Text display options
+local kAbbreviated      = addonTable.textDisplayOptions.kAbbreviated;
+local kCommaSeparated   = addonTable.textDisplayOptions.kCommaSeparated;
+local kUnformatted      = addonTable.textDisplayOptions.kUnformated;
+local kHidden           = addonTable.textDisplayOptions.kHidden;
+
 local groups = addonTable.groups;
 local bars = addonTable.bars;
-
--- Text display options
-local kAbbreviated      = 1;
-local kCommaSeparated   = 2;
-local kUnformatted      = 3;
-local kHidden           = 4;
-
-local TextOptionLabels =
-{
-    "Abbreviated",
-    "Thousand Separators Only",
-    "Unformatted",
-    "Hidden",
-}
 
 local SaveDataVersion = addonTable.saveDataVersion;
 local FontInfo = addonTable.fontInfo;

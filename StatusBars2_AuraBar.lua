@@ -15,8 +15,6 @@ local kUnitPower = addonTable.barTypes.kUnitPower;
 local kEclipse = addonTable.barTypes.kEclipse;
 local kDemonicFury = addonTable.barTypes.kDemonicFury;
 
-local FontInfo = addonTable.fontInfo;
-
 -------------------------------------------------------------------------------
 --
 --  Name:           StatusBars2_CreateAuraBar

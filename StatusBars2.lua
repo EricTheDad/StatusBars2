@@ -20,6 +20,21 @@ addonTable.barTypes =
     kDemonicFury = 13,
 };
 
+-- Text display options
+addonTable.textDisplayOptions =
+{
+    kAbbreviated      = 1,
+    kCommaSeparated   = 2,
+    kUnformatted      = 3,
+    kHidden           = 4,
+};
+
+-- Text display options
+local kAbbreviated      = addonTable.textDisplayOptions.kAbbreviated;
+local kCommaSeparated   = addonTable.textDisplayOptions.kCommaSeparated;
+local kUnformatted      = addonTable.textDisplayOptions.kUnformatted;
+local kHidden           = addonTable.textDisplayOptions.kHidden;
+
 addonTable.fontInfo =
 {
     { label = "Small",  filename = "GameFontNormalSmall" },
@@ -123,11 +138,14 @@ local function Slash_Cmd_Handler( msg, editbox )
     if command == 'config' then
         -- Enable config mode
         StatusBars2Config_SetConfigMode( true );
-    else
+    elseif command == '' then
         -- This is dumb, but if you seem to need to call once to open the panel and once to actually set it to the right category
         ShowUIPanel(InterfaceOptionsFrame);
         -- InterfaceOptionsFrame_OpenToCategory(StatusBars2_Options);
         InterfaceOptionsFrame_OpenToCategory(StatusBars2_Options);
+    else
+        print("Usage: /statusbars2 or /sb2 - show the Statusbars2 Blizzard interface panel");
+        print("Options: config - switch Statusbars2 into configuration mode");
     end
 end
 
@@ -188,12 +206,6 @@ function StatusBars2_OnEvent( self, event, ... )
 
             -- Saved variables have been loaded, we can fix up the settings now
             StatusBars2_LoadSettings( StatusBars2_Settings );
-
-            -- Initialize the option panel controls
-            StatusBars2_Options_Configure_Bar_Options( );
-
-            -- Push the current bar data out to the interface panel
-            StatusBars2_Options_DoDataExchange( false );
 
             -- Install slash command handler
             SlashCmdList["STATUSBARS2"] = Slash_Cmd_Handler;
