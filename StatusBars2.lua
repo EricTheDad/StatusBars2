@@ -326,17 +326,10 @@ function StatusBars2_CreateBars( )
     elseif( englishClass == "HUNTER" ) then
         StatusBars2_CreateAuraStackBar( "frenzy", "player", HUNTER_FOCUS_FIRE, "buff", 5, BUFF_FRENZY );
         StatusBars2_CreateAuraStackBar( "lockAndLoad", "player", HUNTER_BLACK_ARROW, "buff", 5, BUFF_LOCK_AND_LOAD );
-    elseif( englishClass == "WARRIOR" ) then
-        StatusBars2_CreateAuraStackBar( "sunder", "target", WARRIOR_SUNDER_ARMOR, "debuff", 3, DEBUFF_WEAKENED_ARMOR );
     elseif( englishClass == "MAGE" ) then
         StatusBars2_CreateAuraStackBar( "arcaneCharge", "player", MAGE_ARCANE_CHARGE, "debuff", 4, DEBUFF_ARCANE_CHARGE );
-        -- Not sure these are actually useful.
-        -- StatusBars2_CreateAuraStackBar( "fingersOfFrost", "player", BUFF_FINGERS_OF_FROST, "buff", 2, BUFF_FINGERS_OF_FROST );
-        -- StatusBars2_CreateAuraStackBar( "masteryIcicles", "player", BUFF_MASTERY_ICICLES, "buff", 5, BUFF_MASTERY_ICICLES );
     elseif( englishClass == "SHAMAN" ) then
         StatusBars2_CreateAuraStackBar( "maelstromWeapon", "player", SHAMAN_MAELSTROM_WEAPON, "buff", 5, BUFF_MAELSTROM_WEAPON );
-        -- Not sure this is actually useful.
-        -- StatusBars2_CreateAuraStackBar( "tidalWave", "player", BUFF_TIDAL_WAVE, "buff", 2 );
     elseif( englishClass == "MONK" ) then
         StatusBars2_CreateChiBar( );
     end

@@ -26,30 +26,15 @@ local kDemonicFury = addonTable.barTypes.kDemonicFury;
 --
 local function StatusBars2_GetAuraStack( unit, aura, auraType )
 
-    local stack = 0;
-
-    -- Iterate over the auras on the target
-    local i;
-    for i = 1, 40 do
-
-        -- Get the aura
-        local name, rank, texture, count;
-        if( auraType == "buff" ) then
-            name, rank, texture, count = UnitBuff( unit, i );
-        else
-            name, rank, texture, count = UnitDebuff( unit, i );
-        end
-
-        -- Check the name
-        if( name == nil ) then
-            break;
-        elseif( string.find( name, aura, 1, true ) ) then
-            stack = count;
-            break;
-        end;
+    -- Get the aura
+    local name, rank, texture, count;
+    if( auraType == "buff" ) then
+        name, rank, texture, count = UnitBuff( unit, aura );
+    else
+        name, rank, texture, count = UnitDebuff( unit, aura );
     end
 
-    return stack;
+    return count or 0;
 
 end
 
@@ -121,15 +106,7 @@ function StatusBars2_AuraStackBar_OnEvent( self, event, ... )
     elseif( event == "UNIT_AURA" ) then
         local arg1 = ...;
         if( arg1 == self.unit ) then
-
-            -- UnitAura doesn't seem to be returning debuffs right now
-            local _,_,_,amount = UnitAura( self.unit, self.aura );
-
-            if not amount then
-                _,_,_,amount = UnitDebuff( self.unit, self.aura );
-            end
-
-            StatusBars2_UpdateDiscreteBar( self, amount or 0 );
+            StatusBars2_UpdateDiscreteBar( self, StatusBars2_GetAuraStack( self.unit, self.aura, self.auraType ) );
         end
 
     -- Combat log event
