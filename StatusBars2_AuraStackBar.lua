@@ -46,7 +46,7 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateAuraStackBar( key, unit, spellID, auraType, count, auraID )
+function StatusBars2_CreateAuraStackBar( key, unit, spellID, auraType, count, auraID, defaultColor )
 
     -- The player has a spell that is the pre-condition for the aura stack
     -- We can match on the same name as the spell, but if we know it, the auraID is more efficient and reliable
@@ -56,7 +56,7 @@ function StatusBars2_CreateAuraStackBar( key, unit, spellID, auraType, count, au
     local displayName = GetSpellInfo( auraID or spellID );
     
     -- Create the bar
-    local bar = StatusBars2_CreateDiscreteBar( key, unit, displayName, kAuraStack, count );
+    local bar = StatusBars2_CreateDiscreteBar( key, unit, displayName, kAuraStack, count, defaultColor );
 
     -- Save the aura name and unit
     bar.spellID = spellID;

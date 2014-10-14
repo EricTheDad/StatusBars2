@@ -130,7 +130,7 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateBar( key, template, unit, displayName, barType )
+function StatusBars2_CreateBar( key, template, unit, displayName, barType, defaultColor )
 
     -- Create the bar
     local bar = CreateFrame( "Frame", "StatusBars2_"..key.."Bar", StatusBars2, template );
@@ -171,6 +171,9 @@ function StatusBars2_CreateBar( key, template, unit, displayName, barType )
 
     -- Default the bar to Auto enabled
     bar.defaultEnabled = "Auto";
+
+    -- Store default color if it was passed in
+    bar.defaultColor = defaultColor;
 
     -- Initialize flashing variables
     bar.flashing = false;

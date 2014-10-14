@@ -329,7 +329,7 @@ function StatusBars2_CreateBars( )
         StatusBars2_CreateAuraStackBar( "lockAndLoad", "player", HUNTER_BLACK_ARROW, "buff", 5, BUFF_LOCK_AND_LOAD );
     elseif( englishClass == "MAGE" ) then
         StatusBars2_CreateAuraStackBar( "arcaneCharge", "player", MAGE_ARCANE_CHARGE, "debuff", 4, DEBUFF_ARCANE_CHARGE );
-        StatusBars2_CreateAuraStackBar( "arcaneMissiles", "player", MAGE_ARCANE_MISSILES, "buff", 3, BUFF_ARCANE_MISSILES );
+        StatusBars2_CreateAuraStackBar( "arcaneMissiles", "player", MAGE_ARCANE_MISSILES, "buff", 3, BUFF_ARCANE_MISSILES, { 0.90, 0.57, 0.94 } );
     elseif( englishClass == "SHAMAN" ) then
         StatusBars2_CreateAuraStackBar( "maelstromWeapon", "player", SHAMAN_MAELSTROM_WEAPON, "buff", 5, BUFF_MAELSTROM_WEAPON );
     elseif( englishClass == "MONK" ) then

@@ -1,4 +1,7 @@
-﻿3.00.02
+﻿3.00.03
+Changed default color for arcane missiles bar
+
+3.00.02
 Various minor fixes.  More efficient updates for Aurastack bars.  Removed sunder bar for warriors, as that is no longer a thing.  Added arcane missles bar for arcane mages.
 
 3.00.01b

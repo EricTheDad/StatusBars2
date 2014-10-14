@@ -26,10 +26,10 @@ local kDemonicFury = addonTable.barTypes.kDemonicFury;
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateDiscreteBar( key, unit, displayName, barType, boxCount )
+function StatusBars2_CreateDiscreteBar( key, unit, displayName, barType, boxCount, defaultColor )
 
     -- Create the bar
-    local bar = StatusBars2_CreateBar( key, "StatusBars2_DiscreteBarTemplate", unit, displayName, barType );
+    local bar = StatusBars2_CreateBar( key, "StatusBars2_DiscreteBarTemplate", unit, displayName, barType, defaultColor );
 
     -- Set custom options template
     bar.optionsTemplate = "StatusBars2_AuraStatckBarOptionsTemplate";
@@ -226,7 +226,9 @@ end
 function StatusBars2_GetDiscreteBarColor( bar, boxIndex )
 
     if( bar.color ) then
-        return unpack(bar.color);
+        return unpack( bar.color );
+    elseif( bar.defaultColor ) then
+        return unpack( bar.defaultColor );
     elseif( bar.type == kCombo ) then
         return 1, 0, 0;
     elseif( bar.type == kAuraStack ) then
