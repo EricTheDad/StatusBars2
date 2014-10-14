@@ -1,4 +1,7 @@
-﻿3.00.01b
+﻿3.00.02
+Various minor fixes.  More efficient updates for Aurastack bars.  Removed sunder bar for warriors, as that is no longer a thing.  Added arcane missles bar for arcane mages.
+
+3.00.01b
 Changed non-functional "Defaults" button to a "Revert" button that reloads your pre-config-mode settings and keeps you in config mode. 
 
 3.00.00b
