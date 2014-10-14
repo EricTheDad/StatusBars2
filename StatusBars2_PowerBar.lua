@@ -463,7 +463,7 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_GetPowerBarColor( powerToken, doprint )
+function StatusBars2_GetPowerBarColor( powerToken )
 
     -- PowerBarColor defined by Blizzard unit frame
     local color = PowerBarColor[powerToken];
@@ -476,17 +476,10 @@ function StatusBars2_GetPowerBarColor( powerToken, doprint )
         elseif( powerToken == SPELL_POWER_SHADOW_ORBS or powerToken == "SHADOW_ORBS") then
             color = { r = 162/255, g = 51/255, b = 209/255 };
         else
-            if doprint then
-                print("Getting default");
-            end
             color = addonTable.kDefaultPowerBarColor; 
         end
     end
     
-    if doprint then
-        print("PBcolor: ", color.r, color.g, color.b);
-    end
-
     return color.r, color.g, color.b;
         
 end

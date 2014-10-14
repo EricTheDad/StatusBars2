@@ -51,10 +51,10 @@ local StatusBars2_Settings = nil;
 --
 function StatusBars2_LoadSettings( settings )
 
-    if( settings.SaveDataVersion ~= SaveDataVersion ) then
-        -- Initialize the bar settings
-        StatusBars2_InitializeSettings( settings );
+    -- Initialize the bar settings
+    StatusBars2_InitializeSettings( settings );
 
+    if( settings.SaveDataVersion ~= SaveDataVersion ) then
         -- Import old settings
         StatusBars2_ImportSettings( settings );
 

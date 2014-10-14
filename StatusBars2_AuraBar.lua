@@ -246,11 +246,9 @@ function StatusBars2_ShowAuraButtons( self, auraType, getAuraFunction, maxAuras,
         -- Get the aura
         local name, rank, icon, count, debuffType, duration, expirationTime, caster, isStealable,_, spellID = getAuraFunction( self.unit, i );
 
-
+        -- print( name, ": ", spellID );
         -- If the aura exists show it
         if( icon ~= nil ) then
-
-            -- print(name..": "..spellID);
 
             -- Determine if the button should be shown
             if( ( caster == "player" or not mineOnly ) and ( duration > 0 or not self.onlyShowTimed ) ) then
@@ -344,8 +342,7 @@ function StatusBars2_GetAuraButton( self, id, buttonName, template, auraName, au
     -- Set the position
     button:SetPoint( "TOPLEFT", self, "TOPLEFT", offset, 0 );
 
-    -- Enable/disable mouse for moving or tooltips
-    -- button:EnableMouse( self.enableTooltips or not StatusBars2.locked );
+    -- Enable mouse if the aura bar is movable
     button:EnableMouse( not StatusBars2.locked );
 
     -- If its a debuff set the border size and color

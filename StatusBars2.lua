@@ -99,6 +99,7 @@ local MAGE_ARCANE_CHARGE = 114664;
 local SHAMAN_MAELSTROM_WEAPON = 51530;
 local ROGUE_ANTICIPATION = 114015;
 local HUNTER_BLACK_ARROW = 3674;
+local MAGE_ARCANE_MISSILES = 5143;
 
 -- Buff IDs Blizzard doesn't define
 local BUFF_FRENZY = 19615;
@@ -108,7 +109,7 @@ local BUFF_MASTERY_ICICLES = 76613;
 local BUFF_TIDAL_WAVE = 51564;
 local BUFF_LOCK_AND_LOAD = 168980;
 local BUFF_MAELSTROM_WEAPON = 53817;
-local BUFF_TASTE_FOR_BLOOD = 56636;
+local BUFF_ARCANE_MISSILES = 79683;
 
 -- Debuff IDs Blizzard doesn't define
 local DEBUFF_WEAKENED_ARMOR = 113746;
@@ -328,6 +329,7 @@ function StatusBars2_CreateBars( )
         StatusBars2_CreateAuraStackBar( "lockAndLoad", "player", HUNTER_BLACK_ARROW, "buff", 5, BUFF_LOCK_AND_LOAD );
     elseif( englishClass == "MAGE" ) then
         StatusBars2_CreateAuraStackBar( "arcaneCharge", "player", MAGE_ARCANE_CHARGE, "debuff", 4, DEBUFF_ARCANE_CHARGE );
+        StatusBars2_CreateAuraStackBar( "arcaneMissiles", "player", MAGE_ARCANE_MISSILES, "buff", 3, BUFF_ARCANE_MISSILES );
     elseif( englishClass == "SHAMAN" ) then
         StatusBars2_CreateAuraStackBar( "maelstromWeapon", "player", SHAMAN_MAELSTROM_WEAPON, "buff", 5, BUFF_MAELSTROM_WEAPON );
     elseif( englishClass == "MONK" ) then
@@ -418,6 +420,8 @@ function StatusBars2_UpdateBars( )
         -- Special Mage Bars
         elseif( bar.key == "arcaneCharge" and IsSpellKnown( bar.spellID ) ) then
             StatusBars2_EnableBar( bar, 1, 15 );
+        elseif( bar.key == "arcaneMissiles" and IsSpellKnown( bar.spellID ) ) then
+            StatusBars2_EnableBar( bar, 1, 16 );
         elseif( bar.key == "fingersOfFrost" and GetSpecialization() == SPEC_MAGE_FROST and GetUnitLevel( bar.unit ) == 24 ) then
             StatusBars2_EnableBar( bar, 1, 16 );
         elseif( bar.key == "masteryIcicles" and GetSpecialization() == SPEC_MAGE_FROST and GetUnitLevel( bar.unit ) == 80 ) then
