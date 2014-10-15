@@ -1,4 +1,7 @@
-﻿3.00.03
+﻿3.00.04
+Fix for bar select dropdown not working
+
+3.00.03
 Changed default color for arcane missiles bar
 
 3.00.02
