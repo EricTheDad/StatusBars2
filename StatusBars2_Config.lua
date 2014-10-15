@@ -600,6 +600,20 @@ addonTable.Config_Bar_OnMouseDown = Config_Bar_OnMouseDown;
 
 -------------------------------------------------------------------------------
 --
+--  Name:           StatusBars2Config_BarSelect_OnClick
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+local function StatusBars2Config_BarSelect_OnClick( self, menu  )
+
+    StatusBars2Config_SetBar( menu:GetParent( ), self.value );
+
+end
+
+-------------------------------------------------------------------------------
+--
 --  Name:           StatusBars2Config_BarSelect_Initialize
 --
 --  Description:    
@@ -624,20 +638,6 @@ function StatusBars2Config_BarSelect_Initialize( self )
 		end
     end
     
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2Config_BarSelect_OnClick
---
---  Description:    
---
--------------------------------------------------------------------------------
---
-local function StatusBars2Config_BarSelect_OnClick( self, menu  )
-
-    StatusBars2Config_SetBar( menu:GetParent( ), self.value );
-
 end
 
 -------------------------------------------------------------------------------
