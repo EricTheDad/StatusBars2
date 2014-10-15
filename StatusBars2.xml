@@ -1,0 +1,530 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\..\FrameXML\UI.xsd">
+
+    <!-- Flash overlay template -->
+    <Texture name="StatusBars2_BarFlashOverlay" virtual="true" file="Interface\AddOns\StatusBars2\Flash" alphaMode="ADD" hidden="true">
+        <Size>
+            <AbsDimension x="174" y="20" />
+        </Size>
+        <Anchors>
+            <Anchor point="CENTER" relativeto="$Parent">
+                <Offset>
+                    <AbsDimension x="1" y="0" />
+                </Offset>
+            </Anchor>
+        </Anchors>
+    </Texture>
+
+    <!-- Continuous bar template -->
+    <Frame name="StatusBars2_ContinuousBarTemplate" movable="true" virtual="true" >
+
+        <Size x="170" y="20" />
+
+        <Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+            <EdgeSize>
+                <AbsValue val="16" />
+            </EdgeSize>
+            <TileSize>
+                <AbsValue val="16" />
+            </TileSize>
+        </Backdrop>
+
+        <Frames>
+            <Frame setAllPoints="true" >
+                <Layers>
+                    <Layer level="OVERLAY">
+                        <FontString name="$parent_Text" inherits="GameFontNormalSmall" >
+                            <Anchors>
+                                <Anchor point="CENTER" relativeto="$Parent">
+                                </Anchor>
+                            </Anchors>
+                            <Size>
+                                <AbsDimension x="170" y="10" />
+                            </Size>
+                        </FontString>
+                        <FontString name="$parent_PercentText" inherits="GameFontNormalSmall" >
+                            <Size>
+                                <AbsDimension x="170" y="10" />
+                            </Size>
+                        </FontString>
+                        <Texture name="$parent_Spark" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD" hidden="true" >
+                            <Size>
+                                <AbsDimension x="32" y="32"/>
+                            </Size>
+                            <Anchors>
+                                <Anchor point="CENTER"/>
+                            </Anchors>
+                        </Texture>
+                    </Layer>
+                    <Layer level="OVERLAY">
+                        <Texture name="$parent_FlashOverlay" inherits="StatusBars2_BarFlashOverlay" />
+                    </Layer>
+                </Layers>
+            </Frame>
+            <StatusBar name="$parent_Status" >
+                <Size>
+                  <AbsDimension x="162" y="13" />
+                </Size>
+                <Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" tile="true">
+                    <TileSize>
+                        <AbsValue val="16" />
+                    </TileSize>
+                </Backdrop>
+                <BarTexture file="Interface\TargetingFrame\UI-StatusBar" />
+                <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                        <Offset>
+                            <AbsDimension x="0" y="0" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </StatusBar>
+        </Frames>
+    </Frame>
+
+    <!-- Discrete box template for boxes that are added to a discrete bar -->
+    <Frame name="StatusBars2_DiscreteBoxTemplate" movable="true" virtual="true" >
+
+        <Size x="170" y="20" />
+
+        <Anchors>
+            <Anchor point="TOPLEFT" relativeto="$Parent" >
+                <Offset x="0" y="0" />
+            </Anchor>
+        </Anchors>
+        <Frames>
+            <StatusBar name="$parent_Status" drawLayer="LOW" minValue="0" maxValue="1" >
+                <Size>
+                  <AbsDimension x="163" y="13" />
+                </Size>
+                <Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" tile="true">
+                    <TileSize>
+                        <AbsValue val="16" />
+                    </TileSize>
+                </Backdrop>
+                <BarTexture file="Interface\TargetingFrame\UI-StatusBar" />
+                <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                        <Offset>
+                            <AbsDimension x="0" y="0" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </StatusBar>
+        </Frames>
+    </Frame>
+
+    <!-- Discrete bar template. Boxes are added to it programatically -->
+    <Frame name="StatusBars2_DiscreteBarTemplate" movable="true" virtual="true" >
+
+        <Size x="170" y="20" />
+
+    </Frame>
+
+    <!-- Rune bar template. -->
+    <Frame name="StatusBars2_RuneFrameTemplate" virtual="true" movable="true" >
+
+        <Size x="170" y="28" />
+        <Frames>
+            <Button name="$parent_RuneButton1" inherits="RuneButtonIndividualTemplate" id="1">
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="$Parent" relativePoint="LEFT">
+                        <Offset>
+                            <AbsDimension x="2" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+
+            <Button name="$parent_RuneButton2" inherits="RuneButtonIndividualTemplate" id="2">
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="$Parent" relativePoint="LEFT">
+                        <Offset>
+                            <AbsDimension x="27" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+
+            <Button name="$parent_RuneButton5" inherits="RuneButtonIndividualTemplate" id="5">
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="$Parent" relativePoint="LEFT">
+                        <Offset>
+                            <AbsDimension x="62" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+
+            <Button name="$parent_RuneButton6" inherits="RuneButtonIndividualTemplate" id="6">
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="$Parent" relativePoint="LEFT">
+                        <Offset>
+                            <AbsDimension x="87" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+
+            <Button name="$parent_RuneButton3" inherits="RuneButtonIndividualTemplate" id="3">
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="$Parent" relativePoint="LEFT">
+                        <Offset>
+                            <AbsDimension x="122" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+
+            <Button name="$parent_RuneButton4" inherits="RuneButtonIndividualTemplate" id="4">
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="$Parent" relativePoint="LEFT">
+                        <Offset>
+                            <AbsDimension x="147" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+        </Frames>
+    </Frame>
+
+    <!-- Aura bar template -->
+    <Frame name="StatusBars2_AuraBarTemplate" movable="true" virtual="true" >
+        <Size x="170" y="20" />
+    </Frame>
+
+    <!-- Eclipse bar template -->
+	<Frame name="StatusBars2_EclipseBarTemplate" frameStrata="LOW" toplevel="true" hidden="true" moveable="true" virtual="true">
+        <Animations>
+            <AnimationGroup parentKey="sunActivate">
+                <Alpha target="$parentSunBar"        change="1" duration="0.6" order="1"/>
+                <Alpha target="$parentGlow"          change="1" duration="0.6" order="1"/>
+                <Alpha target="$parentDarkMoon"  change="1" duration="0.6" order="1"/>
+                <Scripts>
+                    <OnPlay>
+                        self:GetParent().moonBar:SetAlpha(0);
+                        self:GetParent().darkSun:SetAlpha(0);
+                    </OnPlay>
+                    <OnFinished>
+                        self:GetParent().sunBar:SetAlpha(1);
+                        self:GetParent().glow:SetAlpha(1);
+                        self:GetParent().darkMoon:SetAlpha(1);
+                        self:GetParent().glow.pulse:Play();
+                    </OnFinished>
+                </Scripts>
+            </AnimationGroup>
+            <AnimationGroup parentKey="sunDeactivate">
+                <Alpha target="$parentSunBar"        change="-1" duration="0.6" order="1"/>
+                <Alpha target="$parentGlow"          change="-1" duration="0.6" order="1"/>
+                <Alpha target="$parentDarkMoon"  change="-1" duration="0.6" order="1"/>
+                <Scripts>
+                    <OnPlay>
+                        self:GetParent().glow.pulse:Stop();
+                    </OnPlay>
+                    <OnFinished>
+                        self:GetParent().sunBar:SetAlpha(0);
+                        self:GetParent().glow:SetAlpha(0);
+                        self:GetParent().darkMoon:SetAlpha(0);
+                    </OnFinished>
+                </Scripts>
+            </AnimationGroup>
+            <AnimationGroup parentKey="moonActivate">
+                <Alpha target="$parentMoonBar"   change="1" duration="0.6" order="1"/>
+                <Alpha target="$parentGlow"      change="1" duration="0.6" order="1"/>
+                <Alpha target="$parentDarkSun"   change="1" duration="0.6" order="1"/>
+                <Scripts>
+                    <OnPlay>
+                        self:GetParent().sunBar:SetAlpha(0);
+                        self:GetParent().darkMoon:SetAlpha(0);
+                    </OnPlay>
+                    <OnFinished>
+                        self:GetParent().moonBar:SetAlpha(1);
+                        self:GetParent().glow:SetAlpha(1);
+                        self:GetParent().darkSun:SetAlpha(1);
+                        self:GetParent().glow.pulse:Play();
+                    </OnFinished>
+                </Scripts>
+            </AnimationGroup>
+            <AnimationGroup parentKey="moonDeactivate">
+                <Alpha target="$parentMoonBar"   change="-1" duration="0.6" order="1"/>
+                <Alpha target="$parentGlow"      change="-1" duration="0.6" order="1"/>
+                <Alpha target="$parentDarkSun"   change="-1" duration="0.6" order="1"/>
+                <Scripts>
+                    <OnPlay>
+                        self:GetParent().glow.pulse:Stop();
+                    </OnPlay>
+                    <OnFinished>
+                        self:GetParent().moonBar:SetAlpha(0);
+                        self:GetParent().glow:SetAlpha(0);
+                        self:GetParent().darkSun:SetAlpha(0);
+                    </OnFinished>
+                </Scripts>
+            </AnimationGroup>
+        </Animations>
+        <Size x="140" y="38"/>
+        <Anchors>
+          <Anchor point="TOP" relativeTo="PlayerFrame" relativePoint="BOTTOM">
+            <Offset>
+              <AbsDimension x="48" y="40"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <HitRectInsets>
+            <AbsInset left="4" right="4" top="6" bottom="6"/>
+        </HitRectInsets>
+        <Layers>
+            <Layer level="ARTWORK">
+                <Texture name="$parentBar" atlas="DruidEclipse-BaseBar" useAtlasSize="true">
+                    <Anchors>
+                        <Anchor point="CENTER"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="BACKGROUND">
+                <Texture parentKey="Sun" name="$parentSun" atlas="DruidEclipse-BaseSun" useAtlasSize="true">
+                    <Anchors>
+                        <Anchor point="CENTER" relativeTo="$parentBar"  relativePoint="RIGHT" x="-17" y="1"/>
+                    </Anchors>
+                </Texture>
+                <Texture parentKey="Moon" name="$parentMoon" atlas="DruidEclipse-BaseMoon" useAtlasSize="true">
+                    <Anchors>
+                        <Anchor point="CENTER" relativeTo="$parentBar" relativePoint="LEFT" x="17" y="1"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="BACKGROUND" textureSubLevel="1">
+                <Texture parentKey="DarkSun" name="$parentDarkSun" atlas="DruidEclipse-LunarSun" useAtlasSize="true">
+                    <Anchors>
+                        <Anchor point="CENTER" relativeTo="$parentSun"/>
+                    </Anchors>
+                </Texture>
+                <Texture parentKey="DarkMoon" name="$parentDarkMoon" atlas="DruidEclipse-SolarMoon" useAtlasSize="true">
+                    <Anchors>
+                        <Anchor point="CENTER" relativeTo="$parentMoon"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="ARTWORK" textureSubLevel="1">
+                <Texture parentKey="SunBar" name="$parentSunBar" atlas="DruidEclipse-SolarBar" useAtlasSize="true">
+                    <Anchors>
+                        <Anchor point="CENTER" x="15"/>
+                    </Anchors>
+                </Texture>
+                <Texture parentKey="MoonBar" name="$parentMoonBar" atlas="DruidEclipse-LunarBar" useAtlasSize="true">
+                    <Anchors>
+                        <Anchor point="CENTER" x="-15"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="OVERLAY" textureSubLevel="-1">
+                <Texture parentKey="MoonCover" name="$parentMoonCover" atlas="DruidEclipse-SolarCover" useAtlasSize="true" hidden="true">
+                    <Anchors>
+                        <Anchor point="LEFT" x="20" y="1"/>
+                    </Anchors>
+                </Texture>
+                <Texture parentKey="SunCover" name="$parentSunCover" atlas="DruidEclipse-LunarCover" useAtlasSize="true" hidden="true">
+                    <Anchors>
+                        <Anchor point="RIGHT" x="-30"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="OVERLAY">
+                <Texture parentKey="Marker" name="$parentMarker" atlas="DruidEclipse-Arrow" useAtlasSize="true" alphaMode="ADD">
+                    <Anchors>
+                        <Anchor point="CENTER" y="2"/>
+                    </Anchors>
+                </Texture>
+                <Texture parentKey="Glow" name="$parentGlow" atlas="DruidEclipse-SolarSun">
+                    <Size x="43" y="45"/>
+                    <Anchors>
+                        <Anchor point="CENTER"/>
+                    </Anchors>
+                </Texture>
+                <FontString name="$parentPowertext" inherits="TextStatusBarText" justifyH="CENTER" parentKey="PowerText" hidden="true">
+                    <Anchors>
+                        <Anchor point="CENTER" x="0" y="0"/>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+		<Scripts>
+			<OnShow function="StatusBars2_EclipseBar_OnShow"/>
+		</Scripts>
+	</Frame>
+
+    <Frame name="StatusBars2_GroupFrameTemplate" movable="true" hidden="false" frameStrata="LOW" virtual = "true" >
+        <Size x="170" y="50" />
+    </Frame>
+
+    <!-- Main frame -->
+    <Frame name="StatusBars2" parent="UIParent" inherits="StatusBars2_GroupFrameTemplate" >
+
+        <Size x="170" y="200" />
+
+        <Anchors>
+            <Anchor point="CENTER" relativeto="$Parent" >
+                <Offset x="85" y="-282" />
+            </Anchor>
+        </Anchors>
+
+		<Scripts>
+            <OnLoad>
+                StatusBars2_OnLoad( self );
+            </OnLoad>
+        </Scripts>
+    </Frame>
+
+    <!-- Bar button template -->
+    <Button name="StatusBar2_BarOptionsButtonTemplate" virtual="true" >
+
+        <Size x="140" y="20" />
+
+        <ButtonText name="$parentText">
+            <Size x="140" y="13"/>
+            <Anchors>
+                <Anchor point="LEFT" relativeTo="$parent" >
+                    <Offset>
+                        <AbsDimension x="10" y="1"/>
+                    </Offset>
+                </Anchor>
+            </Anchors>
+        </ButtonText>
+
+        <NormalFont style="GameFontNormalLeft"/>
+        <HighlightFont style="GameFontHighlightLeft"/>
+        <DisabledFont style="GameFontDisableLeft"/>
+
+        <HighlightTexture file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD" >
+        </HighlightTexture>
+
+        <Scripts>
+            <OnClick>
+                StatusBars2_BarOptionsButton_OnClick( self );
+            </OnClick>
+        </Scripts>
+    </Button>
+
+    <!-- Options frame -->
+    <Frame name="StatusBars2_Options" >
+        <Scripts>
+            <OnLoad>
+                StatusBars2_Options_OnLoad( self );
+            </OnLoad>
+        </Scripts>
+        <Layers>
+            <Layer level="BACKGROUND">
+                <FontString 
+                    name="$parent_Title" 
+                    inherits="GameFontNormalLarge" 
+                    text="StatusBars2" >
+                    <Size x="200" y="50"/>
+                    <Anchors>
+                        <Anchor point="TOP" relativeTo="$parent" >
+                            <Offset>
+                                <AbsDimension x="0" y="-20"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString 
+                    name="$parent_Credits1" 
+                    inherits="GameFontNormalSmallLeft" 
+                    text="Original Addon by Wesslen" >
+                    <Size x="200" y="17"/>
+                    <Anchors>
+                        <Anchor point="TOP" relativeTo="$parent_Title" relativePoint="BOTTOM" >
+                            <Offset>
+                                <AbsDimension x="0" y="-20"/>
+                            </Offset>
+                        </Anchor>
+                        <Anchor point="LEFT" relativeTo="$parent" >
+                            <Offset>
+                                <AbsDimension x="20" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString 
+                    name="$parent_Credits2" 
+                    inherits="GameFontNormalSmallLeft" 
+                    text="Version 2 rewrite by GopherYerguns" >
+                    <Size x="400" y="17"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parent_Credits1" relativePoint="BOTTOMLEFT">
+                            <Offset>
+                                <AbsDimension x="0" y="-5"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString 
+                    name="$parent_Credits3" 
+                    inherits="GameFontNormalSmallLeft" 
+                    text="Mists of Pandaria updates by ???? and EricTheDad" >
+                    <Size x="400" y="17"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parent_Credits2" relativePoint="BOTTOMLEFT" >
+                            <Offset>
+                                <AbsDimension x="0" y="-5"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString 
+                    name="$parent_Credits4" 
+                    inherits="GameFontNormalSmallLeft" 
+                    text="Ongoing maintenance, Warlords of Draenor update and new configuration interface by EricTheDad" >
+                    <Size x="600" y="17"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parent_Credits3" relativePoint="BOTTOMLEFT" >
+                            <Offset>
+                                <AbsDimension x="0" y="-5"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString 
+                    name="$parent_slash_command_help1" 
+                    inherits="GameFontNormalSmallLeft" 
+                    text='Show this screen by typing "/statusbars2" or "/sb2" in the chat input.' >
+                    <Size x="600" y="17"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parent_Credits4" relativePoint="BOTTOMLEFT" >
+                            <Offset>
+                                <AbsDimension x="0" y="-25"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString 
+                    name="$parent_slash_command_help2" 
+                    inherits="GameFontNormalSmallLeft" 
+                    text='Enable configuration mode by typing in "/statusbars2 config" or "/sb2 config" or clicking the button below' >
+                    <Size x="600" y="17"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parent_slash_command_help1" relativePoint="BOTTOMLEFT" >
+                            <Offset>
+                                <AbsDimension x="0" y="-5"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+			<Button name="$parent_MoveBarsButton" inherits="OptionsButtonTemplate" text="Configure Statusbars2">
+				<Size x="200" y="21"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeto="$parent" >
+						<Offset x="0" y="0" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						StatusBars2_Options_ToggleMoveBars_OnClick( self );
+					</OnClick>
+				</Scripts>
+			</Button>
+        </Frames>
+    </Frame>
+
+</Ui>

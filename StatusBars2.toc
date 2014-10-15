@@ -1,0 +1,30 @@
+﻿## Interface: 60000
+## Version: 3.00.00b
+## Title: StatusBars2
+## Author: GopherYerguns, Wesslen, 堂吉先生, EricTheDad
+## Notes: Movable status bars for health, power and a variety of class-ability-specific displays.
+## Dependencies:
+## OptionalDeps:
+## SavedVariablesPerCharacter: StatusBars2_Settings
+## X-Curse-Packaged-Version: 3.00.03
+## X-Curse-Project-Name: StatusBars2
+## X-Curse-Project-ID: statusbars2
+## X-Curse-Repository-ID: wow/statusbars2/mainline
+StatusBars2.lua
+StatusBars2_Groups.lua
+StatusBars2_AuraBar.lua
+StatusBars2_AuraStackBar.lua
+StatusBars2_EclipseBar.lua
+StatusBars2_RuneBar.lua
+StatusBars2_HealthBar.lua
+StatusBars2_PowerBar.lua
+StatusBars2_DiscreteBar.lua
+StatusBars2_SpecialtyBars.lua
+StatusBars2_ContinuousBar.lua
+StatusBars2_BaseBar.lua
+StatusBars2_Settings.lua
+StatusBars2_InterfacePanel.lua
+StatusBars2_Config.lua
+StatusBars2_Util.lua
+StatusBars2.xml
+StatusBars2_Config.xml

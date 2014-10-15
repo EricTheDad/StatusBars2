@@ -1,0 +1,310 @@
+﻿3.00.03
+Changed default color for arcane missiles bar
+
+3.00.02
+Various minor fixes.  More efficient updates for Aurastack bars.  Removed sunder bar for warriors, as that is no longer a thing.  Added arcane missles bar for arcane mages.
+
+3.00.01b
+Changed non-functional "Defaults" button to a "Revert" button that reloads your pre-config-mode settings and keeps you in config mode. 
+
+3.00.00b
+Huge new configuration interface.  Added slash commands /statusbars2 and /sb2.  Optional parameter "config" opens the new configuration panel directly instead of having to go through the Blizzard Options Panel first.
+
+2.10.04b
+Fixed Hunter Frenzy stacks not enabling
+
+2.10.03b
+Just another push to try to get CurseForge to build the package
+
+2.10.02b
+Fixed bars moving around as they appear and disappear.  DOES NOT FUNCTION WITH CURRENT LIVE CLIENT
+
+2.10.01b
+Updated to work with WoD Beta.  DOES NOT FUNCTION WITH CURRENT LIVE CLIENT
+
+2.10.00
+Added the ability to set different text sizes for the text on the bars.
+Added the ability to set custom colors for aura stack bars and specialty bars.
+
+2.09.00
+Added the ability to set bars' opacity, either globally or individually on each bar.  Options panel restructuring.  Major improvements and bug fixes to aura filtering UI.
+
+2.08.03
+Corrected moving aura bars
+
+2.08.02
+Corrected aura bar stack displays sliding off the aura icons when global scale was applied.
+
+2.08.01
+Corrected aura bar scaling functionality.  Stack display now scales correctly with the icons.
+
+2.08.00
+Added bars for Shaman Lighting Shield and Marksman Hunter Master Marksman buffs.  Corrected Arcane charges so they only have 4 boxes on their bar now.
+
+2.07.01
+=======
+TOC bump for 5.4
+
+2.07.00
+=======
+Added formatting for large numbers to make them more readable using some Blizzard functions intended for that purpose.  Several options available depending on personal preference.
+
+2.06.01
+=======
+Updated TOC for 5.3
+
+2.06.00
+=======
+Added a filter for buffs / debuffs.  If this option is selected, the exact name of the buff or debuff that you want displayed needs to be typed into the list 
+on the configuration page for the appropriate aura bar, so if a rogue wants to see his slice and dice buff, he would type that in to the list for the player auras, 
+and if he wanted to see his rupture debuff on the target, he would type that into the list for the target auras.
+
+I'm filtering on the localized name of the aura, so you need to type in the aura name in the language that your WoW client is using and it should work fine.  I haven't
+been able to test this, so if anyone using a non-English client has problems with this, let me know.
+
+2.05.01
+=======
+TOC updated for WoW 5.2
+
+2.05.00
+=======
+Disabled tooltips on the aura bar icons.  Added option to re-enable them if desired.
+
+2.04.03
+=======
+Fixed eclipse bar
+
+2.04.02
+=======
+Fix for an error that was occasionally popping up in instances (not 100% certain, but it does seem to do the job)
+
+2.04.01
+=======
+Fix for Warlock Shard Bar not appearing.  Lesson of the day: "Do not assume a Blizzard define is actually defining what it appears to." or "Caution when copying Blizzard code".
+
+2.04
+====
+All classes and specs tested and working.
+Creating only the bars your character class could actually potentially use, so you don't have config pages for 
+bars that never even could be used by your class.
+Tweaked some of the bar colors to be what I feel is more representative of the power they are displaying.
+Config page headings are now created using pre-defined Blizzard strings (meaning they are localized?)
+Made Eclipse bar the same size as the Blizzard one until I figure out how to make it bigger without it looking crappy.
+
+2.03
+====
+Fixed Chi bar power type so that it works now
+Refactored specialty bars so they now all share most of their code instead of being error-prone copy-and-paste jobs.
+Taking bar colors from Blizzard resources instead of having local hard coded values
+
+2.02.03
+=======
+Added a necessary, missed part of the fix intended in 2.02.02
+
+2.02.02
+=======
+Another quick tweak to ensure the statusbar texture doesn't get drawn behind the backdrop texture.
+
+2.02.01
+=======
+Quick tweak to make default bar positions properly centered.
+
+2.02
+====
+Made the bar groups individually movable so you don't have to do it one bar at a time.
+Added some additional event handling to make loading the addon and switching focus and pets work better.
+Removed Renewing Mists bar, as it doesn't really affect the players actions, so the aura display is good enough.
+
+2.01
+====
+Improved the look of the bars by making the statusbar slightly bigger and drawing it under the frame instead of on top of it.
+
+2.00
+====
+Bumped TOC for 5.1
+
+2.00.06b
+========
+Discrete bars not size however large they need to be on enable, completely obliviating the need to know what the maximum possible power is.
+They will always size themselves to however many embers/orbs/holy power/chi the player has at a given moment. So even if Blizzard introduces something
+that increases the maximum of these types of powers, the addon will continue to work correctly, it will just add another box for those that need it.
+Ember bar now updates in particle increments (untested).
+Cleaned up the look of discrete bars with 6+ boxes by making the edge a little thinner so the art elements don't overlap.
+
+2.00.05b
+========
+Constructing discrete bars directly now rather than from a template.  This allows me to change the number of boxes for embers, holy power etc. 
+if something changes that changes the number of boxes in the bar, e.g. the player changes spec or glyphs
+
+2.00.04b
+========
+I was wrong about the Frenzy, changed it back and it works now.
+
+2.00.03b
+========
+Integrated Frenzy and Renewing Mist in from WOW Interface version.  
+Fixed some things that look wrong with Frenzy, but untested, as I have no hunter.  I'll have to try it out on PTR.
+
+2.00.02b
+========
+Main Frame position added to save/load
+Range checking for scale on load
+
+2.00.01b
+========
+Fixed some copy/paste errors that were causing the settings to become corrupted.
+Fixed and re-enabled sunder armor bar.
+
+2.00b
+=====
+Imported functionality changes made to the project by 堂吉先生 on WoW Interterface (with author's permission) while retaining the original look and configurability.  
+Fixed issue where bars become stuck to the mouse cursor if they fade out while moving them.
+
+1.21
+----
+Updated to work with 4.2
+
+1.20
+----
+Updated to work with 4.1
+
+1.19
+----
+Added focus health, power and aura bars.
+Fixed bug - Rune bar not displaying correctly when logging in.
+
+1.18
+----
+Added Druid Eclipse bar
+
+1.17
+----
+Updated TOC to 4.00
+Updated to work with the 4.0.1 patch
+Added Warlock Soul Shard bar
+Added Paladin Holy Power bar
+
+1.16
+----
+Improved support for non-English clients.
+Fixed bug - Rune bar was not movable.
+
+1.15
+----
+Added configuration options for health and power bar percentage text. Text may be show on the left or ride side of the bar, or hidden.
+Improved response time when dragging bars.
+Fixed bug - Receiving an aura changed event while dragging an aura bar could result in the bar stuck to the cursor.
+
+1.14 beta
+---------
+Updated TOC to 3.20
+Added support for moving bars independently. Bars can be ungrouped in the options page. When ungrouped each bar
+can be moved independent of the other bars. When grouped all bars can be moved and will retain their positions
+relative to each other.
+
+1.13
+----
+Fixed bug - Aura bars not displaying
+Updated TOC to 3.10
+
+1.12
+----
+Bars of different sizes are now center aligned.
+Fixed bug - Aura button border was incorrectly sized.
+Fixed bug - Spell casting bar was incorrectly canceling.
+Fixed bug - Target bars set to Auto were not displaying correctly.
+Fixed bug - Player bars were not displaying correctly for druids in feral form.
+
+1.11
+----
+Reorganized the options UI. There is now a global options page and individual bar option pages.
+
+Global options are:
+  Scale - Combined with the individual bar scale to get a final scaling factor for each bar
+  Fade bars in and out
+  
+Bar configuration options are:
+  All bars:
+    Enable mode. One of:
+      Auto - Bar is visible when in combat or when not at its default state
+      Combat - Bar is only visible when in combat
+      Always - Bar is always visible
+      Never - Bar is never visible
+    Scale - Combined with the global scale to get the final bar scale
+    
+  Health and Power bars:
+    Flash when below threshold
+    
+  Druid Mana bar:
+    Show in all forms
+    
+  Target Power bar:
+    Show the spell being cast by the target
+    
+  Aura bars:
+    Show Buffs
+    Show Debuffs
+    Show self auras only
+    Show timed auras only
+
+1.10
+----
+Moved to low strata and made transparent to mouse clicks when locked.
+Added an option to only show bars in combat.
+
+1.09
+----
+Added ability to lock bar position.
+
+1.08
+----
+Check if casting unit is target before displaying casting bar.
+Fixed bug with Deadly Poison other than VII.
+
+1.07
+----
+Added support for Death Knights.
+
+1.06
+----
+Added a target spellcasting bar overlayed on the power bar.
+Fixed display bug when target shapeshifted.
+
+1.05
+----
+Added pet buff/debuff bar.
+
+1.04
+----
+Fixed bug with debuffs displaying the wrong tooltip.
+
+1.03
+----
+Added player and target buff/debuff bars.
+Fixed bug when dismissing or summoning pets.
+
+1.02
+----
+Added a player power bar.
+Added an option to always show target bars. Defaults to on.
+Fixed display bug when zoning.
+
+1.01
+----
+Added support for druids.
+Made bars movable.
+Added options. Integrated with Blizzard interface options UI.
+Fixed display bug when first logging in.
+
+1.00
+----
+Initial release. Supported status bars:
+    Player health
+    Player power
+    Target health
+    Pet health
+    Pet power
+    Player combo points
+    Target sunder armor stack
+    Target deadly poison stack
+    Shaman Maelstrom Weapon stack
