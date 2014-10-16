@@ -69,7 +69,7 @@ function StatusBars2_LoadSettings( settings )
     end
 
     -- Apply the settings to the bars
-    StatusBars2_Settings_Apply_Settings( false, settings );
+    StatusBars2_Settings_Apply_Settings( settings, false );
 
 end
 
@@ -524,7 +524,7 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_Settings_Apply_Settings( save, settings )
+function StatusBars2_Settings_Apply_Settings( settings, save )
 
     local rnd = StatusBars2_Round;
 

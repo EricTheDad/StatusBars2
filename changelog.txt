@@ -1,4 +1,7 @@
-﻿3.00.04
+﻿3.00.05
+Fixed bars staying in position when hitting escape to exit panel rather than the normal cancel behaviour of restoring the bars to their pre-config positions.
+
+3.00.04
 Fix for bar select dropdown not working
 
 3.00.03

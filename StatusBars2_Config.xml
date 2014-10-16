@@ -1093,7 +1093,7 @@
             </OnShow>
             <OnHide>
                 PlaySound("UChatScrollButton");
-                StatusBars2Config_SetConfigMode( false );
+                StatusBars2Config_OnHide( self );
             </OnHide>
             <OnUpdate>
                 if (self.doUpdate) then

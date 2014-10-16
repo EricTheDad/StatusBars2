@@ -87,14 +87,11 @@ function StatusBars2Config_SetConfigMode( enable )
     end
 
     if( enable ) then
-        StatusBars2_Settings_Apply_Settings( false, StatusBars2_Settings )
+        StatusBars2_Settings_Apply_Settings( StatusBars2_Settings, false );
         StatusBars2.configMode = true;
-        --StatusBars2_Config:Show( );
         ShowUIPanel( StatusBars2_Config );
     else
         StatusBars2.configMode = false;
-        --StatusBars2_Config:Hide( );
-        HideUIPanel( StatusBars2_Config );
     end
 
     -- Update the bar visibility and location
@@ -517,13 +514,9 @@ end
 function StatusBars2Config_OKButton_OnClick( self )
 
     -- Pull the settings from the panel into the bars
-    StatusBars2Config_DoDataExchange( self:GetParent( ), true );
-
-    -- Now push the settings from the bars to the saved settings
-    StatusBars2_Settings_Apply_Settings( true, StatusBars2_Settings );
-
-    -- Disable config mode
-    StatusBars2Config_SetConfigMode( false );
+    StatusBars2Config_DoDataExchange( StatusBars2_Config, true );
+    StatusBars2_Config.applyChanges = true;
+    HideUIPanel( StatusBars2_Config );
  
 end
 
@@ -537,11 +530,7 @@ end
 --
 function StatusBars2Config_CancelButton_OnClick( self )
 
-    -- Reset the bars to the last saved state.
-    StatusBars2_Settings_Apply_Settings( false, StatusBars2_Settings );
-
-    -- Disable config mode
-    StatusBars2Config_SetConfigMode( false );
+    HideUIPanel( StatusBars2_Config );
 
 end
 
@@ -556,11 +545,38 @@ end
 function StatusBars2Config_RevertButton_OnClick( self )
 
     -- Reset the bars to the last saved state.
-    StatusBars2_Settings_Apply_Settings( false, StatusBars2_Settings );
+    StatusBars2_Settings_Apply_Settings( StatusBars2_Settings, false );
 
 	-- Unlike cancel, don't close config mode, just update layouts
-	self:GetParent( ).doUpdate = true;
+	StatusBars2_Config.doUpdate = true;
 	
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2Config_OnHide
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2Config_OnHide( self )
+
+    if( self.applyChanges )then
+
+        self.applyChanges = false;
+
+        -- Push the settings from the bars to the saved settings
+        StatusBars2_Settings_Apply_Settings( StatusBars2_Settings, true );
+
+    else
+        -- Reset the bars to the last saved state.
+        StatusBars2_Settings_Apply_Settings( StatusBars2_Settings, false );
+    end
+
+    -- Disable config mode
+    StatusBars2Config_SetConfigMode( false );
+
 end
 
 -------------------------------------------------------------------------------
@@ -1084,7 +1100,7 @@ function StatusBars2_Options_ResetBarPositionButton_OnClick( self )
         bar.position = nil;
     end
 
-	self:GetParent( ).doUpdate = true;
+	StatusBars2_Config.doUpdate = true;
     
 end
 
@@ -1106,7 +1122,7 @@ function StatusBars2_Options_ResetGroupPositionButton_OnClick( self )
 
     local x, y = UIParent:GetCenter( );
     StatusBars2_StatusBar_SetPosition( StatusBars2, x + kDefaultFramePosition.x, y + kDefaultFramePosition.y, true );
-	self:GetParent( ).doUpdate = true;
+	StatusBars2_Config.doUpdate = true;
 
 end
 
