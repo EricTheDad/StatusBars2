@@ -149,6 +149,7 @@
         <NormalFont style="GameFontNormalLeft"/>
         <Scripts>
             <OnClick>
+                PlaySound("UChatScrollButton");
                 StatusBars2_BarOptions_ListEntryButton_OnClick( self );
             </OnClick>
             <OnEnter>
@@ -332,6 +333,7 @@
                 </Anchors>
                 <Scripts>
                     <OnClick>
+                        PlaySound("UChatScrollButton");
                         StatusBars2_Options_ResetGroupPositionButton_OnClick( self );
                     </OnClick>
                 </Scripts>
@@ -345,6 +347,7 @@
                 </Anchors>
                 <Scripts>
                     <OnClick>
+                        PlaySound("UChatScrollButton");
                         StatusBars2_Options_ResetBarPositionButton_OnClick( self );
                     </OnClick>
                 </Scripts>
@@ -616,6 +619,7 @@
                 </Anchors>
                 <Scripts>
                     <OnClick>
+                        PlaySound("UChatScrollButton");
                         StatusBars2_BarOptions_AddAuraFilterEntry( self:GetParent( ).auraNameInput );
                     </OnClick>
                 </Scripts>
@@ -629,6 +633,7 @@
                 </Anchors>
                 <Scripts>
                     <OnClick>
+                        PlaySound("UChatScrollButton");
                         StatusBars2_BarOptions_ClearAuraFilterList_OnClick( self );
                     </OnClick>
                 </Scripts>
@@ -642,6 +647,7 @@
                 </Anchors>
                 <Scripts>
                     <OnClick>
+                        PlaySound("UChatScrollButton");
                         StatusBars2_BarOptions_DeleteAuraFilterListEntry_OnClick( self );
                     </OnClick>
                 </Scripts>
@@ -820,6 +826,7 @@
                         getglobal( self:GetName( ) .. "Text" ):SetJustifyH("RIGHT");
                     </OnLoad>
 					<OnClick>
+                        PlaySound("UChatScrollButton");
                         StatusBars2_BarOptions_Enable_Aura_List( self:GetParent( ), self:GetChecked( ) );
 					</OnClick>
                     <OnEnter>
@@ -848,6 +855,7 @@
                         getglobal( self:GetName( ) .. "Text" ):SetText( "Custom Color" );
                     </OnLoad>
 					<OnClick>
+                        PlaySound("UChatScrollButton");
                         StatusBars2_BarOptions_Enable_ColorSelectButton( self:GetParent( ), self:GetChecked( ) );
 					</OnClick>
                 </Scripts>
@@ -868,6 +876,7 @@
                 </Backdrop>
                 <Scripts>
                     <OnClick>
+                        PlaySound("UChatScrollButton");
                         StatusBars2_Options_SetBarColorButton_OnClick( self:GetParent( ) );
                     </OnClick>
                 </Scripts>
@@ -882,6 +891,7 @@
                 </Anchors>
                 <Scripts>
                     <OnClick>
+                        PlaySound("UChatScrollButton");
                         StatusBars2_Options_SetBarColorButton_OnClick( self:GetParent( ) );
                     </OnClick>
                 </Scripts>
@@ -907,6 +917,7 @@
         <NormalFont style="GameFontNormalLeft"/>
         <Scripts>
             <OnClick>
+                PlaySound("UChatScrollButton");
                 StatusBars2_BarOptions_ListEntryButton_OnClick( self );
             </OnClick>
             <OnEnter>
@@ -925,6 +936,7 @@
     <Button name="StatusBars2_ConfigTabButtonTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
         <Scripts>
             <OnClick>
+                PlaySound("igCharacterInfoTab");
                 StatusBars2_TabButtonOnClick(self);
             </OnClick>
         </Scripts>
@@ -965,7 +977,10 @@
                 <Scripts>
                     <OnLoad>
                     </OnLoad>
-					<OnClick function="StatusBars2Config_RevertButton_OnClick"/>
+                    <OnClick>
+                        PlaySound("AchievementMenuOpen");
+                        StatusBars2Config_RevertButton_OnClick( self );
+                    </OnClick>
                 </Scripts>
             </Button>
 	        <Button name="$parentCancelButton" parentKey="cancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
@@ -1088,11 +1103,11 @@
                 PanelTemplates_SetTab(self, 1);
             </OnLoad>
             <OnShow>
-                PlaySound("UChatScrollButton");
+                PlaySound("igCharacterInfoOpen");
                 StatusBar2_TabContainer_OnShow( self )
             </OnShow>
             <OnHide>
-                PlaySound("UChatScrollButton");
+                PlaySound("igCharacterInfoClose");
                 StatusBars2Config_OnHide( self );
             </OnHide>
             <OnUpdate>

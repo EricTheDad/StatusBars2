@@ -407,7 +407,7 @@ function StatusBars2_UpdateBars( )
         elseif( bar.key == "holyPower" ) then
             StatusBars2_EnableBar( bar, 1, 6 );
         -- Special Priest Bars
-        elseif( bar.key == "orbs" and IsSpellKnown( PRIEST_SHADOW_ORBS ) ) then
+        elseif( bar.key == "orbs" and GetSpecialization() == SPEC_PRIEST_SHADOW ) then
             StatusBars2_EnableBar( bar, 1, 12 );
         -- Special Hunter Bars
         elseif( bar.key == "frenzy" and IsSpellKnown( bar.spellID ) ) then

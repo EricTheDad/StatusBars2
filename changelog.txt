@@ -1,5 +1,9 @@
 ﻿3.00.05
+Fixed shadow orb bar
 Fixed bars staying in position when hitting escape to exit panel rather than the normal cancel behaviour of restoring the bars to their pre-config positions.
+Fixed dropdown boxes getting influenced by other interfaces
+Fixed revert not carrying over into the panel settings
+Added more sounds
 
 3.00.04
 Fix for bar select dropdown not working

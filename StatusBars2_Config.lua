@@ -46,7 +46,6 @@ local oldOffset = 0;
 local currentScrollFrame = nil;
 local currentColorSwatch = nil;
 
-local SB2Config_DropdownInfo = UIDropDownMenu_CreateInfo();  -- We only need one of these, we'll use it everywhere for efficiency
 local ScrollBarButtons = {}
 
 local TextOptions  =
@@ -421,9 +420,7 @@ local function StatusBars2Config_ShowActivePanel( config_panel )
     
     -- Hide everything except for the one we are planning on showing
     for i, v in ipairs( config_panel.allPanels ) do
-        if( v ~= panelToShow ) then
-            v:Hide();
-        end
+        v:Hide();
     end
 
     -- Now show it
@@ -547,6 +544,9 @@ function StatusBars2Config_RevertButton_OnClick( self )
     -- Reset the bars to the last saved state.
     StatusBars2_Settings_Apply_Settings( StatusBars2_Settings, false );
 
+    -- Push the old state into the panel display, too.
+    StatusBars2Config_DoDataExchange( StatusBars2_Config, false );
+
 	-- Unlike cancel, don't close config mode, just update layouts
 	StatusBars2_Config.doUpdate = true;
 	
@@ -638,7 +638,7 @@ end
 --
 function StatusBars2Config_BarSelect_Initialize( self )
 
-    local entry = SB2Config_DropdownInfo;
+    local entry = UIDropDownMenu_CreateInfo();
 
     for i, bar in ipairs( bars ) do
 		-- Bars with a nil group are not enabled (wrong spec, not high enough level etc.
@@ -652,29 +652,6 @@ function StatusBars2Config_BarSelect_Initialize( self )
 			entry.checked = UIDropDownMenu_GetSelectedValue( self ) == entry.value;
 			UIDropDownMenu_AddButton( entry );
 		end
-    end
-    
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_TextDisplayOptionsMenu_Initialize
---
---  Description:    Initialize the text display options drop down menu
---
--------------------------------------------------------------------------------
---
-function StatusBars2_TextDisplayOptionsMenu_Initialize( self )
-
-    local entry = SB2Config_DropdownInfo;
-
-    for i, opt in ipairs( TextOptions ) do
-        entry.func = StatusBars2_TextDisplayOptionsMenu_OnClick;
-        entry.arg1 = self;
-        entry.value = opt.value;
-        entry.text = opt.label;
-        entry.checked = UIDropDownMenu_GetSelectedValue( self ) == entry.value;
-        UIDropDownMenu_AddButton( entry );
     end
     
 end
@@ -695,25 +672,25 @@ end
 
 -------------------------------------------------------------------------------
 --
---  Name:           StatusBars2_FontMenu_Initialize
+--  Name:           StatusBars2_TextDisplayOptionsMenu_Initialize
 --
 --  Description:    Initialize the text display options drop down menu
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_FontMenu_Initialize( self )
+function StatusBars2_TextDisplayOptionsMenu_Initialize( self )
 
-    local entry = SB2Config_DropdownInfo;
+    local entry = UIDropDownMenu_CreateInfo();
 
-    for i, info in ipairs( FontInfo ) do
-        entry.func = StatusBars2_FontMenu_OnClick;
+    for i, opt in ipairs( TextOptions ) do
+        entry.func = StatusBars2_TextDisplayOptionsMenu_OnClick;
         entry.arg1 = self;
-        entry.value = i;
-        entry.text = info.label;
-        entry.checked = UIDropDownMenu_GetSelectedValue( self ) == i;
+        entry.value = opt.value;
+        entry.text = opt.label;
+        entry.checked = UIDropDownMenu_GetSelectedValue( self ) == entry.value;
         UIDropDownMenu_AddButton( entry );
     end
-
+    
 end
 
 -------------------------------------------------------------------------------
@@ -732,20 +709,20 @@ end
 
 -------------------------------------------------------------------------------
 --
---  Name:           StatusBars2_BarEnabledMenu_Initialize
+--  Name:           StatusBars2_FontMenu_Initialize
 --
---  Description:    Initialize the enabled drop down menu
+--  Description:    Initialize the text display options drop down menu
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_BarEnabledMenu_Initialize( self )
+function StatusBars2_FontMenu_Initialize( self )
 
-    local entry = SB2Config_DropdownInfo;
+    local entry = UIDropDownMenu_CreateInfo();
 
-    for i, info in ipairs( EnableInfo ) do
+    for i, info in ipairs( FontInfo ) do
         entry.func = StatusBars2_FontMenu_OnClick;
         entry.arg1 = self;
-        entry.value = info.value;
+        entry.value = i;
         entry.text = info.label;
         entry.checked = UIDropDownMenu_GetSelectedValue( self ) == i;
         UIDropDownMenu_AddButton( entry );
@@ -769,18 +746,18 @@ end
 
 -------------------------------------------------------------------------------
 --
---  Name:           StatusBars2_PercentTextMenu_Initialize
+--  Name:           StatusBars2_BarEnabledMenu_Initialize
 --
---  Description:    Initialize the percent text drop down menu
+--  Description:    Initialize the enabled drop down menu
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_PercentTextMenu_Initialize( self )
+function StatusBars2_BarEnabledMenu_Initialize( self )
 
-    local entry = SB2Config_DropdownInfo;
+    local entry = UIDropDownMenu_CreateInfo();
 
-    for i, info in ipairs( PercentTextInfo ) do
-        entry.func = StatusBars2_FontMenu_OnClick;
+    for i, info in ipairs( EnableInfo ) do
+        entry.func = StatusBars2_BarEnabledMenu_OnClick;
         entry.arg1 = self;
         entry.value = info.value;
         entry.text = info.label;
@@ -801,6 +778,29 @@ end
 function StatusBars2_PercentTextMenu_OnClick( self, menu )
 
     UIDropDownMenu_SetSelectedValue( menu, self.value );
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_PercentTextMenu_Initialize
+--
+--  Description:    Initialize the percent text drop down menu
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_PercentTextMenu_Initialize( self )
+
+    local entry = UIDropDownMenu_CreateInfo();
+
+    for i, info in ipairs( PercentTextInfo ) do
+        entry.func = StatusBars2_PercentTextMenu_OnClick;
+        entry.arg1 = self;
+        entry.value = info.value;
+        entry.text = info.label;
+        entry.checked = UIDropDownMenu_GetSelectedValue( self ) == i;
+        UIDropDownMenu_AddButton( entry );
+    end
 
 end
 
