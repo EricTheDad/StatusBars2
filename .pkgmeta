@@ -4,4 +4,3 @@ ignore:
     - .pkgmeta
 
 manual-changelog: changelog.txt
-    
