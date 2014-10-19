@@ -1,4 +1,8 @@
-﻿3.01.00
+﻿3.01.01
+Updated save data version
+Fixed bug with help tooltip on bars not turning off immediately when the button was unchecked
+
+3.01.00
 Changed how bars are moved.  You now hold down "Alt" to move a single bar, "Ctrl" to move a whole group and "Ctrl" and "Alt" simultaneously to move all bars.
 This also carries over into moving unlocked bars outside of configuration mode.  Consequently, there is now only a need for "locked" and "unlocked" states for the bars.
 Bars are automatically, temporarily unlocked in config mode regardless of their in-game-play locked state.

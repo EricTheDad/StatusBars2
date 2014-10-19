@@ -1125,6 +1125,8 @@
                 StatusBars2Config_OnHide( self );
             </OnHide>
             <OnUpdate>
+                StatusBars2.showHelp = self.showHelpButton:GetChecked( );
+
                 if (self.doUpdate) then
                     self.doUpdate = false;
                     StatusBars2Config_OnUpdate( self );
