@@ -197,9 +197,7 @@ end
 function StatusBars2_UpdateAuraBar( self )
 
     -- If dragging have to cancel before hiding the buttons
-    if( self.isMoving ) then
-        StatusBars2_StatusBar_OnMouseUp( self, "LeftButton" );
-    end
+    StatusBars2_Movable_StopMoving( self );
 
     -- Button offset
     local offset = 2;
@@ -291,8 +289,8 @@ function StatusBars2_GetAuraButton( self, id, buttonName, template, auraName, au
     if( button == nil ) then
         button = CreateFrame( "Button", buttonName, self, template );
         button:SetSize( StatusBars2_GetAuraSize( self ), StatusBars2_GetAuraSize( self ) );
-        button:SetScript( "OnMouseDown", StatusBars2_AuraButton_OnMouseDown );
-        button:SetScript( "OnMouseUp", StatusBars2_AuraButton_OnMouseUp );
+        button:SetScript( "OnMouseDown", StatusBars2_ChildButton_OnMouseDown );
+        button:SetScript( "OnMouseUp", StatusBars2_ChildButton_OnMouseUp );
 
         button.DefaultOnEnter = button:GetScript( "OnEnter" );
         button.DefaultOnLeave = button:GetScript( "OnLeave" );
@@ -377,38 +375,6 @@ end
 function StatusBars2_GetAuraSize( self )
 
     return self:GetHeight( );
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_AuraButton_OnMouseDown
---
---  Description:    Called when the mouse button goes down in this frame
---
--------------------------------------------------------------------------------
---
-function StatusBars2_AuraButton_OnMouseDown( self, button )
-
-    if( not StatusBars2.locked ) then
-        StatusBars2_StatusBar_OnMouseDown( self.parentBar, button );
-    end
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_AuraButton_OnMouseUp
---
---  Description:    Called when the mouse goes up in this frame
---
--------------------------------------------------------------------------------
---
-function StatusBars2_AuraButton_OnMouseUp( self, button )
-
-    if( not StatusBars2.locked ) then
-        StatusBars2_StatusBar_OnMouseUp( self.parentBar, button );
-    end
 
 end
 

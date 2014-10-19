@@ -41,6 +41,9 @@ function StatusBars2_CreateRuneBar( )
     for i = 1, 6 do
         local rune = _G[ name .. '_RuneButton' .. i ];
         rune.parentBar = bar;
+        rune:SetScript( "OnMouseDown", StatusBars2_ChildButton_OnMouseDown );
+        rune:SetScript( "OnMouseUp", StatusBars2_ChildButton_OnMouseUp );
+        rune:SetScript( "OnHide", StatusBars2_RuneButton_OnHide );
         RuneButton_Update( rune, i, true );
     end
 
@@ -144,11 +147,8 @@ function StatusBars2_RuneBar_OnEnable( self )
         local rune = _G[ self:GetName( ) .. '_RuneButton' .. i ];
 
         -- If not grouped or locked enable the mouse for moving
-        if( not StatusBars2.grouped and not StatusBars2.locked ) then
+        if( not StatusBars2.locked ) then
             rune:EnableMouse( true );
-            rune:SetScript( "OnMouseDown", StatusBars2_RuneButton_OnMouseDown );
-            rune:SetScript( "OnMouseUp", StatusBars2_RuneButton_OnMouseUp );
-            rune:SetScript( "OnHide", StatusBars2_RuneButton_OnHide );
         else
             rune:EnableMouse( false );
         end
@@ -178,34 +178,6 @@ function StatusBars2_RuneBar_UpdateAllRunes( self )
             RuneButton_Update( runeButton, i, true );
         end
     end
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_RuneButton_OnMouseDown
---
---  Description:    Called when the mouse button goes down in this frame
---
--------------------------------------------------------------------------------
---
-function StatusBars2_RuneButton_OnMouseDown( self, button )
-
-    StatusBars2_StatusBar_OnMouseDown( self.parentBar, button );
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_RuneButton_OnMouseUp
---
---  Description:    Called when the mouse goes up in this frame
---
--------------------------------------------------------------------------------
---
-function StatusBars2_RuneButton_OnMouseUp( self, button )
-
-    StatusBars2_StatusBar_OnMouseUp( self.parentBar, button );
 
 end
 

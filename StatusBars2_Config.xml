@@ -159,7 +159,9 @@
                 end
             </OnEnter>
             <OnLeave>
-                GameTooltip:Hide( );
+                if( GameTooltip:IsOwned(self) ) then
+                    GameTooltip:Hide( );
+                end
             </OnLeave>
         </Scripts>
         <Size x="150" y="20" />
@@ -279,7 +281,7 @@
             <CheckButton name="$parent_FadeButton" parentKey="fadeButton" inherits="OptionsCheckButtonTemplate" >
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeto="$parent" >
-                        <Offset x="10" y="-10" />
+                        <Offset x="10" y="-15" />
                     </Anchor>
                 </Anchors>
                 <Scripts>
@@ -296,11 +298,22 @@
                 </Anchors>
                 <Scripts>
                     <OnLoad>
-                        getglobal( self:GetName( ) .. "Text" ):SetText( "Lock bar positions" );
+                        getglobal( self:GetName( ) .. "Text" ):SetText( "Lock bars during play" );
                     </OnLoad>
+                    <OnEnter>
+                        if( StatusBars2_Config.showHelpButton:GetChecked( ) ) then
+                            GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_BOTTOMRIGHT", 0, 0);
+                            GameTooltip:SetText("Bars are automatically unlocked while the configuration panel is open.\nDon't uncheck this unless you want to be able to move the bars while playing");
+                        end
+                    </OnEnter>
+                    <OnLeave>
+                        if( GameTooltip:IsOwned(self) ) then
+                            GameTooltip:Hide( );
+                        end
+                    </OnLeave>
                 </Scripts>
             </CheckButton>
-            <CheckButton name="$parent_GroupedButton" parentKey="groupedButton" inherits="OptionsCheckButtonTemplate" >
+            <CheckButton name="$parent_ShowHelpButton" parentKey="showHelpButton" inherits="OptionsCheckButtonTemplate" >
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeto="$parent_LockedButton" >
                         <Offset x="0" y="-24" />
@@ -308,50 +321,11 @@
                 </Anchors>
                 <Scripts>
                     <OnLoad>
-                        getglobal( self:GetName( ) .. "Text" ):SetText( "Lock bars to groups" );
+                        getglobal( self:GetName( ) .. "Text" ):SetText( "Enable help tooltips" );
+                        StatusBars2_Config.showHelpButton = self;
                     </OnLoad>
                 </Scripts>
             </CheckButton>
-            <CheckButton name="$parent_LockGroupsTogetherButton" parentKey="groupsLockedTogetherButton" inherits="OptionsCheckButtonTemplate" >
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeto="$parent_GroupedButton" >
-                        <Offset x="0" y="-24" />
-                    </Anchor>
-                </Anchors>
-                <Scripts>
-                    <OnLoad>
-                        getglobal( self:GetName( ) .. "Text" ):SetText( "Lock groups together" );
-                    </OnLoad>
-                </Scripts>
-            </CheckButton>
-            <Button name="$parent_ResetGroupPositionButton" inherits="OptionsButtonTemplate" text="Reset Group Positions">
-                <Size x="150" y="21"/>
-                <Anchors>
-                    <Anchor point="BOTTOMRIGHT" >
-                        <Offset x="0" y="0" />
-                    </Anchor>
-                </Anchors>
-                <Scripts>
-                    <OnClick>
-                        PlaySound("UChatScrollButton");
-                        StatusBars2_Options_ResetGroupPositionButton_OnClick( self );
-                    </OnClick>
-                </Scripts>
-            </Button>
-            <Button name="$parent_ResetBarPositionButton" inherits="OptionsButtonTemplate" text="Snap Bars To Group">
-                <Size x="150" y="21"/>
-                <Anchors>
-                    <Anchor point="BOTTOM" relativeto="$parent_ResetGroupPositionButton" relativePoint="TOP">
-                        <Offset x="0" y="5" />
-                    </Anchor>
-                </Anchors>
-                <Scripts>
-                    <OnClick>
-                        PlaySound("UChatScrollButton");
-                        StatusBars2_Options_ResetBarPositionButton_OnClick( self );
-                    </OnClick>
-                </Scripts>
-            </Button>
             <Frame name="$parent_TextDisplayOptionsMenu" parentKey="textDisplayOptionsMenu" inherits="StatusBars2_LabeledDropDownMenu" >
                 <Size x="170" y="17"/>
                 <Anchors>
@@ -384,11 +358,41 @@
                     </OnLoad>
                 </Scripts>
             </Frame>
+            <Button name="$parent_ResetGroupPositionButton" inherits="OptionsButtonTemplate" text="Reset All Group Positions">
+                <Size x="190" y="21"/>
+                <Anchors>
+                    <Anchor point="BOTTOMRIGHT" >
+                        <Offset x="0" y="5" />
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                        PlaySound("UChatScrollButton");
+                        StatusBars2_Options_ResetGroupPositionButton_OnClick( self );
+                    </OnClick>
+                </Scripts>
+            </Button>
+            <Button name="$parent_ResetBarPositionButton" inherits="OptionsButtonTemplate" text="Snap All Bars To Groups">
+                <Size x="190" y="21"/>
+                <Anchors>
+                    <Anchor point="BOTTOM" relativeto="$parent_ResetGroupPositionButton" relativePoint="TOP">
+                        <Offset x="0" y="5" />
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                        PlaySound("UChatScrollButton");
+                        StatusBars2_Options_ResetBarPositionButton_OnClick( self );
+                    </OnClick>
+                </Scripts>
+            </Button>
         </Frames>
     </Frame>
 
     <!-- Group layout and options frame template -->
     <Frame name="StatusBars2_GroupOptionsConfigTemplate" inherits="StatusBars2_LayoutConfigTemplate" virtual="true" >
+        <Frames>
+        </Frames>
     </Frame>
 
     <!-- Base bar layout and options frame template -->
@@ -668,11 +672,15 @@
                 <FontString inherits="GameFontNormalLeft" />
                 <Scripts>
                     <OnEnter>
-                        GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_TOPLEFT", 0, 0);
-                        GameTooltip:SetText('Type the name of the buff/debuff you want to add to the list here and click the "Add Entry" button.\nYou must type the name exactly as it appears in the tooltip.  Capitalization is important!');
+                        if( StatusBars2_Config.showHelpButton:GetChecked( ) ) then
+                            GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_TOPLEFT", 0, 0);
+                            GameTooltip:SetText('Type the name of the buff/debuff you want to add to the list here and click the "Add Entry" button.\nYou must type the name exactly as it appears in the tooltip.  Capitalization is important!');
+                        end
                     </OnEnter>
                     <OnLeave>
-                        GameTooltip:Hide( );
+                        if( GameTooltip:IsOwned(self) ) then
+                            GameTooltip:Hide( );
+                        end
                     </OnLeave>
                     <OnTextChanged>
                         local addButton = self:GetParent( ).addEntryButton;
@@ -830,11 +838,15 @@
                         StatusBars2_BarOptions_Enable_Aura_List( self:GetParent( ), self:GetChecked( ) );
 					</OnClick>
                     <OnEnter>
-                        GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_TOPLEFT", 0, 0);
-                        GameTooltip:SetText("Hides all buffs/debuffs except for the ones you add to the list below.\nHowever, the check marks above still affect which auras are displayed.\nFor example, if you type in the name of a buff but don't have the\n\"Show Buffs\" checkbox checked, the buff still won't be displayed.");
+                        if( StatusBars2_Config.showHelpButton:GetChecked( ) ) then
+                            GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_TOPLEFT", 0, 0);
+                            GameTooltip:SetText("Hides all buffs/debuffs except for the ones you add to the list below.\nHowever, the check marks above still affect which auras are displayed.\nFor example, if you type in the name of a buff but don't have the\n\"Show Buffs\" checkbox checked, the buff still won't be displayed.");
+                        end
                     </OnEnter>
                     <OnLeave>
-                        GameTooltip:Hide( );
+                        if( GameTooltip:IsOwned(self) ) then
+                            GameTooltip:Hide( );
+                        end
                     </OnLeave>
                 </Scripts>
             </CheckButton>
@@ -927,7 +939,9 @@
                 end
             </OnEnter>
             <OnLeave>
-                GameTooltip:Hide( );
+                if( GameTooltip:IsOwned(self) ) then
+                    GameTooltip:Hide( );
+                end
             </OnLeave>
         </Scripts>
         <Size x="150" y="20" />

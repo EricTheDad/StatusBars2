@@ -164,12 +164,9 @@ function StatusBars2_OnLoad( self )
     self:SetScript( "OnEvent", StatusBars2_OnEvent );
     self:SetScript( "OnUpdate", StatusBars2_OnUpdate );
     
-    -- We only want mouse clicks to be detected in the actual bars.  If bars or groups 
-    -- are locked, the bar will push the mouse click handling up to the parent, so we don't 
-    -- register the handlers with the system even though we need the handlers.
-    self.OnMouseDown = StatusBars2_OnMouseDown;
-    self.OnMouseUp = StatusBars2_OnMouseUp;
-    
+    -- Add mouse click handlers
+    StatusBars2_MakeMovable( self, "all");
+
     -- Register for events
     self:RegisterEvent( "PLAYER_ENTERING_WORLD" );
     self:RegisterEvent( "ADDON_LOADED" );
@@ -503,7 +500,7 @@ function StatusBars2_UpdateLayout( )
             group_offset = group_offset + offset;
             gx = px;
             gy = py + group_offset;
-            StatusBars2_StatusBar_SetPosition( groupFrame, gx, gy);
+            StatusBars2_Movable_SetPosition( groupFrame, gx, gy);
             gx, gy = groupFrame:GetCenter( );
             gy = groupFrame:GetTop( );
             group_offset = group_offset - kGroupSpacing;
@@ -538,7 +535,7 @@ function StatusBars2_UpdateFullLayout( )
     StatusBars2:SetAlpha( StatusBars2.alpha );
 
     -- Set Main Frame Position
-    StatusBars2_StatusBar_SetPosition( StatusBars2, kDefaultFramePosition.x, kDefaultFramePosition.y );
+    StatusBars2_Movable_SetPosition( StatusBars2, kDefaultFramePosition.x, kDefaultFramePosition.y );
 
     -- Set group scale and alpha
     for i, group in ipairs( groups ) do
@@ -592,7 +589,7 @@ end
 function StatusBars2_DisableBar( bar )
 
     -- If the frame was being dragged, drop it.
-    bar:OnMouseUp( "LeftButton" );
+    StatusBars2_Movable_StopMoving( bar );
 
     -- Remove the event and update handlers
     bar:SetScript( "OnEvent", nil );
@@ -740,46 +737,6 @@ end
 
 -------------------------------------------------------------------------------
 --
---  Name:           StatusBars2_OnMouseDown
---
---  Description:    Called when the mouse button goes down in this frame
---
--------------------------------------------------------------------------------
---
-function StatusBars2_OnMouseDown( self, button )
-
-    if( button == "LeftButton" and not self.isMoving ) then
-        self:StartMoving();
-        self.isMoving = true;
-    end
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_OnMouseUp
---
---  Description:    Called when the mouse button goes up in this frame
---
--------------------------------------------------------------------------------
---
-function StatusBars2_OnMouseUp( self, button )
-
-    if( button == "LeftButton" and self.isMoving ) then
-        self:StopMovingOrSizing();
-        self.isMoving = false;
-
-        -- Moving the frame clears the points and attaches it to the UIParent frame
-        -- This will re-attach it to it's group frame
-        local x, y = self:GetCenter( );
-        y = self:GetTop( );
-        StatusBars2_StatusBar_SetPosition( self, x * self:GetScale( ), y * self:GetScale( ), true );
-    end
-
-end
-
--------------------------------------------------------------------------------
---
 --  Name:           StatusBars2_OnHide
 --
 --  Description:    Called when the frame is hidden
@@ -788,7 +745,7 @@ end
 --
 function StatusBars2_OnHide( self )
 
-    StatusBars2_OnMouseUp( self, "LeftButton" );
+    StatusBars2_Movable_StopMoving( self );
 
 end
 

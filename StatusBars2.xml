@@ -193,7 +193,7 @@
     </Frame>
 
     <!-- Eclipse bar template -->
-	<Frame name="StatusBars2_EclipseBarTemplate" frameStrata="LOW" toplevel="true" hidden="true" moveable="true" virtual="true">
+	<Frame name="StatusBars2_EclipseBarTemplate" frameStrata="LOW" toplevel="true" hidden="true" movable="true" virtual="true">
         <Animations>
             <AnimationGroup parentKey="sunActivate">
                 <Alpha target="$parentSunBar"        change="1" duration="0.6" order="1"/>
@@ -511,8 +511,8 @@
             </Layer>
         </Layers>
         <Frames>
-			<Button name="$parent_MoveBarsButton" inherits="OptionsButtonTemplate" text="Configure Statusbars2">
-				<Size x="200" y="21"/>
+			<Button name="$parent_ConfigureBarsButton" inherits="OptionsButtonTemplate" text="Configure Statusbars2">
+				<Size x="200" y="32"/>
 				<Anchors>
 					<Anchor point="CENTER" relativeto="$parent" >
 						<Offset x="0" y="0" />

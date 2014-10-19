@@ -281,7 +281,9 @@ function StatisBars2_PruneSettings( settings )
         settings.groups[ i ] = nil;
     end
 
-    StatusBars2_Options.moveBars = nil;
+    settings.moveBars = nil;
+    settings.grouped = nil;
+    settings.groupsLocked = nil;
 
 end
 
@@ -394,16 +396,6 @@ function StatusBars2_SetDefaultSettings( settings )
         settings.locked = true;
     end
 
-    -- Bars locked to groups
-    if( settings.grouped == nil ) then
-        settings.grouped = true;
-    end
-
-    -- Groups locked together
-    if( settings.groupsLocked == nil ) then
-        settings.groupsLocked = true;
-    end
-
     -- Scale
     if( settings.scale == nil or settings.scale <= 0 ) then
         settings.scale = 1.0;
@@ -413,6 +405,9 @@ function StatusBars2_SetDefaultSettings( settings )
     if( settings.alpha == nil or settings.alpha <= 0 or settings.alpha > 1.0 ) then
         settings.alpha = 1.0;
     end
+
+    -- Help tooltips
+    settings.showHelp = settings.showHelp or true;
 
 end;
 
@@ -544,8 +539,7 @@ function StatusBars2_Settings_Apply_Settings( settings, save )
         settings.font = StatusBars2.font;
         settings.fade = StatusBars2.fade;
         settings.locked = StatusBars2.locked;
-        settings.grouped = StatusBars2.grouped;
-        settings.groupsLocked = StatusBars2.groupsLocked;
+        settings.showHelp = StatusBars2.showHelp;
     else
         StatusBars2.scale = settings.scale or 1.0;
         StatusBars2.alpha = settings.alpha or 1.0;
@@ -558,8 +552,7 @@ function StatusBars2_Settings_Apply_Settings( settings, save )
         StatusBars2.font = settings.font;
         StatusBars2.fade = settings.fade;
         StatusBars2.locked = settings.locked;
-        StatusBars2.grouped = settings.grouped;
-        StatusBars2.groupsLocked = settings.groupsLocked;
+        StatusBars2.showHelp = settings.showHelp;
     end
 
     -- Apply Settings to groups

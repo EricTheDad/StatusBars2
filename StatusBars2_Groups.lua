@@ -15,115 +15,6 @@ local debugLayout = addonTable.debugLayout;
 
 -------------------------------------------------------------------------------
 --
---  Name:           StatusBars2_Group_OnMouseDown
---
---  Description:    Handle "OnMouseDown" event coming from one of the attached bars
---
--------------------------------------------------------------------------------
---
-function StatusBars2_Group_OnMouseDown( self, button )
-
-    -- Move on left button down
-    if( button == 'LeftButton' ) then
-
-        -- If grouped move the main frame
-        if( self:ShouldPassClickToParent( ) ) then
-            self:GetParent( ):OnMouseDown( button );
-
-        -- Otherwise move this bar
-        elseif( self:ShouldProcessClick( ) ) then
-            self:StartMoving( );
-            self.isMoving = true;
-        end
-
-    end
-   
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_Group_OnMouseUp
---
---  Description:    Handle "OnMouseUp" event coming from one of the attached bars
---
--------------------------------------------------------------------------------
---
-function StatusBars2_Group_OnMouseUp( self, button )
-
-    -- Move with left button
-    if( button == 'LeftButton' ) then
-        local parentFrame = self:GetParent( );
-
-        -- If the parent frame is the one that was put into motion, call it's handler
-        if( parentFrame.isMoving ) then
-            parentFrame:OnMouseUp( button );
-
-        -- Otherwise move this bar
-        elseif( self.isMoving ) then
-            -- End moving
-            self:StopMovingOrSizing( );
-            self.isMoving = false;
-
-            -- Moving the frame clears the points and attaches it to the UIParent frame
-            -- This will re-attach it to it's group frame
-            local x, y = self:GetCenter( );
-            y = self:GetTop( );
-            StatusBars2_StatusBar_SetPosition( self, x * self:GetScale( ), y * self:GetScale( ), true );
-        end
-    end
-    
-end
-
--------------------------------------------------------------------------------
---
---  Name:           ConfigShouldPassClickToParent
---
---  Description:    
---
--------------------------------------------------------------------------------
---
-local function ConfigShouldPassClickToParent( )
-    return not IsControlKeyDown( ) and IsAltKeyDown( );
-end
-
--------------------------------------------------------------------------------
---
---  Name:           NormalShouldPassClickToParent
---
---  Description:    
---
--------------------------------------------------------------------------------
---
-local function NormalShouldPassClickToParent( )
-    return not IsControlKeyDown( ) and ( StatusBars2.groupsLocked or IsAltKeyDown( ) );
-end
-
--------------------------------------------------------------------------------
---
---  Name:           ConfigShouldProcessClick
---
---  Description:    
---
--------------------------------------------------------------------------------
---
-local function ConfigShouldProcessClick( )
-    return IsControlKeyDown( );
-end
-
--------------------------------------------------------------------------------
---
---  Name:           NormalShouldProcessClick
---
---  Description:    
---
--------------------------------------------------------------------------------
---
-local function NormalShouldProcessClick( )
-    return IsControlKeyDown( ) or not StatusBars2.locked;
-end
-
--------------------------------------------------------------------------------
---
 --  Name:           NormalStatusBars2
 --
 --  Description:    
@@ -132,13 +23,7 @@ end
 --
 local function StatusBars2_Group_OnEnable( self )
 
-    if( StatusBars2.configMode ) then
-        self.ShouldPassClickToParent = ConfigShouldPassClickToParent;
-        self.ShouldProcessClick = ConfigShouldProcessClick;
-    else
-        self.ShouldPassClickToParent = NormalShouldPassClickToParent;
-        self.ShouldProcessClick = NormalShouldProcessClick;
-    end
+    StatusBars2_Movable_OnEnable( self );
 
 end
 
@@ -163,9 +48,10 @@ local function StatusBars2_CreateGroupFrame( name, key )
         groupFrame.text:Show( );
     end
     
+    -- Add mouse click handlers
+    StatusBars2_MakeMovable( groupFrame, "group");
+
     groupFrame.OnEnable = StatusBars2_Group_OnEnable;
-    groupFrame.OnMouseDown = StatusBars2_Group_OnMouseDown;
-    groupFrame.OnMouseUp = StatusBars2_Group_OnMouseUp;
     groupFrame.key = key;
 
     -- Insert the group frame into the groups table for later reference.

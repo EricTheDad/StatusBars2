@@ -344,8 +344,7 @@ local function StatusBars2Config_DoDataExchange( configPanel, save, bar )
     local fontMenu = configPanel.globalConfigTabPage.fontMenu;
     local fadeButton = configPanel.globalConfigTabPage.fadeButton;
     local lockedButton = configPanel.globalConfigTabPage.lockedButton;
-    local groupedButton = configPanel.globalConfigTabPage.groupedButton;
-    local groupsLockedTogetherButton = configPanel.globalConfigTabPage.groupsLockedTogetherButton;
+    local showHelpButton = configPanel.globalConfigTabPage.showHelpButton;
     local scaleSlider = configPanel.globalConfigTabPage.scaleSlider;
     local alphaSlider = configPanel.globalConfigTabPage.alphaSlider;
 
@@ -355,10 +354,9 @@ local function StatusBars2Config_DoDataExchange( configPanel, save, bar )
         StatusBars2.font = UIDropDownMenu_GetSelectedValue( fontMenu );
         StatusBars2.fade = fadeButton:GetChecked( );
         StatusBars2.locked = lockedButton:GetChecked( );
-        StatusBars2.grouped = groupedButton:GetChecked( );
-        StatusBars2.groupsLocked = groupsLockedTogetherButton:GetChecked( );
         StatusBars2.scale = scaleSlider:GetValue( );
         StatusBars2.alpha = StatusBars2_Round( alphaSlider:GetValue( ) / 100, 2 );
+        StatusBars2.showHelp = showHelpButton:GetChecked( );
     else
         UIDropDownMenu_SetSelectedValue( textOptionsMenu, StatusBars2.textDisplayOption );
         UIDropDownMenu_SetText( textOptionsMenu, TextOptions[StatusBars2.textDisplayOption].label );
@@ -366,12 +364,11 @@ local function StatusBars2Config_DoDataExchange( configPanel, save, bar )
         UIDropDownMenu_SetText( fontMenu, FontInfo[UIDropDownMenu_GetSelectedValue(fontMenu)].label );
         fadeButton:SetChecked( StatusBars2.fade );
         lockedButton:SetChecked( StatusBars2.locked );
-        groupedButton:SetChecked( StatusBars2.grouped );
-        groupsLockedTogetherButton:SetChecked( StatusBars2.groupsLocked );
         scaleSlider.applyToFrame = StatusBars2;
         scaleSlider:SetValue( StatusBars2.scale or 1.0 );
         alphaSlider.applyToFrame = StatusBars2;
         alphaSlider:SetValue( (StatusBars2.alpha or 1.0 ) * 100 );
+        showHelpButton:SetChecked( StatusBars2.showHelp );
     end
 
     StatusBars2Config_Group_DoDataExchange( configPanel, save, bar );
@@ -410,12 +407,16 @@ local function StatusBars2Config_ShowActivePanel( config_panel )
     -- Figure out which panel we are going to show
     if( activeTabID == kGlobal ) then
         panelToShow = config_panel.globalConfigTabPage;
+        StatusBars2.moveMode = "all";
     elseif( activeTabID == kGroup ) then
         panelToShow = config_panel.groupConfigTabPage;
+        StatusBars2.moveMode = "group";
     elseif( activeTabID == kBarLayout ) then
         panelToShow = config_panel.barLayoutTabPage;
+        StatusBars2.moveMode = "bar";
     elseif( activeTabID == kBarOptions ) then
         panelToShow = activeBar.optionsPanel;
+        StatusBars2.moveMode = "bar";
     end
     
     -- Hide everything except for the one we are planning on showing
@@ -581,38 +582,56 @@ end
 
 -------------------------------------------------------------------------------
 --
---  Name:           Config_Bar_OnMouseDown
+--  Name:           Config_Movable_OnMouseDown
 --
 --  Description:    
 --
 -------------------------------------------------------------------------------
 --
-local function Config_Bar_OnMouseDown( self, button )
+local function Config_Movable_OnMouseDown( self, button )
 
     -- Move on left button down
     if( button == 'LeftButton' ) then
+
+        local moveMode = StatusBars2_GetMoveMode( );
+
+        if( moveMode == "bar" ) then
+            if( StatusBars2.moveMode ~= "bar" ) then
+                PanelTemplates_SetTab( StatusBars2_Config, 3 );
+            end
+        elseif( moveMode == "group" ) then
+            PanelTemplates_SetTab( StatusBars2_Config, 2 );
+        elseif( moveMode == "all" ) then
+            PanelTemplates_SetTab( StatusBars2_Config, 1 );
+        end
+
+        -- In config mode, keep the last move mode even if the player isn't pressing any keys now.
+        StatusBars2.moveMode = moveMode or StatusBars2.moveMode;
         StatusBars2Config_SetBar( StatusBars2_Config, self );
-        StatusBars2_StatusBar_OnMouseDown( self, button );
+        StatusBars2_Movable_StartMoving( self );
     end
 
 end
 
 -------------------------------------------------------------------------------
 --
---  Name:           Config_Bar_OnMouseUp
+--  Name:           Config_Movable_OnMouseUp
 --
 --  Description:    
 --
 -------------------------------------------------------------------------------
 --
-local function Config_Bar_OnMouseUp( self, button )
+local function Config_Movable_OnMouseUp( self, button )
 
-    StatusBars2_StatusBar_OnMouseUp( self, button );
+    -- Move on left button down
+    if( button == 'LeftButton' ) then
+        StatusBars2_Movable_StopMoving( self );
+    end
 
 end
 
-addonTable.Config_Bar_OnMouseUp = Config_Bar_OnMouseUp;
-addonTable.Config_Bar_OnMouseDown = Config_Bar_OnMouseDown;
+addonTable.Config_Movable_OnMouseUp = Config_Movable_OnMouseUp;
+addonTable.Config_Movable_OnMouseDown = Config_Movable_OnMouseDown;
 
 -------------------------------------------------------------------------------
 --
@@ -1121,7 +1140,7 @@ function StatusBars2_Options_ResetGroupPositionButton_OnClick( self )
     end
 
     local x, y = UIParent:GetCenter( );
-    StatusBars2_StatusBar_SetPosition( StatusBars2, x + kDefaultFramePosition.x, y + kDefaultFramePosition.y, true );
+    StatusBars2_Movable_SetPosition( StatusBars2, x + kDefaultFramePosition.x, y + kDefaultFramePosition.y, true );
 	StatusBars2_Config.doUpdate = true;
 
 end
