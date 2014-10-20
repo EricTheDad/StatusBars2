@@ -115,7 +115,7 @@ function StatusBars2_AuraBar_OnEnable( self )
     if( StatusBars2.configMode ) then
 
         -- Show a backdrop so we can see the bar
-        self:Bar_ShowBackdrop( );
+        StatusBars2_Frame_ShowBackdrop( self );
 
         -- Hide all the buttons
         for name, button in pairs( self.buttons ) do
@@ -125,7 +125,7 @@ function StatusBars2_AuraBar_OnEnable( self )
     else
 
         -- Hide the backdrop if we showed it for config mode
-        self:Bar_HideBackdrop( );
+        StatusBars2_Frame_HideBackdrop( self );
 
         -- Update the bar
         StatusBars2_UpdateAuraBar( self );
@@ -133,7 +133,7 @@ function StatusBars2_AuraBar_OnEnable( self )
     end
 
     -- Call the base method
-    self:Bar_OnEnable( );
+    self:BaseBar_OnEnable( );
 
 end
 
@@ -147,7 +147,7 @@ end
 --
 function StatusBars2_AuraBar_IsVisible( self )
 
-    return StatusBars2_StatusBar_IsVisible( self ) and ( UnitExists( self.unit ) and not UnitIsDeadOrGhost( self.unit ) );
+    return self:BaseBar_BarIsVisible( ) and ( UnitExists( self.unit ) and not UnitIsDeadOrGhost( self.unit ) );
 
 end
 

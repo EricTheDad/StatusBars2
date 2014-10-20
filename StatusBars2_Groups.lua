@@ -41,7 +41,7 @@ local function StatusBars2_CreateGroupFrame( name, key )
     
     if debugLayout then
         local FontInfo = addonTable.fontInfo;
-        Bar_ShowBackdrop( groupFrame )
+        StatusBars2_Frame_ShowBackdrop( groupFrame )
         groupFrame.text:SetFontObject(FontInfo[1].filename);
         groupFrame.text:SetTextColor( 1, 1, 1 );
         groupFrame.text:SetText( name );

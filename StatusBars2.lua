@@ -188,7 +188,7 @@ function StatusBars2_OnEvent( self, event, ... )
         if( select( 1, ... ) == "StatusBars2" ) then
 
             if debugLayout then
-                Bar_ShowBackdrop( self )
+                StatusBars2_Frame_ShowBackdrop( self )
                 self.text:SetFontObject(FontInfo[1].filename);
                 self.text:SetTextColor( 1, 1, 1 );
                 self.text:SetText( self:GetName() );
@@ -544,11 +544,7 @@ function StatusBars2_UpdateFullLayout( )
     end
 
     for i, bar in ipairs( bars ) do
-        -- Set the scale
-        bar:SetBarScale( bar.scale );
-
-        -- Set maximum opacity
-        bar.alpha = bar.alpha or 1.0;
+        bar:OnUpdateLayout( );
     end
 
     StatusBars2_UpdateLayout( );
@@ -599,7 +595,7 @@ function StatusBars2_DisableBar( bar )
     bar:EnableMouse( false );
 
     -- Clear the layout properties
-    bar.group = nil;
+    --bar.group = nil;
     bar.index = nil;
     bar.removeWhenHidden = false;
 

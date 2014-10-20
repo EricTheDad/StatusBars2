@@ -60,3 +60,58 @@ function StatusBars2_Round( x, places )
     return x and (floor( x * mult + 0.5 ) / mult) or x;
 end
 
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_Frame_ShowBackdrop
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_Frame_ShowBackdrop( self )
+
+    -- Set an edge so we can see the aura self
+    local backdropInfo = {
+        bgFile = "Interface/Tooltips/UI-Tooltip-Background",
+        edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
+        edgeSize = 16,
+        insets = {
+            left = 5,
+            right = 5,
+            top = 5,
+            bottom = 5
+        }
+    };
+
+    self:SetBackdrop( backdropInfo );
+    self:SetBackdropColor( 0, 0, 0, 0.85 );
+
+    -- Create a font string if we don't have one
+    if( self.text == nil ) then
+        self.text = self:CreateFontString( );
+        self.text:SetPoint("CENTER",0,0);
+    end
+
+end
+
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_Frame_HideBackdrop
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_Frame_HideBackdrop( self )
+
+    -- Get rid of the edge if it was added in config mode
+    self:SetBackdrop( nil );
+
+    -- Hide the text if it was displayed from config mode
+    if ( self.text ) then
+        self.text:Hide( );
+    end
+
+end
+

@@ -29,56 +29,15 @@ local kHidden           = addonTable.textDisplayOptions.kHidden;
 
 -------------------------------------------------------------------------------
 --
---  Name:           StatusBars2_CreateContinuousBar
+--  Name:           StatusBars2_ContinuousBar_IsVisible
 --
---  Description:    Create a bar to display a range of values
+--  Description:    Determine if a continuous bar is visible
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateContinuousBar( key, unit, displayName, barType, r, g, b )
+local function StatusBars2_ContinuousBar_IsVisible( self )
 
-    -- Create the bar
-    local bar = StatusBars2_CreateBar( key, "StatusBars2_ContinuousBarTemplate", unit, displayName, barType );
-    local name = bar:GetName( );
-    
-    -- Get the status and text frames
-    bar.status = _G[ name .. "_Status" ];
-    bar.text = _G[ name .. "_Text" ];
-    bar.percentText = _G[ name .. "_PercentText" ];
-    bar.spark = _G[ name .. "_Spark" ];
-    bar.flashtexture = _G[ name .. "_FlashOverlay" ];
-    
-    -- Set the options template
-    bar.optionsTemplate = "StatusBars2_ContinuousBarOptionsTemplate";
-
-    -- Set the default configuration template
-    bar.optionsPanelKey = "continuousBarOptionsTabPage";
-
-    -- Set the visibility handler
-    bar.BarIsVisible = StatusBars2_ContinuousBar_IsVisible;
-
-    -- Base methods for subclasses to call
-    bar.ContinuousBar_Update = StatusBars2_ContinuousBar_Update;
-    bar.ContinuousBar_OnEnable = StatusBars2_ContinuousBar_OnEnable;
-
-    -- Set the background color
-    bar.status:SetBackdropColor( 0, 0, 0, 0.85 );
-
-    -- Set the status bar color
-    bar.status:SetStatusBarColor( r, g, b );
-
-    -- Set the text color
-    bar.text:SetTextColor( 1, 1, 1 );
-
-    -- Set the options template
-    bar.optionsTemplate = "StatusBars2_ContinuousBarOptionsTemplate";
-
-    -- Set the status bar to draw behind the edge frame so it doesn't overlap.  
-    -- This should be possible with XML, but I can't figure it out with the documentation available.
-    -- Would probably work if the statusbar was the parent frame to the edge frame, but that would entail a large rewrite.
-    bar.status:SetFrameLevel( bar:GetFrameLevel( ) - 1 );
-
-    return bar;
+    return self:BaseBar_BarIsVisible( ) and ( UnitExists( self.unit ) and not UnitIsDeadOrGhost( self.unit ) );
 
 end
 
@@ -90,7 +49,7 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_ContinuousBar_Update( self, current, max )
+local function StatusBars2_ContinuousBar_Update( self, current, max )
 
     -- If the bar should not be visible, hide it
     if( not self:BarIsVisible( ) ) then
@@ -134,23 +93,13 @@ end
 
 -------------------------------------------------------------------------------
 --
---  Name:           StatusBars2_ContinuousBar_OnEnable
+--  Name:           StatusBars2_ContinuousBar_OnUpdateLayout
 --
 --  Description:    Continuous bar enable handler
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_ContinuousBar_OnEnable( self )
-
-    -- Set to a static state if we are in config mode
-    if( StatusBars2.configMode ) then
-        -- Set the bar current and max values
-        self.status:SetMinMaxValues( 0, 1 );
-        self.status:SetValue( 1 );
-
-        -- Set the percent text
-        self.percentText:SetText( "Pct%" );
-    end
+local function StatusBars2_ContinuousBar_OnUpdateLayout( self )
 
     -- Set the percentage text location
     if( self.percentDisplayOption == 'Hide' ) then
@@ -164,31 +113,101 @@ function StatusBars2_ContinuousBar_OnEnable( self )
         end
     end
 
-    if( StatusBars2.textDisplayOption == kHidden ) then
-        self.text:Hide( );
-    else
-        self.text:Show( );
-        self.textDisplayOption = StatusBars2.textDisplayOption
-    end
-
     self.text:SetFontObject(FontInfo[StatusBars2.font].filename);
 
     -- Call the base method
-    self:Bar_OnEnable( );
+    self:BaseBar_OnUpdateLayout( );
 
 end
 
 -------------------------------------------------------------------------------
 --
---  Name:           StatusBars2_ContinuousBar_IsVisible
+--  Name:           StatusBars2_ContinuousBar_OnEnable
 --
---  Description:    Determine if a continuous bar is visible
+--  Description:    Continuous bar enable handler
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_ContinuousBar_IsVisible( self )
+local function StatusBars2_ContinuousBar_OnEnable( self )
 
-    return StatusBars2_StatusBar_IsVisible( self ) and ( UnitExists( self.unit ) and not UnitIsDeadOrGhost( self.unit ) );
+    -- Set to a static state if we are in config mode
+    if( StatusBars2.configMode ) then
+        -- Set the bar current and max values
+        self.status:SetMinMaxValues( 0, 1 );
+        self.status:SetValue( 1 );
+
+        -- Set the percent text
+        self.percentText:SetText( "Pct%" );
+    else
+        if( StatusBars2.textDisplayOption == kHidden ) then
+            self.text:Hide( );
+        else
+            self.text:Show( );
+            self.textDisplayOption = StatusBars2.textDisplayOption
+        end
+    end
+
+    -- Call the base method
+    self:BaseBar_OnEnable( );
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_CreateContinuousBar
+--
+--  Description:    Create a bar to display a range of values
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_CreateContinuousBar( key, unit, displayName, barType, r, g, b )
+
+    -- Create the bar
+    local bar = StatusBars2_CreateBar( key, "StatusBars2_ContinuousBarTemplate", unit, displayName, barType );
+    local name = bar:GetName( );
+
+    -- Get the status and text frames
+    bar.status = _G[ name .. "_Status" ];
+    bar.text = _G[ name .. "_Text" ];
+    bar.percentText = _G[ name .. "_PercentText" ];
+    bar.spark = _G[ name .. "_Spark" ];
+    bar.flashtexture = _G[ name .. "_FlashOverlay" ];
+
+    -- Base methods for subclasses to call
+    bar.ContinuousBar_OnUpdateLayout = StatusBars2_ContinuousBar_OnUpdateLayout;
+    bar.ContinuousBar_OnEnable = StatusBars2_ContinuousBar_OnEnable;
+    bar.ContinuousBar_BarIsVisible = StatusBars2_ContinuousBar_IsVisible;
+    bar.ContinuousBar_Update = StatusBars2_ContinuousBar_Update;
+
+    -- Set the options template
+    bar.optionsTemplate = "StatusBars2_ContinuousBarOptionsTemplate";
+
+    -- Set the default configuration template
+    bar.optionsPanelKey = "continuousBarOptionsTabPage";
+
+    -- Set the default methods
+    bar.OnUpdateLayout = bar.ContinuousBar_OnUpdateLayout;
+    bar.OnEnable = bar.ContinuousBar_OnEnable;
+    bar.BarIsVisible = bar.ContinuousBar_BarIsVisible;
+
+    -- Set the background color
+    bar.status:SetBackdropColor( 0, 0, 0, 0.85 );
+
+    -- Set the status bar color
+    bar.status:SetStatusBarColor( r, g, b );
+
+    -- Set the text color
+    bar.text:SetTextColor( 1, 1, 1 );
+
+    -- Set the options template
+    bar.optionsTemplate = "StatusBars2_ContinuousBarOptionsTemplate";
+
+    -- Set the status bar to draw behind the edge frame so it doesn't overlap.
+    -- This should be possible with XML, but I can't figure it out with the documentation available.
+    -- Would probably work if the statusbar was the parent frame to the edge frame, but that would entail a large rewrite.
+    bar.status:SetFrameLevel( bar:GetFrameLevel( ) - 1 );
+
+    return bar;
 
 end
 

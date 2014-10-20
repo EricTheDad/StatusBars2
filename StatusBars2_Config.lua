@@ -86,14 +86,18 @@ function StatusBars2Config_SetConfigMode( enable )
     end
 
     if( enable ) then
-        StatusBars2_Settings_Apply_Settings( StatusBars2_Settings, false );
+
+        if( not StatusBars2_Config ) then
+            CreateFrame( "Frame", "StatusBars2_Config", StatusBars2, "StatusBars2_Config_Template" );
+        end
+
         StatusBars2.configMode = true;
         ShowUIPanel( StatusBars2_Config );
     else
         StatusBars2.configMode = false;
     end
 
-    -- Update the bar visibility and location
+    -- This will set all the bars into config mode or normal mode depending on the value of StatusBars2.configMode
     StatusBars2_UpdateBars( );
 
 end
@@ -132,7 +136,8 @@ function StatusBars2Config_Configure_Bar_Options( config_panel )
         bar.optionsPanel = config_panel[bar.optionsPanelKey];
     end
 
-    return initialActiveBar
+    -- The initial show will have no bar active, so make the first bar (player health) active
+    StatusBars2Config_SetBar( config_panel, bars[1] );
     
 end
 
@@ -148,7 +153,7 @@ local function StatusBars2Config_Bar_DoDataExchange( configPanel, save, bar )
 
     local rnd = StatusBars2_Round;
     local frame = bar.optionsPanel;
-    local group = groups[bar.group];
+    local group = bar:GetParent( );
     local enabledMenu = frame.enabledMenu;
     local scaleSlider = configPanel.barLayoutTabPage.scaleSlider;
     local alphaSlider = configPanel.barLayoutTabPage.alphaSlider;
@@ -304,7 +309,8 @@ end
 --
 local function StatusBars2Config_Group_DoDataExchange( configPanel, save, bar )
 
-    local group = groups[bar.group];
+    local group = bar:GetParent( );
+
     local scaleSlider = configPanel.groupConfigTabPage.scaleSlider;
     local alphaSlider = configPanel.groupConfigTabPage.alphaSlider;
 
@@ -392,13 +398,13 @@ end
 
 -------------------------------------------------------------------------------
 --
---  Name:           StatusBars2Config_ShowActivePanel
+--  Name:           StatusBars2Config_SetupActiveBarPanel
 --
 --  Description:    
 --
 -------------------------------------------------------------------------------
 --
-local function StatusBars2Config_ShowActivePanel( config_panel )
+local function StatusBars2Config_SetupActiveBarPanel( config_panel )
 
     local activeBar = UIDropDownMenu_GetSelectedValue( config_panel.barSelectMenu );
     local activeTabID = PanelTemplates_GetSelectedTab( config_panel );
@@ -457,47 +463,38 @@ function StatusBars2Config_SetBar( config_panel, bar )
         end
     end
 
-    StatusBars2Config_ShowActivePanel( config_panel );
+    StatusBars2Config_SetupActiveBarPanel( config_panel );
 
 end
 
 -------------------------------------------------------------------------------
 --
---  Name:           StatusBar2_TabContainer_OnShow
+--  Name:           StatusBars2Confg_OnShow
 --
 --  Description:    
 --
 -------------------------------------------------------------------------------
 --
-function StatusBar2_TabContainer_OnShow( self )
+function StatusBars2Confg_OnShow( self )
 
-    local desiredActiveBar = UIDropDownMenu_GetSelectedValue( self.barSelectMenu );
-
-    if( desiredActiveBar == nil ) then
-        -- Initialize the config panel and get a bar to set the panel to on it's 
-        -- initial open. We have to wait until the OnShow for this because the bars 
-        -- might not exist yet when OnLoad is called
-        desiredActiveBar = StatusBars2Config_Configure_Bar_Options( self );
-    end
-
-    StatusBars2Config_DoDataExchange( self, false, desiredActiveBar );
-    StatusBars2Config_SetBar( self, desiredActiveBar );
+    -- Push the bars' states into the panel display.
+    StatusBars2Config_DoDataExchange( StatusBars2_Config, false );
 
 end
 
 -------------------------------------------------------------------------------
 --
---  Name:           StatusBars2_TabButtonOnClick
+--  Name:           StatusBars2Config_TabButton_OnClick
 --
 --  Description:    
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_TabButtonOnClick( self )
+function StatusBars2Config_TabButton_OnClick( self )
 
     local parent = self:GetParent( );
     PanelTemplates_SetTab( parent, self:GetID() );
-    StatusBars2Config_SetBar( parent );
+    StatusBars2Config_SetupActiveBarPanel( parent );
 
 end
 
@@ -511,8 +508,6 @@ end
 --
 function StatusBars2Config_OKButton_OnClick( self )
 
-    -- Pull the settings from the panel into the bars
-    StatusBars2Config_DoDataExchange( StatusBars2_Config, true );
     StatusBars2_Config.applyChanges = true;
     HideUIPanel( StatusBars2_Config );
  
@@ -565,7 +560,11 @@ function StatusBars2Config_OnHide( self )
 
     if( self.applyChanges )then
 
+        -- Set back to false so that pressing Esc to exit the panel doesn't ever wind up saving changes
         self.applyChanges = false;
+
+        -- Pull the last set state from the panel into the bars
+        StatusBars2Config_DoDataExchange( self, true );
 
         -- Push the settings from the bars to the saved settings
         StatusBars2_Settings_Apply_Settings( StatusBars2_Settings, true );
@@ -660,17 +659,12 @@ function StatusBars2Config_BarSelect_Initialize( self )
     local entry = UIDropDownMenu_CreateInfo();
 
     for i, bar in ipairs( bars ) do
-		-- Bars with a nil group are not enabled (wrong spec, not high enough level etc.
-		-- We won't show them because we don't want to have bars that could be in the same place 
-		-- for different specs cluttering things up
-		if( bar.group ) then
-			entry.func = StatusBars2Config_BarSelect_OnClick;
-			entry.arg1 = self;
-			entry.value = bar;
-			entry.text = bar.displayName;
-			entry.checked = UIDropDownMenu_GetSelectedValue( self ) == entry.value;
-			UIDropDownMenu_AddButton( entry );
-		end
+        entry.func = StatusBars2Config_BarSelect_OnClick;
+        entry.arg1 = self;
+        entry.value = bar;
+        entry.text = bar.displayName;
+        entry.checked = UIDropDownMenu_GetSelectedValue( self ) == entry.value;
+        UIDropDownMenu_AddButton( entry );
     end
     
 end
@@ -686,6 +680,7 @@ end
 function StatusBars2_TextDisplayOptionsMenu_OnClick( self, menu )
 
     UIDropDownMenu_SetSelectedValue( menu, self.value );
+	StatusBars2_Config.doUpdate = true;
 
 end
 
@@ -723,6 +718,7 @@ end
 function StatusBars2_FontMenu_OnClick( self, menu )
 
     UIDropDownMenu_SetSelectedValue( menu, self.value );
+	StatusBars2_Config.doUpdate = true;
 
 end
 
@@ -760,6 +756,7 @@ end
 function StatusBars2_BarEnabledMenu_OnClick( self, menu )
 
     UIDropDownMenu_SetSelectedValue( menu, self.value );
+	StatusBars2_Config.doUpdate = true;
 
 end
 
@@ -797,6 +794,7 @@ end
 function StatusBars2_PercentTextMenu_OnClick( self, menu )
 
     UIDropDownMenu_SetSelectedValue( menu, self.value );
+	StatusBars2_Config.doUpdate = true;
 
 end
 

@@ -375,7 +375,7 @@ end
 --
 function StatusBars2_PowerBar_IsVisible( self )
 
-    return StatusBars2_ContinuousBar_IsVisible( self ) and ( UnitPowerMax( self.unit, StatusBars2_GetPowerType( self ) ) > 0 or self.casting or self.channeling );
+    return self:ContinuousBar_BarIsVisible( ) and ( UnitPowerMax( self.unit, StatusBars2_GetPowerType( self ) ) > 0 or self.casting or self.channeling );
 
 end
 

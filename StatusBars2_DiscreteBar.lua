@@ -261,7 +261,7 @@ function StatusBars2_DiscreteBar_OnEnable( self )
     if( StatusBars2.configMode ) then
 
         -- Show a backdrop so we can see the bar
-        self:Bar_ShowBackdrop( );
+        StatusBars2_Frame_ShowBackdrop( self );
 
         local r, g, b = self:GetColor( );
         self:SetBackdropColor( r, g, b, 1.0 );
@@ -274,7 +274,7 @@ function StatusBars2_DiscreteBar_OnEnable( self )
     else
 
         -- Hide the backdrop if we showed it for config mode
-        self:Bar_HideBackdrop( );
+        StatusBars2_Frame_HideBackdrop( self );
 
         -- Show all boxes that should be active in case they were hidden by config mode
         for i, box in ipairs( { self:GetChildren( ) } ) do
@@ -288,6 +288,6 @@ function StatusBars2_DiscreteBar_OnEnable( self )
     end
 
     -- Call the base method
-    self:Bar_OnEnable( );
+    self:BaseBar_OnEnable( );
 
 end

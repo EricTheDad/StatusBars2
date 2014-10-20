@@ -951,14 +951,14 @@
         <Scripts>
             <OnClick>
                 PlaySound("igCharacterInfoTab");
-                StatusBars2_TabButtonOnClick(self);
+                StatusBars2Config_TabButton_OnClick(self);
             </OnClick>
         </Scripts>
     </Button>
 
 
     <!-- StatusBars2 Configuration Frame -->
-	<Frame name="StatusBars2_Config" toplevel="true" inherits="StatusBars2_DialogFrameTemplete" parent="UIParent" hidden="true" enableMouse="true" frameStrata="DIALOG">
+	<Frame name="StatusBars2_Config_Template" toplevel="true" inherits="StatusBars2_DialogFrameTemplete" parent="UIParent" hidden="true" enableMouse="true" frameStrata="DIALOG" virtual="true">
 		<Size>
 			<AbsDimension x="550" y="250"/>
 		</Size>
@@ -1115,10 +1115,11 @@
                 tinsert(UISpecialFrames, self:GetName());
                 PanelTemplates_SetNumTabs(self, 4);
                 PanelTemplates_SetTab(self, 1);
+                StatusBars2Config_Configure_Bar_Options( self );
             </OnLoad>
             <OnShow>
                 PlaySound("igCharacterInfoOpen");
-                StatusBar2_TabContainer_OnShow( self )
+                StatusBars2Confg_OnShow( self )
             </OnShow>
             <OnHide>
                 PlaySound("igCharacterInfoClose");

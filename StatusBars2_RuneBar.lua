@@ -158,7 +158,7 @@ function StatusBars2_RuneBar_OnEnable( self )
     StatusBars2_RuneBar_UpdateAllRunes( self );
 
     -- Call the base method
-    self:Bar_OnEnable( );
+    self:BaseBar_OnEnable( );
 
 end
 
@@ -191,7 +191,8 @@ end
 --
 function StatusBars2_RuneButton_OnHide( self )
 
-    StatusBars2_StatusBar_OnHide( self.parentBar );
+    local OnHideScript = self.parentBar:GetScript( "OnHide" );
+    OnHideScript( self.parentBar );
 
 end
 

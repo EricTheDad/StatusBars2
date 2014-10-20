@@ -70,120 +70,89 @@ end
 
 -------------------------------------------------------------------------------
 --
---  Name:           Bar_ShowBackdrop
+--  Name:           StatusBars2_StatusBar_OnHide
 --
---  Description:    
+--  Description:    Called when the frame is hidden
 --
 -------------------------------------------------------------------------------
 --
-function Bar_ShowBackdrop( self )
+local function StatusBars2_StatusBar_OnHide( self )
 
-    -- Set an edge so we can see the aura self
-    local backdropInfo = { 
-        bgFile = "Interface/Tooltips/UI-Tooltip-Background", 
-        edgeFile = "Interface/Tooltips/UI-Tooltip-Border", 
-        edgeSize = 16,
-        insets = {
-            left = 5,
-            right = 5,
-            top = 5,
-            bottom = 5 
-        }
-    };
-
-    self:SetBackdrop( backdropInfo );
-    self:SetBackdropColor( 0, 0, 0, 0.85 );
-
-    -- Create a font string if we don't have one
-    if( self.text == nil ) then
-        self.text = self:CreateFontString( );
-        self.text:SetPoint("CENTER",0,0);
-    end
+    StatusBars2_Movable_StopMoving( self );
 
 end
 
 -------------------------------------------------------------------------------
 --
---  Name:           Bar_HideBackdrop
+--  Name:           StatusBars2_StatusBar_IsDefault
 --
---  Description:    
+--  Description:    Determine if a status bar is in the default state
 --
 -------------------------------------------------------------------------------
 --
-local function Bar_HideBackdrop( self )
+local function StatusBars2_StatusBar_IsDefault( self )
 
-    -- Get rid of the edge if it was added in config mode
-    self:SetBackdrop( nil );
-    
-    -- Hide the text if it was displayed from config mode
-    if ( self.text ) then
-        self.text:Hide( );
-    end
+    return true;
 
 end
 
 -------------------------------------------------------------------------------
 --
---  Name:           StatusBars2_CreateBar
+--  Name:           StatusBars2_StatusBar_SetScale
 --
---  Description:    Create a status bar
+--  Description:    Set the bar scale
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateBar( key, template, unit, displayName, barType, defaultColor )
+local function StatusBars2_StatusBar_SetScale( self, scale )
 
-    -- Create the bar
-    local bar = CreateFrame( "Frame", "StatusBars2_"..key.."Bar", StatusBars2, template );
-    bar:Hide( );
+    self:SetScale( scale );
 
-    -- Add mouse click handlers
-    StatusBars2_MakeMovable( bar, "bar");
+end
 
-    -- Store bar settings
-    bar.unit = unit;
-    bar.key = key;
-    bar.displayName = displayName;
-    bar.type = barType;
-    bar.inCombat = false;
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_StatusBar_GetHeight
+--
+--  Description:    Get the bar height
+--
+-------------------------------------------------------------------------------
+--
+local function StatusBars2_StatusBar_GetHeight( self )
 
-    -- Base methods for subclasses to call
-    bar.Bar_OnEnable = StatusBars2_StatusBar_OnEnable;
-    bar.Bar_ShowBackdrop = Bar_ShowBackdrop;
-    bar.Bar_HideBackdrop = Bar_HideBackdrop;
+    return self:GetHeight( ) * self.scale;
 
-    -- Set the default options template
-    bar.optionsTemplate = "StatusBars2_BarOptionsTemplate";
+end
 
-    -- Set the default configuration template
-    bar.optionsPanelKey = "barOptionsTabPage";
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_StatusBar_IsVisible
+--
+--  Description:    Determine if a status bar should be visible
+--
+-------------------------------------------------------------------------------
+--
+local function StatusBars2_StatusBar_IsVisible( self )
 
-    -- Set the default methods
-    bar.OnEnable = StatusBars2_StatusBar_OnEnable;
-    bar.BarIsVisible = StatusBars2_StatusBar_IsVisible;
-    bar.IsDefault = StatusBars2_StatusBar_IsDefault;
-    bar.SetBarScale = StatusBars2_StatusBar_SetScale;
-    bar.SetBarPosition = StatusBars2_Movable_SetPosition;
-    bar.GetBarHeight = StatusBars2_StatusBar_GetHeight;
+    -- Get the enable type
+    local enabled = self.enabled;
 
-    -- Set the mouse event handlers
-    bar:SetScript( "OnHide", StatusBars2_StatusBar_OnHide );
+    local visible = false;
 
-    -- Default the bar to Auto enabled
-    bar.defaultEnabled = "Auto";
+    -- Auto
+    if( enabled == "Auto" ) then
+        visible = self.inCombat or not self:IsDefault( );
 
-    -- Store default color if it was passed in
-    bar.defaultColor = defaultColor;
+    -- Combat
+    elseif( enabled == "Combat" ) then
+        visible = self.inCombat;
 
-    -- Initialize flashing variables
-    bar.flashing = false;
+    -- Always
+    elseif( enabled == "Always" ) then
+        visible = true;
+    end
 
-    -- Events to register for on enable
-    bar.eventsToRegister = {};
-
-    -- Save it in the bar collection
-    table.insert( bars, bar );
-
-    return bar;
+    return visible;
 
 end
 
@@ -221,23 +190,45 @@ end
 
 -------------------------------------------------------------------------------
 --
---  Name:           StatusBars2_StatusBar_OnEnable
+--  Name:           StatuBars2_StatusBar_OnUpdateLayout
 --
---  Description:    Called when a status bar is enabled
+--  Description:    Called when a status bar's layout is updated
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_StatusBar_OnEnable( self )
+local function StatuBars2_StatusBar_OnUpdateLayout( self )
 
     if( StatusBars2.configMode ) then
 
-        -- Set the text
+        -- Set the text, update the font etc.
         if ( self.text ) then
             self.text:SetFontObject(FontInfo[StatusBars2.font].filename);
             self.text:SetText( self.displayName );
             self.text:SetTextColor( 1, 1, 1 );
             self.text:Show( );
         end
+
+    end
+
+    -- Set the scale
+    self:SetBarScale( self.scale );
+
+    -- Set maximum opacity
+    self.alpha = self.alpha or 1.0;
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_StatusBar_OnEnable
+--
+--  Description:    Called when a status bar is enabled
+--
+-------------------------------------------------------------------------------
+--
+local function StatusBars2_StatusBar_OnEnable( self )
+
+    if( StatusBars2.configMode ) then
 
         self:SetScript( "OnEnter", StatusBars2_StatusBar_OnEnter );
         self:SetScript( "OnLeave", StatusBars2_StatusBar_OnLeave );
@@ -257,6 +248,14 @@ function StatusBars2_StatusBar_OnEnable( self )
             self:SetScript( "OnEvent", self.OnEvent );
             self:SetScript( "OnUpdate", self.OnUpdate );
 
+            if( StatusBars2.showHelp ) then
+                self:SetScript( "OnEnter", StatusBars2_StatusBar_OnEnter );
+                self:SetScript( "OnLeave", StatusBars2_StatusBar_OnLeave );
+            else
+                self:SetScript( "OnEnter", nil );
+                self:SetScript( "OnLeave", nil );
+            end
+
             -- Register for events
             for event, v in pairs ( self.eventsToRegister ) do
                 self:RegisterEvent( event );
@@ -274,89 +273,67 @@ end
 
 -------------------------------------------------------------------------------
 --
---  Name:           StatusBars2_StatusBar_OnHide
+--  Name:           StatusBars2_CreateBar
 --
---  Description:    Called when the frame is hidden
---
--------------------------------------------------------------------------------
---
-function StatusBars2_StatusBar_OnHide( self )
-
-    StatusBars2_Movable_StopMoving( self );
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_StatusBar_IsDefault
---
---  Description:    Determine if a status bar is in the default state
+--  Description:    Create a status bar
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_StatusBar_IsDefault( self )
+function StatusBars2_CreateBar( key, template, unit, displayName, barType, defaultColor )
 
-    return true;
+    -- Create the bar
+    local bar = CreateFrame( "Frame", "StatusBars2_"..key.."Bar", StatusBars2, template );
+    bar:Hide( );
 
-end
+    -- Add mouse click handlers
+    StatusBars2_MakeMovable( bar, "bar");
 
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_StatusBar_SetScale
---
---  Description:    Set the bar scale
---
--------------------------------------------------------------------------------
---
-function StatusBars2_StatusBar_SetScale( self, scale )
+    -- Store bar settings
+    bar.unit = unit;
+    bar.key = key;
+    bar.displayName = displayName;
+    bar.type = barType;
+    bar.inCombat = false;
 
-    self:SetScale( scale );
+    -- Base methods for subclasses to call
+    bar.BaseBar_OnUpdateLayout = StatuBars2_StatusBar_OnUpdateLayout;
+    bar.BaseBar_OnEnable = StatusBars2_StatusBar_OnEnable;
+    bar.BaseBar_BarIsVisible = StatusBars2_StatusBar_IsVisible;
 
-end
+    -- Set the default options template
+    bar.optionsTemplate = "StatusBars2_BarOptionsTemplate";
 
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_StatusBar_GetHeight
---
---  Description:    Get the bar height
---
--------------------------------------------------------------------------------
---
-function StatusBars2_StatusBar_GetHeight( self )
+    -- Set the default configuration template
+    bar.optionsPanelKey = "barOptionsTabPage";
 
-    return self:GetHeight( ) * self.scale;
+    -- Set the default methods
+    bar.OnUpdateLayout = bar.BaseBar_OnUpdateLayout;
+    bar.OnEnable = bar.BaseBar_OnEnable;
+    bar.BarIsVisible = bar.BaseBar_BarIsVisible;
+    bar.IsDefault = StatusBars2_StatusBar_IsDefault;
+    bar.SetBarScale = StatusBars2_StatusBar_SetScale;
+    bar.SetBarPosition = StatusBars2_Movable_SetPosition;
+    bar.GetBarHeight = StatusBars2_StatusBar_GetHeight;
 
-end
+    -- Set the mouse event handlers
+    bar:SetScript( "OnHide", StatusBars2_StatusBar_OnHide );
 
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_StatusBar_IsVisible
---
---  Description:    Determine if a status bar should be visible
---
--------------------------------------------------------------------------------
---
-function StatusBars2_StatusBar_IsVisible( self )
+    -- Default the bar to Auto enabled
+    bar.defaultEnabled = "Auto";
 
-    -- Get the enable type
-    local enabled = self.enabled;
+    -- Store default color if it was passed in
+    bar.defaultColor = defaultColor;
 
-    local visible = false;
+    -- Initialize flashing variables
+    bar.flashing = false;
 
-    -- Auto
-    if( enabled == "Auto" ) then
-        visible = self.inCombat or not self:IsDefault( );
+    -- Events to register for on enable
+    bar.eventsToRegister = {};
 
-    -- Combat
-    elseif( enabled == "Combat" ) then
-        visible = self.inCombat;
+    -- Save it in the bar collection
+    table.insert( bars, bar );
 
-    -- Always
-    elseif( enabled == "Always" ) then
-        visible = true;
-    end
-
-    return visible;
+    return bar;
 
 end
 

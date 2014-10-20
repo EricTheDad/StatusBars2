@@ -1,4 +1,8 @@
-﻿3.01.01
+﻿3.01.02
+Now all bars show in the config panel dropdown regardless of whether they are shown or not with the current spec/form.  However, only the bars available in the current spec/form are visible.
+Changes to percent text and text size are now visible on the bars before you press "Accept".
+
+3.01.01
 Updated save data version
 Fixed bug with help tooltip on bars not turning off immediately when the button was unchecked
 
