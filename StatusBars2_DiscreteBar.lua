@@ -31,9 +31,8 @@ function StatusBars2_CreateDiscreteBar( key, unit, displayName, barType, boxCoun
     -- Create the bar
     local bar = StatusBars2_CreateBar( key, "StatusBars2_DiscreteBarTemplate", unit, displayName, barType, defaultColor );
 
-    -- Set custom options template
-    bar.optionsTemplate = "StatusBars2_AuraStatckBarOptionsTemplate";
-    bar.optionsPanelKey = "auraStackBarOptionsTabPage";
+    -- Set the default configuration template
+    bar.optionsPanelKey = "auraStackBarConfigTabPage";
 
     -- Base methods for subclasses to call
     bar.DiscreteBar_OnEnable = StatusBars2_DiscreteBar_OnEnable;

@@ -90,9 +90,65 @@
         </Layers>
     </Frame>
 
-    <Slider name="EditBoxSlider" inherits="OptionsSliderTemplate" virtual="true">
+    <EditBox name="StatusBars2_SliderEditBoxTemplate" letters="4" autoFocus="false" inherits="InputBoxTemplate" virtual = "true">
+        <FontString inherits="GameFontNormalSmall" justifyH="CENTER" >
+        </FontString>
+        <Scripts>
+            <OnEditFocusLost>
+                local slider = self:GetParent( );
+                local OnValueChangedScript = slider:GetScript( "OnValueChanged" );
+                if OnValueChangedScript then
+                    OnValueChangedScript( slider, slider:GetValue( ) );
+                end
+            </OnEditFocusLost>
+            <OnEnterPressed>
+                local slider = self:GetParent( );
+                local value = tonumber(self:GetText( ));
+                local min, max = slider:GetMinMaxValues( );
+
+                <!-- Note the escape charaters for '<' and '>' -->
+                if( value and value &gt;= min and value &lt;= max ) then
+                    slider:SetValue( value );
+                end
+                self:ClearFocus( );
+            </OnEnterPressed>
+        </Scripts>
+        <Size x="36" y="32" />
+    </EditBox >
+
+    <Slider name="StatusBars2_EditBoxSliderTemplate" inherits="OptionsSliderTemplate" virtual="true">
+        <Scripts>
+            <OnValueChanged>
+                self.editBox:SetText( string.format("%.02f", value) );
+            </OnValueChanged>
+        </Scripts>
+    </Slider>
+
+    <Slider name="StatusBars2_VerticalEditBoxSliderTemplate" inherits="StatusBars2_EditBoxSliderTemplate" virtual="true">
         <Frames>
-            <EditBox name="$parent_EditBox" parentKey="editBox" letters="4" autoFocus="false" inherits="InputBoxTemplate" >
+            <EditBox name="$parent_EditBox" parentKey="editBox" letters="4" autoFocus="false" inherits="StatusBars2_SliderEditBoxTemplate" >
+                <Anchors>
+                    <Anchor point="TOP" relativePoint="BOTTOM">
+                        <Offset>
+                            <AbsDimension x="0" y="-8"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </EditBox >
+        </Frames>
+		<Size>
+			<AbsDimension x="17" y="200"/>
+		</Size>
+		<ThumbTexture name="$parentThumb" file="Interface\Buttons\UI-SliderBar-Button-Vertical">
+			<Size>
+				<AbsDimension x="32" y="32"/>
+			</Size>
+		</ThumbTexture>
+    </Slider>
+
+    <Slider name="StatusBars2_HorizontalEditBoxSliderTemplate" inherits="StatusBars2_EditBoxSliderTemplate" virtual="true">
+        <Frames>
+            <EditBox name="$parent_EditBox" parentKey="editBox" letters="4" autoFocus="false" inherits="StatusBars2_SliderEditBoxTemplate" >
                 <Anchors>
                     <Anchor point="LEFT" relativePoint="RIGHT">
                         <Offset>
@@ -100,36 +156,9 @@
                         </Offset>
                     </Anchor>
                 </Anchors>
-                <FontString inherits="GameFontNormalSmall" justifyH="CENTER" >
-                </FontString>
-                <Scripts>
-                    <OnEditFocusLost>
-                        local slider = self:GetParent( );
-                        local OnValueChangedScript = slider:GetScript( "OnValueChanged" );
-                        if OnValueChangedScript then
-                            OnValueChangedScript( slider, slider:GetValue( ) );
-                        end
-                    </OnEditFocusLost>
-                    <OnEnterPressed>
-                        local slider = self:GetParent( );
-                        local value = tonumber(self:GetText( ));
-                        local min, max = slider:GetMinMaxValues( );
-
-                        <!-- Note the escape charaters for '<' and '>' -->
-                        if( value and value &gt;= min and value &lt;= max ) then
-                            slider:SetValue( value );
-                        end
-                        self:ClearFocus( );
-                    </OnEnterPressed>
-                </Scripts>
-                <Size x="36" y="32" />
             </EditBox >
         </Frames>
-        <Scripts>
-            <OnValueChanged>
-                self.editBox:SetText( string.format("%.02f", value) );
-            </OnValueChanged>
-        </Scripts>
+        <Size x="200" y="17"/>
     </Slider>
 
     <Button name="StatusBar2_AuraListEntryButtonTemplate" virtual="true" >
@@ -166,6 +195,138 @@
         </Scripts>
         <Size x="150" y="20" />
     </Button>
+
+    <Button name="StatusBar2_AutoLayoutListEntryButtonTemplate" virtual="true" >
+        <ButtonText name="$parentText">
+            <Size x="140" y="13"/>
+            <Anchors>
+                <Anchor point="LEFT" relativeTo="$parent" >
+                    <Offset>
+                        <AbsDimension x="10" y="1"/>
+                    </Offset>
+                </Anchor>
+            </Anchors>
+        </ButtonText>
+        <DisabledFont style="GameFontDisableLeft"/>
+        <HighlightFont style="GameFontHighlightLeft"/>
+        <HighlightTexture file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD"/>
+        <NormalFont style="GameFontNormalLeft"/>
+        <Frames>
+            <CheckButton name="$parent_EnableToAutoLayout" parentKey="enableAutoLayout" inherits="OptionsSmallCheckButtonTemplate" >
+                <Anchors>
+                    <Anchor point="RIGHT">
+                        <Offset x="0" y="0" />
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                        PlaySound("UChatScrollButton");
+                        StatusBars2_GroupOptions_AutoLayoutListEntryButton_Checkbox_OnClick( self );
+                    </OnClick>
+                </Scripts>
+            </CheckButton>
+        </Frames>
+        <Scripts>
+            <OnClick>
+                PlaySound("UChatScrollButton");
+                StatusBars2_BarOptions_ListEntryButton_OnClick( self );
+            </OnClick>
+        </Scripts>
+        <Size x="180" y="20" />
+    </Button>
+
+    <ScrollFrame name="StatusBars2_ScrollFrameTemplate" inherits="HybridScrollFrameTemplate" virtual="true">
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture name="$parentTopLeft" file="Interface\Common\Common-Input-Border-TL">
+                    <Size>
+                        <AbsDimension x="8" y="8"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset x="-5" y="5"/>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <Texture name="$parentTopRight" file="Interface\Common\Common-Input-Border-TR">
+                    <Size>
+                        <AbsDimension x="8" y="8"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPRIGHT">
+                            <Offset x="0" y="5"/>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <Texture name="$parentTop" file="Interface\Common\Common-Input-Border-T">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="TOPRIGHT"/>
+                        <Anchor point="BOTTOMRIGHT" relativeTo="$parentTopRight" relativePoint="BOTTOMLEFT"/>
+                    </Anchors>
+                </Texture>
+                <Texture name="$parentBottomLeft" file="Interface\Common\Common-Input-Border-BL">
+                    <Size>
+                        <AbsDimension x="8" y="8"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="BOTTOMLEFT">
+                            <Offset x="-5" y="-5"/>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <Texture name="$parentBottomRight" file="Interface\Common\Common-Input-Border-BR">
+                    <Size>
+                        <AbsDimension x="8" y="8"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="BOTTOMRIGHT">
+                            <Offset x="0" y="-5"/>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <Texture name="$parentBottom" file="Interface\Common\Common-Input-Border-B">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parentBottomLeft" relativePoint="TOPRIGHT"/>
+                        <Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="BOTTOMLEFT"/>
+                    </Anchors>
+                </Texture>
+                <Texture name="$parentLeft" file="Interface\Common\Common-Input-Border-L">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="BOTTOMLEFT"/>
+                        <Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomLeft" relativePoint="TOPRIGHT"/>
+                    </Anchors>
+                </Texture>
+                <Texture name="$parentRight" file="Interface\Common\Common-Input-Border-R">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parentTopRight" relativePoint="BOTTOMLEFT"/>
+                        <Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="TOPRIGHT"/>
+                    </Anchors>
+                </Texture>
+                <Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border-M">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT"/>
+                        <Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Slider name="$parentScrollBar" parentKey="scrollBar" inherits="HybridScrollBarTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+                        <Offset>
+                            <AbsDimension x="-23" y="-14"/>
+                        </Offset>
+                    </Anchor>
+                    <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+                        <Offset>
+                            <AbsDimension x="-23" y="11"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Slider>
+        </Frames>
+    </ScrollFrame>
 
     <Frame name="StatusBars2_LabeledDropDownMenu" inherits="UIDropDownMenuTemplate" virtual="true">
         <Layers>
@@ -207,8 +368,7 @@
             </Layer>
         </Layers>
         <Frames>
-            <Slider name="$parent_ScaleSlider" parentKey="scaleSlider" inherits="EditBoxSlider" minValue="0.25" maxValue="3.0" valueStep="0.05" >
-                <Size x="200" y="17"/>
+            <Slider name="$parent_ScaleSlider" parentKey="scaleSlider" inherits="StatusBars2_HorizontalEditBoxSliderTemplate" minValue="0.25" maxValue="3.0" valueStep="0.05" >
                 <Anchors>
                     <Anchor point="LEFT" relativeTo="$parent_ScaleSliderLabel" relativePoint="LEFT" >
                         <Offset x="64" y="0" />
@@ -230,8 +390,7 @@
                     </OnValueChanged>
                 </Scripts>
             </Slider>
-            <Slider name="$parent_AlphaSlider" parentKey="alphaSlider" inherits="EditBoxSlider" minValue="20" maxValue="100" valueStep="5" >
-                <Size x="200" y="17"/>
+            <Slider name="$parent_AlphaSlider" parentKey="alphaSlider" inherits="StatusBars2_HorizontalEditBoxSliderTemplate" minValue="0.2" maxValue="1.0" valueStep="0.05" >
                 <Anchors>
                     <Anchor point="LEFT" relativeTo="$parent_AlphaSliderLabel" relativePoint="LEFT" >
                         <Offset x="64" y="0" />
@@ -254,16 +413,16 @@
                     <OnLoad>
                         self.type = CONTROLTYPE_SLIDER;
                         local min, max = self:GetMinMaxValues( );
-                        getglobal( self:GetName( ) .. "Low" ):SetText( string.format("%.0f%%", min) );
-                        getglobal( self:GetName( ) .. "High" ):SetText( string.format("%.0f%%", max) );
+                        getglobal( self:GetName( ) .. "Low" ):SetText( string.format("%.0f%%", min * 100) );
+                        getglobal( self:GetName( ) .. "High" ):SetText( string.format("%.0f%%", max * 100) );
                         self:SetObeyStepOnDrag( true );
                     </OnLoad>
                     <OnValueChanged>
-                        self.editBox:SetText( string.format("%3d", value) );
-                        local realValue = value * 0.01
+                        self.editBox:SetText( string.format("%3d", value * 100) );
+                        
                         if self.applyToFrame then
-                            self.applyToFrame.alpha = realValue;
-                            self.applyToFrame:SetAlpha( realValue );
+                            self.applyToFrame.alpha = value;
+                            self.applyToFrame:SetAlpha( value );
                         end
                     </OnValueChanged>
                 </Scripts>
@@ -392,6 +551,31 @@
     <!-- Group layout and options frame template -->
     <Frame name="StatusBars2_GroupOptionsConfigTemplate" inherits="StatusBars2_LayoutConfigTemplate" virtual="true" >
         <Frames>
+            <ScrollFrame name="$parent_autoLayoutList" parentKey="autoLayoutList" inherits="StatusBars2_ScrollFrameTemplate" >
+                <Anchors>
+                    <Anchor point="TOPRIGHT">
+                        <Offset>
+                            <AbsDimension x="0" y="-5"/>
+                        </Offset>
+                    </Anchor>
+                    <Anchor point="BOTTOMRIGHT">
+                        <Offset>
+                            <AbsDimension x="0" y="5"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        HybridScrollFrame_OnLoad(self);
+                        self.update = StatusBars2_GroupOptions_AutoLayoutListUpdate;
+                        HybridScrollFrame_CreateButtons(self, "StatusBar2_AutoLayoutListEntryButtonTemplate");
+                    </OnLoad>
+                    <OnShow>
+                        StatusBars2_GroupOptions_AutoLayoutListUpdate( self );    
+                    </OnShow>
+                </Scripts>
+                <Size x="180" y="200" />
+            </ScrollFrame>
         </Frames>
     </Frame>
 
@@ -400,7 +584,7 @@
     </Frame>
 
     <!-- Base bar configuration frame template -->
-    <Frame name="StatusBars2_BarConfigTemplate" inherits="StatusBars2_ConfigTabFrameTemplate" virtual="true" >
+    <Frame name="StatusBars2_BarConfigTemplate" inherits="StatusBars2_LayoutConfigTemplate" virtual="true" >
 		<Layers>
 			<Layer level="BACKGROUND">
                 <FontString name="$parent_EnabledLabel" inherits="GameFontNormalSmallLeft" text="Enabled" >
@@ -700,7 +884,7 @@
                 </Scripts>
                 <Size x="180" y="32" />
             </EditBox >
-            <ScrollFrame name="$parent_AuraFilterList" parentKey="auraList" inherits="HybridScrollFrameTemplate" >
+            <ScrollFrame name="$parent_AuraFilterList" parentKey="auraList" inherits="StatusBars2_ScrollFrameTemplate" >
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeTo="$parent_AuraNameInput" relativePoint="BOTTOMLEFT">
                         <Offset>
@@ -718,80 +902,6 @@
                         </Offset>
                     </Anchor>
                 </Anchors>
-                <Layers>
-                    <Layer level="BACKGROUND">
-                        <Texture name="$parentTopLeft" file="Interface\Common\Common-Input-Border-TL">
-                            <Size>
-                                <AbsDimension x="8" y="8"/>
-                            </Size>
-                            <Anchors>
-                                <Anchor point="TOPLEFT">
-                                    <Offset x="-5" y="5"/>
-                                </Anchor>
-                            </Anchors>
-                        </Texture>
-                        <Texture name="$parentTopRight" file="Interface\Common\Common-Input-Border-TR">
-                            <Size>
-                                <AbsDimension x="8" y="8"/>
-                            </Size>
-                            <Anchors>
-                                <Anchor point="TOPRIGHT">
-                                    <Offset x="0" y="5"/>
-                                </Anchor>
-                            </Anchors>
-                        </Texture>
-                        <Texture name="$parentTop" file="Interface\Common\Common-Input-Border-T">
-                            <Anchors>
-                                <Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="TOPRIGHT"/>
-                                <Anchor point="BOTTOMRIGHT" relativeTo="$parentTopRight" relativePoint="BOTTOMLEFT"/>
-                            </Anchors>
-                        </Texture>
-                        <Texture name="$parentBottomLeft" file="Interface\Common\Common-Input-Border-BL">
-                            <Size>
-                                <AbsDimension x="8" y="8"/>
-                            </Size>
-                            <Anchors>
-                                <Anchor point="BOTTOMLEFT">
-                                    <Offset x="-5" y="-5"/>
-                                </Anchor>
-                            </Anchors>
-                        </Texture>
-                        <Texture name="$parentBottomRight" file="Interface\Common\Common-Input-Border-BR">
-                            <Size>
-                                <AbsDimension x="8" y="8"/>
-                            </Size>
-                            <Anchors>
-                                <Anchor point="BOTTOMRIGHT">
-                                    <Offset x="0" y="-5"/>
-                                </Anchor>
-                            </Anchors>
-                        </Texture>
-                        <Texture name="$parentBottom" file="Interface\Common\Common-Input-Border-B">
-                            <Anchors>
-                                <Anchor point="TOPLEFT" relativeTo="$parentBottomLeft" relativePoint="TOPRIGHT"/>
-                                <Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="BOTTOMLEFT"/>
-                            </Anchors>
-                        </Texture>
-                        <Texture name="$parentLeft" file="Interface\Common\Common-Input-Border-L">
-                            <Anchors>
-                                <Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="BOTTOMLEFT"/>
-                                <Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomLeft" relativePoint="TOPRIGHT"/>
-                            </Anchors>
-                        </Texture>
-                        <Texture name="$parentRight" file="Interface\Common\Common-Input-Border-R">
-                            <Anchors>
-                                <Anchor point="TOPLEFT" relativeTo="$parentTopRight" relativePoint="BOTTOMLEFT"/>
-                                <Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="TOPRIGHT"/>
-                            </Anchors>
-                        </Texture>
-                        <Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border-M">
-                            <Anchors>
-                                <Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT"/>
-                                <Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT"/>
-                            </Anchors>
-                        </Texture>
-                    </Layer>
-                </Layers>
                 <Scripts>
                     <OnLoad>
                         HybridScrollFrame_OnLoad(self);
@@ -803,22 +913,6 @@
                     </OnShow>
                 </Scripts>
                 <Size x="180" y="200" />
-                <Frames>
-                    <Slider name="$parentScrollBar" parentKey="scrollBar" inherits="HybridScrollBarTemplate">
-                        <Anchors>
-                            <Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-                                <Offset>
-                                    <AbsDimension x="-23" y="-14"/>
-                                </Offset>
-                            </Anchor>
-                            <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-                                <Offset>
-                                    <AbsDimension x="-23" y="11"/>
-                                </Offset>
-                            </Anchor>
-                        </Anchors>
-                    </Slider>
-                </Frames>
             </ScrollFrame>
             <CheckButton name="$parent_OnlyShowListedAurasButton" parentKey="onlyShowListedAurasButton" inherits="OptionsCheckButtonTemplate" >
                 <Anchors>
@@ -960,7 +1054,7 @@
     <!-- StatusBars2 Configuration Frame -->
 	<Frame name="StatusBars2_Config_Template" toplevel="true" inherits="StatusBars2_DialogFrameTemplete" parent="UIParent" hidden="true" enableMouse="true" frameStrata="DIALOG" virtual="true">
 		<Size>
-			<AbsDimension x="550" y="250"/>
+			<AbsDimension x="550" y="300"/>
 		</Size>
         <TitleRegion>
             <Size x="300" y="68"/>
@@ -1049,31 +1143,31 @@
             </Frame>   
             <Frame name="$parentBarLayoutTabPage" parentKey="barLayoutTabPage" inherits="StatusBars2_BarLayoutConfigTemplate" hidden="false">
             </Frame>   
-            <Frame name="$parent_BarOptionsTabPage" parentKey="barOptionsTabPage" inherits="StatusBars2_BarConfigTemplate" hidden="true">
+            <Frame name="$parent_BarConfigTabPage" parentKey="barConfigTabPage" inherits="StatusBars2_BarConfigTemplate" hidden="true">
                 <Frames>
                 </Frames> 
             </Frame>
-            <Frame name="$parent_ContinuousBarOptionsTabPage" parentKey="continuousBarOptionsTabPage" inherits="StatusBars2_ContinuousBarConfigTemplate" hidden="true">
+            <Frame name="$parent_ContinuousBarConfigTabPage" parentKey="continuousBarConfigTabPage" inherits="StatusBars2_ContinuousBarConfigTemplate" hidden="true">
                 <Frames>
                 </Frames> 
             </Frame>
-            <Frame name="$parent_DruidManaBarOptionsTabPage" parentKey="druidManaBarOptionsTabPage" inherits="StatusBars2_DruidManaBarConfigTemplate" hidden="true">
+            <Frame name="$parent_DruidManaBarConfigTabPage" parentKey="druidManaBarConfigTabPage" inherits="StatusBars2_DruidManaBarConfigTemplate" hidden="true">
                 <Frames>
                 </Frames> 
             </Frame>
-            <Frame name="$parent_TargetPowerBarOptionsTabPage" parentKey="targetPowerBarOptionsTabPage" inherits="StatusBars2_TargetPowerBarConfigTemplate" hidden="true">
+            <Frame name="$parent_TargetPowerBarConfigTabPage" parentKey="targetPowerBarConfigTabPage" inherits="StatusBars2_TargetPowerBarConfigTemplate" hidden="true">
                 <Frames>
                 </Frames> 
             </Frame>
-            <Frame name="$parent_AuraBarOptionsTabPage" parentKey="auraBarOptionsTabPage" inherits="StatusBars2_AuraBarConfigTemplate" hidden="true">
+            <Frame name="$parent_AuraBarConfigTabPage" parentKey="auraBarConfigTabPage" inherits="StatusBars2_AuraBarConfigTemplate" hidden="true">
                 <Frames>
                 </Frames> 
             </Frame>
-            <Frame name="$parent_AuraStatckOptionsTabPage" parentKey="auraStackBarOptionsTabPage" inherits="StatusBars2_AuraStackBarConfigTemplate" hidden="true">
+            <Frame name="$parent_AuraStatckConfigTabPage" parentKey="auraStackBarConfigTabPage" inherits="StatusBars2_AuraStackBarConfigTemplate" hidden="true">
                 <Frames>
                 </Frames> 
             </Frame>
-            <Button name="$parentTab1" inherits="StatusBars2_ConfigTabButtonTemplate" id="1" text="Global">
+            <Button name="$parentTab1" inherits="StatusBars2_ConfigTabButtonTemplate" id="1" text="Global Options">
                 <Anchors>
                     <Anchor point="CENTER" relativePoint="BOTTOMLEFT">
                         <Offset>
@@ -1082,7 +1176,7 @@
                     </Anchor>
                 </Anchors>
             </Button>
-            <Button name="$parentTab2" inherits="StatusBars2_ConfigTabButtonTemplate" id="2" text="Group">
+            <Button name="$parentTab2" inherits="StatusBars2_ConfigTabButtonTemplate" id="2" text="Group Options">
                 <Anchors>
                     <Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT">
                         <Offset>
@@ -1091,18 +1185,9 @@
                     </Anchor>
                 </Anchors>
             </Button>
-            <Button name="$parentTab3" parentKey="tabButtonLayout" inherits="StatusBars2_ConfigTabButtonTemplate" id="3" text="Bar Layout">
+            <Button name="$parentTab3" parentKey="tabButtonLayout" inherits="StatusBars2_ConfigTabButtonTemplate" id="3" text="Bar Options">
                 <Anchors>
                     <Anchor point="LEFT" relativeTo="$parentTab2" relativePoint="RIGHT">
-                        <Offset>
-                            <AbsDimension x="-16" y="0"/>
-                        </Offset>
-                    </Anchor>
-                </Anchors>
-            </Button>
-            <Button name="$parentTab4" parentKey="tabButtonOptions" inherits="StatusBars2_ConfigTabButtonTemplate" id="4" text="Bar Options">
-                <Anchors>
-                    <Anchor point="LEFT" relativeTo="$parentTab3" relativePoint="RIGHT">
                         <Offset>
                             <AbsDimension x="-16" y="0"/>
                         </Offset>
@@ -1113,7 +1198,7 @@
         <Scripts>
             <OnLoad>
                 tinsert(UISpecialFrames, self:GetName());
-                PanelTemplates_SetNumTabs(self, 4);
+                PanelTemplates_SetNumTabs(self, 3);
                 PanelTemplates_SetTab(self, 1);
                 StatusBars2Config_Configure_Bar_Options( self );
             </OnLoad>

@@ -7,13 +7,13 @@ local bars = addonTable.bars;
 
 -------------------------------------------------------------------------------
 --
---  Name:           shallowCopy
+--  Name:           StatusBars2_ShallowCopy
 --
 --  Description:    Shallow table copy.
 --
 -------------------------------------------------------------------------------
 --
-function shallowCopy(original)
+function StatusBars2_ShallowCopy(original)
     if original then
         local copy = {}
         for key, value in pairs(original) do
@@ -26,19 +26,19 @@ end
 
 -------------------------------------------------------------------------------
 --
---  Name:           deepCopy
+--  Name:           StatusBars2_DeepCopy
 --
 --  Description:    Deep table copy.
 --
 -------------------------------------------------------------------------------
 --
-function deepCopy(original)
+function StatusBars2_DeepCopy(original)
     if original then
         local copy = {}
         for k, v in pairs(original) do
             -- as before, but if we find a table, make sure we copy that too
             if type(v) == 'table' then
-                v = deepCopy(v)
+                v = StatusBars2_DeepCopy(v)
             end
             copy[k] = v
         end

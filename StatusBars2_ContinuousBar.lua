@@ -179,11 +179,8 @@ function StatusBars2_CreateContinuousBar( key, unit, displayName, barType, r, g,
     bar.ContinuousBar_BarIsVisible = StatusBars2_ContinuousBar_IsVisible;
     bar.ContinuousBar_Update = StatusBars2_ContinuousBar_Update;
 
-    -- Set the options template
-    bar.optionsTemplate = "StatusBars2_ContinuousBarOptionsTemplate";
-
     -- Set the default configuration template
-    bar.optionsPanelKey = "continuousBarOptionsTabPage";
+    bar.optionsPanelKey = "continuousBarConfigTabPage";
 
     -- Set the default methods
     bar.OnUpdateLayout = bar.ContinuousBar_OnUpdateLayout;
@@ -198,9 +195,6 @@ function StatusBars2_CreateContinuousBar( key, unit, displayName, barType, r, g,
 
     -- Set the text color
     bar.text:SetTextColor( 1, 1, 1 );
-
-    -- Set the options template
-    bar.optionsTemplate = "StatusBars2_ContinuousBarOptionsTemplate";
 
     -- Set the status bar to draw behind the edge frame so it doesn't overlap.
     -- This should be possible with XML, but I can't figure it out with the documentation available.

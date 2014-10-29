@@ -31,8 +31,7 @@ local kDefaultFramePosition = addonTable.kDefaultFramePosition;
 -- Tab buttons
 local kGlobal       = 1;
 local kGroup        = 2;
-local kBarLayout    = 3;
-local kBarOptions   = 4;
+local kBar          = 3;
 
 -------------------------------------------------------------------------------
 --
@@ -112,28 +111,23 @@ end
 --
 function StatusBars2Config_Configure_Bar_Options( config_panel )
 
-    local initialActiveBar;
     local allPanels = {};
 
     -- Keep track of all the panels so we can easily go through them when we have to hide them.
-    table.insert(allPanels, config_panel.globalConfigTabPage);
-    table.insert(allPanels, config_panel.groupConfigTabPage);
-    table.insert(allPanels, config_panel.barLayoutTabPage);
-    table.insert(allPanels, config_panel.barOptionsTabPage);
-    table.insert(allPanels, config_panel.continuousBarOptionsTabPage);
-    table.insert(allPanels, config_panel.druidManaBarOptionsTabPage);
-    table.insert(allPanels, config_panel.targetPowerBarOptionsTabPage);
-    table.insert(allPanels, config_panel.auraBarOptionsTabPage);
-    table.insert(allPanels, config_panel.auraStackBarOptionsTabPage);
+    table.insert( allPanels, config_panel.globalConfigTabPage );
+    table.insert( allPanels, config_panel.groupConfigTabPage );
+    table.insert( allPanels, config_panel.barConfigTabPage );
+    table.insert( allPanels, config_panel.continuousBarConfigTabPage );
+    table.insert( allPanels, config_panel.druidManaBarConfigTabPage );
+    table.insert( allPanels, config_panel.targetPowerBarConfigTabPage );
+    table.insert( allPanels, config_panel.auraBarConfigTabPage );
+    table.insert( allPanels, config_panel.auraStackBarConfigTabPage );
+    table.insert( allPanels, config_panel.barLayoutTabPage );
     config_panel.allPanels = allPanels;
 
-    -- Add a category for each bar
+    -- Hook up the appropriate the options frames
     for i, bar in ipairs( bars ) do
-        if( i == 1 ) then
-            initialActiveBar = bar;
-        end
-        -- Hook up the appropriate the options frame
-        bar.optionsPanel = config_panel[bar.optionsPanelKey];
+        bar.configPanel = config_panel[bar.optionsPanelKey];
     end
 
     -- The initial show will have no bar active, so make the first bar (player health) active
@@ -152,25 +146,25 @@ end
 local function StatusBars2Config_Bar_DoDataExchange( configPanel, save, bar )
 
     local rnd = StatusBars2_Round;
-    local frame = bar.optionsPanel;
+    local frame = bar.configPanel;
     local group = bar:GetParent( );
     local enabledMenu = frame.enabledMenu;
-    local scaleSlider = configPanel.barLayoutTabPage.scaleSlider;
-    local alphaSlider = configPanel.barLayoutTabPage.alphaSlider;
+    local scaleSlider = frame.scaleSlider;
+    local alphaSlider = frame.alphaSlider;
     local flashButton = frame.flashButton;
     local flashThresholdSlider = frame.flashThresholdSlider;
     local showBuffsButton = frame.showBuffsButton;
     local showDebuffsButton = frame.showDebuffsButton;
     local onlyShowSelfAurasButton = frame.onlyShowSelfAurasButton;
     local onlyShowTimedAurasButton = frame.onlyShowTimedAurasButton;
-    local onlyShowListedAurasButton = frame.onlyShowListedAurasButton;
     local enableTooltipsButton = frame.enableTooltipsButton;
     local showSpellButton = frame.showSpellButton;
     local showInAllFormsButton = frame.showInAllFormsButton;
     local percentTextMenu = frame.percentTextMenu;
-    local auraList = frame.auraList;
     local customColorButton = frame.customColorButton;
     local colorSwatch = frame.colorSwatch;
+    local onlyShowListedAurasButton = frame.onlyShowListedAurasButton;
+    local auraList = frame.auraList;
 
     -- Exchange data
     if( save ) then
@@ -178,12 +172,12 @@ local function StatusBars2Config_Bar_DoDataExchange( configPanel, save, bar )
         bar.scale = StatusBars2_Round( scaleSlider:GetValue( ), 2 );
 
         if( alphaSlider ) then
-            local alphaValue = StatusBars2_Round( alphaSlider:GetValue( ) / 100, 2 );
+            local alphaValue = StatusBars2_Round( alphaSlider:GetValue( ), 2 );
             bar.alpha = alphaValue;
         end
        if( customColorButton and colorSwatch ) then
             if( customColorButton:GetChecked( )) then
-                bar.color = shallowCopy({colorSwatch:GetBackdropColor( )});
+                bar.color = StatusBars2_ShallowCopy( { colorSwatch:GetBackdropColor( ) } );
             else
                 bar.color = nil;
             end
@@ -204,9 +198,6 @@ local function StatusBars2Config_Bar_DoDataExchange( configPanel, save, bar )
         if( onlyShowTimedAurasButton ) then
             bar.onlyShowTimed = onlyShowTimedAurasButton:GetChecked( );
         end
-        if( onlyShowListedAurasButton ) then
-            bar.onlyShowListed = onlyShowListedAurasButton:GetChecked( );
-        end
         if( enableTooltipsButton ) then
             bar.enableTooltips = enableTooltipsButton:GetChecked( );
         end
@@ -218,6 +209,9 @@ local function StatusBars2Config_Bar_DoDataExchange( configPanel, save, bar )
         end
         if( percentTextMenu ) then
             bar.percentDisplayOption = UIDropDownMenu_GetSelectedValue( percentTextMenu );
+        end
+        if( onlyShowListedAurasButton ) then
+            bar.onlyShowListed = onlyShowListedAurasButton:GetChecked( );
         end
         if( auraList ) then
             if( auraList.allEntries and #auraList.allEntries > 0 ) then
@@ -239,7 +233,7 @@ local function StatusBars2Config_Bar_DoDataExchange( configPanel, save, bar )
 
         if( alphaSlider ) then
             alphaSlider.applyToFrame = bar;
-            alphaSlider:SetValue( ( bar.alpha or group.alpha or StatusBars2.alpha or 1 ) * 100 );
+            alphaSlider:SetValue( bar.alpha or group.alpha or StatusBars2.alpha or 1 );
         end
         if( customColorButton and colorSwatch ) then
             local customColorEnabled = bar.color ~= nil;
@@ -263,10 +257,6 @@ local function StatusBars2Config_Bar_DoDataExchange( configPanel, save, bar )
         if( onlyShowTimedAurasButton ) then
             onlyShowTimedAurasButton:SetChecked( bar.onlyShowTimed );
         end
-        if( onlyShowListedAurasButton ) then
-            onlyShowListedAurasButton:SetChecked( bar.onlyShowListed );
-            StatusBars2_BarOptions_Enable_Aura_List( frame, bar.onlyShowListed );
-        end
         if( enableTooltipsButton ) then
             enableTooltipsButton:SetChecked( bar.enableTooltips );
         end
@@ -279,6 +269,10 @@ local function StatusBars2Config_Bar_DoDataExchange( configPanel, save, bar )
         if( percentTextMenu ) then
             UIDropDownMenu_SetSelectedValue( percentTextMenu, bar.percentDisplayOption );
             UIDropDownMenu_SetText( percentTextMenu, bar.percentDisplayOption );
+        end
+        if( onlyShowListedAurasButton ) then
+            onlyShowListedAurasButton:SetChecked( bar.onlyShowListed );
+            StatusBars2_BarOptions_Enable_Aura_List( frame, bar.onlyShowListed );
         end
         if ( auraList ) then
             if( bar.auraFilter ) then
@@ -313,13 +307,14 @@ local function StatusBars2Config_Group_DoDataExchange( configPanel, save, bar )
 
     local scaleSlider = configPanel.groupConfigTabPage.scaleSlider;
     local alphaSlider = configPanel.groupConfigTabPage.alphaSlider;
+    local autoLayoutList = configPanel.groupConfigTabPage.autoLayoutList;
 
     -- Exchange data
     if( save ) then
         group.scale = StatusBars2_Round( scaleSlider:GetValue( ), 2 );
 
         if( alphaSlider ) then
-            local alphaValue = StatusBars2_Round( alphaSlider:GetValue( ) / 100, 2 );
+            local alphaValue = StatusBars2_Round( alphaSlider:GetValue( ), 2 );
             group.alpha = alphaValue;
         end
     else
@@ -328,7 +323,17 @@ local function StatusBars2Config_Group_DoDataExchange( configPanel, save, bar )
 
         if( alphaSlider ) then
             alphaSlider.applyToFrame = group;
-            alphaSlider:SetValue( ( group.alpha or StatusBars2.alpha or 1 ) * 100 );
+            alphaSlider:SetValue( group.alpha or StatusBars2.alpha or 1 );
+        end
+        if ( autoLayoutList ) then
+            autoLayoutList.allEntries = {};
+            for i, bar in ipairs( bars ) do
+                if( bar:GetParent( ) == group ) then
+                    table.insert( autoLayoutList.allEntries, bar );
+                end
+            end
+
+            StatusBars2_GroupOptions_AutoLayoutListUpdate( autoLayoutList );
         end
     end
 end
@@ -361,7 +366,7 @@ local function StatusBars2Config_DoDataExchange( configPanel, save, bar )
         StatusBars2.fade = fadeButton:GetChecked( );
         StatusBars2.locked = lockedButton:GetChecked( );
         StatusBars2.scale = scaleSlider:GetValue( );
-        StatusBars2.alpha = StatusBars2_Round( alphaSlider:GetValue( ) / 100, 2 );
+        StatusBars2.alpha = StatusBars2_Round( alphaSlider:GetValue( ), 2 );
         StatusBars2.showHelp = showHelpButton:GetChecked( );
     else
         UIDropDownMenu_SetSelectedValue( textOptionsMenu, StatusBars2.textDisplayOption );
@@ -373,7 +378,7 @@ local function StatusBars2Config_DoDataExchange( configPanel, save, bar )
         scaleSlider.applyToFrame = StatusBars2;
         scaleSlider:SetValue( StatusBars2.scale or 1.0 );
         alphaSlider.applyToFrame = StatusBars2;
-        alphaSlider:SetValue( (StatusBars2.alpha or 1.0 ) * 100 );
+        alphaSlider:SetValue( StatusBars2.alpha or 1.0 );
         showHelpButton:SetChecked( StatusBars2.showHelp );
     end
 
@@ -410,27 +415,23 @@ local function StatusBars2Config_SetupActiveBarPanel( config_panel )
     local activeTabID = PanelTemplates_GetSelectedTab( config_panel );
     local panelToShow;
 
-    -- Figure out which panel we are going to show
     if( activeTabID == kGlobal ) then
         panelToShow = config_panel.globalConfigTabPage;
         StatusBars2.moveMode = "all";
     elseif( activeTabID == kGroup ) then
         panelToShow = config_panel.groupConfigTabPage;
         StatusBars2.moveMode = "group";
-    elseif( activeTabID == kBarLayout ) then
-        panelToShow = config_panel.barLayoutTabPage;
-        StatusBars2.moveMode = "bar";
-    elseif( activeTabID == kBarOptions ) then
-        panelToShow = activeBar.optionsPanel;
+    elseif( activeTabID == kBar ) then
+        panelToShow = activeBar.configPanel;
         StatusBars2.moveMode = "bar";
     end
     
-    -- Hide everything except for the one we are planning on showing
+    -- Hide everything
     for i, v in ipairs( config_panel.allPanels ) do
         v:Hide();
     end
 
-    -- Now show it
+    -- Now show the one we decided to show
     panelToShow:Show( );
 
 end
@@ -913,8 +914,8 @@ function StatusBars2_BarOptions_AddAuraFilterEntry( self )
     local numEntries = #aura_list.allEntries;
     local aura_name = self:GetText( );
     
-    aura_list.allEntries[numEntries+1] = aura_name;
-    table.sort(aura_list.allEntries);
+    table.insert( aura_list.allEntries, aura_name );
+    table.sort( aura_list.allEntries );
     StatusBars2_BarOptions_AuraListUpdate( aura_list );
 
     self:ClearFocus();
@@ -990,7 +991,7 @@ function StatusBars2_BarOptions_ListEntryButton_OnClick( self )
     local aura_list = self:GetParent():GetParent();
 
     aura_list.selectedIndex = self.index;
-    StatusBars2_BarOptions_AuraListUpdate( aura_list );
+    aura_list:update( );
 
 end
 
@@ -1141,6 +1142,114 @@ function StatusBars2_Options_ResetGroupPositionButton_OnClick( self )
     StatusBars2_Movable_SetPosition( StatusBars2, x + kDefaultFramePosition.x, y + kDefaultFramePosition.y, true );
 	StatusBars2_Config.doUpdate = true;
 
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_GroupOptions_AutoLayoutListEntryButton_Checkbox_OnClick
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_GroupOptions_AutoLayoutListEntryButton_Checkbox_OnClick( self )
+
+    local listEntry = self:GetParent( );
+    local scrollFrame = listEntry:GetParent( );
+
+    -- keep going up the chain until we find the scrollFrame
+    while ( scrollFrame and scrollFrame:GetObjectType() ~= "ScrollFrame" ) do
+        scrollFrame = scrollFrame:GetParent( );
+    end
+
+    local offset = HybridScrollFrame_GetOffset(scrollFrame);
+    local buttonIndex = listEntry.index;
+    local bar = scrollFrame.allEntries[buttonIndex + offset];
+    print("Checkbox index ", buttonIndex, " checked ", self:GetChecked(), " offset ", offset, " bar ", bar.key);
+
+    if( self:GetChecked( ) ) then
+        bar.position = nil;
+        StatusBars2_Config.doUpdate = true;
+    end
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_BarCompareFunction
+--
+--  Description:    Function for comparing two bars
+--
+-------------------------------------------------------------------------------
+--
+local function StatusBars2_AutoLayout_BarCompareFunction( bar1, bar2 )
+
+    return bar1.index < bar2.index;
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_GroupOptions_AutoLayoutListUpdate
+--
+--  Description:    Select an item in the list of aura names
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_GroupOptions_AutoLayoutListUpdate( self )
+
+    if self then
+        currentScrollFrame = self;
+    end
+
+    if currentScrollFrame then
+
+        local scrollFrame = currentScrollFrame;
+        local offset = HybridScrollFrame_GetOffset(scrollFrame);
+
+        if( scrollFrame.allEntries ) then
+            table.sort( scrollFrame.allEntries, StatusBars2_AutoLayout_BarCompareFunction );
+        end
+
+        if self or offset ~= oldOffset then
+            oldOffset = offset;
+
+            local buttons = scrollFrame.buttons;
+            local button_height = buttons[1]:GetHeight();
+            local bar;
+            local checkButton;
+
+            for i, entry in ipairs(buttons) do
+                local index = i + offset;
+
+                if scrollFrame.allEntries and scrollFrame.allEntries[index] then
+                    bar = scrollFrame.allEntries[index];
+                    entry:SetText( bar.displayName );
+                    entry:Show();
+                    entry.index = index;
+
+                    if scrollFrame.selectedIndex == index then
+                        entry:LockHighlight( );
+                    else
+                        entry:UnlockHighlight( );
+                    end
+
+                    entry.enableAutoLayout:SetChecked( bar.position == nil );
+
+                else
+                    entry:Hide();
+                end
+            end
+
+            local num_entries = 0;
+            if scrollFrame.allEntries then
+                num_entries = #scrollFrame.allEntries;
+            end
+
+            HybridScrollFrame_Update(scrollFrame, num_entries * button_height, scrollFrame:GetHeight());
+        end
+    end
+    
 end
 
 --[[

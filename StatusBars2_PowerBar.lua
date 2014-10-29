@@ -37,12 +37,10 @@ function StatusBars2_CreatePowerBar( key, unit, barType, powerType )
 
     -- If its the druid mana bar use a special options template
     if( barType == kDruidMana ) then
-        bar.optionsTemplate = "StatusBars2_DruidManaBarOptionsTemplate";
-        bar.optionsPanelKey = "druidManaBarOptionsTabPage";
+        bar.optionsPanelKey = "druidManaBarConfigTabPage";
     -- If its a target power bar use a special options template
     elseif( bar.unit == "target" ) then
-        bar.optionsTemplate = "StatusBars2_TargetPowerBarOptionsTemplate";
-        bar.optionsPanelKey = "targetPowerBarOptionsTabPage";
+        bar.optionsPanelKey = "targetPowerBarConfigTabPage";
     end
 
     bar.powerType = powerType;

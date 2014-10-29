@@ -303,7 +303,7 @@ function StatusBars2_SetBarDefaultSettings( bar, barSettings )
     end
 
     -- Flash player and pet health and mana bars
-    if( barSettings.flash == nil and ( bar.optionsTemplate == "StatusBars2_ContinuousBarOptionsTemplate" or bar.optionsTemplate == "StatusBars2_DruidManaBarOptionsTemplate" ) ) then
+    if( barSettings.flash == nil and ( bar.optionsPanelKey == "continuousBarConfigTabPage" or bar.optionsPanelKey == "druidManaBarConfigTabPage" ) ) then
         if( ( bar.unit == "player" or bar.unit == "pet" ) and bar.type == kHealth ) then
             barSettings.flash = true;
         elseif( ( bar.unit == "player" or bar.unit == "pet" ) and bar.type == kPower ) then
@@ -323,7 +323,7 @@ function StatusBars2_SetBarDefaultSettings( bar, barSettings )
     end
 
     -- Place continuous bar percent text on the right side
-    if( barSettings.percentDisplayOption == nil and ( bar.optionsTemplate == "StatusBars2_ContinuousBarOptionsTemplate" or bar.optionsTemplate == "StatusBars2_DruidManaBarOptionsTemplate" or bar.optionsTemplate == "StatusBars2_TargetPowerBarOptionsTemplate" ) ) then
+    if( barSettings.percentDisplayOption == nil and ( bar.optionsPanelKey == "continuousBarConfigTabPage" or bar.optionsPanelKey == "druidManaBarConfigTabPage" or bar.optionsPanelKey == "targetPowerBarConfigTabPage" ) ) then
         barSettings.percentDisplayOption = "Right";
     end
 
@@ -433,7 +433,7 @@ local function StatusBars2_Settings_Apply_BarSettings( save, bar, barSettings )
         end
 
         barSettings.enabled = bar.enabled;
-        barSettings.color = shallowCopy( bar.color );
+        barSettings.color = StatusBars2_ShallowCopy( bar.color );
         barSettings.flash = bar.flash;
         barSettings.flashThreshold = bar.flashThreshold;
         barSettings.showBuffs = bar.showBuffs;
@@ -445,7 +445,7 @@ local function StatusBars2_Settings_Apply_BarSettings( save, bar, barSettings )
         barSettings.showSpell = bar.showSpell;
         barSettings.showInAllForms = bar.showInAllForms;
         barSettings.percentDisplayOption = bar.percentDisplayOption;
-        barSettings.auraFilter = shallowCopy( bar.auraFilter );
+        barSettings.auraFilter = StatusBars2_ShallowCopy( bar.auraFilter );
     else
         bar.scale = barSettings.scale or 1.0;
         bar.alpha = barSettings.alpha or 1.0;
@@ -458,7 +458,7 @@ local function StatusBars2_Settings_Apply_BarSettings( save, bar, barSettings )
         end
 
         bar.enabled = barSettings.enabled;
-        bar.color = shallowCopy( barSettings.color );
+        bar.color = StatusBars2_ShallowCopy( barSettings.color );
         bar.flash = barSettings.flash;
         bar.flashThreshold = barSettings.flashThreshold;
         bar.showBuffs = barSettings.showBuffs;
@@ -470,7 +470,7 @@ local function StatusBars2_Settings_Apply_BarSettings( save, bar, barSettings )
         bar.showSpell = barSettings.showSpell;
         bar.showInAllForms = barSettings.showInAllForms;
         bar.percentDisplayOption = barSettings.percentDisplayOption;
-        bar.auraFilter = barSettings.auraFilter and shallowCopy( barSettings.auraFilter ) or nil;
+        bar.auraFilter = barSettings.auraFilter and StatusBars2_ShallowCopy( barSettings.auraFilter ) or nil;
     end
 
 end

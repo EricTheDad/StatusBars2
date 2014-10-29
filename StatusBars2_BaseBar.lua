@@ -300,11 +300,8 @@ function StatusBars2_CreateBar( key, template, unit, displayName, barType, defau
     bar.BaseBar_OnEnable = StatusBars2_StatusBar_OnEnable;
     bar.BaseBar_BarIsVisible = StatusBars2_StatusBar_IsVisible;
 
-    -- Set the default options template
-    bar.optionsTemplate = "StatusBars2_BarOptionsTemplate";
-
     -- Set the default configuration template
-    bar.optionsPanelKey = "barOptionsTabPage";
+    bar.optionsPanelKey = "barConfigTabPage";
 
     -- Set the default methods
     bar.OnUpdateLayout = bar.BaseBar_OnUpdateLayout;

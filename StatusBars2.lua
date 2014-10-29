@@ -197,7 +197,7 @@ function StatusBars2_OnEvent( self, event, ... )
 
             -- If we have a power bar we don't have a blizzard color for, we'll use the class color.
             local _, englishClass = UnitClass( "player" );
-            addonTable.kDefaultPowerBarColor = shallowCopy(RAID_CLASS_COLORS[englishClass]);
+            addonTable.kDefaultPowerBarColor = StatusBars2_ShallowCopy(RAID_CLASS_COLORS[englishClass]);
 
             StatusBars2_CreateGroups( );
             StatusBars2_CreateBars( );
@@ -470,12 +470,17 @@ function StatusBars2_UpdateLayout( )
     local rnd = StatusBars2_Round;
 
     local layoutBars = {}
+    local positionedBars = {}
 
     -- Build a list of bars to layout
     for i, bar in ipairs( bars ) do
         -- If the bar has a group and index set include it in the layout
         if( bar.group ~= nil and bar.index ~= nil and ( not bar.removeWhenHidden or bar.visible ) ) then
-            table.insert( layoutBars, bar );
+            if( bar.position ) then
+                table.insert( positionedBars, bar );
+            else
+                table.insert( layoutBars, bar );
+            end
         end
     end
 
@@ -516,6 +521,10 @@ function StatusBars2_UpdateLayout( )
 
         -- Update the offset
         offset = offset - ( bar:GetBarHeight( ) - 2 );
+    end
+
+    for i, bar in ipairs( positionedBars ) do
+        bar:SetBarPosition( 0, 0 );
     end
 
 end

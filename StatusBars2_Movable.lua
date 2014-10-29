@@ -62,6 +62,10 @@ function StatusBars2_Movable_StartMoving( self )
     if( self.movableType and StatusBars2.moveMode == self.movableType ) then
         self:StartMoving( );
         self.isMoving = true;
+        local x, y = self:GetCenter( );
+        self.startX = x;
+        self.startY = y;
+
     elseif( StatusBars2.moveMode ) then
         StatusBars2_Movable_StartMoving( self:GetParent( ) );
     end
@@ -89,8 +93,16 @@ function StatusBars2_Movable_StopMoving( self )
         -- Moving the frame clears the points and attaches it to the UIParent frame
         -- This will re-attach it to it's group frame
         local x, y = self:GetCenter( );
-        y = self:GetTop( );
-        StatusBars2_Movable_SetPosition( self, x * self:GetScale( ), y * self:GetScale( ), true );
+        local rnd = StatusBars2_Round;
+
+        -- Don't count it if we didn't move the bar more than a pixel
+        if( rnd( math.abs( x - self.startX ) ) > 0.1 or rnd( math.abs( y - self.startY ) ) > 0.1 ) then
+            y = self:GetTop( );
+            StatusBars2_Movable_SetPosition( self, x * self:GetScale( ), y * self:GetScale( ), true );
+
+            -- Update the layout so if we moved something that changed the groups' autolayout that that changes, too.
+            StatusBars2_UpdateFullLayout( );
+        end
 
     elseif( self ~= StatusBars2 ) then
         -- if this bar isn't moving, then pass the event through to the parent unless we are already at the top parent frame of this addon
