@@ -23,13 +23,13 @@ local kDemonicFury = addonTable.barTypes.kDemonicFury;
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateAuraBar( key, unit )
+function StatusBars2_CreateAuraBar( group, index, removeWhenHidden, key, unit )
 
     local barType = kAura;
     local displayName = StatusBars2_ConstructDisplayName( unit, barType );
 
     -- Create the bar
-    local bar = StatusBars2_CreateBar( key, "StatusBars2_AuraBarTemplate", unit, displayName, barType );
+    local bar = StatusBars2_CreateBar( group, index, removeWhenHidden, key, "StatusBars2_AuraBarTemplate", unit, displayName, barType );
 
     -- Set the options template
     bar.optionsPanelKey = "auraBarConfigTabPage";

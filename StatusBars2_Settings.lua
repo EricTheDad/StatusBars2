@@ -298,6 +298,9 @@ end
 function StatusBars2_SetBarDefaultSettings( bar, barSettings )
 
     -- Enable all bars by default
+    barSettings.group = barSettings.group or bar.group;
+    barSettings.index = barSettings.index or bar.index;
+
     if( barSettings.enabled == nil ) then
         barSettings.enabled = bar.defaultEnabled;
     end
@@ -422,6 +425,8 @@ end;
 local function StatusBars2_Settings_Apply_BarSettings( save, bar, barSettings )
 
     if( save ) then
+        barSettings.group = bar.group;
+        barSettings.index = bar.index;
         barSettings.scale = bar.scale ~= 1 and bar.scale or nil;
         barSettings.alpha = bar.alpha and bar.alpha < 1 and bar.alpha or nil;
 
@@ -447,6 +452,8 @@ local function StatusBars2_Settings_Apply_BarSettings( save, bar, barSettings )
         barSettings.percentDisplayOption = bar.percentDisplayOption;
         barSettings.auraFilter = StatusBars2_ShallowCopy( bar.auraFilter );
     else
+        bar.group = barSettings.group;
+        bar.index = barSettings.index;
         bar.scale = barSettings.scale or 1.0;
         bar.alpha = barSettings.alpha or 1.0;
 

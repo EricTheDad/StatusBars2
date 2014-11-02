@@ -279,7 +279,7 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateBar( key, template, unit, displayName, barType, defaultColor )
+function StatusBars2_CreateBar( group, index, removeWhenHidden, key, template, unit, displayName, barType, defaultColor )
 
     -- Create the bar
     local bar = CreateFrame( "Frame", "StatusBars2_"..key.."Bar", StatusBars2, template );
@@ -294,6 +294,11 @@ function StatusBars2_CreateBar( key, template, unit, displayName, barType, defau
     bar.displayName = displayName;
     bar.type = barType;
     bar.inCombat = false;
+
+    -- Store layout settings
+    bar.index = index;
+    bar.group = group;
+    bar.removeWhenHidden = removeWhenHidden;
 
     -- Base methods for subclasses to call
     bar.BaseBar_OnUpdateLayout = StatuBars2_StatusBar_OnUpdateLayout;

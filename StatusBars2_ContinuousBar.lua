@@ -160,10 +160,10 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateContinuousBar( key, unit, displayName, barType, r, g, b )
+function StatusBars2_CreateContinuousBar( group, index, removeWhenHidden, key, unit, displayName, barType, r, g, b )
 
     -- Create the bar
-    local bar = StatusBars2_CreateBar( key, "StatusBars2_ContinuousBarTemplate", unit, displayName, barType );
+    local bar = StatusBars2_CreateBar( group, index, removeWhenHidden, key, "StatusBars2_ContinuousBarTemplate", unit, displayName, barType );
     local name = bar:GetName( );
 
     -- Get the status and text frames

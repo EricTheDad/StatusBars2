@@ -27,10 +27,10 @@ local kMaxRunes = 6;
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateRuneBar( )
+function StatusBars2_CreateRuneBar( group, index, removeWhenHidden )
 
     -- Create the bar
-    local bar = StatusBars2_CreateBar( "rune", "StatusBars2_RuneFrameTemplate", "player", RUNES, kRune );
+    local bar = StatusBars2_CreateBar( group, index, removeWhenHidden, "rune", "StatusBars2_RuneFrameTemplate", "player", RUNES, kRune );
     local name = bar:GetName( );
 
     -- Create the rune table

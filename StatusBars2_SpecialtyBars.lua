@@ -26,10 +26,10 @@ local kDemonicFury = addonTable.barTypes.kDemonicFury;
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateSpecialtyBar( key, unit, displayName, barType )
+function StatusBars2_CreateSpecialtyBar( group, index, removeWhenHidden, key, unit, displayName, barType )
 
     -- Create the bar
-    local bar = StatusBars2_CreateDiscreteBar( key, unit, displayName, barType, 0 );
+    local bar = StatusBars2_CreateDiscreteBar( group, index, removeWhenHidden, key, unit, displayName, barType, 0 );
 
     -- Set the event handlers
     bar.OnEvent = StatusBars2_SpecialtyBar_OnEvent;
@@ -172,10 +172,10 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateComboBar( )
+function StatusBars2_CreateComboBar( group, index, removeWhenHidden )
 
     -- Create the bar
-    local bar = StatusBars2_CreateSpecialtyBar( "combo", "player", COMBAT_TEXT_SHOW_COMBO_POINTS_TEXT, kCombo );
+    local bar = StatusBars2_CreateSpecialtyBar( group, index, removeWhenHidden, "combo", "player", COMBAT_TEXT_SHOW_COMBO_POINTS_TEXT, kCombo );
 
     bar.HandleEvent = StatusBars2_ComboBar_HandleEvent;
     bar.GetCharges = StatusBars2_GetComboPoints;
@@ -237,10 +237,10 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateUnitPowerBar( key, displayName )
+function StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, key, displayName )
     
     -- Create the bar
-    local bar = StatusBars2_CreateSpecialtyBar( key, "player", displayName, kUnitPower );
+    local bar = StatusBars2_CreateSpecialtyBar( group, index, removeWhenHidden, key, "player", displayName, kUnitPower );
 
     local powerType, powerToken, powerEvent = StatusBars2_GetSpecialtyUnitPowerType( key );
 
@@ -352,10 +352,10 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateShardBar( )
+function StatusBars2_CreateShardBar( group, index, removeWhenHidden )
 
     -- Create the bar
-    local bar = StatusBars2_CreateUnitPowerBar( "shard", SOUL_SHARDS );
+    local bar = StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, "shard", SOUL_SHARDS );
 
     -- Override event handlers for this specific type of bar
     bar.IsDefault = StatusBars2_SpecialtyBar_MaxIsDefault;
@@ -371,10 +371,10 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateHolyPowerBar( )
+function StatusBars2_CreateHolyPowerBar( group, index, removeWhenHidden )
 
     -- Create the bar
-    local bar = StatusBars2_CreateUnitPowerBar( "holyPower", HOLY_POWER );
+    local bar = StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, "holyPower", HOLY_POWER );
     return bar;
 
 end
@@ -387,10 +387,10 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateChiBar( )
+function StatusBars2_CreateChiBar( group, index, removeWhenHidden )
 
     -- Create the bar
-    local bar = StatusBars2_CreateUnitPowerBar( "chi", CHI_POWER );
+    local bar = StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, "chi", CHI_POWER );
     return bar;
 
 end
@@ -403,10 +403,10 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateOrbsBar( )
+function StatusBars2_CreateOrbsBar( group, index, removeWhenHidden )
 
     -- Create the bar
-    local bar = StatusBars2_CreateUnitPowerBar( "orbs", SHADOW_ORBS );
+    local bar = StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, "orbs", SHADOW_ORBS );
     return bar;
 
 end
@@ -419,10 +419,10 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateEmbersBar( )
+function StatusBars2_CreateEmbersBar( group, index, removeWhenHidden )
 
     -- Create the bar
-    local bar = StatusBars2_CreateUnitPowerBar( "embers", BURNING_EMBERS );
+    local bar = StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, "embers", BURNING_EMBERS );
 
     -- Set the event handlers
     bar.IsDefault = StatusBars2_EmbersBar_IsDefault;

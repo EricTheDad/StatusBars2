@@ -229,7 +229,7 @@
         <Scripts>
             <OnClick>
                 PlaySound("UChatScrollButton");
-                StatusBars2_BarOptions_ListEntryButton_OnClick( self );
+                StatusBars2_BarOptions_AutoLayoutListEntryButton_OnClick( self, button, down );
             </OnClick>
         </Scripts>
         <Size x="180" y="20" />
@@ -548,10 +548,86 @@
         </Frames>
     </Frame>
 
+    <Button name="StatusBar2_UpButton" virtual="true" >
+        <Size>
+            <AbsDimension x="50" y="50"/>
+        </Size>
+        <NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Up">
+            <Size>
+                <AbsDimension x="50" y="50"/>
+            </Size>
+            <Anchors>
+                <Anchor point="RIGHT"/>
+            </Anchors>
+        </NormalTexture>
+        <PushedTexture name="$parentPushedTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Down">
+            <Size>
+                <AbsDimension x="50" y="50"/>
+            </Size>
+            <Anchors>
+                <Anchor point="RIGHT"/>
+            </Anchors>
+        </PushedTexture>
+        <DisabledTexture name="$parentDisabledTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Disabled">
+            <Size>
+                <AbsDimension x="50" y="50"/>
+            </Size>
+            <Anchors>
+                <Anchor point="RIGHT"/>
+            </Anchors>
+        </DisabledTexture>
+        <HighlightTexture name="$parentHighlightTexture" file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD">
+            <Size>
+                <AbsDimension x="50" y="50"/>
+            </Size>
+            <Anchors>
+                <Anchor point="RIGHT"/>
+            </Anchors>
+        </HighlightTexture>
+    </Button>
+
+    <Button name="StatusBar2_DownButton" virtual="true" >
+        <Size>
+            <AbsDimension x="50" y="50"/>
+        </Size>
+        <NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
+            <Size>
+                <AbsDimension x="50" y="50"/>
+            </Size>
+            <Anchors>
+                <Anchor point="RIGHT"/>
+            </Anchors>
+        </NormalTexture>
+        <PushedTexture name="$parentPushedTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down">
+            <Size>
+                <AbsDimension x="50" y="50"/>
+            </Size>
+            <Anchors>
+                <Anchor point="RIGHT"/>
+            </Anchors>
+        </PushedTexture>
+        <DisabledTexture name="$parentDisabledTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled">
+            <Size>
+                <AbsDimension x="50" y="50"/>
+            </Size>
+            <Anchors>
+                <Anchor point="RIGHT"/>
+            </Anchors>
+        </DisabledTexture>
+        <HighlightTexture name="$parentHighlightTexture" file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD">
+            <Size>
+                <AbsDimension x="50" y="50"/>
+            </Size>
+            <Anchors>
+                <Anchor point="RIGHT"/>
+            </Anchors>
+        </HighlightTexture>
+    </Button>
+
     <!-- Group layout and options frame template -->
     <Frame name="StatusBars2_GroupOptionsConfigTemplate" inherits="StatusBars2_LayoutConfigTemplate" virtual="true" >
         <Frames>
-            <ScrollFrame name="$parent_autoLayoutList" parentKey="autoLayoutList" inherits="StatusBars2_ScrollFrameTemplate" >
+            <ScrollFrame name="$parent_AutoLayoutList" parentKey="autoLayoutList" inherits="StatusBars2_ScrollFrameTemplate" >
                 <Anchors>
                     <Anchor point="TOPRIGHT">
                         <Offset>
@@ -560,7 +636,7 @@
                     </Anchor>
                     <Anchor point="BOTTOMRIGHT">
                         <Offset>
-                            <AbsDimension x="0" y="5"/>
+                            <Offset x="0" y="5"/>
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -576,7 +652,43 @@
                 </Scripts>
                 <Size x="180" y="200" />
             </ScrollFrame>
+            <Button name="$parent_MoveUpButton" parentKey="moveUpButton" inherits="StatusBar2_UpButton">
+                <Anchors>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$parent_AutoLayoutList" relativePoint="LEFT">
+                        <Offset>
+                            <AbsDimension x="-5" y="5"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        self:Disable();
+                    </OnLoad>
+                    <OnClick>
+                        StatusBars2_GroupOptions_AutoLayoutUp_OnClick( self );
+                    </OnClick>
+                </Scripts>
+            </Button>
+            <Button name="$parent_MoveDownButton" parentKey="moveDownButton" inherits="StatusBar2_DownButton">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parent_AutoLayoutList" relativePoint="LEFT">
+                        <Offset>
+                            <AbsDimension x="-5" y="-5"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        self:Disable();
+                    </OnLoad>
+                    <OnClick>
+                        StatusBars2_GroupOptions_AutoLayoutDown_OnClick( self );
+                    </OnClick>
+                </Scripts>
+            </Button>
         </Frames>
+        <Scripts>
+        </Scripts>
     </Frame>
 
     <!-- Base bar layout and options frame template -->

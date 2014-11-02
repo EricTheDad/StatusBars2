@@ -29,13 +29,13 @@ local FontInfo = addonTable.fontInfo;
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateHealthBar( key, unit )
+function StatusBars2_CreateHealthBar( group, index, removeWhenHidden, key, unit )
 
     local barType = kHealth;
     local displayName = StatusBars2_ConstructDisplayName( unit, barType );
 
     -- Create the bar
-    local bar = StatusBars2_CreateContinuousBar( key, unit, displayName, barType, 1, 0, 0 );
+    local bar = StatusBars2_CreateContinuousBar( group, index, removeWhenHidden, key, unit, displayName, barType, 1, 0, 0 );
 
     -- Set the event handlers
     bar.OnEvent = StatusBars2_HealthBar_OnEvent;

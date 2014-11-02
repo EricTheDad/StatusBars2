@@ -6,6 +6,14 @@ local addonName, addonTable = ... --Pulls back the Addon-Local Variables and sto
 addonTable.groups = {};
 addonTable.bars = {};
 
+addonTable.groupIDs =
+{
+    kPlayerGroup              = 1,
+    kTargetGroup              = 2,
+    kFocusGroup               = 3,
+    kPetGroup                 = 4.
+};
+
 addonTable.barTypes = 
 {
     kHealth = 0,
@@ -49,7 +57,7 @@ addonTable.debugLayout = false;
 
 addonTable.kDefaultFramePosition = { x = 0, y = 0 };
 
-addonTable.saveDataVersion = 1.1;
+addonTable.saveDataVersion = 1.2;
 
 -- Settings
 StatusBars2_Settings = { };
@@ -65,6 +73,12 @@ local kDruidMana = addonTable.barTypes.kDruidMana;
 local kUnitPower = addonTable.barTypes.kUnitPower;
 local kEclipse = addonTable.barTypes.kEclipse;
 local kDemonicFury = addonTable.barTypes.kDemonicFury;
+
+-- Group ids
+local kPlayerGroup              = addonTable.groupIDs.kPlayerGroup;
+local kTargetGroup              = addonTable.groupIDs.kTargetGroup;
+local kFocusGroup               = addonTable.groupIDs.kFocusGroup;
+local kPetGroup                 = addonTable.groupIDs.kPetGroup;
 
 local kDefaultPowerBarColor = addonTable.kDefaultPowerBarColor;
 
@@ -283,54 +297,54 @@ function StatusBars2_CreateBars( )
     local localizedClass, englishClass = UnitClass( "player" );
 
     -- Player bars
-    StatusBars2_CreateHealthBar( "playerHealth", "player" );
-    StatusBars2_CreatePowerBar( "playerPower", "player" );
-    StatusBars2_CreateAuraBar( "playerAura", "player" );
+    StatusBars2_CreateHealthBar( kPlayerGroup, 1, false, "playerHealth", "player" );
+    StatusBars2_CreatePowerBar( kPlayerGroup, 2, false, "playerPower", "player" );
+    StatusBars2_CreateAuraBar( kPlayerGroup, 7, false, "playerAura", "player" );
 
     -- Target bars
-    StatusBars2_CreateHealthBar( "targetHealth", "target" );
-    StatusBars2_CreatePowerBar( "targetPower", "target" );
-    StatusBars2_CreateAuraBar( "targetAura", "target" );
+    StatusBars2_CreateHealthBar( kTargetGroup, 1, false, "targetHealth", "target" );
+    StatusBars2_CreatePowerBar( kTargetGroup, 2, true, "targetPower", "target" );
+    StatusBars2_CreateAuraBar( kTargetGroup, 7, false, "targetAura", "target" );
 
     -- Focus bars
-    StatusBars2_CreateHealthBar( "focusHealth", "focus" );
-    StatusBars2_CreatePowerBar( "focusPower", "focus" );
-    StatusBars2_CreateAuraBar( "focusAura", "focus" );
+    StatusBars2_CreateHealthBar( kFocusGroup, 1, false, "focusHealth", "focus" );
+    StatusBars2_CreatePowerBar( kFocusGroup, 2, true, "focusPower", "focus" );
+    StatusBars2_CreateAuraBar( kFocusGroup, 7, false, "focusAura", "focus" );
 
     -- Pet bars
-    StatusBars2_CreateHealthBar( "petHealth", "pet" );
-    StatusBars2_CreatePowerBar( "petPower", "pet" );
-    StatusBars2_CreateAuraBar( "petAura", "pet" );
+    StatusBars2_CreateHealthBar( kPetGroup, 1, false, "petHealth", "pet" );
+    StatusBars2_CreatePowerBar( kPetGroup, 2, false, "petPower", "pet" );
+    StatusBars2_CreateAuraBar( kPetGroup, 7, false, "petAura", "pet" );
 
     -- Specialty bars
     
     if( englishClass == "DRUID" )  then
-        StatusBars2_CreatePowerBar( "druidMana", "player", kDruidMana, SPELL_POWER_MANA );
-        StatusBars2_CreateComboBar( );
-        StatusBars2_CreateEclipseBar( );
+        StatusBars2_CreatePowerBar( kPlayerGroup, 4, false, "druidMana", "player", kDruidMana, SPELL_POWER_MANA );
+        StatusBars2_CreateComboBar( kPlayerGroup, 5);
+        StatusBars2_CreateEclipseBar( kPlayerGroup, 6);
     elseif( englishClass == "ROGUE" ) then
-        StatusBars2_CreateComboBar( );
-        StatusBars2_CreateAuraStackBar( "anticipation", "player", ROGUE_ANTICIPATION, "buff", 5, BUFF_ANTICIPATION );
+        StatusBars2_CreateComboBar( kPlayerGroup, 4);
+        StatusBars2_CreateAuraStackBar( kPlayerGroup, 5, false, "anticipation", "player", ROGUE_ANTICIPATION, "buff", 5, BUFF_ANTICIPATION );
     elseif( englishClass == "DEATHKNIGHT" ) then
-        StatusBars2_CreateRuneBar( );
+        StatusBars2_CreateRuneBar( kPlayerGroup, 4 );
     elseif( englishClass == "WARLOCK" ) then
-        StatusBars2_CreatePowerBar( "fury", "player", kDemonicFury, SPELL_POWER_DEMONIC_FURY );
-        StatusBars2_CreateShardBar( );
-        StatusBars2_CreateEmbersBar( );
+        StatusBars2_CreatePowerBar( kPlayerGroup, 4, false, "fury", "player", kDemonicFury, SPELL_POWER_DEMONIC_FURY );
+        StatusBars2_CreateShardBar( kPlayerGroup, 5);
+        StatusBars2_CreateEmbersBar( kPlayerGroup, 6);
     elseif( englishClass == "PALADIN" ) then
-        StatusBars2_CreateHolyPowerBar( );
+        StatusBars2_CreateHolyPowerBar( kPlayerGroup, 4);
     elseif( englishClass == "PRIEST" ) then
-        StatusBars2_CreateOrbsBar( );
+        StatusBars2_CreateOrbsBar( kPlayerGroup, 4 );
     elseif( englishClass == "HUNTER" ) then
-        StatusBars2_CreateAuraStackBar( "frenzy", "player", HUNTER_FOCUS_FIRE, "buff", 5, BUFF_FRENZY );
-        StatusBars2_CreateAuraStackBar( "lockAndLoad", "player", HUNTER_BLACK_ARROW, "buff", 5, BUFF_LOCK_AND_LOAD );
+        StatusBars2_CreateAuraStackBar( kPlayerGroup, 4, false, "frenzy", "player", HUNTER_FOCUS_FIRE, "buff", 5, BUFF_FRENZY );
+        StatusBars2_CreateAuraStackBar( kPlayerGroup, 5, false, "lockAndLoad", "player", HUNTER_BLACK_ARROW, "buff", 5, BUFF_LOCK_AND_LOAD );
     elseif( englishClass == "MAGE" ) then
-        StatusBars2_CreateAuraStackBar( "arcaneCharge", "player", MAGE_ARCANE_CHARGE, "debuff", 4, DEBUFF_ARCANE_CHARGE );
-        StatusBars2_CreateAuraStackBar( "arcaneMissiles", "player", MAGE_ARCANE_MISSILES, "buff", 3, BUFF_ARCANE_MISSILES, { 0.90, 0.57, 0.94 } );
+        StatusBars2_CreateAuraStackBar( kPlayerGroup, 4, false, "arcaneCharge", "player", MAGE_ARCANE_CHARGE, "debuff", 4, DEBUFF_ARCANE_CHARGE );
+        StatusBars2_CreateAuraStackBar( kPlayerGroup, 5, false, "arcaneMissiles", "player", MAGE_ARCANE_MISSILES, "buff", 3, BUFF_ARCANE_MISSILES, { 0.90, 0.57, 0.94 } );
     elseif( englishClass == "SHAMAN" ) then
-        StatusBars2_CreateAuraStackBar( "maelstromWeapon", "player", SHAMAN_MAELSTROM_WEAPON, "buff", 5, BUFF_MAELSTROM_WEAPON );
+        StatusBars2_CreateAuraStackBar( kPlayerGroup, 4, false, "maelstromWeapon", "player", SHAMAN_MAELSTROM_WEAPON, "buff", 5, BUFF_MAELSTROM_WEAPON );
     elseif( englishClass == "MONK" ) then
-        StatusBars2_CreateChiBar( );
+        StatusBars2_CreateChiBar( kPlayerGroup, 4 );
     end
    
 end
@@ -357,78 +371,78 @@ function StatusBars2_UpdateBars( )
     for i, bar in ipairs( bars ) do
 
         if( bar.key == "playerHealth" ) then
-            StatusBars2_EnableBar( bar, 1, 1 );
+            StatusBars2_EnableBar( bar );
         elseif( bar.key == "playerPower" and ( englishClass ~= "DRUID" or powerType ~= SPELL_POWER_MANA ) ) then
-            StatusBars2_EnableBar( StatusBars2_playerPowerBar, 1, 2 );
+            StatusBars2_EnableBar( StatusBars2_playerPowerBar );
         elseif( bar.key == "playerAura" and ( bar.showBuffs or bar.showDebuffs ) ) then
-            StatusBars2_EnableBar( bar, 1, 20 );
+            StatusBars2_EnableBar( bar );
         elseif( bar.key == "targetHealth" ) then
-            StatusBars2_EnableBar( bar, 2, 1 );
+            StatusBars2_EnableBar( bar );
         elseif( bar.key == "targetPower" ) then
-            StatusBars2_EnableBar( bar, 2, 2, true );
+            StatusBars2_EnableBar( bar );
         elseif( bar.key == "targetAura" and ( bar.showBuffs or bar.showDebuffs ) ) then
-            StatusBars2_EnableBar( bar, 2, 3 );
+            StatusBars2_EnableBar( bar );
         elseif( bar.key == "focusHealth" ) then
-            StatusBars2_EnableBar( bar, 3, 1 );
+            StatusBars2_EnableBar( bar );
         elseif( bar.key == "focusPower" ) then
-            StatusBars2_EnableBar( bar, 3, 2, true );
+            StatusBars2_EnableBar( bar );
         elseif( bar.key == "focusAura" and ( bar.showBuffs or bar.showDebuffs ) ) then
-            StatusBars2_EnableBar( bar, 3, 3 );
+            StatusBars2_EnableBar( bar );
         elseif( bar.key == "petHealth" ) then
-            StatusBars2_EnableBar( bar, 4, 1 );
+            StatusBars2_EnableBar( bar );
         elseif( bar.key == "petPower" ) then
-            StatusBars2_EnableBar( bar, 4, 2 );
+            StatusBars2_EnableBar( bar );
         elseif( bar.key == "petAura" and ( bar.showBuffs or bar.showDebuffs ) ) then
-            StatusBars2_EnableBar( bar, 4, 3 );
+            StatusBars2_EnableBar( bar );
         -- Special Druid Bars
         elseif( bar.key == "druidMana" and ( bar.showInAllForms or powerType == SPELL_POWER_MANA ) ) then
-            StatusBars2_EnableBar( bar, 1, 3 );
+            StatusBars2_EnableBar( bar );
         elseif( bar.key == "eclipse" and powerType == SPELL_POWER_MANA and GetSpecialization() == 1 ) then
-            StatusBars2_EnableBar( bar, 1, 8 );
+            StatusBars2_EnableBar( bar );
         -- Special Rogue Bars
         elseif( bar.key == "combo" and powerType == SPELL_POWER_ENERGY ) then
-            StatusBars2_EnableBar( bar, 1, 4 );
+            StatusBars2_EnableBar( bar );
         elseif( bar.key == "anticipation" and IsSpellKnown( bar.spellID ) ) then
-            StatusBars2_EnableBar( bar, 1, 16 );
+            StatusBars2_EnableBar( bar );
         -- Special Death Knight Bars
         elseif( bar.key == "rune" ) then
-            StatusBars2_EnableBar( bar, 1, 7 );
+            StatusBars2_EnableBar( bar );
         -- Special Warlock Bars
         elseif( bar.key == "fury" and GetSpecialization() == SPEC_WARLOCK_DEMONOLOGY ) then
-            StatusBars2_EnableBar( bar, 1, 14 );
+            StatusBars2_EnableBar( bar );
         elseif( bar.key == "shard" and IsPlayerSpell( WARLOCK_SOULBURN ) ) then
-            StatusBars2_EnableBar( bar, 1, 5 );
+            StatusBars2_EnableBar( bar );
         elseif( bar.key == "embers" and IsPlayerSpell( WARLOCK_BURNING_EMBERS ) ) then
-            StatusBars2_EnableBar( bar, 1, 13 );
+            StatusBars2_EnableBar( bar );
         -- Special Paladin Bars
         elseif( bar.key == "holyPower" ) then
-            StatusBars2_EnableBar( bar, 1, 6 );
+            StatusBars2_EnableBar( bar );
         -- Special Priest Bars
         elseif( bar.key == "orbs" and GetSpecialization() == SPEC_PRIEST_SHADOW ) then
-            StatusBars2_EnableBar( bar, 1, 12 );
+            StatusBars2_EnableBar( bar );
         -- Special Hunter Bars
         elseif( bar.key == "frenzy" and IsSpellKnown( bar.spellID ) ) then
-            StatusBars2_EnableBar( bar, 1, 18 );
+            StatusBars2_EnableBar( bar );
         elseif( bar.key == "lockAndLoad" and IsSpellKnown( bar.spellID ) ) then
-            StatusBars2_EnableBar( bar, 1, 19 );
+            StatusBars2_EnableBar( bar );
         -- Special Warrior Bars
         elseif( bar.key == "sunder" and IsSpellKnown( bar.spellID ) ) then
-            StatusBars2_EnableBar( bar, 1, 10 );
+            StatusBars2_EnableBar( bar );
         -- Special Mage Bars
         elseif( bar.key == "arcaneCharge" and IsSpellKnown( bar.spellID ) ) then
-            StatusBars2_EnableBar( bar, 1, 15 );
+            StatusBars2_EnableBar( bar );
         elseif( bar.key == "arcaneMissiles" and IsSpellKnown( bar.spellID ) ) then
-            StatusBars2_EnableBar( bar, 1, 16 );
+            StatusBars2_EnableBar( bar );
         elseif( bar.key == "fingersOfFrost" and GetSpecialization() == SPEC_MAGE_FROST and GetUnitLevel( bar.unit ) == 24 ) then
-            StatusBars2_EnableBar( bar, 1, 16 );
+            StatusBars2_EnableBar( bar );
         elseif( bar.key == "masteryIcicles" and GetSpecialization() == SPEC_MAGE_FROST and GetUnitLevel( bar.unit ) == 80 ) then
-            StatusBars2_EnableBar( bar, 1, 17 );
+            StatusBars2_EnableBar( bar );
         -- Special Shaman Bars
         elseif( bar.key == "maelstromWeapon" and IsSpellKnown( bar.spellID ) ) then
-            StatusBars2_EnableBar( bar, 1, 9 );
+            StatusBars2_EnableBar( bar );
         -- Special Monk Bars
         elseif( bar.key == "chi" ) then
-            StatusBars2_EnableBar( bar, 1, 11 );
+            StatusBars2_EnableBar( bar );
         end
 
     end
@@ -475,7 +489,7 @@ function StatusBars2_UpdateLayout( )
     -- Build a list of bars to layout
     for i, bar in ipairs( bars ) do
         -- If the bar has a group and index set include it in the layout
-        if( bar.group ~= nil and bar.index ~= nil and ( not bar.removeWhenHidden or bar.visible ) ) then
+        if( bar.isEnabled and ( not bar.removeWhenHidden or bar.visible ) ) then
             if( bar.position ) then
                 table.insert( positionedBars, bar );
             else
@@ -568,15 +582,12 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_EnableBar( bar, group, index, removeWhenHidden )
+function StatusBars2_EnableBar( bar )
 
-    -- Set the layout properties
-    bar.group = group;
-    bar.index = index;
-    bar.removeWhenHidden = removeWhenHidden;
+    bar.isEnabled = true;
 
     -- Set the parent to the appropriate group frame
-    bar:SetParent( groups[ group ] );
+    bar:SetParent( groups[ bar.group ] );
 
     -- Notify the bar is is enabled
     bar:OnEnable( );
@@ -603,17 +614,14 @@ function StatusBars2_DisableBar( bar )
     -- Disable the mouse
     bar:EnableMouse( false );
 
-    -- Clear the layout properties
-    --bar.group = nil;
-    bar.index = nil;
-    bar.removeWhenHidden = false;
-
     -- Unregister all events
     bar:UnregisterAllEvents( );
 
     -- Hide the bar
     bar:Hide( );
     bar.visible = false;
+
+    bar.isEnabled = false;
 
 end
 

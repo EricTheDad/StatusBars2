@@ -26,10 +26,10 @@ local kDemonicFury = addonTable.barTypes.kDemonicFury;
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateDiscreteBar( key, unit, displayName, barType, boxCount, defaultColor )
+function StatusBars2_CreateDiscreteBar( group, index, removeWhenHidden, key, unit, displayName, barType, boxCount, defaultColor )
 
     -- Create the bar
-    local bar = StatusBars2_CreateBar( key, "StatusBars2_DiscreteBarTemplate", unit, displayName, barType, defaultColor );
+    local bar = StatusBars2_CreateBar( group, index, removeWhenHidden, key, "StatusBars2_DiscreteBarTemplate", unit, displayName, barType, defaultColor );
 
     -- Set the default configuration template
     bar.optionsPanelKey = "auraStackBarConfigTabPage";

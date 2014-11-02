@@ -147,7 +147,7 @@ local function StatusBars2Config_Bar_DoDataExchange( configPanel, save, bar )
 
     local rnd = StatusBars2_Round;
     local frame = bar.configPanel;
-    local group = bar:GetParent( );
+    local group = groups[ bar.group ];
     local enabledMenu = frame.enabledMenu;
     local scaleSlider = frame.scaleSlider;
     local alphaSlider = frame.alphaSlider;
@@ -303,7 +303,7 @@ end
 --
 local function StatusBars2Config_Group_DoDataExchange( configPanel, save, bar )
 
-    local group = bar:GetParent( );
+    local group = groups[ bar.group ];
 
     local scaleSlider = configPanel.groupConfigTabPage.scaleSlider;
     local alphaSlider = configPanel.groupConfigTabPage.alphaSlider;
@@ -328,7 +328,7 @@ local function StatusBars2Config_Group_DoDataExchange( configPanel, save, bar )
         if ( autoLayoutList ) then
             autoLayoutList.allEntries = {};
             for i, bar in ipairs( bars ) do
-                if( bar:GetParent( ) == group ) then
+                if( bar.group == group.key ) then
                     table.insert( autoLayoutList.allEntries, bar );
                 end
             end
@@ -986,12 +986,14 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_BarOptions_ListEntryButton_OnClick( self )
+function StatusBars2_BarOptions_ListEntryButton_OnClick( self, button, down )
 
-    local aura_list = self:GetParent():GetParent();
+    local scrollFrame = self:GetParent( ):GetParent( );
 
-    aura_list.selectedIndex = self.index;
-    aura_list:update( );
+    scrollFrame.selectedIndex = self.index;
+    scrollFrame:update( );
+
+    HybridScrollFrameScrollButton_OnClick ( self, button, down );
 
 end
 
@@ -1146,6 +1148,104 @@ end
 
 -------------------------------------------------------------------------------
 --
+--  Name:           StatusBars2_BarOptions_AutoLayoutListEntryButton_OnClick
+--
+--  Description:    Select an item in the list of aura names
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_BarOptions_AutoLayoutListEntryButton_OnClick( self, button, down )
+
+    local scrollFrame = self:GetParent( ):GetParent( );
+
+    scrollFrame.selectedIndex = self.index;
+    scrollFrame:update( );
+
+    HybridScrollFrameScrollButton_OnClick ( self, button, down );
+
+    scrollFrame:GetParent( ).moveUpButton:Enable( );
+    scrollFrame:GetParent( ).moveDownButton:Enable( );
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_GroupOptions_AutoLayoutUp_OnClick
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_GroupOptions_AutoLayoutUp_OnClick( self )
+
+    local scrollFrame = self:GetParent( ).autoLayoutList;
+    local offset = HybridScrollFrame_GetOffset(scrollFrame);
+    local selectedButtonIndex = scrollFrame.selectedIndex;
+    local selectedBarIndex = offset + selectedButtonIndex;
+    local bar = scrollFrame.allEntries[selectedBarIndex];
+    
+    -- Only do something if this is not already the first bar in the list
+    if( selectedBarIndex > 1 ) then
+        local upperBar = scrollFrame.allEntries[ selectedBarIndex - 1 ];
+
+        -- swap indices
+        local tempIndex = upperBar.index;
+        upperBar.index = bar.index;
+        bar.index = tempIndex;
+
+        -- Update the selected index, since the selected bar has now moved down
+        if( scrollFrame.selectedIndex > 1 ) then
+            scrollFrame.selectedIndex = scrollFrame.selectedIndex - 1;
+        else
+            HybridScrollFrame_SetOffset( scrollFrame, offset - 1 );
+        end
+    end
+
+    StatusBars2_GroupOptions_AutoLayoutListUpdate( scrollFrame );
+    StatusBars2_Config.doUpdate = true;
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_GroupOptions_AutoLayoutDown_OnClick
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_GroupOptions_AutoLayoutDown_OnClick( self )
+
+    local scrollFrame = self:GetParent( ).autoLayoutList;
+    local offset = HybridScrollFrame_GetOffset(scrollFrame);
+    local selectedButtonIndex = scrollFrame.selectedIndex;
+    local selectedBarIndex = offset + selectedButtonIndex;
+    local bar = scrollFrame.allEntries[selectedBarIndex];
+    
+    -- Only do something if this is not already the last bar in the list
+    if( selectedBarIndex < #scrollFrame.allEntries ) then
+        local lowerBar = scrollFrame.allEntries[ selectedBarIndex + 1 ];
+
+        -- swap indices
+        local tempIndex = lowerBar.index;
+        lowerBar.index = bar.index;
+        bar.index = tempIndex;
+
+        -- Update the selected index, since the selected bar has now moved down
+        if( scrollFrame.selectedIndex < #scrollFrame.buttons ) then
+            scrollFrame.selectedIndex = scrollFrame.selectedIndex + 1;
+        else
+            HybridScrollFrame_SetOffset( scrollFrame, offset + 1 );
+        end
+    end
+
+    StatusBars2_GroupOptions_AutoLayoutListUpdate( scrollFrame );
+    StatusBars2_Config.doUpdate = true;
+
+end
+
+-------------------------------------------------------------------------------
+--
 --  Name:           StatusBars2_GroupOptions_AutoLayoutListEntryButton_Checkbox_OnClick
 --
 --  Description:    
@@ -1165,12 +1265,18 @@ function StatusBars2_GroupOptions_AutoLayoutListEntryButton_Checkbox_OnClick( se
     local offset = HybridScrollFrame_GetOffset(scrollFrame);
     local buttonIndex = listEntry.index;
     local bar = scrollFrame.allEntries[buttonIndex + offset];
-    print("Checkbox index ", buttonIndex, " checked ", self:GetChecked(), " offset ", offset, " bar ", bar.key);
 
     if( self:GetChecked( ) ) then
         bar.position = nil;
-        StatusBars2_Config.doUpdate = true;
+    else
+        -- Fake letting go of the mouse button
+        bar.startX = 10000;
+        bar.startY = 10000;
+        bar.isMoving = true;
+        StatusBars2_Movable_StopMoving( bar );
     end
+
+    StatusBars2_Config.doUpdate = true;
 
 end
 

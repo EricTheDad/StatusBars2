@@ -23,10 +23,10 @@ local kDemonicFury = addonTable.barTypes.kDemonicFury;
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateEclipseBar( )
+function StatusBars2_CreateEclipseBar( group, index, removeWhenHidden )
 
     -- Create the bar
-    local bar = StatusBars2_CreateBar( "eclipse", "StatusBars2_EclipseBarTemplate", "player", ECLIPSE, kEclipse );
+    local bar = StatusBars2_CreateBar( group, index, removeWhenHidden, "eclipse", "StatusBars2_EclipseBarTemplate", "player", ECLIPSE, kEclipse );
 
     -- Set the event handlers
     bar.OnEvent = StatusBars2_EclipseBar_OnEvent;

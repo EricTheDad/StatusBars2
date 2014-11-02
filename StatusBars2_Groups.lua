@@ -3,10 +3,10 @@
 local addonName, addonTable = ... --Pulls back the Addon-Local Variables and stores them locally
 
 -- Group ids
-local kPlayerGroup              = 1;
-local kTargetGroup              = 2;
-local kFocusGroup               = 3;
-local kPetGroup                 = 4;
+local kPlayerGroup              = addonTable.groupIDs.kPlayerGroup;
+local kTargetGroup              = addonTable.groupIDs.kTargetGroup;
+local kFocusGroup               = addonTable.groupIDs.kFocusGroup;
+local kPetGroup                 = addonTable.groupIDs.kPetGroup;
 
 local groups = addonTable.groups;
 local bars = addonTable.bars;

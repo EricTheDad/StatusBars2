@@ -26,14 +26,14 @@ local kDemonicFury = addonTable.barTypes.kDemonicFury;
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreatePowerBar( key, unit, barType, powerType )
+function StatusBars2_CreatePowerBar( group, index, removeWhenHidden, key, unit, barType, powerType )
 
     if( not barType ) then barType = kPower end
     
     local displayName = StatusBars2_ConstructDisplayName( unit, barType );
 
     -- Create the power bar
-    local bar = StatusBars2_CreateContinuousBar( key, unit, displayName, barType, 1, 1, 0 );
+    local bar = StatusBars2_CreateContinuousBar( group, index, removeWhenHidden, key, unit, displayName, barType, 1, 1, 0 );
 
     -- If its the druid mana bar use a special options template
     if( barType == kDruidMana ) then
