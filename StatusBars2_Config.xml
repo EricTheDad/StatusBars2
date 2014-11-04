@@ -196,45 +196,6 @@
         <Size x="150" y="20" />
     </Button>
 
-    <Button name="StatusBar2_AutoLayoutListEntryButtonTemplate" virtual="true" >
-        <ButtonText name="$parentText">
-            <Size x="140" y="13"/>
-            <Anchors>
-                <Anchor point="LEFT" relativeTo="$parent" >
-                    <Offset>
-                        <AbsDimension x="10" y="1"/>
-                    </Offset>
-                </Anchor>
-            </Anchors>
-        </ButtonText>
-        <DisabledFont style="GameFontDisableLeft"/>
-        <HighlightFont style="GameFontHighlightLeft"/>
-        <HighlightTexture file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD"/>
-        <NormalFont style="GameFontNormalLeft"/>
-        <Frames>
-            <CheckButton name="$parent_EnableToAutoLayout" parentKey="enableAutoLayout" inherits="OptionsSmallCheckButtonTemplate" >
-                <Anchors>
-                    <Anchor point="RIGHT">
-                        <Offset x="0" y="0" />
-                    </Anchor>
-                </Anchors>
-                <Scripts>
-                    <OnClick>
-                        PlaySound("UChatScrollButton");
-                        StatusBars2_GroupOptions_AutoLayoutListEntryButton_Checkbox_OnClick( self );
-                    </OnClick>
-                </Scripts>
-            </CheckButton>
-        </Frames>
-        <Scripts>
-            <OnClick>
-                PlaySound("UChatScrollButton");
-                StatusBars2_BarOptions_AutoLayoutListEntryButton_OnClick( self, button, down );
-            </OnClick>
-        </Scripts>
-        <Size x="180" y="20" />
-    </Button>
-
     <ScrollFrame name="StatusBars2_ScrollFrameTemplate" inherits="HybridScrollFrameTemplate" virtual="true">
         <Layers>
             <Layer level="BACKGROUND">
@@ -254,7 +215,7 @@
                     </Size>
                     <Anchors>
                         <Anchor point="TOPRIGHT">
-                            <Offset x="0" y="5"/>
+                            <Offset x="24" y="5"/>
                         </Anchor>
                     </Anchors>
                 </Texture>
@@ -280,7 +241,7 @@
                     </Size>
                     <Anchors>
                         <Anchor point="BOTTOMRIGHT">
-                            <Offset x="0" y="-5"/>
+                            <Offset x="24" y="-5"/>
                         </Anchor>
                     </Anchors>
                 </Texture>
@@ -315,12 +276,12 @@
                 <Anchors>
                     <Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
                         <Offset>
-                            <AbsDimension x="-23" y="-14"/>
+                            <AbsDimension x="1" y="-13"/>
                         </Offset>
                     </Anchor>
                     <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
                         <Offset>
-                            <AbsDimension x="-23" y="11"/>
+                            <AbsDimension x="1" y="11"/>
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -550,11 +511,11 @@
 
     <Button name="StatusBar2_UpButton" virtual="true" >
         <Size>
-            <AbsDimension x="50" y="50"/>
+            <AbsDimension x="48" y="48"/>
         </Size>
         <NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Up">
             <Size>
-                <AbsDimension x="50" y="50"/>
+                <AbsDimension x="48" y="48"/>
             </Size>
             <Anchors>
                 <Anchor point="RIGHT"/>
@@ -562,7 +523,7 @@
         </NormalTexture>
         <PushedTexture name="$parentPushedTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Down">
             <Size>
-                <AbsDimension x="50" y="50"/>
+                <AbsDimension x="48" y="48"/>
             </Size>
             <Anchors>
                 <Anchor point="RIGHT"/>
@@ -570,7 +531,7 @@
         </PushedTexture>
         <DisabledTexture name="$parentDisabledTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Disabled">
             <Size>
-                <AbsDimension x="50" y="50"/>
+                <AbsDimension x="48" y="48"/>
             </Size>
             <Anchors>
                 <Anchor point="RIGHT"/>
@@ -578,7 +539,7 @@
         </DisabledTexture>
         <HighlightTexture name="$parentHighlightTexture" file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD">
             <Size>
-                <AbsDimension x="50" y="50"/>
+                <AbsDimension x="48" y="48"/>
             </Size>
             <Anchors>
                 <Anchor point="RIGHT"/>
@@ -588,11 +549,11 @@
 
     <Button name="StatusBar2_DownButton" virtual="true" >
         <Size>
-            <AbsDimension x="50" y="50"/>
+            <AbsDimension x="48" y="48"/>
         </Size>
         <NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
             <Size>
-                <AbsDimension x="50" y="50"/>
+                <AbsDimension x="48" y="48"/>
             </Size>
             <Anchors>
                 <Anchor point="RIGHT"/>
@@ -600,7 +561,7 @@
         </NormalTexture>
         <PushedTexture name="$parentPushedTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down">
             <Size>
-                <AbsDimension x="50" y="50"/>
+                <AbsDimension x="48" y="48"/>
             </Size>
             <Anchors>
                 <Anchor point="RIGHT"/>
@@ -608,7 +569,7 @@
         </PushedTexture>
         <DisabledTexture name="$parentDisabledTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled">
             <Size>
-                <AbsDimension x="50" y="50"/>
+                <AbsDimension x="48" y="48"/>
             </Size>
             <Anchors>
                 <Anchor point="RIGHT"/>
@@ -616,7 +577,7 @@
         </DisabledTexture>
         <HighlightTexture name="$parentHighlightTexture" file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD">
             <Size>
-                <AbsDimension x="50" y="50"/>
+                <AbsDimension x="48" y="48"/>
             </Size>
             <Anchors>
                 <Anchor point="RIGHT"/>
@@ -624,21 +585,106 @@
         </HighlightTexture>
     </Button>
 
+    <CheckButton name="StatusBars2_InListCheckButtonTemplate" virtual="true" inherits="OptionsBaseCheckButtonTemplate">
+		<HitRectInsets>
+			<AbsInset left="0" right="0" top="0" bottom="0"/>
+		</HitRectInsets>
+    </CheckButton>
+
+    <Button name="StatusBar2_AutoLayoutListEntryButtonTemplate" virtual="true" >
+        <ButtonText name="$parentText">
+            <Anchors>
+                <Anchor point="TOPLEFT" relativeTo="$parent" >
+                    <Offset>
+                        <AbsDimension x="4" y="2"/>
+                    </Offset>
+                </Anchor>
+                <Anchor point="BOTTOMRIGHT" relativeTo="$parent" >
+                    <Offset>
+                        <AbsDimension x="-4" y="-2"/>
+                    </Offset>
+                </Anchor>
+            </Anchors>
+        </ButtonText>
+        <DisabledFont style="GameFontDisableLeft"/>
+        <HighlightFont style="GameFontHighlightLeft"/>
+        <HighlightTexture file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD"/>
+        <NormalFont style="GameFontNormalLeft"/>
+        <Frames>
+            <Frame name="$parent_LayoutType" parentKey="layoutType" inherits="UIDropDownMenuTemplate" >
+                <Size x="110" y="20"/>
+                <Anchors>
+                    <Anchor point="LEFT" relativePoint="RIGHT">
+                        <Offset x="0" y="0" />
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        UIDropDownMenu_Initialize( self, StatusBars2_LayoutTypeMenu_Initialize );
+                        UIDropDownMenu_SetWidth( self, self:GetWidth( ) );
+                        UIDropDownMenu_SetButtonWidth( self, "TEXT" );
+                    </OnLoad>
+                </Scripts>
+            </Frame>
+        </Frames>
+        <Scripts>
+            <OnClick>
+                PlaySound("UChatScrollButton");
+                StatusBars2_BarOptions_AutoLayoutListEntryButton_OnClick( self, button, down );
+            </OnClick>
+        </Scripts>
+        <Size x="120" y="20" />
+    </Button>
+
     <!-- Group layout and options frame template -->
     <Frame name="StatusBars2_GroupOptionsConfigTemplate" inherits="StatusBars2_LayoutConfigTemplate" virtual="true" >
+        <Layers>
+			<Layer level="BACKGROUND">
+                <FontString name="$parent_AutoLayoutLabel" inherits="GameFontNormalSmallLeft" text="Auto-Layout" >
+                    <Size x="40" y="20"/>
+                    <Anchors>
+                        <Anchor point="TOPRIGHT">
+                            <Offset>
+                                <AbsDimension x="-5" y="-5"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parent_LockToGroupLabel" inherits="GameFontNormalSmallLeft" text="Lock To Group" >
+                    <Size x="40" y="20"/>
+                    <Anchors>
+                        <Anchor point="RIGHT" relativeTo="$parent_AutoLayoutLabel" relativePoint="LEFT">
+                            <Offset>
+                                <AbsDimension x="0" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parent_BarLabel" inherits="GameFontNormalSmallLeft" text="Bar" >
+                    <Size x="64" y="20"/>
+                    <Anchors>
+                        <Anchor point="RIGHT" relativeTo="$parent_LockToGroupLabel" relativePoint="LEFT">
+                            <Offset>
+                                <AbsDimension x="0" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
         <Frames>
             <ScrollFrame name="$parent_AutoLayoutList" parentKey="autoLayoutList" inherits="StatusBars2_ScrollFrameTemplate" >
                 <Anchors>
-                    <Anchor point="TOPRIGHT">
+                    <Anchor point="TOPRIGHT" relativeTo="$parent_AutoLayoutLabel" relativePoint="BOTTOMRIGHT">
                         <Offset>
-                            <AbsDimension x="0" y="-5"/>
+                            <AbsDimension x="-25" y="-5"/>
                         </Offset>
                     </Anchor>
-                    <Anchor point="BOTTOMRIGHT">
+                    <!--<Anchor point="BOTTOMRIGHT">
                         <Offset>
                             <Offset x="0" y="5"/>
                         </Offset>
-                    </Anchor>
+                    </Anchor>-->
                 </Anchors>
                 <Scripts>
                     <OnLoad>
@@ -650,7 +696,7 @@
                         StatusBars2_GroupOptions_AutoLayoutListUpdate( self );    
                     </OnShow>
                 </Scripts>
-                <Size x="180" y="200" />
+                <Size x="260" y="70" />
             </ScrollFrame>
             <Button name="$parent_MoveUpButton" parentKey="moveUpButton" inherits="StatusBar2_UpButton">
                 <Anchors>
@@ -665,6 +711,7 @@
                         self:Disable();
                     </OnLoad>
                     <OnClick>
+                        PlaySound("UChatScrollButton");
                         StatusBars2_GroupOptions_AutoLayoutUp_OnClick( self );
                     </OnClick>
                 </Scripts>
@@ -682,6 +729,7 @@
                         self:Disable();
                     </OnLoad>
                     <OnClick>
+                        PlaySound("UChatScrollButton");
                         StatusBars2_GroupOptions_AutoLayoutDown_OnClick( self );
                     </OnClick>
                 </Scripts>
@@ -1005,7 +1053,7 @@
                     </Anchor>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_AuraNameInput" relativePoint="BOTTOMRIGHT">
                         <Offset>
-                            <AbsDimension x="0" y="0"/>
+                            <AbsDimension x="-24" y="0"/>
                         </Offset>
                     </Anchor>
                     <Anchor point="BOTTOM" relativeTo="$parent_ClearAuraListButton" relativePoint="TOP">
@@ -1161,6 +1209,20 @@
             </OnClick>
         </Scripts>
     </Button>
+
+    <Frame name="StatusBars2Config_RightClickMenu" inherits="UIDropDownMenuTemplate" hidden="true" >
+        <Size x="70" y="17"/>
+        <Scripts>
+            <OnLoad>
+                UIDropDownMenu_Initialize( self, StatusBars2_BarEnabledMenu_Initialize, "MENU" );
+                UIDropDownMenu_SetWidth(self, self:GetWidth());
+                UIDropDownMenu_SetButtonWidth(self, "TEXT");
+            </OnLoad>
+            <OnShow>
+                StatusBars2Config_RightClickMenu_OnShow( self );
+            </OnShow>
+        </Scripts>
+    </Frame>
 
 
     <!-- StatusBars2 Configuration Frame -->

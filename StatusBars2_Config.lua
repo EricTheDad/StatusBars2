@@ -70,6 +70,19 @@ local PercentTextInfo =
     { label = "Hide",   value = "Hide" },
 }
 
+local LayoutTypeInfo =
+{
+    AutoLayout = { label = "AutoLayout"},
+    GroupLocked = { label = "GroupLocked" },
+    Background = { label = "Background" },
+}
+
+local LaoutTypeInfoOrdered =
+{
+    LayoutTypeInfo.AutoLayout,
+    LayoutTypeInfo.GroupLocked,
+    LayoutTypeInfo.Background,
+}
 -------------------------------------------------------------------------------
 --
 --  Name:           StatusBars2Config_SetConfigMode
@@ -609,6 +622,16 @@ local function Config_Movable_OnMouseDown( self, button )
         StatusBars2.moveMode = moveMode or StatusBars2.moveMode;
         StatusBars2Config_SetBar( StatusBars2_Config, self );
         StatusBars2_Movable_StartMoving( self );
+
+    elseif( button == "RightButton" ) then
+
+        --[[
+        StatusBars2Config_RightClickMenu:ClearAllPoints( );
+        StatusBars2Config_RightClickMenu:SetPoint( "TOPLEFT", self, "BOTTOMRIGHT", 5, 5 );
+        StatusBars2Config_RightClickMenu.bar = self;
+        StatusBars2Config_RightClickMenu:Show( );
+        ]]--
+
     end
 
 end
@@ -625,7 +648,13 @@ local function Config_Movable_OnMouseUp( self, button )
 
     -- Move on left button down
     if( button == 'LeftButton' ) then
+
         StatusBars2_Movable_StopMoving( self );
+
+    elseif( button == "RightButton" ) then
+
+        StatusBars2Config_RightClickMenu:Hide( );
+
     end
 
 end
@@ -1170,6 +1199,24 @@ end
 
 -------------------------------------------------------------------------------
 --
+--  Name:           StatusBars2_GroupOptions_AutoLayout_UpdateSelectedIndex
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+local function StatusBars2_GroupOptions_AutoLayout_UpdateSelectedIndex( scrollFrame, newSelectedIndex )
+
+    scrollFrame.selectedIndex = newSelectedIndex
+    local height = math.max(0, math.floor(scrollFrame.buttonHeight * (newSelectedIndex - (#scrollFrame.buttons)/2)));
+    HybridScrollFrame_SetOffset(scrollFrame, height);
+    scrollFrame:update( );
+    scrollFrame.scrollBar:SetValue(height);
+
+end
+
+-------------------------------------------------------------------------------
+--
 --  Name:           StatusBars2_GroupOptions_AutoLayoutUp_OnClick
 --
 --  Description:    
@@ -1179,30 +1226,20 @@ end
 function StatusBars2_GroupOptions_AutoLayoutUp_OnClick( self )
 
     local scrollFrame = self:GetParent( ).autoLayoutList;
-    local offset = HybridScrollFrame_GetOffset(scrollFrame);
-    local selectedButtonIndex = scrollFrame.selectedIndex;
-    local selectedBarIndex = offset + selectedButtonIndex;
-    local bar = scrollFrame.allEntries[selectedBarIndex];
-    
+    local selectedIndex = scrollFrame.selectedIndex;
+
     -- Only do something if this is not already the first bar in the list
-    if( selectedBarIndex > 1 ) then
-        local upperBar = scrollFrame.allEntries[ selectedBarIndex - 1 ];
+    if( selectedIndex > 1 ) then
+        local bar = scrollFrame.allEntries[selectedIndex];
+        local upperBar = scrollFrame.allEntries[ selectedIndex - 1 ];
 
         -- swap indices
-        local tempIndex = upperBar.index;
-        upperBar.index = bar.index;
-        bar.index = tempIndex;
+        bar.index, upperBar.index = upperBar.index, bar.index;
 
-        -- Update the selected index, since the selected bar has now moved down
-        if( scrollFrame.selectedIndex > 1 ) then
-            scrollFrame.selectedIndex = scrollFrame.selectedIndex - 1;
-        else
-            HybridScrollFrame_SetOffset( scrollFrame, offset - 1 );
-        end
+        StatusBars2_GroupOptions_AutoLayout_UpdateSelectedIndex( scrollFrame, selectedIndex - 1 );
+        StatusBars2_Config.doUpdate = true;
+
     end
-
-    StatusBars2_GroupOptions_AutoLayoutListUpdate( scrollFrame );
-    StatusBars2_Config.doUpdate = true;
 
 end
 
@@ -1217,42 +1254,71 @@ end
 function StatusBars2_GroupOptions_AutoLayoutDown_OnClick( self )
 
     local scrollFrame = self:GetParent( ).autoLayoutList;
-    local offset = HybridScrollFrame_GetOffset(scrollFrame);
-    local selectedButtonIndex = scrollFrame.selectedIndex;
-    local selectedBarIndex = offset + selectedButtonIndex;
-    local bar = scrollFrame.allEntries[selectedBarIndex];
-    
+    local selectedIndex = scrollFrame.selectedIndex;
+
     -- Only do something if this is not already the last bar in the list
-    if( selectedBarIndex < #scrollFrame.allEntries ) then
-        local lowerBar = scrollFrame.allEntries[ selectedBarIndex + 1 ];
+    if( selectedIndex < #scrollFrame.allEntries ) then
+
+        local bar = scrollFrame.allEntries[selectedIndex];
+        local lowerBar = scrollFrame.allEntries[ selectedIndex + 1 ];
 
         -- swap indices
-        local tempIndex = lowerBar.index;
-        lowerBar.index = bar.index;
-        bar.index = tempIndex;
+        bar.index, lowerBar.index = lowerBar.index, bar.index;
 
-        -- Update the selected index, since the selected bar has now moved down
-        if( scrollFrame.selectedIndex < #scrollFrame.buttons ) then
-            scrollFrame.selectedIndex = scrollFrame.selectedIndex + 1;
-        else
-            HybridScrollFrame_SetOffset( scrollFrame, offset + 1 );
-        end
+        StatusBars2_GroupOptions_AutoLayout_UpdateSelectedIndex( scrollFrame, selectedIndex + 1 );
+        StatusBars2_Config.doUpdate = true;
+
     end
-
-    StatusBars2_GroupOptions_AutoLayoutListUpdate( scrollFrame );
-    StatusBars2_Config.doUpdate = true;
 
 end
 
 -------------------------------------------------------------------------------
 --
---  Name:           StatusBars2_GroupOptions_AutoLayoutListEntryButton_Checkbox_OnClick
+--  Name:           StatusBars2Config_LayoutType_OnClick
 --
 --  Description:    
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_GroupOptions_AutoLayoutListEntryButton_Checkbox_OnClick( self )
+local function StatusBars2Config_LayoutType_OnClick( self, menu  )
+
+    UIDropDownMenu_SetSelectedValue( menu, self.value.value );
+    UIDropDownMenu_SetText( menu, self.value.label );
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_LayoutTypeMenu_Initialize
+--
+--  Description:    Initialize the enabled drop down menu
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_LayoutTypeMenu_Initialize( self )
+
+    local entry = UIDropDownMenu_CreateInfo();
+
+    for i, info in ipairs( LaoutTypeInfoOrdered ) do
+        entry.func = StatusBars2Config_LayoutType_OnClick;
+        entry.arg1 = self;
+        entry.value = info;
+        entry.text = info.label;
+        entry.checked = UIDropDownMenu_GetSelectedValue( self ) == info;
+        UIDropDownMenu_AddButton( entry );
+    end
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_GroupOptions_AutoLayoutListEntryButton_EnableAutoLayout_OnClick
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_GroupOptions_AutoLayoutListEntryButton_EnableAutoLayout_OnClick( self )
 
     local listEntry = self:GetParent( );
     local scrollFrame = listEntry:GetParent( );
@@ -1264,7 +1330,7 @@ function StatusBars2_GroupOptions_AutoLayoutListEntryButton_Checkbox_OnClick( se
 
     local offset = HybridScrollFrame_GetOffset(scrollFrame);
     local buttonIndex = listEntry.index;
-    local bar = scrollFrame.allEntries[buttonIndex + offset];
+    local bar = scrollFrame.allEntries[buttonIndex];
 
     if( self:GetChecked( ) ) then
         bar.position = nil;
@@ -1277,6 +1343,21 @@ function StatusBars2_GroupOptions_AutoLayoutListEntryButton_Checkbox_OnClick( se
     end
 
     StatusBars2_Config.doUpdate = true;
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_GroupOptions_AutoLayoutListEntryButton_LockToGroup_OnClick
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_GroupOptions_AutoLayoutListEntryButton_LockToGroup_OnClick( self )
+
+    local listEntry = self:GetParent( );
+    local scrollFrame = listEntry:GetParent( );
 
 end
 
@@ -1302,60 +1383,63 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_GroupOptions_AutoLayoutListUpdate( self )
+function StatusBars2_GroupOptions_AutoLayoutListUpdate( scrollFrame )
 
-    if self then
-        currentScrollFrame = self;
+    local offset = HybridScrollFrame_GetOffset(scrollFrame);
+
+    if( scrollFrame.allEntries ) then
+        table.sort( scrollFrame.allEntries, StatusBars2_AutoLayout_BarCompareFunction );
     end
 
-    if currentScrollFrame then
+    local buttons = scrollFrame.buttons;
+    local selectedIndex = scrollFrame.selectedIndex;
+    local bar, barIndex;
 
-        local scrollFrame = currentScrollFrame;
-        local offset = HybridScrollFrame_GetOffset(scrollFrame);
+    for i, entry in ipairs(buttons) do
+        barIndex = i + offset;
 
-        if( scrollFrame.allEntries ) then
-            table.sort( scrollFrame.allEntries, StatusBars2_AutoLayout_BarCompareFunction );
-        end
+        if scrollFrame.allEntries and scrollFrame.allEntries[barIndex] then
+            bar = scrollFrame.allEntries[barIndex];
+            entry:SetText( bar.displayName );
+            entry:Show();
+            entry.barIndex = barIndex;
 
-        if self or offset ~= oldOffset then
-            oldOffset = offset;
-
-            local buttons = scrollFrame.buttons;
-            local button_height = buttons[1]:GetHeight();
-            local bar;
-            local checkButton;
-
-            for i, entry in ipairs(buttons) do
-                local index = i + offset;
-
-                if scrollFrame.allEntries and scrollFrame.allEntries[index] then
-                    bar = scrollFrame.allEntries[index];
-                    entry:SetText( bar.displayName );
-                    entry:Show();
-                    entry.index = index;
-
-                    if scrollFrame.selectedIndex == index then
-                        entry:LockHighlight( );
-                    else
-                        entry:UnlockHighlight( );
-                    end
-
-                    entry.enableAutoLayout:SetChecked( bar.position == nil );
-
-                else
-                    entry:Hide();
-                end
+            if( selectedIndex == barIndex ) then
+                entry:LockHighlight( );
+            else
+                entry:UnlockHighlight( );
             end
 
-            local num_entries = 0;
-            if scrollFrame.allEntries then
-                num_entries = #scrollFrame.allEntries;
-            end
+            local value = bar.position and LayoutTypeInfo.GroupLocked or LayoutTypeInfo.AutoLayout;
+            UIDropDownMenu_SetSelectedValue( entry.layoutType, value );
+            UIDropDownMenu_SetText( entry.layoutType, value.label );
 
-            HybridScrollFrame_Update(scrollFrame, num_entries * button_height, scrollFrame:GetHeight());
+        else
+            entry:Hide();
         end
     end
+
+    local num_entries = scrollFrame.allEntries and #scrollFrame.allEntries or 0;
+    HybridScrollFrame_Update(scrollFrame, num_entries * scrollFrame.buttonHeight, scrollFrame:GetHeight());
     
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2Config_RightClickMenu_OnShow
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2Config_RightClickMenu_OnShow( self )
+
+    local bar = self.bar;
+    
+    if bar then
+        UIDropDownMenu_SetSelectedValue( self, bar.enabled );
+    end
+
 end
 
 --[[
