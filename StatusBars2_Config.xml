@@ -585,12 +585,6 @@
         </HighlightTexture>
     </Button>
 
-    <CheckButton name="StatusBars2_InListCheckButtonTemplate" virtual="true" inherits="OptionsBaseCheckButtonTemplate">
-		<HitRectInsets>
-			<AbsInset left="0" right="0" top="0" bottom="0"/>
-		</HitRectInsets>
-    </CheckButton>
-
     <Button name="StatusBar2_AutoLayoutListEntryButtonTemplate" virtual="true" >
         <ButtonText name="$parentText">
             <Anchors>
@@ -610,23 +604,6 @@
         <HighlightFont style="GameFontHighlightLeft"/>
         <HighlightTexture file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD"/>
         <NormalFont style="GameFontNormalLeft"/>
-        <Frames>
-            <Frame name="$parent_LayoutType" parentKey="layoutType" inherits="UIDropDownMenuTemplate" >
-                <Size x="110" y="20"/>
-                <Anchors>
-                    <Anchor point="LEFT" relativePoint="RIGHT">
-                        <Offset x="0" y="0" />
-                    </Anchor>
-                </Anchors>
-                <Scripts>
-                    <OnLoad>
-                        UIDropDownMenu_Initialize( self, StatusBars2_LayoutTypeMenu_Initialize );
-                        UIDropDownMenu_SetWidth( self, self:GetWidth( ) );
-                        UIDropDownMenu_SetButtonWidth( self, "TEXT" );
-                    </OnLoad>
-                </Scripts>
-            </Frame>
-        </Frames>
         <Scripts>
             <OnClick>
                 PlaySound("UChatScrollButton");
@@ -747,7 +724,7 @@
     <Frame name="StatusBars2_BarConfigTemplate" inherits="StatusBars2_LayoutConfigTemplate" virtual="true" >
 		<Layers>
 			<Layer level="BACKGROUND">
-                <FontString name="$parent_EnabledLabel" inherits="GameFontNormalSmallLeft" text="Enabled" >
+                <FontString name="$parent_LayoutLabel" inherits="GameFontNormalSmallLeft" text="Layout Options" >
                     <Size x="64" y="20"/>
                     <Anchors>
                         <Anchor point="TOPLEFT" relativeTo="$Parent" >
@@ -757,9 +734,34 @@
                         </Anchor>
                     </Anchors>
                 </FontString>
+                <FontString name="$parent_EnabledLabel" inherits="GameFontNormalSmallLeft" text="Enabled" >
+                    <Size x="64" y="20"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parent_LayoutLabel" relativePoint="BOTTOMLEFT">
+                            <Offset>
+                                <AbsDimension x="0" y="-5"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
             </Layer>
         </Layers>
         <Frames>
+            <Frame name="$parent_LayoutType" parentKey="layoutTypeMenu" inherits="UIDropDownMenuTemplate" >
+                <Size x="140" y="17"/>
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="$parent_LayoutLabel" relativePoint="RIGHT" >
+                        <Offset x="0" y="-3" />
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        UIDropDownMenu_Initialize( self, StatusBars2_LayoutTypeMenu_Initialize );
+                        UIDropDownMenu_SetWidth( self, self:GetWidth( ) );
+                        UIDropDownMenu_SetButtonWidth( self, "TEXT" );
+                    </OnLoad>
+                </Scripts>
+            </Frame>
             <Frame name="$parent_EnabledMenu" parentKey="enabledMenu" inherits="UIDropDownMenuTemplate" >
                 <Size x="70" y="17"/>
                 <Anchors>
@@ -1228,7 +1230,7 @@
     <!-- StatusBars2 Configuration Frame -->
 	<Frame name="StatusBars2_Config_Template" toplevel="true" inherits="StatusBars2_DialogFrameTemplete" parent="UIParent" hidden="true" enableMouse="true" frameStrata="DIALOG" virtual="true">
 		<Size>
-			<AbsDimension x="550" y="300"/>
+			<AbsDimension x="550" y="320"/>
 		</Size>
         <TitleRegion>
             <Size x="300" y="68"/>

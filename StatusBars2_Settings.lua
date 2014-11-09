@@ -429,6 +429,7 @@ local function StatusBars2_Settings_Apply_BarSettings( save, bar, barSettings )
         barSettings.index = bar.index;
         barSettings.scale = bar.scale ~= 1 and bar.scale or nil;
         barSettings.alpha = bar.alpha and bar.alpha < 1 and bar.alpha or nil;
+        barSettings.layoutType = ( bar.layoutType ~= "Autolayout" and bar.layoutType ) or nil;
 
         barSettings.position = bar.position and ( barSettings.position or {} ) or nil;
 
@@ -456,6 +457,7 @@ local function StatusBars2_Settings_Apply_BarSettings( save, bar, barSettings )
         bar.index = barSettings.index;
         bar.scale = barSettings.scale or 1.0;
         bar.alpha = barSettings.alpha or 1.0;
+        bar.layoutType = barSettings.layoutType or "AutoLayout";
 
         bar.position = barSettings.position and ( bar.position or {} ) or nil;
 

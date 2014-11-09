@@ -72,9 +72,9 @@ local PercentTextInfo =
 
 local LayoutTypeInfo =
 {
-    AutoLayout = { label = "AutoLayout"},
-    GroupLocked = { label = "GroupLocked" },
-    Background = { label = "Background" },
+    AutoLayout = { label = "Auto-layout", value = "AutoLayout" },
+    GroupLocked = { label = "Locked To Group", value = "GroupLocked" },
+    Background = { label = "Locked To Background", value = "BGLocked" },
 }
 
 local LaoutTypeInfoOrdered =
@@ -161,6 +161,7 @@ local function StatusBars2Config_Bar_DoDataExchange( configPanel, save, bar )
     local rnd = StatusBars2_Round;
     local frame = bar.configPanel;
     local group = groups[ bar.group ];
+    local layoutMenu = frame.layoutTypeMenu;
     local enabledMenu = frame.enabledMenu;
     local scaleSlider = frame.scaleSlider;
     local alphaSlider = frame.alphaSlider;
@@ -181,6 +182,7 @@ local function StatusBars2Config_Bar_DoDataExchange( configPanel, save, bar )
 
     -- Exchange data
     if( save ) then
+        bar.layoutType = UIDropDownMenu_GetSelectedValue( layoutMenu ).value;
         bar.enabled = UIDropDownMenu_GetSelectedValue( enabledMenu );
         bar.scale = StatusBars2_Round( scaleSlider:GetValue( ), 2 );
 
@@ -239,6 +241,8 @@ local function StatusBars2Config_Bar_DoDataExchange( configPanel, save, bar )
         end
 
     else
+        UIDropDownMenu_SetSelectedValue( layoutMenu, LayoutTypeInfo[ bar.layoutType ] );
+        UIDropDownMenu_SetText( layoutMenu, LayoutTypeInfo[ bar.layoutType ].label );
         UIDropDownMenu_SetSelectedValue( enabledMenu, bar.enabled );
         UIDropDownMenu_SetText( enabledMenu, bar.enabled );
         scaleSlider.applyToFrame = bar;
@@ -341,7 +345,7 @@ local function StatusBars2Config_Group_DoDataExchange( configPanel, save, bar )
         if ( autoLayoutList ) then
             autoLayoutList.allEntries = {};
             for i, bar in ipairs( bars ) do
-                if( bar.group == group.key ) then
+                if( bar.group == group.key and bar.layoutType == "AutoLayout" ) then
                     table.insert( autoLayoutList.allEntries, bar );
                 end
             end
@@ -409,7 +413,11 @@ end
 --
 function StatusBars2Config_OnUpdate( self )
 
-    StatusBars2Config_DoDataExchange( self, true, activeBar );
+    StatusBars2Config_DoDataExchange( self, true );
+
+    -- Changing layout type changes how some of the controls should be filled in, push the data again.
+    StatusBars2Config_DoDataExchange( StatusBars2_Config, false );
+
     StatusBars2_UpdateFullLayout( );
 
 end
@@ -1282,9 +1290,10 @@ end
 --
 local function StatusBars2Config_LayoutType_OnClick( self, menu  )
 
-    UIDropDownMenu_SetSelectedValue( menu, self.value.value );
+    UIDropDownMenu_SetSelectedValue( menu, self.value );
     UIDropDownMenu_SetText( menu, self.value.label );
 
+    StatusBars2_Config.doUpdate = true;
 end
 
 -------------------------------------------------------------------------------
@@ -1307,57 +1316,6 @@ function StatusBars2_LayoutTypeMenu_Initialize( self )
         entry.checked = UIDropDownMenu_GetSelectedValue( self ) == info;
         UIDropDownMenu_AddButton( entry );
     end
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_GroupOptions_AutoLayoutListEntryButton_EnableAutoLayout_OnClick
---
---  Description:    
---
--------------------------------------------------------------------------------
---
-function StatusBars2_GroupOptions_AutoLayoutListEntryButton_EnableAutoLayout_OnClick( self )
-
-    local listEntry = self:GetParent( );
-    local scrollFrame = listEntry:GetParent( );
-
-    -- keep going up the chain until we find the scrollFrame
-    while ( scrollFrame and scrollFrame:GetObjectType() ~= "ScrollFrame" ) do
-        scrollFrame = scrollFrame:GetParent( );
-    end
-
-    local offset = HybridScrollFrame_GetOffset(scrollFrame);
-    local buttonIndex = listEntry.index;
-    local bar = scrollFrame.allEntries[buttonIndex];
-
-    if( self:GetChecked( ) ) then
-        bar.position = nil;
-    else
-        -- Fake letting go of the mouse button
-        bar.startX = 10000;
-        bar.startY = 10000;
-        bar.isMoving = true;
-        StatusBars2_Movable_StopMoving( bar );
-    end
-
-    StatusBars2_Config.doUpdate = true;
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_GroupOptions_AutoLayoutListEntryButton_LockToGroup_OnClick
---
---  Description:    
---
--------------------------------------------------------------------------------
---
-function StatusBars2_GroupOptions_AutoLayoutListEntryButton_LockToGroup_OnClick( self )
-
-    local listEntry = self:GetParent( );
-    local scrollFrame = listEntry:GetParent( );
 
 end
 
@@ -1399,20 +1357,17 @@ function StatusBars2_GroupOptions_AutoLayoutListUpdate( scrollFrame )
         barIndex = i + offset;
 
         if scrollFrame.allEntries and scrollFrame.allEntries[barIndex] then
+
             bar = scrollFrame.allEntries[barIndex];
+            entry.index = barIndex;
             entry:SetText( bar.displayName );
             entry:Show();
-            entry.barIndex = barIndex;
 
             if( selectedIndex == barIndex ) then
                 entry:LockHighlight( );
             else
                 entry:UnlockHighlight( );
             end
-
-            local value = bar.position and LayoutTypeInfo.GroupLocked or LayoutTypeInfo.AutoLayout;
-            UIDropDownMenu_SetSelectedValue( entry.layoutType, value );
-            UIDropDownMenu_SetText( entry.layoutType, value.label );
 
         else
             entry:Hide();

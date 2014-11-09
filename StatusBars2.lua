@@ -490,10 +490,10 @@ function StatusBars2_UpdateLayout( )
     for i, bar in ipairs( bars ) do
         -- If the bar has a group and index set include it in the layout
         if( bar.isEnabled and ( not bar.removeWhenHidden or bar.visible ) ) then
-            if( bar.position ) then
-                table.insert( positionedBars, bar );
-            else
+            if( bar.layoutType == "AutoLayout" ) then
                 table.insert( layoutBars, bar );
+            else
+                table.insert( positionedBars, bar );
             end
         end
     end
@@ -520,7 +520,7 @@ function StatusBars2_UpdateLayout( )
             gx = px;
             gy = py + group_offset;
             StatusBars2_Movable_SetPosition( groupFrame, gx, gy);
-            gx, gy = groupFrame:GetCenter( );
+            gx = groupFrame:GetCenter( );
             gy = groupFrame:GetTop( );
             group_offset = group_offset - kGroupSpacing;
             offset = 0;
@@ -538,6 +538,14 @@ function StatusBars2_UpdateLayout( )
     end
 
     for i, bar in ipairs( positionedBars ) do
+        if( not bar.position ) then
+            -- Fake letting go of the mouse button
+            bar.startX = 10000;
+            bar.startY = 10000;
+            bar.isMoving = true;
+            StatusBars2_Movable_StopMoving( bar );
+        end
+
         bar:SetBarPosition( 0, 0 );
     end
 
