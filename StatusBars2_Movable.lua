@@ -29,7 +29,7 @@ local FontInfo = addonTable.fontInfo;
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_GetMoveMode( )
+function StatusBars2_GetMoveMode( self )
 
     local moveMode;
 
@@ -43,6 +43,11 @@ function StatusBars2_GetMoveMode( )
         else
             moveMode = "bar";
         end
+    end
+
+    -- layoutType "Background" is never locked to a group or all, so it always returns modeMode "bar"
+    if( moveMode and self.layoutType == "Background" ) then
+        moveMode = "bar";
     end
 
     return moveMode;
@@ -123,7 +128,7 @@ local function Normal_Movable_OnMouseDown( self, button )
 
     -- Move on left button down
     if( button == 'LeftButton' ) then
-        StatusBars2.moveMode = StatusBars2_GetMoveMode( );
+        StatusBars2.moveMode = StatusBars2_GetMoveMode( self );
         StatusBars2_Movable_StartMoving( self );
     end
 
@@ -189,6 +194,7 @@ end
 --
 function StatusBars2_Movable_OnEnable( self )
 
+    assert(self);
     local onMouseDown, onMouseUp;
 
     if( StatusBars2.configMode ) then
@@ -243,11 +249,11 @@ function StatusBars2_Movable_SetPosition( self, x, y, savePosition )
     --local ux, uy = UIParent:GetSize();
     --print("ux:"..rnd(ux).." uy:"..rnd(uy));
 
-    local parentFrame = self:GetParent( );
+    local parentFrame = ( self.layoutType ~= "Background" and self:GetParent( ) ) or UIParent;
     local px, py = parentFrame:GetCenter( );
     local relativeTo;
 
-    if ( parentFrame == UIParent ) then 
+    if ( parentFrame == UIParent and self.layoutType ~= "Background" ) then 
         relativeTo = "CENTER";
     else
         py = parentFrame:GetTop( );

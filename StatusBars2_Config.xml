@@ -615,46 +615,12 @@
 
     <!-- Group layout and options frame template -->
     <Frame name="StatusBars2_GroupOptionsConfigTemplate" inherits="StatusBars2_LayoutConfigTemplate" virtual="true" >
-        <Layers>
-			<Layer level="BACKGROUND">
-                <FontString name="$parent_AutoLayoutLabel" inherits="GameFontNormalSmallLeft" text="Auto-Layout" >
-                    <Size x="40" y="20"/>
-                    <Anchors>
-                        <Anchor point="TOPRIGHT">
-                            <Offset>
-                                <AbsDimension x="-5" y="-5"/>
-                            </Offset>
-                        </Anchor>
-                    </Anchors>
-                </FontString>
-                <FontString name="$parent_LockToGroupLabel" inherits="GameFontNormalSmallLeft" text="Lock To Group" >
-                    <Size x="40" y="20"/>
-                    <Anchors>
-                        <Anchor point="RIGHT" relativeTo="$parent_AutoLayoutLabel" relativePoint="LEFT">
-                            <Offset>
-                                <AbsDimension x="0" y="0"/>
-                            </Offset>
-                        </Anchor>
-                    </Anchors>
-                </FontString>
-                <FontString name="$parent_BarLabel" inherits="GameFontNormalSmallLeft" text="Bar" >
-                    <Size x="64" y="20"/>
-                    <Anchors>
-                        <Anchor point="RIGHT" relativeTo="$parent_LockToGroupLabel" relativePoint="LEFT">
-                            <Offset>
-                                <AbsDimension x="0" y="0"/>
-                            </Offset>
-                        </Anchor>
-                    </Anchors>
-                </FontString>
-            </Layer>
-        </Layers>
         <Frames>
             <ScrollFrame name="$parent_AutoLayoutList" parentKey="autoLayoutList" inherits="StatusBars2_ScrollFrameTemplate" >
                 <Anchors>
-                    <Anchor point="TOPRIGHT" relativeTo="$parent_AutoLayoutLabel" relativePoint="BOTTOMRIGHT">
+                    <Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
                         <Offset>
-                            <AbsDimension x="-25" y="-5"/>
+                            <AbsDimension x="-25" y="-35"/>
                         </Offset>
                     </Anchor>
                     <!--<Anchor point="BOTTOMRIGHT">
@@ -663,6 +629,24 @@
                         </Offset>
                     </Anchor>-->
                 </Anchors>
+                <Layers>
+                    <Layer level="BACKGROUND">
+                        <FontString name="$parent_Label" inherits="GameFontNormal" text="Auto-layout order" >
+                            <Anchors>
+                                <Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+                                    <Offset>
+                                        <AbsDimension x="0" y="10"/>
+                                    </Offset>
+                                </Anchor>
+                                <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT">
+                                    <Offset>
+                                        <AbsDimension x="0" y="10"/>
+                                    </Offset>
+                                </Anchor>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
                 <Scripts>
                     <OnLoad>
                         HybridScrollFrame_OnLoad(self);
@@ -673,7 +657,7 @@
                         StatusBars2_GroupOptions_AutoLayoutListUpdate( self );    
                     </OnShow>
                 </Scripts>
-                <Size x="260" y="70" />
+                <Size x="120" y="120" />
             </ScrollFrame>
             <Button name="$parent_MoveUpButton" parentKey="moveUpButton" inherits="StatusBar2_UpButton">
                 <Anchors>

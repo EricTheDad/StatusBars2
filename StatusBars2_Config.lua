@@ -74,7 +74,7 @@ local LayoutTypeInfo =
 {
     AutoLayout = { label = "Auto-layout", value = "AutoLayout" },
     GroupLocked = { label = "Locked To Group", value = "GroupLocked" },
-    Background = { label = "Locked To Background", value = "BGLocked" },
+    Background = { label = "Locked To Background", value = "Background" },
 }
 
 local LaoutTypeInfoOrdered =
@@ -150,6 +150,75 @@ end
 
 -------------------------------------------------------------------------------
 --
+--  Name:           StatusBars2Config_Bar_UpdateLayoutUI
+--
+--  Description:    Exchange data between settings and controls
+--
+-------------------------------------------------------------------------------
+--
+local function StatusBars2Config_Bar_UpdateLayoutUI( configPanel, save, bar )
+
+    local frame = bar.configPanel;
+    local layoutMenu = frame.layoutTypeMenu;
+
+    if( save ) then
+        local newLayoutType = UIDropDownMenu_GetSelectedValue( layoutMenu ).value;
+
+        if( bar.layoutType ~= newLayoutType ) then
+            bar.layoutType = newLayoutType;
+            bar.position = nil; -- Reset the position, UpdateLayout will set it to what it should be.
+        end
+    else
+        UIDropDownMenu_SetSelectedValue( layoutMenu, LayoutTypeInfo[ bar.layoutType ] );
+        UIDropDownMenu_SetText( layoutMenu, LayoutTypeInfo[ bar.layoutType ].label );
+    end
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2Config_Group_UpdateLayoutUI
+--
+--  Description:    Exchange data between settings and controls
+--
+-------------------------------------------------------------------------------
+--
+local function StatusBars2Config_Group_UpdateLayoutUI( configPanel, save, group )
+
+    local autoLayoutList = configPanel.groupConfigTabPage.autoLayoutList;
+
+    -- Exchange data
+    if( not save ) then
+        if ( autoLayoutList ) then
+            autoLayoutList.allEntries = {};
+            for i, bar in ipairs( bars ) do
+                if( bar.group == group.key and bar.layoutType == "AutoLayout" ) then
+                    table.insert( autoLayoutList.allEntries, bar );
+                end
+            end
+
+            StatusBars2_GroupOptions_AutoLayoutListUpdate( autoLayoutList );
+        end
+    end
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2Config_UpdateLayoutUI
+--
+--  Description:    Exchange data between settings and controls regarding the layout
+--
+-------------------------------------------------------------------------------
+--
+local function StatusBars2Config_UpdateLayoutUI( configPanel, save, bar )
+
+    local bar = bar or UIDropDownMenu_GetSelectedValue( configPanel.barSelectMenu );
+    StatusBars2Config_Group_UpdateLayoutUI( configPanel, save, groups[ bar.group ] );
+    StatusBars2Config_Bar_UpdateLayoutUI( configPanel, save, bar );
+
+end
+
+-------------------------------------------------------------------------------
+--
 --  Name:           StatusBars2Config_Bar_DoDataExchange
 --
 --  Description:    Exchange data between settings and controls
@@ -161,7 +230,6 @@ local function StatusBars2Config_Bar_DoDataExchange( configPanel, save, bar )
     local rnd = StatusBars2_Round;
     local frame = bar.configPanel;
     local group = groups[ bar.group ];
-    local layoutMenu = frame.layoutTypeMenu;
     local enabledMenu = frame.enabledMenu;
     local scaleSlider = frame.scaleSlider;
     local alphaSlider = frame.alphaSlider;
@@ -182,7 +250,6 @@ local function StatusBars2Config_Bar_DoDataExchange( configPanel, save, bar )
 
     -- Exchange data
     if( save ) then
-        bar.layoutType = UIDropDownMenu_GetSelectedValue( layoutMenu ).value;
         bar.enabled = UIDropDownMenu_GetSelectedValue( enabledMenu );
         bar.scale = StatusBars2_Round( scaleSlider:GetValue( ), 2 );
 
@@ -241,8 +308,6 @@ local function StatusBars2Config_Bar_DoDataExchange( configPanel, save, bar )
         end
 
     else
-        UIDropDownMenu_SetSelectedValue( layoutMenu, LayoutTypeInfo[ bar.layoutType ] );
-        UIDropDownMenu_SetText( layoutMenu, LayoutTypeInfo[ bar.layoutType ].label );
         UIDropDownMenu_SetSelectedValue( enabledMenu, bar.enabled );
         UIDropDownMenu_SetText( enabledMenu, bar.enabled );
         scaleSlider.applyToFrame = bar;
@@ -318,13 +383,10 @@ end
 --
 -------------------------------------------------------------------------------
 --
-local function StatusBars2Config_Group_DoDataExchange( configPanel, save, bar )
-
-    local group = groups[ bar.group ];
+local function StatusBars2Config_Group_DoDataExchange( configPanel, save, group )
 
     local scaleSlider = configPanel.groupConfigTabPage.scaleSlider;
     local alphaSlider = configPanel.groupConfigTabPage.alphaSlider;
-    local autoLayoutList = configPanel.groupConfigTabPage.autoLayoutList;
 
     -- Exchange data
     if( save ) then
@@ -341,16 +403,6 @@ local function StatusBars2Config_Group_DoDataExchange( configPanel, save, bar )
         if( alphaSlider ) then
             alphaSlider.applyToFrame = group;
             alphaSlider:SetValue( group.alpha or StatusBars2.alpha or 1 );
-        end
-        if ( autoLayoutList ) then
-            autoLayoutList.allEntries = {};
-            for i, bar in ipairs( bars ) do
-                if( bar.group == group.key and bar.layoutType == "AutoLayout" ) then
-                    table.insert( autoLayoutList.allEntries, bar );
-                end
-            end
-
-            StatusBars2_GroupOptions_AutoLayoutListUpdate( autoLayoutList );
         end
     end
 end
@@ -399,10 +451,12 @@ local function StatusBars2Config_DoDataExchange( configPanel, save, bar )
         showHelpButton:SetChecked( StatusBars2.showHelp );
     end
 
-    StatusBars2Config_Group_DoDataExchange( configPanel, save, bar );
+    StatusBars2Config_Group_DoDataExchange( configPanel, save, groups[ bar.group ] );
     StatusBars2Config_Bar_DoDataExchange( configPanel, save, bar );
+    StatusBars2Config_UpdateLayoutUI( configPanel, save, bar );
 
 end
+
 -------------------------------------------------------------------------------
 --
 --  Name:           StatusBars2Config_OnUpdate
@@ -414,10 +468,6 @@ end
 function StatusBars2Config_OnUpdate( self )
 
     StatusBars2Config_DoDataExchange( self, true );
-
-    -- Changing layout type changes how some of the controls should be filled in, push the data again.
-    StatusBars2Config_DoDataExchange( StatusBars2_Config, false );
-
     StatusBars2_UpdateFullLayout( );
 
 end
@@ -446,7 +496,13 @@ local function StatusBars2Config_SetupActiveBarPanel( config_panel )
         panelToShow = activeBar.configPanel;
         StatusBars2.moveMode = "bar";
     end
-    
+
+    -- layoutType "Background" means the bar is never attached to any other elements, 
+    -- so override any moveMode to be "bar"
+    if( StatusBars2.moveMode and activeBar.layoutType == "Background" ) then
+        StatusBars2.moveMode = "bar";
+    end
+
     -- Hide everything
     for i, v in ipairs( config_panel.allPanels ) do
         v:Hide();
@@ -614,7 +670,7 @@ local function Config_Movable_OnMouseDown( self, button )
     -- Move on left button down
     if( button == 'LeftButton' ) then
 
-        local moveMode = StatusBars2_GetMoveMode( );
+        local moveMode = StatusBars2_GetMoveMode( self );
 
         if( moveMode == "bar" ) then
             if( StatusBars2.moveMode ~= "bar" ) then
@@ -778,6 +834,51 @@ function StatusBars2_FontMenu_Initialize( self )
         entry.value = i;
         entry.text = info.label;
         entry.checked = UIDropDownMenu_GetSelectedValue( self ) == i;
+        UIDropDownMenu_AddButton( entry );
+    end
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2Config_LayoutType_OnClick
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+local function StatusBars2Config_LayoutType_OnClick( self, menu  )
+
+    UIDropDownMenu_SetSelectedValue( menu, self.value );
+    UIDropDownMenu_SetText( menu, self.value.label );
+
+    -- Push the settings to the bar before we update
+    StatusBars2Config_UpdateLayoutUI( StatusBars2_Config, true );
+
+    -- Update any layout settings that change because of this change
+    StatusBars2Config_UpdateLayoutUI( StatusBars2_Config, false );
+    StatusBars2_Config.doUpdate = true;
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_LayoutTypeMenu_Initialize
+--
+--  Description:    Initialize the enabled drop down menu
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_LayoutTypeMenu_Initialize( self )
+
+    local entry = UIDropDownMenu_CreateInfo();
+
+    for i, info in ipairs( LaoutTypeInfoOrdered ) do
+        entry.func = StatusBars2Config_LayoutType_OnClick;
+        entry.arg1 = self;
+        entry.value = info;
+        entry.text = info.label;
+        entry.checked = UIDropDownMenu_GetSelectedValue( self ) == info;
         UIDropDownMenu_AddButton( entry );
     end
 
@@ -1154,9 +1255,13 @@ function StatusBars2_Options_ResetBarPositionButton_OnClick( self )
     -- Set a flag and reset the positions if the OK button is clicked
     --StatusBars2_Options.resetBarPositions = true;
     for i, bar in ipairs( bars ) do
+        bar.layoutType = "AutoLayout";
         bar.position = nil;
     end
 
+    -- Change the layout UI elements to match the new settings or the new settings will get 
+    -- nuked when we do the DoDataExchange in StatusBars2Config_OnUpdate
+    StatusBars2Config_UpdateLayoutUI( StatusBars2_Config, false );
 	StatusBars2_Config.doUpdate = true;
     
 end
@@ -1275,46 +1380,6 @@ function StatusBars2_GroupOptions_AutoLayoutDown_OnClick( self )
 
         StatusBars2_GroupOptions_AutoLayout_UpdateSelectedIndex( scrollFrame, selectedIndex + 1 );
         StatusBars2_Config.doUpdate = true;
-
-    end
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2Config_LayoutType_OnClick
---
---  Description:    
---
--------------------------------------------------------------------------------
---
-local function StatusBars2Config_LayoutType_OnClick( self, menu  )
-
-    UIDropDownMenu_SetSelectedValue( menu, self.value );
-    UIDropDownMenu_SetText( menu, self.value.label );
-
-    StatusBars2_Config.doUpdate = true;
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_LayoutTypeMenu_Initialize
---
---  Description:    Initialize the enabled drop down menu
---
--------------------------------------------------------------------------------
---
-function StatusBars2_LayoutTypeMenu_Initialize( self )
-
-    local entry = UIDropDownMenu_CreateInfo();
-
-    for i, info in ipairs( LaoutTypeInfoOrdered ) do
-        entry.func = StatusBars2Config_LayoutType_OnClick;
-        entry.arg1 = self;
-        entry.value = info;
-        entry.text = info.label;
-        entry.checked = UIDropDownMenu_GetSelectedValue( self ) == info;
-        UIDropDownMenu_AddButton( entry );
     end
 
 end

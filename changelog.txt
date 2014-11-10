@@ -1,4 +1,7 @@
-﻿3.01.02
+﻿3.02.00
+Added interface to control the layout properties of any particular bar.  Added interface to control the order of bars that are marked auto-layout.
+
+3.01.02
 Now all bars show in the config panel dropdown regardless of whether they are shown or not with the current spec/form.  However, only the bars available in the current spec/form are visible.
 Changes to percent text and text size are now visible on the bars before you press "Accept".
 
