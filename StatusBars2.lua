@@ -534,7 +534,9 @@ function StatusBars2_UpdateLayout( )
             group_offset = group_offset + offset;
             gx = px;
             gy = py + group_offset;
-            StatusBars2_Movable_SetPosition( groupFrame, gx, gy);
+
+            -- Save the position of the group if it doesn't have one yet so after they initially get set, they don't affect each other any more.
+            StatusBars2_Movable_SetPosition( groupFrame, gx, gy, groupFrame.position == nil );
             gx = groupFrame:GetCenter( );
             gy = groupFrame:GetTop( );
             group_offset = group_offset - kGroupSpacing;

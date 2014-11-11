@@ -1,5 +1,8 @@
 ﻿3.02.00
-Added interface to control the layout properties of any particular bar.  Added interface to control the order of bars that are marked auto-layout.
+Single tab for all bar options rather than having them split between a layout and an options tab.
+Added interface to control the layout properties of the bars.
+Added interface to the group tab to control the order of bars that are marked auto-layout.
+Improved group behavior so that the position of a group is no longer affected by the number of bars displayed in the previous group.
 
 3.01.02
 Now all bars show in the config panel dropdown regardless of whether they are shown or not with the current spec/form.  However, only the bars available in the current spec/form are visible.
