@@ -62,6 +62,9 @@ local EnableInfo =
     { label = "Always",   value = "Always" },
     { label = "Never",    value = "Never" },
 }
+for i, v in ipairs( EnableInfo ) do
+    EnableInfo[v.value] = EnableInfo[i];
+end
 
 local PercentTextInfo =
 {
@@ -69,20 +72,20 @@ local PercentTextInfo =
     { label = "Right",  value = "Right" },
     { label = "Hide",   value = "Hide" },
 }
+for i, v in ipairs( PercentTextInfo ) do
+    PercentTextInfo[v.value] = PercentTextInfo[i];
+end
 
 local LayoutTypeInfo =
 {
-    AutoLayout = { label = "Auto-layout", value = "AutoLayout" },
-    GroupLocked = { label = "Locked To Group", value = "GroupLocked" },
-    Background = { label = "Locked To Background", value = "Background" },
+    { label = "Auto-layout", value = "AutoLayout" },
+    { label = "Locked To Group", value = "GroupLocked" },
+    { label = "Locked To Background", value = "Background" },
 }
+for i, v in ipairs( LayoutTypeInfo ) do
+    LayoutTypeInfo[v.value] = LayoutTypeInfo[i];
+end
 
-local LaoutTypeInfoOrdered =
-{
-    LayoutTypeInfo.AutoLayout,
-    LayoutTypeInfo.GroupLocked,
-    LayoutTypeInfo.Background,
-}
 -------------------------------------------------------------------------------
 --
 --  Name:           StatusBars2Config_SetConfigMode
@@ -162,14 +165,14 @@ local function StatusBars2Config_Bar_UpdateLayoutUI( configPanel, save, bar )
     local layoutMenu = frame.layoutTypeMenu;
 
     if( save ) then
-        local newLayoutType = UIDropDownMenu_GetSelectedValue( layoutMenu ).value;
+        local newLayoutType = UIDropDownMenu_GetSelectedValue( layoutMenu );
 
         if( bar.layoutType ~= newLayoutType ) then
             bar.layoutType = newLayoutType;
             bar.position = nil; -- Reset the position, UpdateLayout will set it to what it should be.
         end
     else
-        UIDropDownMenu_SetSelectedValue( layoutMenu, LayoutTypeInfo[ bar.layoutType ] );
+        UIDropDownMenu_SetSelectedValue( layoutMenu, bar.layoutType );
         UIDropDownMenu_SetText( layoutMenu, LayoutTypeInfo[ bar.layoutType ].label );
     end
 end
@@ -309,7 +312,7 @@ local function StatusBars2Config_Bar_DoDataExchange( configPanel, save, bar )
 
     else
         UIDropDownMenu_SetSelectedValue( enabledMenu, bar.enabled );
-        UIDropDownMenu_SetText( enabledMenu, bar.enabled );
+        UIDropDownMenu_SetText( enabledMenu, EnableInfo[ bar.enabled ].label );
         scaleSlider.applyToFrame = bar;
         scaleSlider:SetValue( bar.scale or 1 );
 
@@ -350,7 +353,7 @@ local function StatusBars2Config_Bar_DoDataExchange( configPanel, save, bar )
         end
         if( percentTextMenu ) then
             UIDropDownMenu_SetSelectedValue( percentTextMenu, bar.percentDisplayOption );
-            UIDropDownMenu_SetText( percentTextMenu, bar.percentDisplayOption );
+            UIDropDownMenu_SetText( percentTextMenu, PercentTextInfo[ bar.percentDisplayOption ].label );
         end
         if( onlyShowListedAurasButton ) then
             onlyShowListedAurasButton:SetChecked( bar.onlyShowListed );
@@ -751,13 +754,14 @@ end
 function StatusBars2Config_BarSelect_Initialize( self )
 
     local entry = UIDropDownMenu_CreateInfo();
+    local selected = UIDropDownMenu_GetSelectedValue( self )
 
     for i, bar in ipairs( bars ) do
         entry.func = StatusBars2Config_BarSelect_OnClick;
         entry.arg1 = self;
         entry.value = bar;
         entry.text = bar.displayName;
-        entry.checked = UIDropDownMenu_GetSelectedValue( self ) == entry.value;
+        entry.checked = selected == entry.value;
         UIDropDownMenu_AddButton( entry );
     end
     
@@ -789,13 +793,14 @@ end
 function StatusBars2_TextDisplayOptionsMenu_Initialize( self )
 
     local entry = UIDropDownMenu_CreateInfo();
+    local selected = UIDropDownMenu_GetSelectedValue( self )
 
     for i, opt in ipairs( TextOptions ) do
         entry.func = StatusBars2_TextDisplayOptionsMenu_OnClick;
         entry.arg1 = self;
         entry.value = opt.value;
         entry.text = opt.label;
-        entry.checked = UIDropDownMenu_GetSelectedValue( self ) == entry.value;
+        entry.checked = selected == entry.value;
         UIDropDownMenu_AddButton( entry );
     end
     
@@ -827,13 +832,14 @@ end
 function StatusBars2_FontMenu_Initialize( self )
 
     local entry = UIDropDownMenu_CreateInfo();
+    local selected = UIDropDownMenu_GetSelectedValue( self )
 
     for i, info in ipairs( FontInfo ) do
         entry.func = StatusBars2_FontMenu_OnClick;
         entry.arg1 = self;
         entry.value = i;
         entry.text = info.label;
-        entry.checked = UIDropDownMenu_GetSelectedValue( self ) == i;
+        entry.checked = selected == entry.value;
         UIDropDownMenu_AddButton( entry );
     end
 
@@ -850,7 +856,6 @@ end
 local function StatusBars2Config_LayoutType_OnClick( self, menu  )
 
     UIDropDownMenu_SetSelectedValue( menu, self.value );
-    UIDropDownMenu_SetText( menu, self.value.label );
 
     -- Push the settings to the bar before we update
     StatusBars2Config_UpdateLayoutUI( StatusBars2_Config, true );
@@ -872,13 +877,14 @@ end
 function StatusBars2_LayoutTypeMenu_Initialize( self )
 
     local entry = UIDropDownMenu_CreateInfo();
+    local selected = UIDropDownMenu_GetSelectedValue( self )
 
-    for i, info in ipairs( LaoutTypeInfoOrdered ) do
+    for i, info in ipairs( LayoutTypeInfo ) do
         entry.func = StatusBars2Config_LayoutType_OnClick;
         entry.arg1 = self;
-        entry.value = info;
+        entry.value = info.value;
         entry.text = info.label;
-        entry.checked = UIDropDownMenu_GetSelectedValue( self ) == info;
+        entry.checked = selected == entry.value;
         UIDropDownMenu_AddButton( entry );
     end
 
@@ -910,13 +916,14 @@ end
 function StatusBars2_BarEnabledMenu_Initialize( self )
 
     local entry = UIDropDownMenu_CreateInfo();
+    local selected = UIDropDownMenu_GetSelectedValue( self )
 
     for i, info in ipairs( EnableInfo ) do
         entry.func = StatusBars2_BarEnabledMenu_OnClick;
         entry.arg1 = self;
         entry.value = info.value;
         entry.text = info.label;
-        entry.checked = UIDropDownMenu_GetSelectedValue( self ) == i;
+        entry.checked = selected == entry.value;
         UIDropDownMenu_AddButton( entry );
     end
 
@@ -948,13 +955,14 @@ end
 function StatusBars2_PercentTextMenu_Initialize( self )
 
     local entry = UIDropDownMenu_CreateInfo();
+    local selected = UIDropDownMenu_GetSelectedValue( self )
 
     for i, info in ipairs( PercentTextInfo ) do
         entry.func = StatusBars2_PercentTextMenu_OnClick;
         entry.arg1 = self;
         entry.value = info.value;
         entry.text = info.label;
-        entry.checked = UIDropDownMenu_GetSelectedValue( self ) == i;
+        entry.checked = selected == entry.value;
         UIDropDownMenu_AddButton( entry );
     end
 

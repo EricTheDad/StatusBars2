@@ -22,7 +22,7 @@ local L =
 }
 
 local addonName, addonTable = ...; -- Let's use the private table passed to every .lua file to store our locale
----[[
+
 local function defaultFunc(L, key)
  -- If this function was called, we have no localization for this key.
  -- We could complain loudly to allow localizers to see the error of their ways, 
@@ -31,11 +31,10 @@ local function defaultFunc(L, key)
  return key;
 end
 setmetatable(L, {__index=defaultFunc});
---]]
+
 
 addonTable.strings = L;
 
-print(GetLocale())
 ------------------------------------------------------
 
 if (GetLocale() == "deDE") then
