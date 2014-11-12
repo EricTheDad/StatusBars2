@@ -115,3 +115,18 @@ function StatusBars2_Frame_HideBackdrop( self )
 
 end
 
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_SetupFontString
+--
+--  Description:    
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_SetupFontString( fontString, string_id )
+
+    fontString:SetText( StatusBars2_GetLocalizedText( string_id ));
+    fontString:SetHeight( fontString:GetStringHeight( ) );
+
+end
+

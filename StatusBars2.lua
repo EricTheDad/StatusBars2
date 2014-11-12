@@ -154,9 +154,6 @@ local function Slash_Cmd_Handler( msg, editbox )
         -- Enable config mode
         StatusBars2Config_SetConfigMode( true );
     elseif command == '' then
-        -- This is dumb, but if you seem to need to call once to open the panel and once to actually set it to the right category
-        ShowUIPanel(InterfaceOptionsFrame);
-        --InterfaceOptionsFrame_OpenToCategory(StatusBars2_Options);
         InterfaceOptionsFrame_OpenToCategory(StatusBars2_Options);
     else
         print("Usage: /statusbars2 or /sb2 - show the Statusbars2 Blizzard interface panel");

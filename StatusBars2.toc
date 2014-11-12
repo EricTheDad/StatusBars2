@@ -1,4 +1,4 @@
-﻿## Interface: 60000
+## Interface: 60000
 ## Version: 3.02.00
 ## Title: StatusBars2
 ## Author: GopherYerguns, Wesslen, 堂吉先生, EricTheDad
@@ -6,6 +6,7 @@
 ## Dependencies:
 ## OptionalDeps:
 ## SavedVariablesPerCharacter: StatusBars2_Settings
+Localization.lua
 StatusBars2.lua
 StatusBars2_Movable.lua
 StatusBars2_Groups.lua
