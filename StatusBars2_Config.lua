@@ -27,6 +27,7 @@ local kHidden           = addonTable.textDisplayOptions.kHidden;
 local FontInfo = addonTable.fontInfo;
 local kDefaultFramePosition = addonTable.kDefaultFramePosition;
 
+local L = addonTable.strings;
 
 -- Tab buttons
 local kGlobal       = 1;
@@ -49,18 +50,18 @@ local ScrollBarButtons = {}
 
 local TextOptions  =
 {
-    { label = "Abbreviated",                value = kAbbreviated },
-    { label = "Thousand Separators Only",   value = kCommaSeparated },
-    { label = "Unformatted",                value = kUnformatted },
-    { label = "Hidden",                     value = kHidden },
+    { label = L[ "Abbreviated" ],                value = kAbbreviated },
+    { label = L[ "Thousand Separators Only" ],   value = kCommaSeparated },
+    { label = L[ "Unformatted" ],                value = kUnformatted },
+    { label = L[ "Hidden" ],                     value = kHidden },
 }
 
 local EnableInfo =
 {
-    { label = "Auto",     value = "Auto" },
-    { label = "Combat",   value = "Combat" },
-    { label = "Always",   value = "Always" },
-    { label = "Never",    value = "Never" },
+    { label = L[ "Auto" ],     value = "Auto" },
+    { label = L[ "Combat" ],   value = "Combat" },
+    { label = L[ "Always" ],   value = "Always" },
+    { label = L[ "Never" ],    value = "Never" },
 }
 for i, v in ipairs( EnableInfo ) do
     EnableInfo[v.value] = EnableInfo[i];
@@ -70,7 +71,7 @@ local PercentTextInfo =
 {
     { label = "Left",   value = "Left" },
     { label = "Right",  value = "Right" },
-    { label = "Hide",   value = "Hide" },
+    { label = "Hidden",   value = "Hide" },
 }
 for i, v in ipairs( PercentTextInfo ) do
     PercentTextInfo[v.value] = PercentTextInfo[i];
@@ -78,7 +79,7 @@ end
 
 local LayoutTypeInfo =
 {
-    { label = "Auto-layout", value = "AutoLayout" },
+    { label = "Automatic", value = "AutoLayout" },
     { label = "Locked To Group", value = "GroupLocked" },
     { label = "Locked To Background", value = "Background" },
 }

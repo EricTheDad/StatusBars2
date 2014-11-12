@@ -6,6 +6,9 @@ local addonName, addonTable = ... --Pulls back the Addon-Local Variables and sto
 local groups = addonTable.groups;
 local bars = addonTable.bars;
 
+-- String table (localization)
+local L = addonTable.strings;
+
 -- Bar types
 local kHealth = addonTable.barTypes.kHealth;
 local kPower = addonTable.barTypes.kPower;
@@ -168,7 +171,7 @@ local function StatusBars2_StatusBar_OnEnter( self )
 
     if( StatusBars2.showHelp ) then
         GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_BOTTOMRIGHT", 0, -20);
-        GameTooltip:SetText('Hold down "Alt" to move an individual bar\nHold down "Ctrl" to move a whole group\nHold down "Ctrl" + "Alt" to move all the bars at once');
+        GameTooltip:SetText( L[ "STRING_ID_MOVE_BAR_HELP_TEXT" ] );
     end
 
 end

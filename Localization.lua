@@ -10,15 +10,35 @@ local addonName, addonTable = ... --Pulls back the Addon-Local Variables and sto
 
 local L =
 {
-	INTERFACEPANEL_CREDITS_TEXT_1 = "Original Addon by Wesslen",
-	INTERFACEPANEL_CREDITS_TEXT_2 = "Version 2 rewrite by GopherYerguns",
-	INTERFACEPANEL_CREDITS_TEXT_3 = "Mists of Pandaria updates by 堂吉先生 and EricTheDad",
-	INTERFACEPANEL_CREDITS_TEXT_4 = "Warlords of Draenor update and ongoing maintenance by EricTheDad",
-	INTERFACEPANEL_CREDITS_TEXT_5 = "Translations provided by:",
-	INTERFACEPANEL_CREDITS_TEXT_6 = "deDE: EricTheDad\nfrFR: available\nitIT: available\nesES: available\nesMX: available\nptBR: available\nruRU: available\nzhCN: available\nkoKR: available\nzhTW: available",
-	INTERFACEPANEL_HELP_TEXT_1 = "Show this screen by typing \"/statusbars2\" or \"/sb2\" in the chat input.",
-	INTERFACEPANEL_HELP_TEXT_2 = "Enable configuration mode by typing in \"/statusbars2 config\" or \"/sb2 config\" or by clicking the button below.",
-	INTERFACEPANEL_TRANSLATORS_NEEDED = "Translators needed!  Go to http://wow.curseforge.com/addons/statusbars2/localization or message EricTheDad if you'd like to help!",
+	STRING_ID_CONFIG_AURA_FILTER_ENTRY_HELP_TEXT = [=[Type the name of the buff/debuff you want to add to the list here and click the "Add Entry" button.
+You must type the name exactly as it appears in the tooltip.  Capitalization is important!]=],
+	STRING_ID_CONFIG_AURA_FILTER_LIST_HELP_TEXT = [=[Hides all buffs/debuffs except for the ones you add to the list below.
+However, the options you checked still affect which auras are displayed.
+For example, if you type in the name of a buff but don't have the
+"Show Buffs" checkbox checked, the buff still won't be displayed.]=],
+	STRING_ID_CONFIG_LOCK_BARS_DURING_PLAY_HELP_TEXT = [=[Bars are automatically unlocked while the configuration panel is open.
+Don't uncheck this unless you want to be able to move the bars while playing]=],
+	STRING_ID_INTERFACEPANEL_CREDITS_TEXT_1 = "Original Addon by Wesslen",
+	STRING_ID_INTERFACEPANEL_CREDITS_TEXT_2 = "Version 2 rewrite by GopherYerguns",
+	STRING_ID_INTERFACEPANEL_CREDITS_TEXT_3 = "Mists of Pandaria updates by 堂吉先生 and EricTheDad",
+	STRING_ID_INTERFACEPANEL_CREDITS_TEXT_4 = "Warlords of Draenor update and ongoing maintenance by EricTheDad",
+	STRING_ID_INTERFACEPANEL_CREDITS_TEXT_5 = "Translations provided by:",
+	STRING_ID_INTERFACEPANEL_CREDITS_TEXT_6 = [=[deDE: EricTheDad
+frFR: available
+itIT: available
+esES: available
+esMX: available
+ptBR: available
+ruRU: available
+zhCN: available
+koKR: available
+zhTW: available]=],
+	STRING_ID_INTERFACEPANEL_HELP_TEXT_1 = "Show this screen by typing \"/statusbars2\" or \"/sb2\" in the chat input.",
+	STRING_ID_INTERFACEPANEL_HELP_TEXT_2 = "Enable configuration mode by typing in \"/statusbars2 config\" or \"/sb2 config\" or by clicking the button below.",
+	STRING_ID_INTERFACEPANEL_TRANSLATORS_NEEDED = "Translators needed!  Go to http://wow.curseforge.com/addons/statusbars2/localization or message EricTheDad if you'd like to help!",
+	STRING_ID_MOVE_BAR_HELP_TEXT = [=[Hold down "Alt" to move an individual bar
+Hold down "Ctrl" to move a whole group
+Hold down "Ctrl" + "Alt" to move all the bars at once]=],
 }
 
 local addonName, addonTable = ...; -- Let's use the private table passed to every .lua file to store our locale
@@ -37,17 +57,83 @@ addonTable.strings = L;
 
 ------------------------------------------------------
 
-if (GetLocale() == "deDE") then
+if (GetLocale() == "enUS") then
 
-L["INTERFACEPANEL_CREDITS_TEXT_1"] = "Ursprüngliches Addon von Wesslen" -- Needs review
-L["INTERFACEPANEL_CREDITS_TEXT_2"] = "Version 2 Umschreibung von GopherYerguns" -- Needs review
-L["INTERFACEPANEL_CREDITS_TEXT_3"] = "Mists of Pandaria Neufassung von 堂吉先生 und EricTheDad" -- Needs review
-L["INTERFACEPANEL_CREDITS_TEXT_4"] = "Warlords of Draenor Neufassung und laufende Wartung von EricTheDad" -- Needs review
-L["INTERFACEPANEL_CREDITS_TEXT_5"] = "Übersetzungen bereitgestellt von:" -- Needs review
-L["INTERFACEPANEL_CREDITS_TEXT_6"] = "deDE: EricTheDad\nfrFR: verfügbar\nitIT: verfügbar\nesES: verfügbar\nesMX: verfügbar\nptBR: verfügbar\nruRU: verfügbar\nzhCN: verfügbar\nkoKR: verfügbar\nzhTW: verfügbar" -- Needs review
-L["INTERFACEPANEL_HELP_TEXT_1"] = "Tippe \"/statusbars2\" oder \"/sb2\" im Chat ein um dieses Fenster zu zeigen" -- Needs review
-L["INTERFACEPANEL_HELP_TEXT_2"] = "Um Konfigurationsmodus zu aktivieren, tippe \"/statusbars2 config\" oder \"/sb2 config\" im Chat ein oder klicke auf die Taste hierunter." -- Needs review
-L["INTERFACEPANEL_TRANSLATORS_NEEDED"] = "Übersetzer gesucht!  Geh nach http://wow.curseforge.com/addons/statusbars2/localization oder sende eine Nachricht an EricTheDad um auszuhelfen!" -- Needs review
+-- L["Abbreviated"] = ""
+-- L["ACCEPT"] = ""
+-- L["Add Entry"] = ""
+-- L["Always"] = ""
+-- L["Auto"] = ""
+-- L["Auto-layout order"] = ""
+-- L["Automatic"] = ""
+L["Available"] = "Verfügbar" -- Needs review
+-- L["Bar Options"] = ""
+-- L["Bar Select"] = ""
+-- L["CANCEL"] = ""
+-- L["Clear"] = ""
+-- L["Color"] = ""
+-- L["Combat"] = ""
+-- L["Delete Entry"] = ""
+-- L["Enable Aura Tooltips"] = ""
+-- L["Enabled"] = ""
+-- L["Enable help tooltips"] = ""
+-- L["Fade bars in and out"] = ""
+-- L["Flash when below"] = ""
+-- L["Global Options"] = ""
+-- L["Group Options"] = ""
+-- L["Hidden"] = ""
+-- L["Huge"] = ""
+-- L["Large"] = ""
+-- L["Layout Options"] = ""
+-- L["Left"] = ""
+-- L["Lock bars during play"] = ""
+-- L["Locked To Background"] = ""
+-- L["Locked To Group"] = ""
+-- L["Medium"] = ""
+-- L["Never"] = ""
+-- L["Only show auras listed"] = ""
+-- L["Only show auras with a duration"] = ""
+-- L["Only show my auras"] = ""
+-- L["Opacity"] = ""
+-- L["Percent Text"] = ""
+-- L["Reset All Group Positions"] = ""
+-- L["REVERT"] = ""
+-- L["Right"] = ""
+-- L["Scale"] = ""
+-- L["Set Color"] = ""
+-- L["Show Buffs"] = ""
+-- L["Show Debuffs"] = ""
+-- L["Show in all forms"] = ""
+-- L["Show target spell"] = ""
+-- L["Small"] = ""
+-- L["Snap All Bars To Groups"] = ""
+-- L["StatusBars2 Config"] = ""
+-- L["STRING_ID_CONFIG_AURA_FILTER_ENTRY_HELP_TEXT"] = ""
+-- L["STRING_ID_CONFIG_AURA_FILTER_LIST_HELP_TEXT"] = ""
+-- L["STRING_ID_CONFIG_LOCK_BARS_DURING_PLAY_HELP_TEXT"] = ""
+L["STRING_ID_INTERFACEPANEL_CREDITS_TEXT_1"] = "Ursprüngliches Addon von Wesslen" -- Needs review
+L["STRING_ID_INTERFACEPANEL_CREDITS_TEXT_2"] = "Version 2 Umschreibung von GopherYerguns" -- Needs review
+L["STRING_ID_INTERFACEPANEL_CREDITS_TEXT_3"] = "Mists of Pandaria Neufassung von 堂吉先生 und EricTheDad" -- Needs review
+L["STRING_ID_INTERFACEPANEL_CREDITS_TEXT_4"] = "Warlords of Draenor Neufassung und laufende Wartung von EricTheDad" -- Needs review
+L["STRING_ID_INTERFACEPANEL_CREDITS_TEXT_5"] = "Übersetzungen bereitgestellt von:" -- Needs review
+L["STRING_ID_INTERFACEPANEL_CREDITS_TEXT_6"] = [=[deDE: EricTheDad
+frFR: verfügbar
+itIT: verfügbar
+esES: verfügbar
+esMX: verfügbar
+ptBR: verfügbar
+ruRU: verfügbar
+zhCN: verfügbar
+koKR: verfügbar
+zhTW: verfügbar]=] -- Needs review
+L["STRING_ID_INTERFACEPANEL_HELP_TEXT_1"] = "Tippe \"/statusbars2\" oder \"/sb2\" im Chat ein um dieses Fenster zu zeigen" -- Needs review
+L["STRING_ID_INTERFACEPANEL_HELP_TEXT_2"] = "Um Konfigurationsmodus zu aktivieren, tippe \"/statusbars2 config\" oder \"/sb2 config\" im Chat ein oder klicke auf die Taste hierunter." -- Needs review
+L["STRING_ID_INTERFACEPANEL_TRANSLATORS_NEEDED"] = "Übersetzer gesucht!  Geh nach http://wow.curseforge.com/addons/statusbars2/localization oder sende eine Nachricht an EricTheDad um auszuhelfen!" -- Needs review
+-- L["STRING_ID_MOVE_BAR_HELP_TEXT"] = ""
+-- L["Text Display Options"] = ""
+-- L["Text Size"] = ""
+-- L["Thousand Separators Only"] = ""
+-- L["Unformatted"] = ""
 	
 end
 

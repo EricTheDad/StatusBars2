@@ -566,15 +566,15 @@
         </Frames>
         <Scripts>
             <OnShow>
-                StatusBars2_SetupFontString( self.creditsText1, "INTERFACEPANEL_CREDITS_TEXT_1" );
-                StatusBars2_SetupFontString( self.creditsText2, "INTERFACEPANEL_CREDITS_TEXT_2" );
-                StatusBars2_SetupFontString( self.creditsText3, "INTERFACEPANEL_CREDITS_TEXT_3" );
-                StatusBars2_SetupFontString( self.creditsText4, "INTERFACEPANEL_CREDITS_TEXT_4" );
-                StatusBars2_SetupFontString( self.creditsText5, "INTERFACEPANEL_CREDITS_TEXT_5" );
-                StatusBars2_SetupFontString( self.creditsText6, "INTERFACEPANEL_CREDITS_TEXT_6" );
-                StatusBars2_SetupFontString( self.translatorsNeededText, "INTERFACEPANEL_TRANSLATORS_NEEDED" );
-                StatusBars2_SetupFontString( self.helpText1, "INTERFACEPANEL_HELP_TEXT_1" );
-                StatusBars2_SetupFontString( self.helpText2, "INTERFACEPANEL_HELP_TEXT_2" );
+                StatusBars2_SetupFontString( self.creditsText1, "STRING_ID_INTERFACEPANEL_CREDITS_TEXT_1" );
+                StatusBars2_SetupFontString( self.creditsText2, "STRING_ID_INTERFACEPANEL_CREDITS_TEXT_2" );
+                StatusBars2_SetupFontString( self.creditsText3, "STRING_ID_INTERFACEPANEL_CREDITS_TEXT_3" );
+                StatusBars2_SetupFontString( self.creditsText4, "STRING_ID_INTERFACEPANEL_CREDITS_TEXT_4" );
+                StatusBars2_SetupFontString( self.creditsText5, "STRING_ID_INTERFACEPANEL_CREDITS_TEXT_5" );
+                StatusBars2_SetupFontString( self.creditsText6, "STRING_ID_INTERFACEPANEL_CREDITS_TEXT_6" );
+                StatusBars2_SetupFontString( self.translatorsNeededText, "STRING_ID_INTERFACEPANEL_TRANSLATORS_NEEDED" );
+                StatusBars2_SetupFontString( self.helpText1, "STRING_ID_INTERFACEPANEL_HELP_TEXT_1" );
+                StatusBars2_SetupFontString( self.helpText2, "STRING_ID_INTERFACEPANEL_HELP_TEXT_2" );
             </OnShow>
         </Scripts>
     </Frame>

@@ -406,7 +406,7 @@
                 </Anchors>
                 <Scripts>
                     <OnLoad>
-                        getglobal( self:GetName( ) .. "Text" ):SetText( "Fade bars in and out" );
+                        getglobal( self:GetName( ) .. "Text" ):SetText( StatusBars2_GetLocalizedText( "Fade bars in and out" ));
                     </OnLoad>
                 </Scripts>
             </CheckButton>
@@ -418,12 +418,12 @@
                 </Anchors>
                 <Scripts>
                     <OnLoad>
-                        getglobal( self:GetName( ) .. "Text" ):SetText( "Lock bars during play" );
+                        getglobal( self:GetName( ) .. "Text" ):SetText( StatusBars2_GetLocalizedText( "Lock bars during play" ));
                     </OnLoad>
                     <OnEnter>
                         if( StatusBars2_Config.showHelpButton:GetChecked( ) ) then
                             GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_BOTTOMRIGHT", 0, 0);
-                            GameTooltip:SetText("Bars are automatically unlocked while the configuration panel is open.\nDon't uncheck this unless you want to be able to move the bars while playing");
+                            GameTooltip:SetText( StatusBars2_GetLocalizedText( "STRING_ID_CONFIG_LOCK_BARS_DURING_PLAY_HELP_TEXT" ));
                         end
                     </OnEnter>
                     <OnLeave>
@@ -441,7 +441,7 @@
                 </Anchors>
                 <Scripts>
                     <OnLoad>
-                        getglobal( self:GetName( ) .. "Text" ):SetText( "Enable help tooltips" );
+                        getglobal( self:GetName( ) .. "Text" ):SetText( StatusBars2_GetLocalizedText( "Enable help tooltips" ));
                         StatusBars2_Config.showHelpButton = self;
                     </OnLoad>
                 </Scripts>
@@ -458,7 +458,7 @@
                         UIDropDownMenu_Initialize( self, StatusBars2_TextDisplayOptionsMenu_Initialize );
                         UIDropDownMenu_SetWidth(self, self:GetWidth());
                         UIDropDownMenu_SetButtonWidth(self, "TEXT");
-                        self.label:SetText("Text Display Options");
+                        self.label:SetText( StatusBars2_GetLocalizedText( "Text Display Options" ));
                     </OnLoad>
                 </Scripts>
             </Frame>
@@ -474,7 +474,7 @@
                         UIDropDownMenu_Initialize( self, StatusBars2_FontMenu_Initialize );
                         UIDropDownMenu_SetWidth(self, self:GetWidth());
                         UIDropDownMenu_SetButtonWidth(self, "TEXT");
-                        self.label:SetText("Text Size");
+                        self.label:SetText( StatusBars2_GetLocalizedText( "Text Size" ));
                     </OnLoad>
                 </Scripts>
             </Frame>
@@ -775,7 +775,7 @@
                 </Anchors>
                 <Scripts>
                     <OnLoad>
-                        getglobal( self:GetName( ) .. "Text" ):SetText( "Flash when below" );
+                        getglobal( self:GetName( ) .. "Text" ):SetText( StatusBars2_GetLocalizedText( "Flash when below" ));
                     </OnLoad>
                 </Scripts>
             </CheckButton>
@@ -857,7 +857,7 @@
                 </Anchors>
                 <Scripts>
                     <OnLoad>
-                        getglobal( self:GetName( ) .. "Text" ):SetText( "Show in all forms" );
+                        getglobal( self:GetName( ) .. "Text" ):SetText( StatusBars2_GetLocalizedText( "Show in all forms" ));
                     </OnLoad>
                 </Scripts>
             </CheckButton>
@@ -875,7 +875,7 @@
                 </Anchors>
                 <Scripts>
                     <OnLoad>
-                        getglobal( self:GetName( ) .. "Text" ):SetText( "Show target spell" );
+                        getglobal( self:GetName( ) .. "Text" ):SetText( StatusBars2_GetLocalizedText( "Show target spell" ));
                     </OnLoad>
                 </Scripts>
             </CheckButton>
@@ -892,7 +892,7 @@
                 </Anchors>
                 <Scripts>
                     <OnLoad>
-                        getglobal( self:GetName( ) .. "Text" ):SetText( "Show Buffs" );
+                        getglobal( self:GetName( ) .. "Text" ):SetText( StatusBars2_GetLocalizedText( "Show Buffs" ));
                     </OnLoad>
                 </Scripts>
             </CheckButton>
@@ -904,7 +904,7 @@
                 </Anchors>
                 <Scripts>
                     <OnLoad>
-                        getglobal( self:GetName( ) .. "Text" ):SetText( "Show Debuffs" );
+                        getglobal( self:GetName( ) .. "Text" ):SetText( StatusBars2_GetLocalizedText( "Show Debuffs" ));
                     </OnLoad>
                 </Scripts>
             </CheckButton>
@@ -916,7 +916,7 @@
                 </Anchors>
                 <Scripts>
                     <OnLoad>
-                        getglobal( self:GetName( ) .. "Text" ):SetText( "Only show my auras" );
+                        getglobal( self:GetName( ) .. "Text" ):SetText( StatusBars2_GetLocalizedText( "Only show my auras" ));
                     </OnLoad>
                 </Scripts>
             </CheckButton>
@@ -928,7 +928,7 @@
                 </Anchors>
                 <Scripts>
                     <OnLoad>
-                        getglobal( self:GetName( ) .. "Text" ):SetText( "Only show auras with a duration" );
+                        getglobal( self:GetName( ) .. "Text" ):SetText( StatusBars2_GetLocalizedText( "Only show auras with a duration" ));
                     </OnLoad>
                 </Scripts>
             </CheckButton>
@@ -940,7 +940,7 @@
                 </Anchors>
                 <Scripts>
                     <OnLoad>
-                        getglobal( self:GetName( ) .. "Text" ):SetText( "Enable Aura Tooltips" );
+                        getglobal( self:GetName( ) .. "Text" ):SetText( StatusBars2_GetLocalizedText( "Enable Aura Tooltips" ));
                     </OnLoad>
                 </Scripts>
             </CheckButton>
@@ -1004,7 +1004,7 @@
                     <OnEnter>
                         if( StatusBars2_Config.showHelpButton:GetChecked( ) ) then
                             GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_TOPLEFT", 0, 0);
-                            GameTooltip:SetText('Type the name of the buff/debuff you want to add to the list here and click the "Add Entry" button.\nYou must type the name exactly as it appears in the tooltip.  Capitalization is important!');
+                            GameTooltip:SetText( StatusBars2_GetLocalizedText( "STRING_ID_CONFIG_AURA_FILTER_ENTRY_HELP_TEXT" ));
                         end
                     </OnEnter>
                     <OnLeave>
@@ -1068,7 +1068,7 @@
                 </Anchors>
                 <Scripts>
                     <OnLoad>
-                        getglobal( self:GetName( ) .. "Text" ):SetText( "Only show auras listed" );
+                        getglobal( self:GetName( ) .. "Text" ):SetText( StatusBars2_GetLocalizedText( "Only show auras listed" ));
                         getglobal( self:GetName( ) .. "Text" ):ClearAllPoints( );
                         getglobal( self:GetName( ) .. "Text" ):SetPoint("RIGHT", self, "LEFT");
                         getglobal( self:GetName( ) .. "Text" ):SetJustifyH("RIGHT");
@@ -1080,7 +1080,7 @@
                     <OnEnter>
                         if( StatusBars2_Config.showHelpButton:GetChecked( ) ) then
                             GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_TOPLEFT", 0, 0);
-                            GameTooltip:SetText("Hides all buffs/debuffs except for the ones you add to the list below.\nHowever, the check marks above still affect which auras are displayed.\nFor example, if you type in the name of a buff but don't have the\n\"Show Buffs\" checkbox checked, the buff still won't be displayed.");
+                            GameTooltip:SetText( StatusBars2_GetLocalizedText( "STRING_ID_CONFIG_AURA_FILTER_LIST_HELP_TEXT" ));
                         end
                     </OnEnter>
                     <OnLeave>
@@ -1104,7 +1104,7 @@
                 </Anchors>
                 <Scripts>
                     <OnLoad>
-                        getglobal( self:GetName( ) .. "Text" ):SetText( "Custom Color" );
+                        getglobal( self:GetName( ) .. "Text" ):SetText( StatusBars2_GetLocalizedText( "Color" ));
                     </OnLoad>
 					<OnClick>
                         PlaySound("UChatScrollButton");
