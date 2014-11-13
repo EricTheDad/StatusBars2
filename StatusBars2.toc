@@ -6,6 +6,7 @@
 ## Dependencies:
 ## OptionalDeps:
 ## SavedVariablesPerCharacter: StatusBars2_Settings
+
 Localization.lua
 StatusBars2.lua
 StatusBars2_Movable.lua

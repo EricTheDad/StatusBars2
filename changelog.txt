@@ -1,4 +1,7 @@
-﻿3.03.00
+﻿3.03.01
+Fixed a problem where position settings for bars that were not set to auto-layout would be lost.
+
+3.03.00
 Initial setup for localization.  Some of the German localization strings entered.
 
 3.02.00

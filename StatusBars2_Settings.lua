@@ -321,8 +321,10 @@ function StatusBars2_SetBarDefaultSettings( bar, barSettings )
 
     -- Add new fields to the position, if needed
     if( barSettings.position ) then
-        barSettings.position.point = barSettings.position.point or "TOP";
-        barSettings.position.relativePoint = barSettings.position.relativePoint or "BOTTOM";
+
+        if( not barSettings.layoutType ) then
+            barSettings.layoutType = "GroupLocked";
+        end
     end
 
     -- Place continuous bar percent text on the right side
@@ -423,6 +425,11 @@ end;
 -------------------------------------------------------------------------------
 --
 local function StatusBars2_Settings_Apply_BarSettings( save, bar, barSettings )
+
+    -- This can occur when copying bar settings from one character to another
+    if( not barSettings ) then
+        return;
+    end
 
     if( save ) then
         barSettings.group = bar.group;
