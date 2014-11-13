@@ -61,6 +61,7 @@ addonTable.saveDataVersion = 1.3;
 
 -- Settings
 StatusBars2_Settings = { };
+StatusBars2_SettingsDB = { };
 
 -- Bar types
 local kHealth = addonTable.barTypes.kHealth;

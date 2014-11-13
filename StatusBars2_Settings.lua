@@ -28,7 +28,7 @@ local SaveDataVersion = addonTable.saveDataVersion;
 local FontInfo = addonTable.fontInfo;
 local kDefaultFramePosition = addonTable.kDefaultFramePosition;
 
-local StatusBars2_Settings = nil;
+local characterName;
 
 -------------------------------------------------------------------------------
 --
@@ -43,45 +43,13 @@ local StatusBars2_Settings = nil;
 
 -------------------------------------------------------------------------------
 --
---  Name:           StatusBars2_LoadSettings
---
---  Description:    Load settings
---
--------------------------------------------------------------------------------
---
-function StatusBars2_LoadSettings( settings )
-
-    -- Initialize the bar settings
-    StatusBars2_InitializeSettings( settings );
-
-    if( settings.SaveDataVersion ~= SaveDataVersion ) then
-        -- Import old settings
-        StatusBars2_ImportSettings( settings );
-
-        -- Get rid of old setting we no longer care about
-        StatisBars2_PruneSettings( settings );
-        
-        -- Set default settings
-        StatusBars2_SetDefaultSettings( settings );
-
-        -- We are now up to date, update the version number
-        settings.SaveDataVersion = SaveDataVersion;
-    end
-
-    -- Apply the settings to the bars
-    StatusBars2_Settings_Apply_Settings( settings, false );
-
-end
-
--------------------------------------------------------------------------------
---
 --  Name:           StatusBars2_InitializeSettings
 --
 --  Description:    Initialize the settings object
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_InitializeSettings( settings )
+local function StatusBars2_InitializeSettings( settings )
 
     -- If the bar array does not exist create it
     if( settings.bars == nil ) then
@@ -118,13 +86,43 @@ end
 
 -------------------------------------------------------------------------------
 --
+--  Name:           StatusBars2_ImportEnableSetting
+--
+--  Description:    Import an old enabled setting
+--
+-------------------------------------------------------------------------------
+--
+local function StatusBars2_ImportEnableSetting( settings, old, new )
+
+    if( settings[ old ] ~= nil ) then
+        if( settings[ old ] ) then
+            settings.bars[ new ].enabled = "Auto"
+        else
+            settings.bars[ new ].enabled = "Never"
+        end
+        settings[ old ] = nil;
+    end
+
+    if( settings.bars[ new ] ) then
+        local percentDisplayOption = settings.bars[ new ].percentText;
+
+        if( percentDisplayOption ) then
+            settings.bars[ new ].percentDisplayOption = percentDisplayOption;
+            settings.bars[ new ].percentText = nil;
+        end
+    end
+
+end
+
+-------------------------------------------------------------------------------
+--
 --  Name:           StatusBars2_ImportSettings
 --
 --  Description:    Import old settings
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_ImportSettings( settings )
+local function StatusBars2_ImportSettings( settings )
 
     -- Import old bar enable settings
     StatusBars2_ImportEnableSetting( settings, "ShowPlayerHealth", "playerHealth" );
@@ -223,43 +221,13 @@ end
 
 -------------------------------------------------------------------------------
 --
---  Name:           StatusBars2_ImportEnableSetting
---
---  Description:    Import an old enabled setting
---
--------------------------------------------------------------------------------
---
-function StatusBars2_ImportEnableSetting( settings, old, new )
-
-    if( settings[ old ] ~= nil ) then
-        if( settings[ old ] ) then
-            settings.bars[ new ].enabled = "Auto"
-        else
-            settings.bars[ new ].enabled = "Never"
-        end
-        settings[ old ] = nil;
-    end
-
-    if( settings.bars[ new ] ) then
-        local percentDisplayOption = settings.bars[ new ].percentText;
-
-        if( percentDisplayOption ) then
-            settings.bars[ new ].percentDisplayOption = percentDisplayOption;
-            settings.bars[ new ].percentText = nil;
-        end
-    end
-
-end
-
--------------------------------------------------------------------------------
---
 --  Name:           StatisBars2_PruneSettings
 --
 --  Description:    Get rid of old setting we no longer care about
 --
 -------------------------------------------------------------------------------
 --
-function StatisBars2_PruneSettings( settings )
+local function StatisBars2_PruneSettings( settings )
 
     local tempBars = {};
     
@@ -295,7 +263,7 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_SetBarDefaultSettings( bar, barSettings )
+local function StatusBars2_SetBarDefaultSettings( bar, barSettings )
 
     -- Enable all bars by default
     barSettings.group = barSettings.group or bar.group;
@@ -372,7 +340,7 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_SetDefaultSettings( settings )
+local function StatusBars2_SetDefaultSettings( settings )
 
     -- Set defaults for the bars
     for i, bar in ipairs( bars ) do
@@ -528,14 +496,14 @@ end
 
 -------------------------------------------------------------------------------
 --
---  Name:           StatusBars2_Settings_Apply_Settings
+--  Name:           ApplySettings
 --
---  Description:    Apply settings to active bars or pull them from the active 
---                  bars into the settings variables
+--  Description:    Apply settings to active bars or pull them from the active
+--                  bars into the settings table
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_Settings_Apply_Settings( settings, save )
+local function ApplySettings( settings, save )
 
     local rnd = StatusBars2_Round;
 
@@ -579,6 +547,97 @@ function StatusBars2_Settings_Apply_Settings( settings, save )
     -- Apply Settings to bars
     for k, bar in pairs( bars ) do
         StatusBars2_Settings_Apply_BarSettings( save, bar, settings.bars[bar.key] );
+    end
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_Settings_Apply_Settings
+--
+--  Description:    Apply settings to active bars or pull them from the active
+--                  bars into the settings table.  If we are saving, also
+--                  save the settings to the global settings DB
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_Settings_Apply_Settings( settings, save )
+
+    ApplySettings( settings, save );
+
+    if( save ) then
+        ApplySettings( StatusBars2_SettingsDB.database[characterName], save );
+    end
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_LoadSettings
+--
+--  Description:    Load settings
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_LoadSettings( settings )
+
+    -- save the character name / server name combo to use as the database key
+    characterName = GetUnitName( "player" ).."-"..GetRealmName( );
+
+    -- Initialize the bar settings
+    StatusBars2_InitializeSettings( settings );
+
+    if( settings.SaveDataVersion ~= SaveDataVersion ) then
+        -- Import old settings
+        StatusBars2_ImportSettings( settings );
+
+        -- Get rid of old setting we no longer care about
+        StatisBars2_PruneSettings( settings );
+
+        -- Set default settings
+        StatusBars2_SetDefaultSettings( settings );
+
+        -- We are now up to date, update the version number
+        settings.SaveDataVersion = SaveDataVersion;
+    end
+
+    -- Apply the settings to the bars
+    StatusBars2_Settings_Apply_Settings( settings, false );
+
+    -- Update the DB settings if necessary
+    if( StatusBars2_SettingsDB.SaveDataVersion ~= SaveDataVersion ) then
+
+        -- Create the actual database table if this is fresh
+        if( not StatusBars2_SettingsDB.database ) then
+            StatusBars2_SettingsDB.database = {};
+        end
+
+        for k, entry in pairs( StatusBars2_SettingsDB.database ) do
+            -- Import old settings
+            StatusBars2_ImportSettings( entry );
+
+            -- Get rid of old setting we no longer care about
+            StatisBars2_PruneSettings( entry );
+
+            -- Set default settings
+            StatusBars2_SetDefaultSettings( entry );
+        end
+
+        -- We are now up to date, update the version number
+        StatusBars2_SettingsDB.SaveDataVersion = SaveDataVersion;
+
+    end
+
+    local database = StatusBars2_SettingsDB.database;
+
+    -- Set up the DB entry for this character, if necessary
+    if( not database[characterName] ) then
+
+        database[characterName] = {};
+        StatusBars2_InitializeSettings( database[characterName] );
+
+        -- Push the current bar settings into the DB
+        ApplySettings( database[characterName], true );
     end
 
 end

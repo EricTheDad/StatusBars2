@@ -1,4 +1,7 @@
-﻿3.03.01
+﻿3.04.00
+Added very basic profiles.  Basically restricted to copying settings from one character to another.  Only works for group positions and those bars that are shared between the character being copied from and the character being copied to.
+
+3.03.01
 Fixed a problem where position settings for bars that were not set to auto-layout would be lost.
 
 3.03.00

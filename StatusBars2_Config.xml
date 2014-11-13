@@ -1151,42 +1151,6 @@
         </Frames>
     </Frame>
 
-    <!-- Scroll frame entry button template -->
-    <Button name="StatusBar2_BarListEntryButtonTemplate" virtual="true" >
-        <ButtonText name="$parentText">
-            <Size x="140" y="13"/>
-            <Anchors>
-                <Anchor point="LEFT" relativeTo="$parent" >
-                    <Offset>
-                        <AbsDimension x="10" y="1"/>
-                    </Offset>
-                </Anchor>
-            </Anchors>
-        </ButtonText>
-        <DisabledFont style="GameFontDisableLeft"/>
-        <HighlightFont style="GameFontHighlightLeft"/>
-        <HighlightTexture file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD"/>
-        <NormalFont style="GameFontNormalLeft"/>
-        <Scripts>
-            <OnClick>
-                PlaySound("UChatScrollButton");
-                StatusBars2_BarOptions_ListEntryButton_OnClick( self );
-            </OnClick>
-            <OnEnter>
-                if ( self:GetText( ) ) then
-                    GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_RIGHT", 0, -self:GetHeight( ));
-                    GameTooltip:SetText(self:GetText( ), nil, nil, nil, nil, 1);
-                end
-            </OnEnter>
-            <OnLeave>
-                if( GameTooltip:IsOwned(self) ) then
-                    GameTooltip:Hide( );
-                end
-            </OnLeave>
-        </Scripts>
-        <Size x="150" y="20" />
-    </Button>
-
     <Button name="StatusBars2_ConfigTabButtonTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
         <Scripts>
             <OnClick>
@@ -1218,10 +1182,16 @@
 		</Size>
         <TitleRegion>
             <Size x="300" y="68"/>
-            <Anchors><Anchor point="TOP"/></Anchors>
+            <Anchors>
+                <Anchor point="TOP"/>
+            </Anchors>
         </TitleRegion>
 		<Anchors>
-			<Anchor point="TOP"/>
+			<Anchor point="TOP">
+                <Offset>
+                    <AbsDimension x="0" y="-48"/>
+                </Offset>
+            </Anchor>
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -1327,6 +1297,41 @@
                 <Frames>
                 </Frames> 
             </Frame>
+            <Frame name="$parent_ProfilesConfigTabPage" parentKey="profilesConfigTabPage" inherits="StatusBars2_ConfigTabFrameTemplate" hidden="true">
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <FontString parentKey="copySettingsText" inherits="GameFontNormalLeft" justifyH="CENTER" >
+                            <Anchors>
+                                <Anchor point="CENTER" >
+                                    <Offset x="0" y="20" />
+                                </Anchor>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+                <Frames>
+                    <Frame name="$parent_ProfileSelectMenu" parentKey="profileSelectMenu" inherits="UIDropDownMenuTemplate" >
+                        <Size x="200" y="25"/>
+                        <Anchors>
+                            <Anchor point="CENTER" >
+                                <Offset x="0" y="-20" />
+                            </Anchor>
+                        </Anchors>
+                        <Scripts>
+                            <OnLoad>
+                                UIDropDownMenu_Initialize( self, StatusBars2_CopyFromProfileMenu_Initialize );
+                                UIDropDownMenu_SetWidth(self, self:GetWidth());
+                                UIDropDownMenu_SetButtonWidth(self, "TEXT");
+                            </OnLoad>
+                        </Scripts>
+                    </Frame>
+                </Frames>
+                <Scripts>
+                    <OnLoad>
+                        StatusBars2_SetupFontString( self.copySettingsText, "STRING_ID_CONFIG_COPY_SETTINGS_TEXT" );
+                    </OnLoad>
+                </Scripts>
+            </Frame>
             <Button name="$parentTab1" inherits="StatusBars2_ConfigTabButtonTemplate" id="1" text="Global Options">
                 <Anchors>
                     <Anchor point="CENTER" relativePoint="BOTTOMLEFT">
@@ -1345,9 +1350,18 @@
                     </Anchor>
                 </Anchors>
             </Button>
-            <Button name="$parentTab3" parentKey="tabButtonLayout" inherits="StatusBars2_ConfigTabButtonTemplate" id="3" text="Bar Options">
+            <Button name="$parentTab3" inherits="StatusBars2_ConfigTabButtonTemplate" id="3" text="Bar Options">
                 <Anchors>
                     <Anchor point="LEFT" relativeTo="$parentTab2" relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="-16" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="$parentTab4" inherits="StatusBars2_ConfigTabButtonTemplate" id="4" text="Profiles">
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="$parentTab3" relativePoint="RIGHT">
                         <Offset>
                             <AbsDimension x="-16" y="0"/>
                         </Offset>
@@ -1358,7 +1372,7 @@
         <Scripts>
             <OnLoad>
                 tinsert(UISpecialFrames, self:GetName());
-                PanelTemplates_SetNumTabs(self, 3);
+                PanelTemplates_SetNumTabs(self, 4);
                 PanelTemplates_SetTab(self, 1);
                 StatusBars2Config_Configure_Bar_Options( self );
             </OnLoad>

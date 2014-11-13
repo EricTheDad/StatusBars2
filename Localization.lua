@@ -16,6 +16,7 @@ You must type the name exactly as it appears in the tooltip.  Capitalization is 
 However, the options you checked still affect which auras are displayed.
 For example, if you type in the name of a buff but don't have the
 "Show Buffs" checkbox checked, the buff still won't be displayed.]=],
+	STRING_ID_CONFIG_COPY_SETTINGS_TEXT = "Select a character to copy settings from",
 	STRING_ID_CONFIG_LOCK_BARS_DURING_PLAY_HELP_TEXT = [=[Bars are automatically unlocked while the configuration panel is open.
 Don't uncheck this unless you want to be able to move the bars while playing]=],
 	STRING_ID_INTERFACEPANEL_CREDITS_TEXT_1 = "Original Addon by Wesslen",
@@ -60,7 +61,6 @@ addonTable.strings = L;
 if (GetLocale() == "enUS") then
 
 -- L["Abbreviated"] = ""
--- L["ACCEPT"] = ""
 -- L["Add Entry"] = ""
 -- L["Always"] = ""
 -- L["Auto"] = ""
@@ -69,7 +69,6 @@ if (GetLocale() == "enUS") then
 L["Available"] = "Verfügbar" -- Needs review
 -- L["Bar Options"] = ""
 -- L["Bar Select"] = ""
--- L["CANCEL"] = ""
 -- L["Clear"] = ""
 -- L["Color"] = ""
 -- L["Combat"] = ""
@@ -97,7 +96,6 @@ L["Available"] = "Verfügbar" -- Needs review
 -- L["Opacity"] = ""
 -- L["Percent Text"] = ""
 -- L["Reset All Group Positions"] = ""
--- L["REVERT"] = ""
 -- L["Right"] = ""
 -- L["Scale"] = ""
 -- L["Set Color"] = ""
@@ -110,6 +108,7 @@ L["Available"] = "Verfügbar" -- Needs review
 -- L["StatusBars2 Config"] = ""
 -- L["STRING_ID_CONFIG_AURA_FILTER_ENTRY_HELP_TEXT"] = ""
 -- L["STRING_ID_CONFIG_AURA_FILTER_LIST_HELP_TEXT"] = ""
+-- L["STRING_ID_CONFIG_COPY_SETTINGS_TEXT"] = ""
 -- L["STRING_ID_CONFIG_LOCK_BARS_DURING_PLAY_HELP_TEXT"] = ""
 L["STRING_ID_INTERFACEPANEL_CREDITS_TEXT_1"] = "Ursprüngliches Addon von Wesslen" -- Needs review
 L["STRING_ID_INTERFACEPANEL_CREDITS_TEXT_2"] = "Version 2 Umschreibung von GopherYerguns" -- Needs review

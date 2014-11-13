@@ -33,6 +33,7 @@ local L = addonTable.strings;
 local kGlobal       = 1;
 local kGroup        = 2;
 local kBar          = 3;
+local kProfile      = 4;
 
 -------------------------------------------------------------------------------
 --
@@ -140,6 +141,7 @@ function StatusBars2Config_Configure_Bar_Options( config_panel )
     table.insert( allPanels, config_panel.auraBarConfigTabPage );
     table.insert( allPanels, config_panel.auraStackBarConfigTabPage );
     table.insert( allPanels, config_panel.barLayoutTabPage );
+    table.insert( allPanels, config_panel.profilesConfigTabPage );
     config_panel.allPanels = allPanels;
 
     -- Hook up the appropriate the options frames
@@ -471,6 +473,7 @@ end
 --
 function StatusBars2Config_OnUpdate( self )
 
+    -- Push the panel settings to the bars
     StatusBars2Config_DoDataExchange( self, true );
     StatusBars2_UpdateFullLayout( );
 
@@ -499,6 +502,9 @@ local function StatusBars2Config_SetupActiveBarPanel( config_panel )
     elseif( activeTabID == kBar ) then
         panelToShow = activeBar.configPanel;
         StatusBars2.moveMode = "bar";
+    elseif( activeTabID == kProfile ) then
+        panelToShow = config_panel.profilesConfigTabPage;
+        StatusBars2.moveMode = "all";
     end
 
     -- layoutType "Background" means the bar is never attached to any other elements, 
@@ -678,12 +684,12 @@ local function Config_Movable_OnMouseDown( self, button )
 
         if( moveMode == "bar" ) then
             if( StatusBars2.moveMode ~= "bar" ) then
-                PanelTemplates_SetTab( StatusBars2_Config, 3 );
+                PanelTemplates_SetTab( StatusBars2_Config, kBar );
             end
         elseif( moveMode == "group" ) then
-            PanelTemplates_SetTab( StatusBars2_Config, 2 );
+            PanelTemplates_SetTab( StatusBars2_Config, kGroup );
         elseif( moveMode == "all" ) then
-            PanelTemplates_SetTab( StatusBars2_Config, 1 );
+            PanelTemplates_SetTab( StatusBars2_Config, kGlobal );
         end
 
         -- In config mode, keep the last move mode even if the player isn't pressing any keys now.
@@ -1451,6 +1457,53 @@ function StatusBars2_GroupOptions_AutoLayoutListUpdate( scrollFrame )
     local num_entries = scrollFrame.allEntries and #scrollFrame.allEntries or 0;
     HybridScrollFrame_Update(scrollFrame, num_entries * scrollFrame.buttonHeight, scrollFrame:GetHeight());
     
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_CopyFromProfileMenu_OnClick
+--
+--  Description:    Called when a menu item is clicked
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_CopyFromProfileMenu_OnClick( self, menu )
+
+    UIDropDownMenu_SetSelectedValue( menu, self.value );
+
+    -- First, copy the settings of the selected profile into the bars
+    StatusBars2_Settings_Apply_Settings( self.value, false );
+
+    -- Next copy the settings from the bars into the panel display.  The doUpdate
+    -- will cause the panel settings to be copied into the bars again
+    StatusBars2Config_DoDataExchange( StatusBars2_Config, false );
+
+	StatusBars2_Config.doUpdate = true;
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_CopyFromProfileMenu_Initialize
+--
+--  Description:    Initialize the copy settings from profile drop down menu
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_CopyFromProfileMenu_Initialize( self )
+
+    local entry = UIDropDownMenu_CreateInfo();
+    local selected = UIDropDownMenu_GetSelectedValue( self )
+
+    for k, profile in pairs( StatusBars2_SettingsDB.database ) do
+        entry.func = StatusBars2_CopyFromProfileMenu_OnClick;
+        entry.arg1 = self;
+        entry.value = profile;
+        entry.text = k;
+        entry.checked = selected == entry.value;
+        UIDropDownMenu_AddButton( entry );
+    end
+
 end
 
 -------------------------------------------------------------------------------
