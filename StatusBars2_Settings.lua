@@ -43,6 +43,135 @@ local characterName;
 
 -------------------------------------------------------------------------------
 --
+--  Name:           StatusBars2_SetBarDefaultSettings
+--
+--  Description:    Set default settings for a bar
+--
+-------------------------------------------------------------------------------
+--
+local function StatusBars2_SetBarDefaultSettings( bar, barSettings )
+
+    -- Enable all bars by default
+    barSettings.group = barSettings.group or bar.group;
+    barSettings.index = barSettings.index or bar.index;
+
+    if( barSettings.enabled == nil ) then
+        barSettings.enabled = bar.defaultEnabled;
+    end
+
+    -- Flash player and pet health and mana bars
+    if( barSettings.flash == nil and ( bar.optionsPanelKey == "continuousBarConfigTabPage" or bar.optionsPanelKey == "druidManaBarConfigTabPage" ) ) then
+        if( ( bar.unit == "player" or bar.unit == "pet" ) and bar.type == kHealth ) then
+            barSettings.flash = true;
+        elseif( ( bar.unit == "player" or bar.unit == "pet" ) and bar.type == kPower ) then
+            local localizedClass, englishClass = UnitClass( "player" );
+            barSettings.flash = ( bar.unit == "player" and englishClass ~= "ROGUE" and englishClass ~= "WARRIOR" and englishClass ~= "DEATHKNIGHT" and englishClass ~= "MONK" and englishClass ~= "DRUID" ) or ( bar.unit == "pet" and englishClass == "WARLOCK" );
+        elseif( bar.type == kDruidMana ) then
+            barSettings.flash = true;
+        else
+            barSettings.flash = false;
+        end
+    end
+
+    -- Add new fields to the position, if needed
+    if( barSettings.position ) then
+
+        if( not barSettings.layoutType ) then
+            barSettings.layoutType = "GroupLocked";
+        end
+    end
+
+    -- Place continuous bar percent text on the right side
+    if( barSettings.percentDisplayOption == nil and ( bar.optionsPanelKey == "continuousBarConfigTabPage" or bar.optionsPanelKey == "druidManaBarConfigTabPage" or bar.optionsPanelKey == "targetPowerBarConfigTabPage" ) ) then
+        barSettings.percentDisplayOption = "Right";
+    end
+
+    -- Set flash threshold to 40%
+    if( barSettings.flashThreshold == nil ) then
+        barSettings.flashThreshold = 0.40;
+    end
+
+    -- Enable buffs
+    if( barSettings.showBuffs == nil and bar.type == kAura ) then
+        barSettings.showBuffs = true;
+    end
+
+    -- Enable debuffs
+    if( barSettings.showDebuffs == nil and bar.type == kAura ) then
+        barSettings.showDebuffs = true;
+    end
+
+    -- Set scale to 1.0
+    if( barSettings.scale == nil or barSettings.scale <= 0 ) then
+        barSettings.scale = 1.0;
+    end
+
+    -- Show target spell
+    if( bar.type == kPower and bar.unit == "target" and barSettings.showSpell == nil ) then
+        barSettings.showSpell = true;
+    end
+
+    -- Show in all forms
+    if( bar.type == kDruidMana and barSettings.showInAllForms == nil ) then
+        barSettings.showInAllForms = true;
+    end
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_SetDefaultSettings
+--
+--  Description:    Set default settings
+--
+-------------------------------------------------------------------------------
+--
+local function StatusBars2_SetDefaultSettings( settings )
+
+    -- Set defaults for the bars
+    for i, bar in ipairs( bars ) do
+
+        StatusBars2_SetBarDefaultSettings( bar, settings.bars[ bar.key ] );
+
+    end
+
+    -- Text display options
+    if( settings.textDisplayOption == nil or settings.textDisplayOption < kAbbreviated or settings.textDisplayOption > kHidden) then
+        settings.textDisplayOption = kAbbreviated;
+    end
+
+    -- Text Size
+    if( settings.font == nil or not FontInfo[settings.font] ) then
+        settings.font = 1;
+    end
+
+    -- Fade
+    if( settings.fade == nil ) then
+        settings.fade = true;
+    end
+
+    -- Locked
+    if( settings.locked == nil ) then
+        settings.locked = true;
+    end
+
+    -- Scale
+    if( settings.scale == nil or settings.scale <= 0 ) then
+        settings.scale = 1.0;
+    end
+
+    -- Opacity
+    if( settings.alpha == nil or settings.alpha <= 0 or settings.alpha > 1.0 ) then
+        settings.alpha = 1.0;
+    end
+
+    -- Help tooltips
+    settings.showHelp = settings.showHelp or true;
+
+end;
+
+-------------------------------------------------------------------------------
+--
 --  Name:           StatusBars2_InitializeSettings
 --
 --  Description:    Initialize the settings object
@@ -81,6 +210,9 @@ local function StatusBars2_InitializeSettings( settings )
         end
 
     end
+
+    -- Set default settings.
+    StatusBars2_SetDefaultSettings( settings )
 
 end
 
@@ -254,135 +386,6 @@ local function StatisBars2_PruneSettings( settings )
     settings.groupsLocked = nil;
 
 end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_SetBarDefaultSettings
---
---  Description:    Set default settings for a bar
---
--------------------------------------------------------------------------------
---
-local function StatusBars2_SetBarDefaultSettings( bar, barSettings )
-
-    -- Enable all bars by default
-    barSettings.group = barSettings.group or bar.group;
-    barSettings.index = barSettings.index or bar.index;
-
-    if( barSettings.enabled == nil ) then
-        barSettings.enabled = bar.defaultEnabled;
-    end
-
-    -- Flash player and pet health and mana bars
-    if( barSettings.flash == nil and ( bar.optionsPanelKey == "continuousBarConfigTabPage" or bar.optionsPanelKey == "druidManaBarConfigTabPage" ) ) then
-        if( ( bar.unit == "player" or bar.unit == "pet" ) and bar.type == kHealth ) then
-            barSettings.flash = true;
-        elseif( ( bar.unit == "player" or bar.unit == "pet" ) and bar.type == kPower ) then
-            local localizedClass, englishClass = UnitClass( "player" );
-            barSettings.flash = ( bar.unit == "player" and englishClass ~= "ROGUE" and englishClass ~= "WARRIOR" and englishClass ~= "DEATHKNIGHT" and englishClass ~= "MONK" and englishClass ~= "DRUID" ) or ( bar.unit == "pet" and englishClass == "WARLOCK" );
-        elseif( bar.type == kDruidMana ) then
-            barSettings.flash = true;
-        else
-            barSettings.flash = false;
-        end
-    end
-
-    -- Add new fields to the position, if needed
-    if( barSettings.position ) then
-
-        if( not barSettings.layoutType ) then
-            barSettings.layoutType = "GroupLocked";
-        end
-    end
-
-    -- Place continuous bar percent text on the right side
-    if( barSettings.percentDisplayOption == nil and ( bar.optionsPanelKey == "continuousBarConfigTabPage" or bar.optionsPanelKey == "druidManaBarConfigTabPage" or bar.optionsPanelKey == "targetPowerBarConfigTabPage" ) ) then
-        barSettings.percentDisplayOption = "Right";
-    end
-
-    -- Set flash threshold to 40%
-    if( barSettings.flashThreshold == nil ) then
-        barSettings.flashThreshold = 0.40;
-    end
-
-    -- Enable buffs
-    if( barSettings.showBuffs == nil and bar.type == kAura ) then
-        barSettings.showBuffs = true;
-    end
-
-    -- Enable debuffs
-    if( barSettings.showDebuffs == nil and bar.type == kAura ) then
-        barSettings.showDebuffs = true;
-    end
-
-    -- Set scale to 1.0
-    if( barSettings.scale == nil or barSettings.scale <= 0 ) then
-        barSettings.scale = 1.0;
-    end
-
-    -- Show target spell
-    if( bar.type == kPower and bar.unit == "target" and barSettings.showSpell == nil ) then
-        barSettings.showSpell = true;
-    end
-
-    -- Show in all forms
-    if( bar.type == kDruidMana and barSettings.showInAllForms == nil ) then
-        barSettings.showInAllForms = true;
-    end
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_SetDefaultSettings
---
---  Description:    Set default settings
---
--------------------------------------------------------------------------------
---
-local function StatusBars2_SetDefaultSettings( settings )
-
-    -- Set defaults for the bars
-    for i, bar in ipairs( bars ) do
-
-        StatusBars2_SetBarDefaultSettings( bar, settings.bars[ bar.key ] );
-
-    end
-
-    -- Text display options
-    if( settings.textDisplayOption == nil or settings.textDisplayOption < kAbbreviated or settings.textDisplayOption > kHidden) then
-        settings.textDisplayOption = kAbbreviated;
-    end
-
-    -- Text Size
-    if( settings.font == nil or not FontInfo[settings.font] ) then
-        settings.font = 1;
-    end
-
-    -- Fade
-    if( settings.fade == nil ) then
-        settings.fade = true;
-    end
-
-    -- Locked
-    if( settings.locked == nil ) then
-        settings.locked = true;
-    end
-
-    -- Scale
-    if( settings.scale == nil or settings.scale <= 0 ) then
-        settings.scale = 1.0;
-    end
-
-    -- Opacity
-    if( settings.alpha == nil or settings.alpha <= 0 or settings.alpha > 1.0 ) then
-        settings.alpha = 1.0;
-    end
-
-    -- Help tooltips
-    settings.showHelp = settings.showHelp or true;
-
-end;
 
 -------------------------------------------------------------------------------
 --
@@ -594,9 +597,6 @@ function StatusBars2_LoadSettings( settings )
         -- Get rid of old setting we no longer care about
         StatisBars2_PruneSettings( settings );
 
-        -- Set default settings
-        StatusBars2_SetDefaultSettings( settings );
-
         -- We are now up to date, update the version number
         settings.SaveDataVersion = SaveDataVersion;
     end
@@ -604,23 +604,26 @@ function StatusBars2_LoadSettings( settings )
     -- Apply the settings to the bars
     StatusBars2_Settings_Apply_Settings( settings, false );
 
-    -- Update the DB settings if necessary
-    if( StatusBars2_SettingsDB.SaveDataVersion ~= SaveDataVersion ) then
+    -- Create the actual database table if this is fresh
+    if( not StatusBars2_SettingsDB.database ) then
+        StatusBars2_SettingsDB.database = {};
+    end
 
-        -- Create the actual database table if this is fresh
-        if( not StatusBars2_SettingsDB.database ) then
-            StatusBars2_SettingsDB.database = {};
-        end
+    for k, entry in pairs( StatusBars2_SettingsDB.database ) do
 
-        for k, entry in pairs( StatusBars2_SettingsDB.database ) do
+        -- Set default settings.  Do this always in case the settings have been corrupted before.
+        -- Weird crashes can happen if the settings are only partially there.
+        StatusBars2_InitializeSettings( entry );
+
+        -- Update the DB settings if necessary
+        if( StatusBars2_SettingsDB.SaveDataVersion ~= SaveDataVersion ) then
+
             -- Import old settings
             StatusBars2_ImportSettings( entry );
 
             -- Get rid of old setting we no longer care about
             StatisBars2_PruneSettings( entry );
 
-            -- Set default settings
-            StatusBars2_SetDefaultSettings( entry );
         end
 
         -- We are now up to date, update the version number
