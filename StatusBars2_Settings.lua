@@ -28,8 +28,6 @@ local SaveDataVersion = addonTable.saveDataVersion;
 local FontInfo = addonTable.fontInfo;
 local kDefaultFramePosition = addonTable.kDefaultFramePosition;
 
-local characterName;
-
 -------------------------------------------------------------------------------
 --
 --  Name:           Setting variables
@@ -39,7 +37,7 @@ local characterName;
 -------------------------------------------------------------------------------
 --
 
-
+local characterName;
 
 -------------------------------------------------------------------------------
 --
@@ -210,9 +208,6 @@ local function StatusBars2_InitializeSettings( settings )
         end
 
     end
-
-    -- Set default settings.
-    StatusBars2_SetDefaultSettings( settings )
 
 end
 
@@ -601,6 +596,10 @@ function StatusBars2_LoadSettings( settings )
         settings.SaveDataVersion = SaveDataVersion;
     end
 
+    -- Set default settings.  Do this always in case the settings have been corrupted before.
+    -- Weird crashes can happen if the settings are only partially there.
+    StatusBars2_SetDefaultSettings( settings )
+
     -- Apply the settings to the bars
     StatusBars2_Settings_Apply_Settings( settings, false );
 
@@ -611,8 +610,6 @@ function StatusBars2_LoadSettings( settings )
 
     for k, entry in pairs( StatusBars2_SettingsDB.database ) do
 
-        -- Set default settings.  Do this always in case the settings have been corrupted before.
-        -- Weird crashes can happen if the settings are only partially there.
         StatusBars2_InitializeSettings( entry );
 
         -- Update the DB settings if necessary
@@ -626,8 +623,9 @@ function StatusBars2_LoadSettings( settings )
 
         end
 
-        -- We are now up to date, update the version number
-        StatusBars2_SettingsDB.SaveDataVersion = SaveDataVersion;
+        -- Set default settings.  Do this always in case the settings have been corrupted before.
+        -- Weird crashes can happen if the settings are only partially there.
+        StatusBars2_SetDefaultSettings( settings )
 
     end
 
@@ -642,5 +640,8 @@ function StatusBars2_LoadSettings( settings )
         -- Push the current bar settings into the DB
         ApplySettings( database[characterName], true );
     end
+
+    -- We are now up to date, ensure the version number is up-to-date
+    StatusBars2_SettingsDB.SaveDataVersion = SaveDataVersion;
 
 end
