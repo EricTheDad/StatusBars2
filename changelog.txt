@@ -1,4 +1,7 @@
-﻿3.04.01
+﻿3.04.02
+Added more default initialization in an attempt to deal with startup lua errors that have been reported.
+
+3.04.01
 Fix to prevent corrupted save variables files from wreaking havoc if they occur.
 
 3.04.00
