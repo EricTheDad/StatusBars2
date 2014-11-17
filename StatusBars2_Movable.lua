@@ -249,7 +249,7 @@ function StatusBars2_Movable_SetPosition( self, x, y, savePosition )
     --local ux, uy = UIParent:GetSize();
     --print("ux:"..rnd(ux).." uy:"..rnd(uy));
 
-    local parentFrame = ( self.layoutType ~= "Background" and self:GetParent( ) ) or UIParent;
+    local parentFrame = (( self.layoutType ~= "Background" ) and self:GetParent( ) ) or UIParent;
     local px, py = parentFrame:GetCenter( );
     local relativeTo;
 

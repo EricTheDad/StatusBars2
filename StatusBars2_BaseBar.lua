@@ -302,6 +302,7 @@ function StatusBars2_CreateBar( group, index, removeWhenHidden, key, template, u
     bar.index = index;
     bar.group = group;
     bar.removeWhenHidden = removeWhenHidden;
+    bar.layoutType = "AutoLayout";
 
     -- Base methods for subclasses to call
     bar.BaseBar_OnUpdateLayout = StatuBars2_StatusBar_OnUpdateLayout;
