@@ -193,11 +193,15 @@ end
 --
 -------------------------------------------------------------------------------
 --
+local inited = false;
+
 function StatusBars2_OnEvent( self, event, ... )
 
     if( event == "ADDON_LOADED" ) then
     
         if( select( 1, ... ) == "StatusBars2" ) then
+
+            inited = true;
 
             if debugLayout then
                 StatusBars2_Frame_ShowBackdrop( self )
@@ -488,13 +492,14 @@ function StatusBars2_UpdateLayout( )
     for i, bar in ipairs( bars ) do
         -- If the bar has a group and index set include it in the layout
         if( bar.isEnabled and ( not bar.removeWhenHidden or bar.visible ) ) then
+
+            table.insert( layoutBars, bar );
+
             if( bar.layoutType == "AutoLayout" ) then
 
                 if( bar.position ) then
                     bar.position = nil;
                 end
-
-                table.insert( layoutBars, bar );
 
             else
 
@@ -506,7 +511,6 @@ function StatusBars2_UpdateLayout( )
                     StatusBars2_Movable_StopMoving( bar );
                 end
 
-                table.insert( positionedBars, bar );
             end
         end
     end
@@ -541,21 +545,22 @@ function StatusBars2_UpdateLayout( )
             offset = 0;
         end
 
-        -- Aura bars need a bit more space
-        if( bar.type == kAura ) then
-            offset = offset - 1;
+        if( bar.layoutType == "AutoLayout" ) then
+            -- Aura bars need a bit more space
+            if( bar.type == kAura ) then
+                offset = offset - 1;
+            end
+
+            bar:SetBarPosition( gx, gy + offset );
+
+            -- Update the offset
+            offset = offset - ( bar:GetBarHeight( ) - 2 );
+        else
+            -- Just pass in dummy x and y, we're going to set the position to the bar's stored position anyway.
+            bar:SetBarPosition( 0, 0 );
         end
 
-        bar:SetBarPosition( gx, gy + offset );
-
-        -- Update the offset
-        offset = offset - ( bar:GetBarHeight( ) - 2 );
     end
-
-    for i, bar in ipairs( positionedBars ) do
-        bar:SetBarPosition( 0, 0 );
-    end
-
 end
 
 -------------------------------------------------------------------------------
