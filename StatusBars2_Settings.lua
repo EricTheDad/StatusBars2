@@ -163,9 +163,6 @@ local function StatusBars2_SetDefaultSettings( settings )
         settings.alpha = 1.0;
     end
 
-    -- Help tooltips
-    settings.showHelp = settings.showHelp or true;
-
 end;
 
 -------------------------------------------------------------------------------
@@ -343,7 +340,12 @@ local function StatusBars2_ImportSettings( settings )
     if( settings.AuraSize ~= nil ) then
         settings.AuraSize = nil;
     end
-    
+
+    -- Only for the versions where this changed
+    if( settings.SaveDataVersion == 1.3 ) then
+        settings.hideHelp = not settings.showHelp;
+    end
+
 end
 
 -------------------------------------------------------------------------------
@@ -379,6 +381,7 @@ local function StatisBars2_PruneSettings( settings )
     settings.moveBars = nil;
     settings.grouped = nil;
     settings.groupsLocked = nil;
+    settings.showHelp = nil;
 
 end
 
@@ -521,7 +524,7 @@ local function ApplySettings( settings, save )
         settings.font = StatusBars2.font;
         settings.fade = StatusBars2.fade;
         settings.locked = StatusBars2.locked;
-        settings.showHelp = StatusBars2.showHelp;
+        settings.hideHelp = StatusBars2.hideHelp;
     else
         StatusBars2.scale = settings.scale or 1.0;
         StatusBars2.alpha = settings.alpha or 1.0;
@@ -534,7 +537,7 @@ local function ApplySettings( settings, save )
         StatusBars2.font = settings.font;
         StatusBars2.fade = settings.fade;
         StatusBars2.locked = settings.locked;
-        StatusBars2.showHelp = settings.showHelp;
+        StatusBars2.hideHelp = settings.hideHelp;
     end
 
     -- Apply Settings to groups

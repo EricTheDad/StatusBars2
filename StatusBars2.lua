@@ -57,7 +57,7 @@ addonTable.debugLayout = false;
 
 addonTable.kDefaultFramePosition = { x = 0, y = 0 };
 
-addonTable.saveDataVersion = 1.3;
+addonTable.saveDataVersion = 1.4;
 
 -- Settings
 StatusBars2_Settings = { };

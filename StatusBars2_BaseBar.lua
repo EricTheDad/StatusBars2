@@ -169,7 +169,7 @@ end
 --
 local function StatusBars2_StatusBar_OnEnter( self )
 
-    if( StatusBars2.showHelp ) then
+    if( not StatusBars2.hideHelp ) then
         GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_BOTTOMRIGHT", 0, -20);
         GameTooltip:SetText( L[ "STRING_ID_MOVE_BAR_HELP_TEXT" ] );
     end
@@ -251,12 +251,12 @@ local function StatusBars2_StatusBar_OnEnable( self )
             self:SetScript( "OnEvent", self.OnEvent );
             self:SetScript( "OnUpdate", self.OnUpdate );
 
-            if( StatusBars2.showHelp ) then
-                self:SetScript( "OnEnter", StatusBars2_StatusBar_OnEnter );
-                self:SetScript( "OnLeave", StatusBars2_StatusBar_OnLeave );
-            else
+            if( StatusBars2.hideHelp ) then
                 self:SetScript( "OnEnter", nil );
                 self:SetScript( "OnLeave", nil );
+            else
+                self:SetScript( "OnEnter", StatusBars2_StatusBar_OnEnter );
+                self:SetScript( "OnLeave", StatusBars2_StatusBar_OnLeave );
             end
 
             -- Register for events

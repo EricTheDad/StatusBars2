@@ -1,4 +1,7 @@
-﻿3.04.03
+﻿3.04.04
+Fixed "Enable Help Tooltips" setting getting reset to "checked" on log in
+
+3.04.03
 Fixed problem with the bar layout code that was causing lua errors if none of the bars in a group were set to auto-layout
 
 3.04.02

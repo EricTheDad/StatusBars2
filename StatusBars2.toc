@@ -1,5 +1,5 @@
-## Interface: 60000
-## Version: 3.04.03
+﻿## Interface: 60000
+## Version: 3.04.04
 ## Title: StatusBars2
 ## Author: GopherYerguns, Wesslen, 堂吉先生, EricTheDad
 ## Notes: Movable status bars for health, power and a variety of class-ability-specific displays.

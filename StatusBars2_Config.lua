@@ -442,7 +442,7 @@ local function StatusBars2Config_DoDataExchange( configPanel, save, bar )
         StatusBars2.locked = lockedButton:GetChecked( );
         StatusBars2.scale = scaleSlider:GetValue( );
         StatusBars2.alpha = StatusBars2_Round( alphaSlider:GetValue( ), 2 );
-        StatusBars2.showHelp = showHelpButton:GetChecked( );
+        StatusBars2.hideHelp = not showHelpButton:GetChecked( );
     else
         UIDropDownMenu_SetSelectedValue( textOptionsMenu, StatusBars2.textDisplayOption );
         UIDropDownMenu_SetText( textOptionsMenu, TextOptions[StatusBars2.textDisplayOption].label );
@@ -454,7 +454,7 @@ local function StatusBars2Config_DoDataExchange( configPanel, save, bar )
         scaleSlider:SetValue( StatusBars2.scale or 1.0 );
         alphaSlider.applyToFrame = StatusBars2;
         alphaSlider:SetValue( StatusBars2.alpha or 1.0 );
-        showHelpButton:SetChecked( StatusBars2.showHelp );
+        showHelpButton:SetChecked( not StatusBars2.hideHelp );
     end
 
     StatusBars2Config_Group_DoDataExchange( configPanel, save, groups[ bar.group ] );
