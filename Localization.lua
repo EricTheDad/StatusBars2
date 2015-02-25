@@ -58,7 +58,7 @@ addonTable.strings = L;
 
 ------------------------------------------------------
 
-if (GetLocale() == "enUS") then
+if (GetLocale() == "deDE") then
 
 -- L["Abbreviated"] = ""
 -- L["Add Entry"] = ""
@@ -170,6 +170,71 @@ end
 
 if (GetLocale() == "zhCN") then
 
+-- L["Abbreviated"] = ""
+-- L["Add Entry"] = ""
+-- L["Always"] = ""
+L["Auto"] = "当有资源值得显示时，StatusBars自动显示或隐藏。" -- Needs review
+-- L["Auto-layout order"] = ""
+-- L["Automatic"] = ""
+-- L["Available"] = ""
+-- L["Bar Options"] = ""
+-- L["Bar Select"] = ""
+-- L["Clear"] = ""
+-- L["Color"] = ""
+-- L["Combat"] = ""
+-- L["Delete Entry"] = ""
+-- L["Enable Aura Tooltips"] = ""
+-- L["Enabled"] = ""
+-- L["Enable help tooltips"] = ""
+-- L["Fade bars in and out"] = ""
+-- L["Flash when below"] = ""
+-- L["Global Options"] = ""
+-- L["Group Options"] = ""
+-- L["Hidden"] = ""
+-- L["Huge"] = ""
+-- L["Large"] = ""
+-- L["Layout Options"] = ""
+-- L["Left"] = ""
+-- L["Lock bars during play"] = ""
+-- L["Locked To Background"] = ""
+-- L["Locked To Group"] = ""
+-- L["Medium"] = ""
+-- L["Never"] = ""
+-- L["Only show auras listed"] = ""
+-- L["Only show auras with a duration"] = ""
+-- L["Only show my auras"] = ""
+-- L["Opacity"] = ""
+-- L["Percent Text"] = ""
+-- L["Reset All Group Positions"] = ""
+-- L["Right"] = ""
+-- L["Scale"] = ""
+-- L["Set Color"] = ""
+-- L["Show Buffs"] = ""
+-- L["Show Debuffs"] = ""
+-- L["Show in all forms"] = ""
+-- L["Show target spell"] = ""
+-- L["Small"] = ""
+-- L["Snap All Bars To Groups"] = ""
+-- L["StatusBars2 Config"] = ""
+-- L["STRING_ID_CONFIG_AURA_FILTER_ENTRY_HELP_TEXT"] = ""
+-- L["STRING_ID_CONFIG_AURA_FILTER_LIST_HELP_TEXT"] = ""
+-- L["STRING_ID_CONFIG_COPY_SETTINGS_TEXT"] = ""
+-- L["STRING_ID_CONFIG_LOCK_BARS_DURING_PLAY_HELP_TEXT"] = ""
+-- L["STRING_ID_INTERFACEPANEL_CREDITS_TEXT_1"] = ""
+-- L["STRING_ID_INTERFACEPANEL_CREDITS_TEXT_2"] = ""
+-- L["STRING_ID_INTERFACEPANEL_CREDITS_TEXT_3"] = ""
+-- L["STRING_ID_INTERFACEPANEL_CREDITS_TEXT_4"] = ""
+-- L["STRING_ID_INTERFACEPANEL_CREDITS_TEXT_5"] = ""
+-- L["STRING_ID_INTERFACEPANEL_CREDITS_TEXT_6"] = ""
+L["STRING_ID_INTERFACEPANEL_HELP_TEXT_1"] = "在聊天框中输入\"/statusbars2\"或者\"/sb2\"显示本页面。" -- Needs review
+L["STRING_ID_INTERFACEPANEL_HELP_TEXT_2"] = "输入\"/statusbars2 config\"或者\"/sb2 config\"或者点击下面的按钮开启配置模式。" -- Needs review
+-- L["STRING_ID_INTERFACEPANEL_TRANSLATORS_NEEDED"] = ""
+-- L["STRING_ID_MOVE_BAR_HELP_TEXT"] = ""
+-- L["Text Display Options"] = ""
+-- L["Text Size"] = ""
+-- L["Thousand Separators Only"] = ""
+-- L["Unformatted"] = ""
+
 end
 
 ------------------------------------------------------
@@ -181,6 +246,71 @@ end
 ------------------------------------------------------
 
 if (GetLocale() == "zhTW") then
+
+-- L["Abbreviated"] = ""
+-- L["Add Entry"] = ""
+L["Always"] = "總是" -- Needs review
+L["Auto"] = "自動" -- Needs review
+-- L["Auto-layout order"] = ""
+-- L["Automatic"] = ""
+-- L["Available"] = ""
+-- L["Bar Options"] = ""
+-- L["Bar Select"] = ""
+-- L["Clear"] = ""
+-- L["Color"] = ""
+L["Combat"] = "戰鬥" -- Needs review
+-- L["Delete Entry"] = ""
+-- L["Enable Aura Tooltips"] = ""
+L["Enabled"] = "已啟用" -- Needs review
+-- L["Enable help tooltips"] = ""
+-- L["Fade bars in and out"] = ""
+-- L["Flash when below"] = ""
+-- L["Global Options"] = ""
+-- L["Group Options"] = ""
+L["Hidden"] = "隱藏" -- Needs review
+L["Huge"] = "特大" -- Needs review
+L["Large"] = "大" -- Needs review
+-- L["Layout Options"] = ""
+L["Left"] = "左" -- Needs review
+-- L["Lock bars during play"] = ""
+-- L["Locked To Background"] = ""
+-- L["Locked To Group"] = ""
+L["Medium"] = "中" -- Needs review
+-- L["Never"] = ""
+-- L["Only show auras listed"] = ""
+-- L["Only show auras with a duration"] = ""
+-- L["Only show my auras"] = ""
+-- L["Opacity"] = ""
+L["Percent Text"] = "百分比文字" -- Needs review
+-- L["Reset All Group Positions"] = ""
+L["Right"] = "右" -- Needs review
+L["Scale"] = "比例" -- Needs review
+-- L["Set Color"] = ""
+-- L["Show Buffs"] = ""
+-- L["Show Debuffs"] = ""
+-- L["Show in all forms"] = ""
+-- L["Show target spell"] = ""
+L["Small"] = "小" -- Needs review
+-- L["Snap All Bars To Groups"] = ""
+L["StatusBars2 Config"] = "StatusBars2 設置" -- Needs review
+-- L["STRING_ID_CONFIG_AURA_FILTER_ENTRY_HELP_TEXT"] = ""
+-- L["STRING_ID_CONFIG_AURA_FILTER_LIST_HELP_TEXT"] = ""
+-- L["STRING_ID_CONFIG_COPY_SETTINGS_TEXT"] = ""
+-- L["STRING_ID_CONFIG_LOCK_BARS_DURING_PLAY_HELP_TEXT"] = ""
+-- L["STRING_ID_INTERFACEPANEL_CREDITS_TEXT_1"] = ""
+-- L["STRING_ID_INTERFACEPANEL_CREDITS_TEXT_2"] = ""
+-- L["STRING_ID_INTERFACEPANEL_CREDITS_TEXT_3"] = ""
+-- L["STRING_ID_INTERFACEPANEL_CREDITS_TEXT_4"] = ""
+-- L["STRING_ID_INTERFACEPANEL_CREDITS_TEXT_5"] = ""
+-- L["STRING_ID_INTERFACEPANEL_CREDITS_TEXT_6"] = ""
+-- L["STRING_ID_INTERFACEPANEL_HELP_TEXT_1"] = ""
+-- L["STRING_ID_INTERFACEPANEL_HELP_TEXT_2"] = ""
+-- L["STRING_ID_INTERFACEPANEL_TRANSLATORS_NEEDED"] = ""
+-- L["STRING_ID_MOVE_BAR_HELP_TEXT"] = ""
+L["Text Display Options"] = "文字顯示選項" -- Needs review
+L["Text Size"] = "文字大小" -- Needs review
+-- L["Thousand Separators Only"] = ""
+-- L["Unformatted"] = ""
 
 end
 

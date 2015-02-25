@@ -1,4 +1,9 @@
-﻿3.04.04
+﻿3.04.05
+Updated TOC for 6.1
+Fixed German localization showing up in the credits for English clients
+Added the translations donated on the CurseForge site for Traditional Chinese and Simplified Chinese.  Thank you!
+
+3.04.04
 Fixed "Enable Help Tooltips" setting getting reset to "checked" on log in
 
 3.04.03
