@@ -1,4 +1,7 @@
-﻿3.04.05
+﻿2.04.06
+Updated TOC for 6.2
+
+3.04.05
 Updated TOC for 6.1
 Fixed German localization showing up in the credits for English clients
 Added the translations donated on the CurseForge site for Traditional Chinese and Simplified Chinese.  Thank you!
