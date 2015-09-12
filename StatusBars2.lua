@@ -20,7 +20,6 @@ addonTable.barTypes =
     kPower = 1,
     kAura = 2,
     kAuraStack = 3,
-    kCombo = 4,
     kRune = 5,
     kDruidMana = 6,
     kUnitPower = 7,
@@ -68,7 +67,6 @@ local kHealth = addonTable.barTypes.kHealth;
 local kPower = addonTable.barTypes.kPower;
 local kAura = addonTable.barTypes.kAura;
 local kAuraStack = addonTable.barTypes.kAuraStack;
-local kCombo = addonTable.barTypes.kCombo;
 local kRune = addonTable.barTypes.kRune;
 local kDruidMana = addonTable.barTypes.kDruidMana;
 local kUnitPower = addonTable.barTypes.kUnitPower;
@@ -235,6 +233,8 @@ function StatusBars2_OnEvent( self, event, ... )
         self:RegisterEvent( "PLAYER_TALENT_UPDATE" );
         self:RegisterEvent( "GLYPH_UPDATED" );
         self:RegisterEvent( "PLAYER_LEVEL_UP" );
+        self:RegisterEvent( "SPELLS_CHANGED" );
+        self:RegisterEvent( "UNIT_MAXPOWER" );
 
     -- Druid change form
     elseif( event == "UNIT_DISPLAYPOWER" and select( 1, ... ) == "player" ) then
@@ -245,7 +245,7 @@ function StatusBars2_OnEvent( self, event, ... )
             StatusBars2_UpdateBars( );
         end
         
-    elseif ( event == "PLAYER_TALENT_UPDATE" or event == "GLYPH_UPDATED" or event == "PLAYER_LEVEL_UP" ) then
+    elseif ( event == "PLAYER_TALENT_UPDATE" or event == "GLYPH_UPDATED" or event == "PLAYER_LEVEL_UP" or event == "SPELLS_CHANGED" or event == "UNIT_MAXPOWER" ) then
 
         -- Any of these events could lead to differences in how the bars should be configured
         StatusBars2_UpdateBars( );
@@ -321,16 +321,16 @@ function StatusBars2_CreateBars( )
     -- Specialty bars
     
     if( englishClass == "DRUID" )  then
-        StatusBars2_CreatePowerBar( kPlayerGroup, 4, false, "druidMana", "player", kDruidMana, SPELL_POWER_MANA );
+        StatusBars2_CreatePowerBar( kPlayerGroup, 4, false, "druidMana", "player", kDruidMana, SPELL_POWER_MANA, PowerBarColor["MANA"] );
         StatusBars2_CreateComboBar( kPlayerGroup, 5);
         StatusBars2_CreateEclipseBar( kPlayerGroup, 6);
     elseif( englishClass == "ROGUE" ) then
         StatusBars2_CreateComboBar( kPlayerGroup, 4);
-        StatusBars2_CreateAuraStackBar( kPlayerGroup, 5, false, "anticipation", "player", ROGUE_ANTICIPATION, "buff", 5, BUFF_ANTICIPATION );
+        StatusBars2_CreateAuraStackBar( kPlayerGroup, 5, false, "anticipation", "player", ROGUE_ANTICIPATION, "buff", 5, BUFF_ANTICIPATION, { r = 0.6, g = 0, b = 0 } );
     elseif( englishClass == "DEATHKNIGHT" ) then
         StatusBars2_CreateRuneBar( kPlayerGroup, 4 );
     elseif( englishClass == "WARLOCK" ) then
-        StatusBars2_CreatePowerBar( kPlayerGroup, 4, false, "fury", "player", kDemonicFury, SPELL_POWER_DEMONIC_FURY );
+        StatusBars2_CreatePowerBar( kPlayerGroup, 4, false, "fury", "player", kDemonicFury, SPELL_POWER_DEMONIC_FURY, PowerBarColor["DEMONIC_FURY"], { r = 0.57, g = 0.12, b = 1 } );
         StatusBars2_CreateShardBar( kPlayerGroup, 5);
         StatusBars2_CreateEmbersBar( kPlayerGroup, 6);
     elseif( englishClass == "PALADIN" ) then
@@ -338,13 +338,13 @@ function StatusBars2_CreateBars( )
     elseif( englishClass == "PRIEST" ) then
         StatusBars2_CreateOrbsBar( kPlayerGroup, 4 );
     elseif( englishClass == "HUNTER" ) then
-        StatusBars2_CreateAuraStackBar( kPlayerGroup, 4, false, "frenzy", "player", HUNTER_FOCUS_FIRE, "buff", 5, BUFF_FRENZY );
+        StatusBars2_CreateAuraStackBar( kPlayerGroup, 4, false, "frenzy", "player", HUNTER_FOCUS_FIRE, "buff", 5, BUFF_FRENZY, { r = 1, g = 0.6, b = 0 } );
         StatusBars2_CreateAuraStackBar( kPlayerGroup, 5, false, "lockAndLoad", "player", HUNTER_BLACK_ARROW, "buff", 5, BUFF_LOCK_AND_LOAD );
     elseif( englishClass == "MAGE" ) then
         StatusBars2_CreateAuraStackBar( kPlayerGroup, 4, false, "arcaneCharge", "player", MAGE_ARCANE_CHARGE, "debuff", 4, DEBUFF_ARCANE_CHARGE );
-        StatusBars2_CreateAuraStackBar( kPlayerGroup, 5, false, "arcaneMissiles", "player", MAGE_ARCANE_MISSILES, "buff", 3, BUFF_ARCANE_MISSILES, { 0.90, 0.57, 0.94 } );
+        StatusBars2_CreateAuraStackBar( kPlayerGroup, 5, false, "arcaneMissiles", "player", MAGE_ARCANE_MISSILES, "buff", 3, BUFF_ARCANE_MISSILES, { r = 0.90, g = 0.57, b = 0.94 } );
     elseif( englishClass == "SHAMAN" ) then
-        StatusBars2_CreateAuraStackBar( kPlayerGroup, 4, false, "maelstromWeapon", "player", SHAMAN_MAELSTROM_WEAPON, "buff", 5, BUFF_MAELSTROM_WEAPON );
+        StatusBars2_CreateAuraStackBar( kPlayerGroup, 4, false, "maelstromWeapon", "player", SHAMAN_MAELSTROM_WEAPON, "buff", 5, BUFF_MAELSTROM_WEAPON, { r = 0, g = 0.5, b = 1 } );
     elseif( englishClass == "MONK" ) then
         StatusBars2_CreateChiBar( kPlayerGroup, 4 );
     end

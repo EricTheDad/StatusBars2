@@ -11,7 +11,6 @@ local kHealth = addonTable.barTypes.kHealth;
 local kPower = addonTable.barTypes.kPower;
 local kAura = addonTable.barTypes.kAura;
 local kAuraStack = addonTable.barTypes.kAuraStack;
-local kCombo = addonTable.barTypes.kCombo;
 local kRune = addonTable.barTypes.kRune;
 local kDruidMana = addonTable.barTypes.kDruidMana;
 local kUnitPower = addonTable.barTypes.kUnitPower;
@@ -39,7 +38,6 @@ function StatusBars2_CreateDiscreteBar( group, index, removeWhenHidden, key, uni
 
     -- Override default methods as needed
     bar.OnEnable = StatusBars2_DiscreteBar_OnEnable;
-    bar.GetColor = StatusBars2_GetDiscreteBarColor;
 
     -- Bar starts off with no boxes created.
     bar.boxCount = 0;
@@ -182,7 +180,7 @@ function StatusBars2_UpdateDiscreteBarBoxColors( bar )
     -- Initialize the boxes
     for i, box in ipairs(boxes) do
         local status = box:GetChildren( );
-        status:SetStatusBarColor( bar:GetColor( i ) );
+        status:SetStatusBarColor( bar:GetColor( ) );
     end
 
 end
@@ -216,39 +214,6 @@ end
 
 -------------------------------------------------------------------------------
 --
---  Name:           StatusBars2_GetDiscreteBarColor
---
---  Description:    Get the color for the boxes of a discrete bar
---
--------------------------------------------------------------------------------
---
-function StatusBars2_GetDiscreteBarColor( bar, boxIndex )
-
-    if( bar.color ) then
-        return unpack( bar.color );
-    elseif( bar.defaultColor ) then
-        return unpack( bar.defaultColor );
-    elseif( bar.type == kCombo ) then
-        return 1, 0, 0;
-    elseif( bar.type == kAuraStack ) then
-        if( bar.key == "anticipation" ) then
-            return 0.6, 0, 0;
-        elseif( bar.key == "maelstromWeapon" ) then
-            return 0, 0.5, 1;
-        elseif( bar.key == "frenzy" ) then
-            return 1, 0.6, 0;
-        end
-    else
-        return StatusBars2_GetPowerBarColor( bar.powerToken );
-    end
-
-    local kDefaultPowerBarColor = addonTable.kDefaultPowerBarColor;
-    return kDefaultPowerBarColor.r, kDefaultPowerBarColor.g, kDefaultPowerBarColor.b;
-
-end
-
--------------------------------------------------------------------------------
---
 --  Name:           StatusBars2_DiscreteBar_OnEnable
 --
 --  Description:    Discrete bar enable handler
@@ -272,7 +237,7 @@ function StatusBars2_DiscreteBar_OnEnable( self )
 
     else
 
-        -- Hide the backdrop if we showed it for config mode
+        -- Hide the backdrop in case we showed it for config mode
         StatusBars2_Frame_HideBackdrop( self );
 
         -- Show all boxes that should be active in case they were hidden by config mode

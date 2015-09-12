@@ -14,7 +14,6 @@ local kHealth = addonTable.barTypes.kHealth;
 local kPower = addonTable.barTypes.kPower;
 local kAura = addonTable.barTypes.kAura;
 local kAuraStack = addonTable.barTypes.kAuraStack;
-local kCombo = addonTable.barTypes.kCombo;
 local kRune = addonTable.barTypes.kRune;
 local kDruidMana = addonTable.barTypes.kDruidMana;
 local kUnitPower = addonTable.barTypes.kUnitPower;
@@ -276,6 +275,36 @@ end
 
 -------------------------------------------------------------------------------
 --
+--  Name:           StatusBars2_GetBarColor
+--
+--  Description:    Get the color for a bar
+--
+-------------------------------------------------------------------------------
+--
+local function StatusBars2_GetBarColor( bar, powerToken )
+
+    local color
+
+    if( bar.color ) then
+        color = bar.color
+    elseif( bar.defaultColor ) then
+        color = bar.defaultColor
+    elseif ( powerToken ) then
+        -- PowerBarColor defined by Blizzard unit frame
+        color = PowerBarColor[powerToken]
+    end
+
+    -- if we didn't find anything suitable, use the default color
+    if( not color ) then 
+        color = addonTable.kDefaultPowerBarColor
+    end
+
+    return color.r, color.g, color.b
+
+end
+
+-------------------------------------------------------------------------------
+--
 --  Name:           StatusBars2_CreateBar
 --
 --  Description:    Create a status bar
@@ -320,6 +349,7 @@ function StatusBars2_CreateBar( group, index, removeWhenHidden, key, template, u
     bar.SetBarScale = StatusBars2_StatusBar_SetScale;
     bar.SetBarPosition = StatusBars2_Movable_SetPosition;
     bar.GetBarHeight = StatusBars2_StatusBar_GetHeight;
+    bar.GetColor = StatusBars2_GetBarColor;
 
     -- Set the mouse event handlers
     bar:SetScript( "OnHide", StatusBars2_StatusBar_OnHide );

@@ -8,7 +8,6 @@ local kHealth = addonTable.barTypes.kHealth;
 local kPower = addonTable.barTypes.kPower;
 local kAura = addonTable.barTypes.kAura;
 local kAuraStack = addonTable.barTypes.kAuraStack;
-local kCombo = addonTable.barTypes.kCombo;
 local kRune = addonTable.barTypes.kRune;
 local kDruidMana = addonTable.barTypes.kDruidMana;
 local kUnitPower = addonTable.barTypes.kUnitPower;
@@ -265,7 +264,8 @@ local function StatusBars2Config_Bar_DoDataExchange( configPanel, save, bar )
         end
        if( customColorButton and colorSwatch ) then
             if( customColorButton:GetChecked( )) then
-                bar.color = StatusBars2_ShallowCopy( { colorSwatch:GetBackdropColor( ) } );
+                bar.color = {}
+                bar.color.r, bar.color.g, bar.color.b = colorSwatch:GetBackdropColor( );
             else
                 bar.color = nil;
             end

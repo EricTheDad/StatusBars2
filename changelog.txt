@@ -1,4 +1,9 @@
-﻿2.04.06
+﻿3.05.00
+Changed combo points to use unit power template, since that's how they work now.  That means the bar won't disappear when changing targets.
+Simplified bar color handling.
+Fixed shadow orbs often not properly updating to 5 when going shadow.
+
+3.04.06
 Updated TOC for 6.2
 
 3.04.05
