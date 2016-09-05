@@ -126,7 +126,6 @@ local BUFF_ARCANE_MISSILES = 79683;
 
 -- Debuff IDs Blizzard doesn't define
 local DEBUFF_WEAKENED_ARMOR = 113746;
-local DEBUFF_ARCANE_CHARGE = 36032;
 
 -- Specialization IDs
 local SPEC_HUNTER_MARKSMAN = 2;
@@ -341,7 +340,7 @@ function StatusBars2_CreateBars( )
         StatusBars2_CreateAuraStackBar( kPlayerGroup, 4, false, "frenzy", "player", HUNTER_FOCUS_FIRE, "buff", 5, BUFF_FRENZY, { r = 1, g = 0.6, b = 0 } );
         StatusBars2_CreateAuraStackBar( kPlayerGroup, 5, false, "lockAndLoad", "player", HUNTER_BLACK_ARROW, "buff", 5, BUFF_LOCK_AND_LOAD );
     elseif( englishClass == "MAGE" ) then
-        StatusBars2_CreateAuraStackBar( kPlayerGroup, 4, false, "arcaneCharge", "player", MAGE_ARCANE_CHARGE, "debuff", 4, DEBUFF_ARCANE_CHARGE );
+		StatusBars2_CreateArcaneChargesBar( kPlayerGroup, 4 )
         StatusBars2_CreateAuraStackBar( kPlayerGroup, 5, false, "arcaneMissiles", "player", MAGE_ARCANE_MISSILES, "buff", 3, BUFF_ARCANE_MISSILES, { r = 0.90, g = 0.57, b = 0.94 } );
     elseif( englishClass == "SHAMAN" ) then
         StatusBars2_CreateAuraStackBar( kPlayerGroup, 4, false, "maelstromWeapon", "player", SHAMAN_MAELSTROM_WEAPON, "buff", 5, BUFF_MAELSTROM_WEAPON, { r = 0, g = 0.5, b = 1 } );

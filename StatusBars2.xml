@@ -122,70 +122,86 @@
 
     <!-- Rune bar template. -->
     <Frame name="StatusBars2_RuneFrameTemplate" virtual="true" movable="true" >
-
         <Size x="170" y="28" />
-        <Frames>
-            <Button name="$parent_RuneButton1" inherits="RuneButtonIndividualTemplate" id="1">
-                <Anchors>
-                    <Anchor point="LEFT" relativeTo="$Parent" relativePoint="LEFT">
-                        <Offset>
-                            <AbsDimension x="2" y="0"/>
-                        </Offset>
-                    </Anchor>
-                </Anchors>
-            </Button>
+		<Anchors>
+		  <Anchor point="TOP" relativePoint="BOTTOM">
+			<Offset>
+			  <AbsDimension x="54" y="34"/>
+			</Offset>
+		  </Anchor>
+		</Anchors>
+		<Frames>
+		  <Button name="$parent_RuneButtonIndividual1" inherits="RuneButtonIndividualTemplate" >
+			<Anchors>
+			  <Anchor point="LEFT" relativePoint="LEFT">
+				<Offset>
+				  <AbsDimension x="0" y="0"/>
+				</Offset>
+			  </Anchor>
+			</Anchors>
+		  </Button>
 
-            <Button name="$parent_RuneButton2" inherits="RuneButtonIndividualTemplate" id="2">
-                <Anchors>
-                    <Anchor point="LEFT" relativeTo="$Parent" relativePoint="LEFT">
-                        <Offset>
-                            <AbsDimension x="27" y="0"/>
-                        </Offset>
-                    </Anchor>
-                </Anchors>
-            </Button>
+		  <Button name="$parent_RuneButtonIndividual2" inherits="RuneButtonIndividualTemplate">
+			<Anchors>
+			  <Anchor point="LEFT" relativeTo="$parent_RuneButtonIndividual1" relativePoint="RIGHT">
+				<Offset>
+				  <AbsDimension x="3" y="0"/>
+				</Offset>
+			  </Anchor>
+			</Anchors>
+		  </Button>
 
-            <Button name="$parent_RuneButton5" inherits="RuneButtonIndividualTemplate" id="5">
-                <Anchors>
-                    <Anchor point="LEFT" relativeTo="$Parent" relativePoint="LEFT">
-                        <Offset>
-                            <AbsDimension x="62" y="0"/>
-                        </Offset>
-                    </Anchor>
-                </Anchors>
-            </Button>
+		  <Button name="$parent_RuneButtonIndividual3" inherits="RuneButtonIndividualTemplate" >
+			<Anchors>
+			  <Anchor point="LEFT" relativeTo="$parent_RuneButtonIndividual2" relativePoint="RIGHT">
+				<Offset>
+				  <AbsDimension x="3" y="0"/>
+				</Offset>
+			  </Anchor>
+			</Anchors>
+		  </Button>
 
-            <Button name="$parent_RuneButton6" inherits="RuneButtonIndividualTemplate" id="6">
-                <Anchors>
-                    <Anchor point="LEFT" relativeTo="$Parent" relativePoint="LEFT">
-                        <Offset>
-                            <AbsDimension x="87" y="0"/>
-                        </Offset>
-                    </Anchor>
-                </Anchors>
-            </Button>
+		  <Button name="$parent_RuneButtonIndividual4" inherits="RuneButtonIndividualTemplate" >
+			<Anchors>
+			  <Anchor point="LEFT" relativeTo="$parent_RuneButtonIndividual3" relativePoint="RIGHT">
+				<Offset>
+				  <AbsDimension x="3" y="0"/>
+				</Offset>
+			  </Anchor>
+			</Anchors>
+		  </Button>
 
-            <Button name="$parent_RuneButton3" inherits="RuneButtonIndividualTemplate" id="3">
-                <Anchors>
-                    <Anchor point="LEFT" relativeTo="$Parent" relativePoint="LEFT">
-                        <Offset>
-                            <AbsDimension x="122" y="0"/>
-                        </Offset>
-                    </Anchor>
-                </Anchors>
-            </Button>
+		  <Button name="$parent_RuneButtonIndividual5" inherits="RuneButtonIndividualTemplate" >
+			<Anchors>
+			  <Anchor point="LEFT" relativeTo="$parent_RuneButtonIndividual4" relativePoint="RIGHT">
+				<Offset>
+				  <AbsDimension x="3" y="0"/>
+				</Offset>
+			  </Anchor>
+			</Anchors>
+		  </Button>
 
-            <Button name="$parent_RuneButton4" inherits="RuneButtonIndividualTemplate" id="4">
-                <Anchors>
-                    <Anchor point="LEFT" relativeTo="$Parent" relativePoint="LEFT">
-                        <Offset>
-                            <AbsDimension x="147" y="0"/>
-                        </Offset>
-                    </Anchor>
-                </Anchors>
-            </Button>
-        </Frames>
-    </Frame>
+		  <Button name="$parent_RuneButtonIndividual6" inherits="RuneButtonIndividualTemplate" >
+			<Anchors>
+			  <Anchor point="LEFT" relativeTo="$parent_RuneButtonIndividual5" relativePoint="RIGHT">
+				<Offset>
+				  <AbsDimension x="3" y="0"/>
+				</Offset>
+			  </Anchor>
+			</Anchors>
+		  </Button>
+
+		  <Button name="$parent_RuneButtonIndividual7" inherits="RuneButtonIndividualTemplate">
+			<Anchors>
+			  <Anchor point="LEFT" relativeTo="$parent_RuneButtonIndividual6" relativePoint="RIGHT">
+				<Offset>
+				  <AbsDimension x="3" y="0"/>
+				</Offset>
+			  </Anchor>
+			</Anchors>
+		  </Button>
+		</Frames>
+	</Frame>
 
     <!-- Aura bar template -->
     <Frame name="StatusBars2_AuraBarTemplate" movable="true" virtual="true" >

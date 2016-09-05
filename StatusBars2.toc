@@ -1,5 +1,5 @@
-﻿## Interface: 60200
-## Version: 3.05.00
+﻿## Interface: 70000
+## Version: 3.06.00b
 ## Title: StatusBars2
 ## Author: GopherYerguns, Wesslen, 堂吉先生, EricTheDad
 ## Notes: Movable status bars for health, power and a variety of class-ability-specific displays.
@@ -7,6 +7,10 @@
 ## OptionalDeps:
 ## SavedVariables: StatusBars2_SettingsDB
 ## SavedVariablesPerCharacter: StatusBars2_Settings
+## X-Curse-Packaged-Version: 3.05.00
+## X-Curse-Project-Name: StatusBars2
+## X-Curse-Project-ID: statusbars2
+## X-Curse-Repository-ID: wow/statusbars2/mainline
 
 Localization.lua
 StatusBars2.lua

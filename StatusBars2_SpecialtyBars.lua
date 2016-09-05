@@ -50,8 +50,7 @@ end
 local function StatusBars2_SpecialtyBar_OnEnable( self )
 
     if( not StatusBars2.configMode ) then
-
-        -- Set the number of boxes we should be seeing
+		-- Set the number of boxes we should be seeing
         self:SetupBoxes( self:GetMaxCharges( ) );
 
         -- Update
@@ -273,6 +272,25 @@ function StatusBars2_CreateOrbsBar( group, index, removeWhenHidden )
 
     -- Create the bar
     local bar = StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, "orbs", SHADOW_ORBS, { r = 162/255, g = 51/255, b = 209/255 }, SPELL_POWER_SHADOW_ORBS, "UNIT_POWER_FREQUENT", "SHADOW_ORBS" );
+    return bar;
+
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_CreateArcaneChargesBar
+--
+--  Description:    Create an arcane charges bar
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_CreateArcaneChargesBar( group, index, removeWhenHidden )
+
+	local MAGE_ARCANE_BLAST = 30451;
+
+    -- Create the bar
+    local bar = StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, "arcaneCharge", "Arcane Charges", PowerBarColor["ARCANE_CHARGES"], SPELL_POWER_ARCANE_CHARGES, "UNIT_POWER", "ARCANE_CHARGES" );
+    bar.spellID = MAGE_ARCANE_BLAST;
     return bar;
 
 end
