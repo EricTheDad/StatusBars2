@@ -411,10 +411,10 @@ function StatusBars2_UpdateBars( )
         -- Special Warlock Bars
         elseif( bar.key == "fury" and GetSpecialization() == SPEC_WARLOCK_DEMONOLOGY ) then
             StatusBars2_EnableBar( bar );
-        elseif( bar.key == "shard" and IsPlayerSpell( WARLOCK_SOULBURN ) ) then
+        elseif( bar.key == "shard" and IsSpellKnown( WARLOCK_SOULBURN ) ) then
             StatusBars2_EnableBar( bar );
-        elseif( bar.key == "embers" and IsPlayerSpell( WARLOCK_BURNING_EMBERS ) ) then
-            StatusBars2_EnableBar( bar );
+        -- elseif( bar.key == "embers" and GetSpecialization() == SPEC_WARLOCK_DESTRUCTION ) then
+            -- StatusBars2_EnableBar( bar );
         -- Special Paladin Bars
         elseif( bar.key == "holyPower" ) then
             StatusBars2_EnableBar( bar );

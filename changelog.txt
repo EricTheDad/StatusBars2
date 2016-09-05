@@ -1,4 +1,7 @@
-﻿3.06.00b
+﻿3.06.01b
+Fixed an on-load crash for warlocks
+
+3.06.00b
 Temporary release.  Fixes on-load crashes, Death Knight runes, Mage Arcane Charges.  I have no idea what things may or may not work for the various classes and specs, as there have been so many changes.
 
 3.05.00

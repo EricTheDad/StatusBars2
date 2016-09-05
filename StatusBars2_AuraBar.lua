@@ -330,7 +330,7 @@ function StatusBars2_GetAuraButton( self, id, buttonName, template, auraName, au
     local buttonCooldown = _G[ buttonName .. "Cooldown" ];
     if( auraDuration > 0 ) then
         buttonCooldown:Show( );
-        CooldownFrame_SetTimer( buttonCooldown, auraExpirationTime - auraDuration, auraDuration, 1 );
+        CooldownFrame_Set( buttonCooldown, auraExpirationTime - auraDuration, auraDuration, true );
     else
         buttonCooldown:Hide( );
     end
