@@ -204,7 +204,7 @@ end
 function StatusBars2_CreateComboBar( group, index, removeWhenHidden )
 
     -- Create the bar
-    local bar = StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, "combo", COMBO_POINTS, { r = 1, g = 0, b = 0 }, SPELL_POWER_COMBO_POINTS, "UNIT_COMBO_POINTS" );
+    local bar = StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, "combo", COMBO_POINTS, { r = 1, g = 0, b = 0 }, SPELL_POWER_COMBO_POINTS, "UNIT_POWER", "COMBO_POINTS" );
     return bar;
 
 end

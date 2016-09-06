@@ -1,4 +1,7 @@
-﻿3.06.01b
+﻿3.06.02b
+Fixed combo points display
+
+3.06.01b
 Fixed an on-load crash for warlocks
 
 3.06.00b
