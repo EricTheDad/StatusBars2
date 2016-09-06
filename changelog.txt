@@ -1,4 +1,7 @@
-﻿3.06.02b
+﻿3.06.03b
+Futzing with the curse packager
+
+3.06.02b
 Fixed combo points display
 
 3.06.01b
