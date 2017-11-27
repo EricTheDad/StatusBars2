@@ -325,7 +325,7 @@ function StatusBars2_CreateBars( )
         StatusBars2_CreateEclipseBar( kPlayerGroup, 6);
     elseif( englishClass == "ROGUE" ) then
         StatusBars2_CreateComboBar( kPlayerGroup, 4);
-        StatusBars2_CreateAuraStackBar( kPlayerGroup, 5, false, "anticipation", "player", ROGUE_ANTICIPATION, "buff", 5, BUFF_ANTICIPATION, { r = 0.6, g = 0, b = 0 } );
+        -- StatusBars2_CreateAuraStackBar( kPlayerGroup, 5, false, "anticipation", "player", ROGUE_ANTICIPATION, "buff", 5, BUFF_ANTICIPATION, { r = 0.6, g = 0, b = 0 } );
     elseif( englishClass == "DEATHKNIGHT" ) then
         StatusBars2_CreateRuneBar( kPlayerGroup, 4 );
     elseif( englishClass == "WARLOCK" ) then

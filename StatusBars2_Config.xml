@@ -178,7 +178,7 @@
         <NormalFont style="GameFontNormalLeft"/>
         <Scripts>
             <OnClick>
-                PlaySound("UChatScrollButton");
+                PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
                 StatusBars2_BarOptions_ListEntryButton_OnClick( self );
             </OnClick>
             <OnEnter>
@@ -487,7 +487,7 @@
                 </Anchors>
                 <Scripts>
                     <OnClick>
-                        PlaySound("UChatScrollButton");
+                        PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
                         StatusBars2_Options_ResetGroupPositionButton_OnClick( self );
                     </OnClick>
                 </Scripts>
@@ -501,7 +501,7 @@
                 </Anchors>
                 <Scripts>
                     <OnClick>
-                        PlaySound("UChatScrollButton");
+                        PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
                         StatusBars2_Options_ResetBarPositionButton_OnClick( self );
                     </OnClick>
                 </Scripts>
@@ -606,7 +606,7 @@
         <NormalFont style="GameFontNormalLeft"/>
         <Scripts>
             <OnClick>
-                PlaySound("UChatScrollButton");
+                PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
                 StatusBars2_BarOptions_AutoLayoutListEntryButton_OnClick( self, button, down );
             </OnClick>
         </Scripts>
@@ -672,7 +672,7 @@
                         self:Disable();
                     </OnLoad>
                     <OnClick>
-                        PlaySound("UChatScrollButton");
+                        PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
                         StatusBars2_GroupOptions_AutoLayoutUp_OnClick( self );
                     </OnClick>
                 </Scripts>
@@ -690,7 +690,7 @@
                         self:Disable();
                     </OnLoad>
                     <OnClick>
-                        PlaySound("UChatScrollButton");
+                        PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
                         StatusBars2_GroupOptions_AutoLayoutDown_OnClick( self );
                     </OnClick>
                 </Scripts>
@@ -953,7 +953,7 @@
                 </Anchors>
                 <Scripts>
                     <OnClick>
-                        PlaySound("UChatScrollButton");
+                        PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
                         StatusBars2_BarOptions_AddAuraFilterEntry( self:GetParent( ).auraNameInput );
                     </OnClick>
                 </Scripts>
@@ -967,7 +967,7 @@
                 </Anchors>
                 <Scripts>
                     <OnClick>
-                        PlaySound("UChatScrollButton");
+                        PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
                         StatusBars2_BarOptions_ClearAuraFilterList_OnClick( self );
                     </OnClick>
                 </Scripts>
@@ -981,7 +981,7 @@
                 </Anchors>
                 <Scripts>
                     <OnClick>
-                        PlaySound("UChatScrollButton");
+                        PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
                         StatusBars2_BarOptions_DeleteAuraFilterListEntry_OnClick( self );
                     </OnClick>
                 </Scripts>
@@ -1074,7 +1074,7 @@
                         getglobal( self:GetName( ) .. "Text" ):SetJustifyH("RIGHT");
                     </OnLoad>
 					<OnClick>
-                        PlaySound("UChatScrollButton");
+                        PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
                         StatusBars2_BarOptions_Enable_Aura_List( self:GetParent( ), self:GetChecked( ) );
 					</OnClick>
                     <OnEnter>
@@ -1107,7 +1107,7 @@
                         getglobal( self:GetName( ) .. "Text" ):SetText( StatusBars2_GetLocalizedText( "Color" ));
                     </OnLoad>
 					<OnClick>
-                        PlaySound("UChatScrollButton");
+                        PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
                         StatusBars2_BarOptions_Enable_ColorSelectButton( self:GetParent( ), self:GetChecked( ) );
 					</OnClick>
                 </Scripts>
@@ -1128,7 +1128,7 @@
                 </Backdrop>
                 <Scripts>
                     <OnClick>
-                        PlaySound("UChatScrollButton");
+                        PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
                         StatusBars2_Options_SetBarColorButton_OnClick( self:GetParent( ) );
                     </OnClick>
                 </Scripts>
@@ -1143,7 +1143,7 @@
                 </Anchors>
                 <Scripts>
                     <OnClick>
-                        PlaySound("UChatScrollButton");
+                        PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
                         StatusBars2_Options_SetBarColorButton_OnClick( self:GetParent( ) );
                     </OnClick>
                 </Scripts>
@@ -1154,7 +1154,7 @@
     <Button name="StatusBars2_ConfigTabButtonTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
         <Scripts>
             <OnClick>
-                PlaySound("igCharacterInfoTab");
+                PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
                 StatusBars2Config_TabButton_OnClick(self);
             </OnClick>
         </Scripts>
@@ -1216,7 +1216,7 @@
                     <OnLoad>
                     </OnLoad>
                     <OnClick>
-                        PlaySound("AchievementMenuOpen");
+                        PlaySound(SOUNDKIT.ACHIEVEMENT_MENU_OPEN);
                         StatusBars2Config_RevertButton_OnClick( self );
                     </OnClick>
                 </Scripts>
@@ -1377,11 +1377,11 @@
                 StatusBars2Config_Configure_Bar_Options( self );
             </OnLoad>
             <OnShow>
-                PlaySound("igCharacterInfoOpen");
+                PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
                 StatusBars2Confg_OnShow( self )
             </OnShow>
             <OnHide>
-                PlaySound("igCharacterInfoClose");
+                PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
                 StatusBars2Config_OnHide( self );
             </OnHide>
             <OnUpdate>

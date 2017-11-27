@@ -1,4 +1,8 @@
-﻿3.06.03b
+﻿3.06.04
+Fixed playsound calls
+Updated TOC for 7.3
+
+3.06.03b
 Futzing with the curse packager
 
 3.06.02b

@@ -49,7 +49,7 @@ local function StatusBars2_RuneFrame_RunePowerUpdate(runeButton, runeIndex, isEn
 			runeButton.energize:Play();
 		end
 	else
-		assert(false, "Bad rune index")
+		assert(false, "Bad rune index "..runeIndex)
 	end
 end
 
