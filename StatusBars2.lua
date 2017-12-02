@@ -59,8 +59,12 @@ addonTable.kDefaultFramePosition = { x = 0, y = 0 };
 addonTable.saveDataVersion = 1.4;
 
 -- Settings
-StatusBars2_Settings = { };
-StatusBars2_SettingsDB = { };
+if StatusBars2_Settings == nil then
+    StatusBars2_Settings = { }
+end
+if StatusBars2_SettingsDB == nil then
+    StatusBars2_SettingsDB = { }
+end
 
 -- Bar types
 local kHealth = addonTable.barTypes.kHealth;
@@ -105,7 +109,6 @@ local kFadeOutTime = 1.0;
 local kFlashDuration = 0.5;
 
 -- Spell IDs Blizzard doesn't define
-local PRIEST_SHADOW_ORBS = 95740;
 local HUNTER_FOCUS_FIRE = 82692;
 local WARRIOR_SUNDER_ARMOR = 7386;
 local MAGE_ARCANE_CHARGE = 114664;
@@ -325,7 +328,6 @@ function StatusBars2_CreateBars( )
         StatusBars2_CreateEclipseBar( kPlayerGroup, 6);
     elseif( englishClass == "ROGUE" ) then
         StatusBars2_CreateComboBar( kPlayerGroup, 4);
-        -- StatusBars2_CreateAuraStackBar( kPlayerGroup, 5, false, "anticipation", "player", ROGUE_ANTICIPATION, "buff", 5, BUFF_ANTICIPATION, { r = 0.6, g = 0, b = 0 } );
     elseif( englishClass == "DEATHKNIGHT" ) then
         StatusBars2_CreateRuneBar( kPlayerGroup, 4 );
     elseif( englishClass == "WARLOCK" ) then
@@ -335,7 +337,8 @@ function StatusBars2_CreateBars( )
     elseif( englishClass == "PALADIN" ) then
         StatusBars2_CreateHolyPowerBar( kPlayerGroup, 4);
     elseif( englishClass == "PRIEST" ) then
-        StatusBars2_CreateOrbsBar( kPlayerGroup, 4 );
+        --StatusBars2_CreateOrbsBar( kPlayerGroup, 4 );
+        --StatusBars2_CreatePowerBar( kPlayerGroup, 4, false, "fury", "player", kDemonicFury, SPELL_POWER_DEMONIC_FURY, PowerBarColor["DEMONIC_FURY"], { r = 0.57, g = 0.12, b = 1 } );
     elseif( englishClass == "HUNTER" ) then
         StatusBars2_CreateAuraStackBar( kPlayerGroup, 4, false, "frenzy", "player", HUNTER_FOCUS_FIRE, "buff", 5, BUFF_FRENZY, { r = 1, g = 0.6, b = 0 } );
         StatusBars2_CreateAuraStackBar( kPlayerGroup, 5, false, "lockAndLoad", "player", HUNTER_BLACK_ARROW, "buff", 5, BUFF_LOCK_AND_LOAD );

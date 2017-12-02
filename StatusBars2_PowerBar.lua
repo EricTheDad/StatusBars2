@@ -17,6 +17,26 @@ local kUnitPower = addonTable.barTypes.kUnitPower;
 local kEclipse = addonTable.barTypes.kEclipse;
 local kDemonicFury = addonTable.barTypes.kDemonicFury;
 
+
+-- PowerTypes
+local SPELL_POWER_MANA = Enum.PowerType.Mana;
+local SPELL_POWER_RAGE = Enum.PowerType.Rage;
+local SPELL_POWER_FOCUS = Enum.PowerType.Focus;
+local SPELL_POWER_ENERGY = Enum.PowerType.Energy;
+local SPELL_POWER_COMBO_POINTS = Enum.PowerType.ComboPoints;
+local SPELL_POWER_RUNES = Enum.PowerType.Runes;
+local SPELL_POWER_RUNIC_POWER = Enum.PowerType.RunicPower;
+local SPELL_POWER_SOUL_SHARDS = Enum.PowerType.SoulShards;
+local SPELL_POWER_LUNAR_POWER = Enum.PowerType.LunarPower;
+local SPELL_POWER_HOLY_POWER = Enum.PowerType.HolyPower;
+local SPELL_POWER_ALTERNATE_POWER = Enum.PowerType.Alternate;
+local SPELL_POWER_MAELSTROM = Enum.PowerType.Maelstrom;
+local SPELL_POWER_CHI = Enum.PowerType.Chi;
+local SPELL_POWER_INSANITY = Enum.PowerType.Insanity;
+local SPELL_POWER_ARCANE_CHARGES = Enum.PowerType.ArcaneCharges;
+local SPELL_POWER_FURY = Enum.PowerType.Fury;
+local SPELL_POWER_PAIN = Enum.PowerType.Pain;
+
 -------------------------------------------------------------------------------
 --
 --  Name:           StatusBars2_GetPowerType
@@ -45,8 +65,8 @@ end
 local function StatusBars2_UpdatePowerBar( self )
 
     -- Get the current and max power
-    local power = UnitPower( self.unit, StatusBars2_GetPowerType( self ) );
-    local maxPower = UnitPowerMax( self.unit, StatusBars2_GetPowerType( self ) );
+    local power = UnitPower( self.unit, StatusBars2_GetPowerType( self ), false );
+    local maxPower = UnitPowerMax( self.unit, StatusBars2_GetPowerType( self ), false );
 
     -- Update the bar
     self:ContinuousBar_Update( power, maxPower );
@@ -385,7 +405,7 @@ local function StatusBars2_PowerBar_IsDefault( self )
         local power = UnitPower( self.unit, powerType );
 
         -- Determine if power is at it's default state
-        if( powerType == SPELL_POWER_RAGE or powerType == SPELL_POWER_RUNIC_POWER ) then
+        if( powerType == SPELL_POWER_RAGE or powerType == SPELL_POWER_RUNIC_POWER or powerType == SPELL_POWER_INSANITY) then
             isDefault = ( power == 0 );
         elseif( powerType == SPELL_POWER_DEMONIC_FURY ) then
             isDefault = ( power == 200 );

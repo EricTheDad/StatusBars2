@@ -51,6 +51,7 @@ local function StatusBars2_SpecialtyBar_OnEnable( self )
 
     if( not StatusBars2.configMode ) then
 		-- Set the number of boxes we should be seeing
+		print (self.displayName, " Max charges ", self:GetMaxCharges());
         self:SetupBoxes( self:GetMaxCharges( ) );
 
         -- Update
@@ -116,6 +117,7 @@ end
 --
 local function StatusBars2_GetMaxUnitPowerCharges( self )
 
+    print(self.displayName, " powerType ", self.powerType, " UnitPowerMax ", UnitPowerMax( self.unit, self.powerType ))
     return UnitPowerMax( self.unit, self.powerType )
 
 end
@@ -158,6 +160,8 @@ end
 -------------------------------------------------------------------------------
 --
 local function StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, key, displayName, defaultColor, powerType, powerEvent, powerToken )
+
+	print (displayName, "powerType", powerType, "powerEvent", powerEvent, "powerToken", powerToken)
 
     -- Create the bar
     local bar = StatusBars2_CreateDiscreteBar( group, index, removeWhenHidden, key, "player", displayName, kUnitPower, 0, defaultColor );
