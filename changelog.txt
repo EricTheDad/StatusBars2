@@ -1,4 +1,7 @@
-﻿3.06.05
+﻿3.06.06
+Removed forgotten debug prints
+
+3.06.05
 Fixed config save that I broke last time.  Fixed display of some power bars.  Removed Shadow Orbs, since that no longer appears to be a thing.
 
 3.06.04
