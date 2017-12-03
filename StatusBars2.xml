@@ -121,7 +121,7 @@
     </Frame>
 
     <!-- Rune bar template. -->
-    <Frame name="StatusBars2_RuneFrameTemplate" virtual="true" movable="true" >
+		<Frame name="StatusBars2_RuneFrameTemplate" mixin="RuneFrameMixin" virtual="true" movable="true" >
         <Size x="170" y="28" />
 		<Anchors>
 		  <Anchor point="TOP" relativePoint="BOTTOM">
@@ -131,75 +131,36 @@
 		  </Anchor>
 		</Anchors>
 		<Frames>
-		  <Button name="$parent_RuneButtonIndividual1" inherits="RuneButtonIndividualTemplate" >
-			<Anchors>
-			  <Anchor point="LEFT" relativePoint="LEFT">
-				<Offset>
-				  <AbsDimension x="0" y="0"/>
-				</Offset>
-			  </Anchor>
-			</Anchors>
-		  </Button>
-
-		  <Button name="$parent_RuneButtonIndividual2" inherits="RuneButtonIndividualTemplate">
-			<Anchors>
-			  <Anchor point="LEFT" relativeTo="$parent_RuneButtonIndividual1" relativePoint="RIGHT">
-				<Offset>
-				  <AbsDimension x="3" y="0"/>
-				</Offset>
-			  </Anchor>
-			</Anchors>
-		  </Button>
-
-		  <Button name="$parent_RuneButtonIndividual3" inherits="RuneButtonIndividualTemplate" >
-			<Anchors>
-			  <Anchor point="LEFT" relativeTo="$parent_RuneButtonIndividual2" relativePoint="RIGHT">
-				<Offset>
-				  <AbsDimension x="3" y="0"/>
-				</Offset>
-			  </Anchor>
-			</Anchors>
-		  </Button>
-
-		  <Button name="$parent_RuneButtonIndividual4" inherits="RuneButtonIndividualTemplate" >
-			<Anchors>
-			  <Anchor point="LEFT" relativeTo="$parent_RuneButtonIndividual3" relativePoint="RIGHT">
-				<Offset>
-				  <AbsDimension x="3" y="0"/>
-				</Offset>
-			  </Anchor>
-			</Anchors>
-		  </Button>
-
-		  <Button name="$parent_RuneButtonIndividual5" inherits="RuneButtonIndividualTemplate" >
-			<Anchors>
-			  <Anchor point="LEFT" relativeTo="$parent_RuneButtonIndividual4" relativePoint="RIGHT">
-				<Offset>
-				  <AbsDimension x="3" y="0"/>
-				</Offset>
-			  </Anchor>
-			</Anchors>
-		  </Button>
-
-		  <Button name="$parent_RuneButtonIndividual6" inherits="RuneButtonIndividualTemplate" >
-			<Anchors>
-			  <Anchor point="LEFT" relativeTo="$parent_RuneButtonIndividual5" relativePoint="RIGHT">
-				<Offset>
-				  <AbsDimension x="3" y="0"/>
-				</Offset>
-			  </Anchor>
-			</Anchors>
-		  </Button>
-
-		  <Button name="$parent_RuneButtonIndividual7" inherits="RuneButtonIndividualTemplate">
-			<Anchors>
-			  <Anchor point="LEFT" relativeTo="$parent_RuneButtonIndividual6" relativePoint="RIGHT">
-				<Offset>
-				  <AbsDimension x="3" y="0"/>
-				</Offset>
-			  </Anchor>
-			</Anchors>
-		  </Button>
+			<Button parentKey="Rune1" parentArray="Runes" inherits="RuneButtonIndividualTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT" x="-6" y="0" />
+				</Anchors>
+			</Button>
+			<Button parentKey="Rune2" parentArray="Runes" inherits="RuneButtonIndividualTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Rune1" relativePoint="RIGHT" x="-3" y="0" />
+				</Anchors>
+			</Button>
+			<Button parentKey="Rune3" parentArray="Runes" inherits="RuneButtonIndividualTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Rune2" relativePoint="RIGHT" x="-3" y="0" />
+				</Anchors>
+			</Button>
+			<Button parentKey="Rune4" parentArray="Runes" inherits="RuneButtonIndividualTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Rune3" relativePoint="RIGHT" x="-3" y="0" />
+				</Anchors>
+			</Button>
+			<Button parentKey="Rune5" parentArray="Runes" inherits="RuneButtonIndividualTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Rune4" relativePoint="RIGHT" x="-3" y="0" />
+				</Anchors>
+			</Button>
+			<Button parentKey="Rune6" parentArray="Runes" inherits="RuneButtonIndividualTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Rune5" relativePoint="RIGHT" x="-3" y="0" />
+				</Anchors>
+			</Button>
 		</Frames>
 	</Frame>
 

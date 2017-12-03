@@ -15,84 +15,6 @@ local kUnitPower = addonTable.barTypes.kUnitPower;
 local kEclipse = addonTable.barTypes.kEclipse;
 local kDemonicFury = addonTable.barTypes.kDemonicFury;
 
--- Number of runes
-local CURRENT_MAX_RUNES;
-local MAX_RUNE_CAPACITY = 7;
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_RuneFrame_RunePowerUpdate
---
---  Description:    Update an individual rune
---
--------------------------------------------------------------------------------
---
-local function StatusBars2_RuneFrame_RunePowerUpdate(runeButton, runeIndex, isEnergize)
-	if runeIndex and runeIndex >= 1 and runeIndex <= CURRENT_MAX_RUNES  then
-		local cooldown = runeButton.Cooldown;
-		local start, duration, runeReady = GetRuneCooldown(runeIndex);
-
-		if not runeReady  then
-			if start then
-				CooldownFrame_Set(cooldown, start, duration, true, true);
-			end
-			runeButton.energize:Stop();
-		else
-			cooldown:Hide();
-			if (not isEnergize and not runeButton.energize:IsPlaying()) then
-				runeButton.shine:SetVertexColor(1, 1, 1);
-				RuneButton_ShineFadeIn(runeButton.shine)
-			end
-		end
-
-		if isEnergize  then
-			runeButton.energize:Play();
-		end
-	else
-		assert(false, "Bad rune index "..runeIndex)
-	end
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_RuneBar_UpdateAllRunes
---
---  Description:    Update all runes
---
--------------------------------------------------------------------------------
---
-local function StatusBars2_RuneBar_UpdateAllRunes( self )
-
-	CURRENT_MAX_RUNES = UnitPowerMax(RuneFrame:GetParent().unit, SPELL_POWER_RUNES);
-	for i=1, MAX_RUNE_CAPACITY do
-		local runeButton = _G[self:GetName( ).."_RuneButtonIndividual"..i];
-
-		-- Shrink the runes sizes if you have all 7
-		if (CURRENT_MAX_RUNES == MAX_RUNE_CAPACITY) then
-			runeButton.Border:SetSize(21, 21);
-			runeButton.rune:SetSize(21, 21);
-			runeButton.Textures.Shine:SetSize(52, 31);
-			runeButton.energize.RingScale:SetFromScale(0.6, 0.7);
-			runeButton.energize.RingScale:SetToScale(0.7, 0.7);
-			runeButton:SetSize(15, 15);
-		else
-			runeButton.Border:SetSize(24, 24);
-			runeButton.rune:SetSize(24, 24);
-			runeButton.Textures.Shine:SetSize(60, 35);
-			runeButton.energize.RingScale:SetFromScale(0.7, 0.8);
-			runeButton.energize.RingScale:SetToScale(0.8, 0.8);
-			runeButton:SetSize(18, 18);
-		end
-
-		if(i <= CURRENT_MAX_RUNES) then
-			runeButton:Show();
-            StatusBars2_RuneFrame_RunePowerUpdate( runeButton, i, true );
-		else
-			runeButton:Hide();
-		end
-	end
-end
-
 -------------------------------------------------------------------------------
 --
 --  Name:           StatusBars2_RuneBar_OnEvent
@@ -111,27 +33,10 @@ local function StatusBars2_RuneBar_OnEvent( self, event, ... )
     elseif( event == "PLAYER_REGEN_ENABLED" ) then
         self.inCombat = false;
 
-	elseif ( event == "UNIT_MAXPOWER") then
-		RuneFrame_UpdateNumberOfShownRunes();
-
-	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
-		RuneFrame_UpdateNumberOfShownRunes();
-		for i=1, CURRENT_MAX_RUNES do
-			local runeButton = _G[self:GetName( ).."_RuneButtonIndividual"..i];
-			StatusBars2_RuneFrame_RunePowerUpdate(runeButton, i, false);
-		end
-
+	elseif ( event == "PLAYER_SPECIALIZATION_CHANGED" or event == "PLAYER_ENTERING_WORLD" ) then
+		self:UpdateRunes(true);
 	elseif ( event == "RUNE_POWER_UPDATE") then
-		local runeIndex, isEnergize = ...;
-		local runeButton = _G[self:GetName( ).."_RuneButtonIndividual"..runeIndex];
-		StatusBars2_RuneFrame_RunePowerUpdate(runeButton, runeIndex, isEnergize);
-
-	elseif ( event == "RUNE_TYPE_UPDATE" ) then
-		local runeIndex = ...;
-		if ( runeIndex and runeIndex >= 1 and runeIndex <= CURRENT_MAX_RUNES ) then
-			local runeButton = _G[self:GetName( ).."_RuneButtonIndividual"..runeIndex];
-			RuneButton_Flash(runeButton);
-		end
+		self:UpdateRunes();
 	end
 
     -- Update the bar visibility
@@ -157,8 +62,8 @@ local function StatusBars2_RuneBar_IsDefault( self )
 
     -- Look for a rune that is not ready
     local i;
-    for i = 1, CURRENT_MAX_RUNES do
-        local start, duration, runeReady = GetRuneCooldown( i );
+	for index, runeIndex in ipairs(self.runeIndexes) do
+        local start, duration, runeReady = GetRuneCooldown( runeIndex );
         if( not runeReady ) then
             isDefault = false;
             break;
@@ -180,11 +85,10 @@ end
 local function StatusBars2_RuneBar_OnEnable( self )
 
     -- Enable or disable moving
-    local i;
-    for i = 1, MAX_RUNE_CAPACITY do
+	for i = 1, #self.Runes do
 
         -- Get the rune button
-        local rune = _G[self:GetName( ).."_RuneButtonIndividual"..i];
+        local rune = self.Runes[i];
 
         -- If not grouped or locked enable the mouse for moving
         if( not StatusBars2.locked ) then
@@ -195,7 +99,7 @@ local function StatusBars2_RuneBar_OnEnable( self )
     end
 
     -- Update the runes
-    StatusBars2_RuneBar_UpdateAllRunes( self );
+    self:UpdateRunes();
 
     -- Call the base method
     self:BaseBar_OnEnable( );
@@ -228,34 +132,33 @@ end
 function StatusBars2_CreateRuneBar( group, index, removeWhenHidden )
 
     -- Create the bar
-    local bar = StatusBars2_CreateBar( group, index, removeWhenHidden, "rune", "StatusBars2_RuneFrameTemplate", "player", RUNES, kRune );
-    local name = bar:GetName( );
+    local self = StatusBars2_CreateBar( group, index, removeWhenHidden, "rune", "StatusBars2_RuneFrameTemplate", "player", RUNES, kRune );
+    local name = self:GetName( );
 
     -- Create the rune table
-    bar.runes = {};
+	self.runeIndexes = {};
 
     -- Initialize the rune buttons
-    local i;
-    for i = 1, MAX_RUNE_CAPACITY do
-        local rune = _G[bar:GetName( ).."_RuneButtonIndividual"..i];
-        rune.parentBar = bar;
-        rune:SetScript( "OnMouseDown", StatusBars2_ChildButton_OnMouseDown );
-        rune:SetScript( "OnMouseUp", StatusBars2_ChildButton_OnMouseUp );
-        rune:SetScript( "OnHide", StatusBars2_RuneButton_OnHide );
-    end
+	for i = 1, #self.Runes do
+		tinsert(self.runeIndexes, i); 
+	end
+	
+	self.runesOnCooldown = {};
+	self.spentAnimsActive = 0;
 
     -- Set the event handlers
-    bar.OnEvent = StatusBars2_RuneBar_OnEvent;
-    bar.OnEnable = StatusBars2_RuneBar_OnEnable;
-    bar.IsDefault = StatusBars2_RuneBar_IsDefault;
+    self.OnEvent = StatusBars2_RuneBar_OnEvent;
+    self.OnEnable = StatusBars2_RuneBar_OnEnable;
+    self.IsDefault = StatusBars2_RuneBar_IsDefault;
 
     -- Events to register for on enable
-    bar.eventsToRegister["RUNE_POWER_UPDATE"] = true;
-    bar.eventsToRegister["RUNE_TYPE_UPDATE"] = true;
-    bar.eventsToRegister["PLAYER_REGEN_ENABLED"] = true;
-    bar.eventsToRegister["PLAYER_REGEN_DISABLED"] = true;
-    bar.eventsToRegister["PLAYER_ENTERING_WORLD"] = true;
+    self.eventsToRegister["RUNE_POWER_UPDATE"] = true;
+    self.eventsToRegister["PLAYER_SPECIALIZATION_CHANGED"] = true;
+    self.eventsToRegister["PLAYER_ENTERING_WORLD"] = true;
 
-    return bar;
+    self.eventsToRegister["PLAYER_REGEN_ENABLED"] = true;
+    self.eventsToRegister["PLAYER_REGEN_DISABLED"] = true;
+
+    return self;
 
 end

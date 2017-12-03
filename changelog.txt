@@ -1,4 +1,7 @@
-﻿3.06.06
+﻿3.07.00
+Fixed Death Knight runes
+
+3.06.06
 Removed forgotten debug prints
 
 3.06.05
