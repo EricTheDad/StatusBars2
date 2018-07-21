@@ -1106,10 +1106,10 @@
                     <OnLoad>
                         getglobal( self:GetName( ) .. "Text" ):SetText( StatusBars2_GetLocalizedText( "Color" ));
                     </OnLoad>
-					<OnClick>
+                    <OnClick>
                         PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
                         StatusBars2_BarOptions_Enable_ColorSelectButton( self:GetParent( ), self:GetChecked( ) );
-					</OnClick>
+                    </OnClick>
                 </Scripts>
             </CheckButton>
             <Frame name="$parent_ColorSwatch" parentKey="colorSwatch">
@@ -1126,12 +1126,6 @@
                         <AbsValue val="16" />
                     </TileSize>
                 </Backdrop>
-                <Scripts>
-                    <OnClick>
-                        PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
-                        StatusBars2_Options_SetBarColorButton_OnClick( self:GetParent( ) );
-                    </OnClick>
-                </Scripts>
                <Size x="25" y="25" />
             </Frame>
             <Button name="$parent_PickColorButton" parentKey="pickColorButton" inherits="OptionsButtonTemplate" text="Set Color">

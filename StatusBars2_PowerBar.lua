@@ -99,12 +99,12 @@ end
 local function StatusBars2_PowerBar_StartCasting( self )
 
         -- Get spell info
-        local name, nameSubtext, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible = UnitCastingInfo( self.unit );
+        local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible = UnitCastingInfo( self.unit );
 
         -- If that failed try getting channeling info
         channeling = false;
         if( name == nil ) then
-            name, nameSubtext, text, texture, startTime, endTime, isTradeSkill, notInterruptible = UnitChannelInfo( self.unit );
+            name, text, texture, startTime, endTime, isTradeSkill, notInterruptible = UnitChannelInfo( self.unit );
             channeling = true;
         end
 

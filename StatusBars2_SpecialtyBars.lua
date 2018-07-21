@@ -65,29 +65,15 @@ end
 
 -------------------------------------------------------------------------------
 --
---  Name:           StatusBars2_SpecialtyBar_ZeroIsDefault
+--  Name:           StatusBars2_SpecialtyBar_IsDefault
 --
---  Description:    Determine if a specialty bar is at its default state when zero power is default
---
--------------------------------------------------------------------------------
---
-local function StatusBars2_SpecialtyBar_ZeroIsDefault( self )
-
-    return self:GetCharges( ) == 0;
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_SpecialtyBar_MaxIsDefault
---
---  Description:    Determine if a specialty bar is at its default state when max power is default
+--  Description:    Determine if a specialty bar is at its default state
 --
 -------------------------------------------------------------------------------
 --
-local function StatusBars2_SpecialtyBar_MaxIsDefault( self )
+local function StatusBars2_SpecialtyBar_IsDefault( self )
 
-    return self:GetCharges( ) == self:GetMaxCharges( );
+    return self:GetCharges( ) == self.defaultCharges;
 
 end
 
@@ -101,8 +87,8 @@ end
 --
 local function StatusBars2_GetUnitPowerCharges( self )
 
-    -- undocumented 3rd parameter "true" in Unitpower delivers the Emberparticles
-    return UnitPower( self.unit, self.powerType, self.powerType == SPELL_POWER_BURNING_EMBERS )
+    -- undocumented 3rd parameter "true" in Unitpower delivers partial charges (e.g. for destruction warlocks)
+    return UnitPower( self.unit, self.powerType, self.showPartialCharges )
 
 end
 
@@ -168,7 +154,8 @@ local function StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, k
     bar.Update = StatusBars2_UpdateDiscreteBar;
     bar.HandleEvent = StatusBars2_UnitPower_HandleEvent;
     bar.SetupBoxes = StatusBars2_SetDiscreteBarBoxCount;
-    bar.IsDefault = StatusBars2_SpecialtyBar_ZeroIsDefault;
+    bar.IsDefault = StatusBars2_SpecialtyBar_IsDefault;
+	bar.DefaultCharges = 0;
 
     -- Base methods for subclasses to call
     bar.SpecialtyBar_OnEnable = StatusBars2_SpecialtyBar_OnEnable;
@@ -211,25 +198,6 @@ end
 
 -------------------------------------------------------------------------------
 --
---  Name:           StatusBars2_CreateShardBar
---
---  Description:    Create a soul shard bar
---
--------------------------------------------------------------------------------
---
-function StatusBars2_CreateShardBar( group, index, removeWhenHidden )
-
-    -- Create the bar
-    local bar = StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, "shard", SOUL_SHARDS, PowerBarColor["SOUL_SHARDS"], SPELL_POWER_SOUL_SHARDS, "UNIT_POWER_FREQUENT", "SOUL_SHARDS" );
-
-    -- Override event handler for this specific type of bar
-    bar.IsDefault = StatusBars2_SpecialtyBar_MaxIsDefault;
-    
-    return bar;
-end
-
--------------------------------------------------------------------------------
---
 --  Name:           StatusBars2_CreateHolyPowerBar
 --
 --  Description:    Create a holy power bar
@@ -239,7 +207,7 @@ end
 function StatusBars2_CreateHolyPowerBar( group, index, removeWhenHidden )
 
     -- Create the bar
-    local bar = StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, "holyPower", HOLY_POWER, PowerBarColor["HOLY_POWER"], SPELL_POWER_HOLY_POWER, "UNIT_POWER_UPDATE", "HOLY_POWER" );
+    local bar = StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, "holyPower", HOLY_POWER, PowerBarColor["HOLY_POWER"], Enum.PowerType.HolyPower, "UNIT_POWER_UPDATE", "HOLY_POWER" );
     return bar;
 
 end
@@ -255,7 +223,7 @@ end
 function StatusBars2_CreateChiBar( group, index, removeWhenHidden )
 
     -- Create the bar
-    local bar = StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, "chi", CHI_POWER, PowerBarColor["CHI"], SPELL_POWER_CHI, "UNIT_POWER_FREQUENT", "CHI" );
+    local bar = StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, "chi", CHI_POWER, PowerBarColor["CHI"], Enum.PowerType.Chi, "UNIT_POWER_FREQUENT", "CHI" );
     return bar;
 
 end
@@ -332,7 +300,7 @@ end
 local function StatusBars2_UpdateEmbersBar( self, current )
 
     local current = current;
-    
+	
     -- Update the boxes
     boxes = { self:GetChildren( ) };
     
@@ -354,37 +322,46 @@ end
 
 -------------------------------------------------------------------------------
 --
---  Name:           StatusBars2_EmbersBar_IsDefault
+--  Name:           StatusBars2_ShardBar_OnEnable
 --
---  Description:    Determine if a Embers bar is at its default state
+--  Description:    Shard bar setup
 --
 -------------------------------------------------------------------------------
 --
-local function StatusBars2_EmbersBar_IsDefault( self )
+local function StatusBars2_ShardBar_OnEnable( self )
 
-    -- Default is exactly one full ember
-    return self:GetCharges( ) == MAX_POWER_PER_EMBER;
+	if GetSpecialization() == SPEC_WARLOCK_DESTRUCTION then
+		self.defaultCharges = 3 * MAX_POWER_PER_EMBER
+		self.showPartialCharges = true
+		self.SetupBoxes = StatusBars2_SetEmbersBoxCount;
+		self.Update = StatusBars2_UpdateEmbersBar;
+	else
+		self.defaultCharges = 3
+		self.showPartialCharges = false
+		self.SetupBoxes = StatusBars2_SetDiscreteBarBoxCount;
+		self.Update = StatusBars2_UpdateDiscreteBar;
+	end
 
+	StatusBars2_SpecialtyBar_OnEnable( self );
+	
 end
 
 -------------------------------------------------------------------------------
 --
---  Name:           StatusBars2_CreateEmbersBar
+--  Name:           StatusBars2_CreateShardBar
 --
---  Description:    Create a Embers bar
+--  Description:    Create a soul shard bar
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateEmbersBar( group, index, removeWhenHidden )
+function StatusBars2_CreateShardBar( group, index, removeWhenHidden )
 
     -- Create the bar
-    local bar = StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, "embers", BURNING_EMBERS, { r = 1, g = 0.33, b = 0 }, SPELL_POWER_BURNING_EMBERS, "UNIT_POWER_FREQUENT", "BURNING_EMBERS" );
+    local bar = StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, "shard", SOUL_SHARDS, PowerBarColor["SOUL_SHARDS"], Enum.PowerType.SoulShards, "UNIT_POWER_FREQUENT", "SOUL_SHARDS" );
 
-    -- Set the event handlers
-    bar.IsDefault = StatusBars2_EmbersBar_IsDefault;
-    bar.SetupBoxes = StatusBars2_SetEmbersBoxCount;
-    bar.Update = StatusBars2_UpdateEmbersBar;
+    -- Override event handlers and values for this specific type of bar
+    bar.OnEnable = StatusBars2_ShardBar_OnEnable;
 
     return bar;
-
 end
+

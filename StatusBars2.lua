@@ -331,9 +331,7 @@ function StatusBars2_CreateBars( )
     elseif( englishClass == "DEATHKNIGHT" ) then
         StatusBars2_CreateRuneBar( kPlayerGroup, 4 );
     elseif( englishClass == "WARLOCK" ) then
-        StatusBars2_CreatePowerBar( kPlayerGroup, 4, false, "fury", "player", kDemonicFury, SPELL_POWER_DEMONIC_FURY, PowerBarColor["DEMONIC_FURY"], { r = 0.57, g = 0.12, b = 1 } );
         StatusBars2_CreateShardBar( kPlayerGroup, 5);
-        StatusBars2_CreateEmbersBar( kPlayerGroup, 6);
     elseif( englishClass == "PALADIN" ) then
         StatusBars2_CreateHolyPowerBar( kPlayerGroup, 4);
     elseif( englishClass == "PRIEST" ) then
@@ -412,17 +410,13 @@ function StatusBars2_UpdateBars( )
         elseif( bar.key == "rune" ) then
             StatusBars2_EnableBar( bar );
         -- Special Warlock Bars
-        elseif( bar.key == "fury" and GetSpecialization() == SPEC_WARLOCK_DEMONOLOGY ) then
+        elseif( bar.key == "shard" and UnitLevel("player") >= SHARDBAR_SHOW_LEVEL) then
             StatusBars2_EnableBar( bar );
-        elseif( bar.key == "shard" and IsSpellKnown( WARLOCK_SOULBURN ) ) then
-            StatusBars2_EnableBar( bar );
-        -- elseif( bar.key == "embers" and GetSpecialization() == SPEC_WARLOCK_DESTRUCTION ) then
-            -- StatusBars2_EnableBar( bar );
         -- Special Paladin Bars
         elseif( bar.key == "holyPower" ) then
             StatusBars2_EnableBar( bar );
         -- Special Priest Bars
-        elseif( bar.key == "orbs" and GetSpecialization() == SPEC_PRIEST_SHADOW ) then
+        elseif( bar.key == "orbs" and GetSpecialization() == SPEC_PRIEST_SHADOW and UnitLevel("player") >= SHADOW_ORBS_SHOW_LEVEL) then
             StatusBars2_EnableBar( bar );
         -- Special Hunter Bars
         elseif( bar.key == "frenzy" and IsSpellKnown( bar.spellID ) ) then

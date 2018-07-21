@@ -1,4 +1,7 @@
-﻿3.08.00
+﻿3.08.01
+Fixed more problems introduced by WoW 8.0 changes.  Tested and fixed druids and warlocks
+
+3.08.00
 Fixed problems introduced by WoW 8.0 changes
 
 3.07.00
