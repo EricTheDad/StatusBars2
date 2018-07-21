@@ -1,4 +1,7 @@
-﻿3.07.00
+﻿3.08.00
+Fixed problems introduced by WoW 8.0 changes
+
+3.07.00
 Fixed Death Knight runes
 
 3.06.06

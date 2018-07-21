@@ -215,7 +215,7 @@ local function StatusBars2_PowerBar_OnEvent( self, event, ... )
         end
 
     -- Show the bar when power ticks
-    elseif( event == "UNIT_POWER" ) then
+    elseif( event == "UNIT_POWER_UPDATE" ) then
 
         if( self:BarIsVisible( ) and not self.visible ) then
             StatusBars2_SetPowerBarColor( self );
@@ -457,7 +457,7 @@ function StatusBars2_CreatePowerBar( group, index, removeWhenHidden, key, unit, 
     -- Events to register for on enable
     bar.eventsToRegister["PLAYER_REGEN_DISABLED"] = true;
     bar.eventsToRegister["PLAYER_REGEN_ENABLED"] = true;
-    bar.eventsToRegister["UNIT_POWER"] = true;
+    bar.eventsToRegister["UNIT_POWER_UPDATE"] = true;
     bar.eventsToRegister["UNIT_MAXPOWER"] = true;
 
     if( bar.unit == "target" ) then

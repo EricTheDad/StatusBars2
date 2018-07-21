@@ -233,7 +233,7 @@ function StatusBars2_OnEvent( self, event, ... )
 
         self:RegisterEvent( "UNIT_DISPLAYPOWER" );
         self:RegisterEvent( "PLAYER_TALENT_UPDATE" );
-        self:RegisterEvent( "GLYPH_UPDATED" );
+        self:RegisterEvent( "USE_GLYPH" );
         self:RegisterEvent( "PLAYER_LEVEL_UP" );
         self:RegisterEvent( "SPELLS_CHANGED" );
         self:RegisterEvent( "UNIT_MAXPOWER" );
@@ -247,7 +247,7 @@ function StatusBars2_OnEvent( self, event, ... )
             StatusBars2_UpdateBars( );
         end
         
-    elseif ( event == "PLAYER_TALENT_UPDATE" or event == "GLYPH_UPDATED" or event == "PLAYER_LEVEL_UP" or event == "SPELLS_CHANGED" or event == "UNIT_MAXPOWER" ) then
+    elseif ( event == "PLAYER_TALENT_UPDATE" or event == "USE_GLYPH" or event == "PLAYER_LEVEL_UP" or event == "SPELLS_CHANGED" or event == "UNIT_MAXPOWER" ) then
 
         -- Any of these events could lead to differences in how the bars should be configured
         StatusBars2_UpdateBars( );

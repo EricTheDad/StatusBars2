@@ -240,7 +240,7 @@ function StatusBars2_ShowAuraButtons( self, auraType, getAuraFunction, maxAuras,
     for i = 1, maxAuras do
 
         -- Get the aura
-        local name, rank, icon, count, debuffType, duration, expirationTime, caster, isStealable,_, spellID = getAuraFunction( self.unit, i );
+        local name, icon, count, debuffType, duration, expirationTime, caster, isStealable,_, spellID = getAuraFunction( self.unit, i );
 
         -- print( name, ": ", spellID );
         -- If the aura exists show it
@@ -253,7 +253,7 @@ function StatusBars2_ShowAuraButtons( self, auraType, getAuraFunction, maxAuras,
                 or ( self.auraFilter and self.auraFilter[ name ] )) then
                     -- Get the button
                     local buttonName = self:GetName( ) .. "_" .. auraType .. "Button" .. i;
-                    local button = StatusBars2_GetAuraButton( self, i, buttonName, "Target" .. auraType .. "FrameTemplate", name, rank, icon, count, debuffType, duration, expirationTime, offset );
+                    local button = StatusBars2_GetAuraButton( self, i, buttonName, "Target" .. auraType .. "FrameTemplate", name, icon, count, debuffType, duration, expirationTime, offset );
 
                     -- Update the offset
                     offset = offset + button:GetWidth( ) + 2;
@@ -278,7 +278,7 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_GetAuraButton( self, id, buttonName, template, auraName, auraRank, auraIcon, auraCount, debuffType, auraDuration, auraExpirationTime, offset )
+function StatusBars2_GetAuraButton( self, id, buttonName, template, auraName, auraIcon, auraCount, debuffType, auraDuration, auraExpirationTime, offset )
 
     -- Get the button
     local button = self.buttons[ buttonName ];

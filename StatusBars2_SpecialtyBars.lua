@@ -177,7 +177,7 @@ local function StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, k
     bar.powerType = powerType;
     bar.powerToken = powerToken;
     
-    -- Blizzard sometimes listens to "UNIT_POWER" and sometimes to "UNIT_POWER_FREQUENT" to update their
+    -- Blizzard sometimes listens to "UNIT_POWER_UPDATE" and sometimes to "UNIT_POWER_FREQUENT" to update their
     -- displays.  I'll just listen to the event they tell me to listen for.
     bar.powerEvent = powerEvent;
     
@@ -204,7 +204,7 @@ end
 function StatusBars2_CreateComboBar( group, index, removeWhenHidden )
 
     -- Create the bar
-    local bar = StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, "combo", COMBO_POINTS, { r = 1, g = 0, b = 0 }, SPELL_POWER_COMBO_POINTS, "UNIT_POWER", "COMBO_POINTS" );
+    local bar = StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, "combo", COMBO_POINTS, { r = 1, g = 0, b = 0 }, SPELL_POWER_COMBO_POINTS, "UNIT_POWER_UPDATE", "COMBO_POINTS" );
     return bar;
 
 end
@@ -239,7 +239,7 @@ end
 function StatusBars2_CreateHolyPowerBar( group, index, removeWhenHidden )
 
     -- Create the bar
-    local bar = StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, "holyPower", HOLY_POWER, PowerBarColor["HOLY_POWER"], SPELL_POWER_HOLY_POWER, "UNIT_POWER", "HOLY_POWER" );
+    local bar = StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, "holyPower", HOLY_POWER, PowerBarColor["HOLY_POWER"], SPELL_POWER_HOLY_POWER, "UNIT_POWER_UPDATE", "HOLY_POWER" );
     return bar;
 
 end
@@ -289,7 +289,7 @@ function StatusBars2_CreateArcaneChargesBar( group, index, removeWhenHidden )
 	local MAGE_ARCANE_BLAST = 30451;
 
     -- Create the bar
-    local bar = StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, "arcaneCharge", "Arcane Charges", PowerBarColor["ARCANE_CHARGES"], SPELL_POWER_ARCANE_CHARGES, "UNIT_POWER", "ARCANE_CHARGES" );
+    local bar = StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, "arcaneCharge", "Arcane Charges", PowerBarColor["ARCANE_CHARGES"], SPELL_POWER_ARCANE_CHARGES, "UNIT_POWER_UPDATE", "ARCANE_CHARGES" );
     bar.spellID = MAGE_ARCANE_BLAST;
     return bar;
 
