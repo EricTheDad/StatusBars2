@@ -14,8 +14,6 @@ local kAuraStack = addonTable.barTypes.kAuraStack
 local kRune = addonTable.barTypes.kRune
 local kDruidMana = addonTable.barTypes.kDruidMana
 local kUnitPower = addonTable.barTypes.kUnitPower
-local kEclipse = addonTable.barTypes.kEclipse
-local kDemonicFury = addonTable.barTypes.kDemonicFury
 
 -------------------------------------------------------------------------------
 --
@@ -224,22 +222,6 @@ function StatusBars2_CreateChiBar( group, index, removeWhenHidden )
 
     -- Create the bar
     local bar = StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, "chi", CHI_POWER, PowerBarColor["CHI"], Enum.PowerType.Chi, "UNIT_POWER_FREQUENT", "CHI" );
-    return bar;
-
-end
-
--------------------------------------------------------------------------------
---
---  Name:           StatusBars2_CreateOrbsBar
---
---  Description:    Create a orbs bar
---
--------------------------------------------------------------------------------
---
-function StatusBars2_CreateOrbsBar( group, index, removeWhenHidden )
-
-    -- Create the bar
-    local bar = StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, "orbs", SHADOW_ORBS, { r = 162/255, g = 51/255, b = 209/255 }, SPELL_POWER_SHADOW_ORBS, "UNIT_POWER_FREQUENT", "SHADOW_ORBS" );
     return bar;
 
 end

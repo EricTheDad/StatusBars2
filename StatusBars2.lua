@@ -23,8 +23,7 @@ addonTable.barTypes =
     kRune = 5,
     kDruidMana = 6,
     kUnitPower = 7,
-    kEclipse = 9,
-    kDemonicFury = 13,
+    kPriestMana = 8,
 };
 
 -- Text display options
@@ -74,8 +73,6 @@ local kAuraStack = addonTable.barTypes.kAuraStack;
 local kRune = addonTable.barTypes.kRune;
 local kDruidMana = addonTable.barTypes.kDruidMana;
 local kUnitPower = addonTable.barTypes.kUnitPower;
-local kEclipse = addonTable.barTypes.kEclipse;
-local kDemonicFury = addonTable.barTypes.kDemonicFury;
 
 -- Group ids
 local kPlayerGroup              = addonTable.groupIDs.kPlayerGroup;
@@ -333,7 +330,7 @@ function StatusBars2_CreateBars( )
     elseif( englishClass == "PALADIN" ) then
         StatusBars2_CreateHolyPowerBar( kPlayerGroup, 4);
     elseif( englishClass == "PRIEST" ) then
-        --StatusBars2_CreateOrbsBar( kPlayerGroup, 4 );
+        StatusBars2_CreatePowerBar( kPlayerGroup, 4, false, "priestMana", "player", kPriestMana, Enum.PowerType.Mana, PowerBarColor["MANA"] );
     elseif( englishClass == "HUNTER" ) then
         StatusBars2_CreateAuraStackBar( kPlayerGroup, 4, false, "frenzy", "player", HUNTER_FOCUS_FIRE, "buff", 5, BUFF_FRENZY, { r = 1, g = 0.6, b = 0 } );
         StatusBars2_CreateAuraStackBar( kPlayerGroup, 5, false, "lockAndLoad", "player", HUNTER_BLACK_ARROW, "buff", 5, BUFF_LOCK_AND_LOAD );
@@ -410,7 +407,7 @@ function StatusBars2_UpdateBars( )
         elseif( bar.key == "holyPower" ) then
             StatusBars2_EnableBar( bar );
         -- Special Priest Bars
-        elseif( bar.key == "orbs" and GetSpecialization() == SPEC_PRIEST_SHADOW and UnitLevel("player") >= SHADOW_ORBS_SHOW_LEVEL) then
+        elseif( bar.key == "priestMana" and GetSpecialization() == SPEC_PRIEST_SHADOW ) then
             StatusBars2_EnableBar( bar );
         -- Special Hunter Bars
         elseif( bar.key == "frenzy" and IsSpellKnown( bar.spellID ) ) then
@@ -422,8 +419,6 @@ function StatusBars2_UpdateBars( )
             StatusBars2_EnableBar( bar );
         -- Special Mage Bars
         elseif( bar.key == "arcaneCharge" and IsSpellKnown( bar.spellID ) ) then
-            StatusBars2_EnableBar( bar );
-        elseif( bar.key == "arcaneMissiles" and IsSpellKnown( bar.spellID ) ) then
             StatusBars2_EnableBar( bar );
         elseif( bar.key == "fingersOfFrost" and GetSpecialization() == SPEC_MAGE_FROST and GetUnitLevel( bar.unit ) == 24 ) then
             StatusBars2_EnableBar( bar );

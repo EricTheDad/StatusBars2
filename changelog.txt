@@ -1,4 +1,7 @@
-﻿3.08.02
+﻿3.08.03
+Added mana bar for shadow preists
+
+3.08.02
 Fixes to rogues and mages
 
 3.08.01

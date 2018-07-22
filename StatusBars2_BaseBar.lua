@@ -17,8 +17,6 @@ local kAuraStack = addonTable.barTypes.kAuraStack;
 local kRune = addonTable.barTypes.kRune;
 local kDruidMana = addonTable.barTypes.kDruidMana;
 local kUnitPower = addonTable.barTypes.kUnitPower;
-local kEclipse = addonTable.barTypes.kEclipse;
-local kDemonicFury = addonTable.barTypes.kDemonicFury;
 
 local FontInfo = addonTable.fontInfo;
 
@@ -38,8 +36,6 @@ function StatusBars2_ConstructDisplayName( unit, barType )
     if( barType == kDruidMana ) then
         local localizedClass = UnitClass( unit );
         return localizedClass.." "..MANA;
-    elseif( barType == kDemonicFury ) then
-        return DEMONIC_FURY;
     elseif( barType == kHealth ) then
         barTypeText = HEALTH;
     elseif( barType == kPower ) then

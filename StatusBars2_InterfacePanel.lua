@@ -11,8 +11,6 @@ local kAuraStack = addonTable.barTypes.kAuraStack;
 local kRune = addonTable.barTypes.kRune;
 local kDruidMana = addonTable.barTypes.kDruidMana;
 local kUnitPower = addonTable.barTypes.kUnitPower;
-local kEclipse = addonTable.barTypes.kEclipse;
-local kDemonicFury = addonTable.barTypes.kDemonicFury;
 
 local groups = addonTable.groups;
 local bars = addonTable.bars;
