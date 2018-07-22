@@ -115,7 +115,6 @@ local MAGE_ARCANE_CHARGE = 114664;
 local SHAMAN_MAELSTROM_WEAPON = 51530;
 local ROGUE_ANTICIPATION = 114015;
 local HUNTER_BLACK_ARROW = 3674;
-local MAGE_ARCANE_MISSILES = 5143;
 
 -- Buff IDs Blizzard doesn't define
 local BUFF_FRENZY = 19615;
@@ -323,9 +322,8 @@ function StatusBars2_CreateBars( )
     -- Specialty bars
     
     if( englishClass == "DRUID" )  then
-        StatusBars2_CreatePowerBar( kPlayerGroup, 4, false, "druidMana", "player", kDruidMana, SPELL_POWER_MANA, PowerBarColor["MANA"] );
+        StatusBars2_CreatePowerBar( kPlayerGroup, 4, false, "druidMana", "player", kDruidMana, Enum.PowerType.Mana, PowerBarColor["MANA"] );
         StatusBars2_CreateComboBar( kPlayerGroup, 5);
-        StatusBars2_CreateEclipseBar( kPlayerGroup, 6);
     elseif( englishClass == "ROGUE" ) then
         StatusBars2_CreateComboBar( kPlayerGroup, 4);
     elseif( englishClass == "DEATHKNIGHT" ) then
@@ -336,13 +334,11 @@ function StatusBars2_CreateBars( )
         StatusBars2_CreateHolyPowerBar( kPlayerGroup, 4);
     elseif( englishClass == "PRIEST" ) then
         --StatusBars2_CreateOrbsBar( kPlayerGroup, 4 );
-        --StatusBars2_CreatePowerBar( kPlayerGroup, 4, false, "fury", "player", kDemonicFury, SPELL_POWER_DEMONIC_FURY, PowerBarColor["DEMONIC_FURY"], { r = 0.57, g = 0.12, b = 1 } );
     elseif( englishClass == "HUNTER" ) then
         StatusBars2_CreateAuraStackBar( kPlayerGroup, 4, false, "frenzy", "player", HUNTER_FOCUS_FIRE, "buff", 5, BUFF_FRENZY, { r = 1, g = 0.6, b = 0 } );
         StatusBars2_CreateAuraStackBar( kPlayerGroup, 5, false, "lockAndLoad", "player", HUNTER_BLACK_ARROW, "buff", 5, BUFF_LOCK_AND_LOAD );
     elseif( englishClass == "MAGE" ) then
 		StatusBars2_CreateArcaneChargesBar( kPlayerGroup, 4 )
-        StatusBars2_CreateAuraStackBar( kPlayerGroup, 5, false, "arcaneMissiles", "player", MAGE_ARCANE_MISSILES, "buff", 3, BUFF_ARCANE_MISSILES, { r = 0.90, g = 0.57, b = 0.94 } );
     elseif( englishClass == "SHAMAN" ) then
         StatusBars2_CreateAuraStackBar( kPlayerGroup, 4, false, "maelstromWeapon", "player", SHAMAN_MAELSTROM_WEAPON, "buff", 5, BUFF_MAELSTROM_WEAPON, { r = 0, g = 0.5, b = 1 } );
     elseif( englishClass == "MONK" ) then
@@ -374,7 +370,7 @@ function StatusBars2_UpdateBars( )
 
         if( bar.key == "playerHealth" ) then
             StatusBars2_EnableBar( bar );
-        elseif( bar.key == "playerPower" and ( englishClass ~= "DRUID" or powerType ~= SPELL_POWER_MANA ) ) then
+        elseif( bar.key == "playerPower" and ( englishClass ~= "DRUID" or powerType ~= Enum.PowerType.Mana ) ) then
             StatusBars2_EnableBar( StatusBars2_playerPowerBar );
         elseif( bar.key == "playerAura" and ( bar.showBuffs or bar.showDebuffs ) ) then
             StatusBars2_EnableBar( bar );
@@ -397,12 +393,10 @@ function StatusBars2_UpdateBars( )
         elseif( bar.key == "petAura" and ( bar.showBuffs or bar.showDebuffs ) ) then
             StatusBars2_EnableBar( bar );
         -- Special Druid Bars
-        elseif( bar.key == "druidMana" and ( bar.showInAllForms or powerType == SPELL_POWER_MANA ) ) then
-            StatusBars2_EnableBar( bar );
-        elseif( bar.key == "eclipse" and powerType == SPELL_POWER_MANA and GetSpecialization() == 1 ) then
+        elseif( bar.key == "druidMana" and ( bar.showInAllForms or powerType == Enum.PowerType.Mana ) ) then
             StatusBars2_EnableBar( bar );
         -- Special Rogue Bars
-        elseif( bar.key == "combo" and powerType == SPELL_POWER_ENERGY ) then
+        elseif( bar.key == "combo" and powerType == Enum.PowerType.Energy ) then
             StatusBars2_EnableBar( bar );
         elseif( bar.key == "anticipation" and IsSpellKnown( bar.spellID ) ) then
             StatusBars2_EnableBar( bar );

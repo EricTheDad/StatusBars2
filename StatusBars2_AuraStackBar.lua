@@ -25,12 +25,13 @@ local kDemonicFury = addonTable.barTypes.kDemonicFury;
 --
 local function StatusBars2_GetAuraStack( unit, aura, auraType )
 
+	print("GetAuraStack", unit, aura, auraType)
     -- Get the aura
-    local name, rank, texture, count;
+    local name, texture, count;
     if( auraType == "buff" ) then
-        name, rank, texture, count = UnitBuff( unit, aura );
+        name, texture, count = UnitBuff( unit, aura );
     else
-        name, rank, texture, count = UnitDebuff( unit, aura );
+        name, texture, count = UnitDebuff( unit, aura );
     end
 
     return count or 0;
@@ -141,10 +142,10 @@ function StatusBars2_AuraStackBar_OnEvent( self, event, ... )
 
                     -- Applied
                     if( eventType == "SPELL_AURA_APPLIED" ) then
-                        local _,_,_,amount = UnitAura( self.unit, spellName );
+                        local _,_,amount = UnitAura( self.unit, spellName );
 
                         if not amount then
-                            _,_,_,amount = UnitDebuff( self.unit, spellName );
+                            _,_,amount = UnitDebuff( self.unit, spellName );
                         end
 
                         StatusBars2_UpdateDiscreteBar( self, amount );

@@ -155,7 +155,7 @@ local function StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, k
     bar.HandleEvent = StatusBars2_UnitPower_HandleEvent;
     bar.SetupBoxes = StatusBars2_SetDiscreteBarBoxCount;
     bar.IsDefault = StatusBars2_SpecialtyBar_IsDefault;
-	bar.DefaultCharges = 0;
+	bar.defaultCharges = 0;
 
     -- Base methods for subclasses to call
     bar.SpecialtyBar_OnEnable = StatusBars2_SpecialtyBar_OnEnable;
@@ -191,7 +191,7 @@ end
 function StatusBars2_CreateComboBar( group, index, removeWhenHidden )
 
     -- Create the bar
-    local bar = StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, "combo", COMBO_POINTS, { r = 1, g = 0, b = 0 }, SPELL_POWER_COMBO_POINTS, "UNIT_POWER_UPDATE", "COMBO_POINTS" );
+    local bar = StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, "combo", COMBO_POINTS, { r = 1, g = 0, b = 0 }, Enum.PowerType.ComboPoints, "UNIT_POWER_UPDATE", "COMBO_POINTS" );
     return bar;
 
 end
@@ -257,7 +257,7 @@ function StatusBars2_CreateArcaneChargesBar( group, index, removeWhenHidden )
 	local MAGE_ARCANE_BLAST = 30451;
 
     -- Create the bar
-    local bar = StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, "arcaneCharge", "Arcane Charges", PowerBarColor["ARCANE_CHARGES"], SPELL_POWER_ARCANE_CHARGES, "UNIT_POWER_UPDATE", "ARCANE_CHARGES" );
+    local bar = StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, "arcaneCharge", "Arcane Charges", PowerBarColor["ARCANE_CHARGES"], Enum.PowerType.ArcaneCharges, "UNIT_POWER_UPDATE", "ARCANE_CHARGES" );
     bar.spellID = MAGE_ARCANE_BLAST;
     return bar;
 

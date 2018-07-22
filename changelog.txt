@@ -1,4 +1,7 @@
-﻿3.08.01
+﻿3.08.02
+Fixes to rogues and mages
+
+3.08.01
 Fixed more problems introduced by WoW 8.0 changes.  Tested and fixed druids and warlocks
 
 3.08.00

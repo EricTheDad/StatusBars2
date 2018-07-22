@@ -1,5 +1,5 @@
 ## Interface: 80000
-## Version: 3.08.01
+## Version: 3.08.02
 ## Title: StatusBars2
 ## Author: GopherYerguns, Wesslen, 堂吉先生, EricTheDad
 ## Notes: Movable status bars for health, power and a variety of class-ability-specific displays. /sb2 to configure
@@ -14,7 +14,6 @@ StatusBars2_Movable.lua
 StatusBars2_Groups.lua
 StatusBars2_AuraBar.lua
 StatusBars2_AuraStackBar.lua
-StatusBars2_EclipseBar.lua
 StatusBars2_RuneBar.lua
 StatusBars2_HealthBar.lua
 StatusBars2_PowerBar.lua
