@@ -60,7 +60,7 @@
                     </Layer>
                 </Layers>
             </Frame>
-            <StatusBar name="$parent_Status" >
+            <StatusBar name="$parent_Status" parentKey="statusBar" >
                 <Size>
                   <AbsDimension x="162" y="13" />
                 </Size>
@@ -351,7 +351,7 @@
     </Frame>
 
     <!-- Bar button template -->
-    <Button name="StatusBar2_BarOptionsButtonTemplate" virtual="true" >
+    <Button name="StatusBars2_BarOptionsButtonTemplate" virtual="true" >
 
         <Size x="140" y="20" />
 

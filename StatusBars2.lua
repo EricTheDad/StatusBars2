@@ -340,6 +340,7 @@ function StatusBars2_CreateBars( )
         StatusBars2_CreateAuraStackBar( kPlayerGroup, 4, false, "maelstromWeapon", "player", SHAMAN_MAELSTROM_WEAPON, "buff", 5, BUFF_MAELSTROM_WEAPON, { r = 0, g = 0.5, b = 1 } );
     elseif( englishClass == "MONK" ) then
         StatusBars2_CreateChiBar( kPlayerGroup, 4 );
+        StatusBars2_CreateStaggerBar( kPlayerGroup, 5 )
     end
    
 end
@@ -428,7 +429,9 @@ function StatusBars2_UpdateBars( )
         elseif( bar.key == "maelstromWeapon" and IsSpellKnown( bar.spellID ) ) then
             StatusBars2_EnableBar( bar );
         -- Special Monk Bars
-        elseif( bar.key == "chi" ) then
+        elseif( bar.key == "chi" and GetSpecialization() == SPEC_MONK_WINDWALKER ) then
+            StatusBars2_EnableBar( bar );
+        elseif ( bar.key == "stagger" and GetSpecialization() == SPEC_MONK_BREWMASTER ) then
             StatusBars2_EnableBar( bar );
         end
 

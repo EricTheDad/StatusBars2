@@ -37,23 +37,6 @@ local SPELL_POWER_PAIN = Enum.PowerType.Pain;
 
 -------------------------------------------------------------------------------
 --
---  Name:           StatusBars2_GetPowerType
---
---  Description:    Get the power type that a power bar is displaying
---
--------------------------------------------------------------------------------
---
-local function StatusBars2_GetPowerType( self )
-
-    if( self.powerType ) then
-        return self.powerType;
-    else
-        return UnitPowerType( self.unit );
-    end
-end
-
--------------------------------------------------------------------------------
---
 --  Name:           StatusBars2_UpdatePowerBar
 --
 --  Description:    Update a power bar
@@ -62,13 +45,8 @@ end
 --
 local function StatusBars2_UpdatePowerBar( self )
 
-    -- Get the current and max power
-    local power = UnitPower( self.unit, StatusBars2_GetPowerType( self ), false );
-    local maxPower = UnitPowerMax( self.unit, StatusBars2_GetPowerType( self ), false );
-
-    -- Update the bar
-    self:ContinuousBar_Update( power, maxPower );
-
+        -- Update the bar with current and max power
+        self:ContinuousBar_Update( self:GetPower( ), self:GetPowerMax( ) );
 end
 
 -------------------------------------------------------------------------------
@@ -81,7 +59,7 @@ end
 --
 local function StatusBars2_SetPowerBarColor( self )
 
-    local powerType = StatusBars2_GetPowerType( self );
+    local powerType = self:GetPowerType( );
     self.status:SetStatusBarColor( self:GetColor( powerType ) );
 
 end
@@ -161,7 +139,7 @@ local function StatusBars2_PowerBar_EndCasting( self )
     self.castID = nil;
 
     -- Reset the min and max values
-    self.status:SetMinMaxValues( 0, UnitPowerMax( self.unit, StatusBars2_GetPowerType( self ) ) );
+    self.status:SetMinMaxValues( 0, self:GetPowerMax( ));
 
     -- Hide the bar spark
     self.spark:Hide( );
@@ -196,7 +174,7 @@ local function StatusBars2_PowerBar_OnEvent( self, event, ... )
             -- If not in casting mode update as normal
             if( not self.casting and not self.channeling ) then
                 StatusBars2_SetPowerBarColor( self );
-                self.status:SetMinMaxValues( 0, UnitPowerMax( self.unit, StatusBars2_GetPowerType( self ) ) );
+                self.status:SetMinMaxValues( 0, self:GetPowerMax( ));
             end
 
             -- Show the bar and update the layout
@@ -219,11 +197,13 @@ local function StatusBars2_PowerBar_OnEvent( self, event, ... )
             StatusBars2_SetPowerBarColor( self );
             StatusBars2_ShowBar( self );
             StatusBars2_UpdateLayout( );
+        elseif( self.powerToken == "STAGGER") then
+            StatusBars2_SetPowerBarColor( self );
         end
 
     -- Update max power
     elseif( event == "UNIT_MAXPOWER" and not self.casting and not self.channeling ) then
-        self.status:SetMinMaxValues( 0, UnitPowerMax( self.unit, StatusBars2_GetPowerType( self ) ) );
+        self.status:SetMinMaxValues( 0, self:GetPowerMax( ));
 
     -- Show when entering combat
     elseif( event == 'PLAYER_REGEN_DISABLED' ) then
@@ -373,7 +353,7 @@ end
 --
 local function StatusBars2_PowerBar_IsVisible( self )
 
-    return self:ContinuousBar_BarIsVisible( ) and ( UnitPowerMax( self.unit, StatusBars2_GetPowerType( self ) ) > 0 or self.casting or self.channeling );
+    return self:ContinuousBar_BarIsVisible( ) and ( self:GetPowerMax( ) > 0 or self.casting or self.channeling );
 
 end
 
@@ -397,18 +377,16 @@ local function StatusBars2_PowerBar_IsDefault( self )
     else
 
         -- Get the power type
-        local powerType = StatusBars2_GetPowerType( self );
+        local powerType = self:GetPowerType( );
 
         -- Get the current power
-        local power = UnitPower( self.unit, powerType );
+        local power = self:GetPower( );
 
         -- Determine if power is at it's default state
         if( powerType == SPELL_POWER_RAGE or powerType == SPELL_POWER_RUNIC_POWER or powerType == SPELL_POWER_INSANITY) then
             isDefault = ( power == 0 );
-        elseif( powerType == SPELL_POWER_DEMONIC_FURY ) then
-            isDefault = ( power == 200 );
         else
-            local maxPower = UnitPowerMax( self.unit, powerType );
+            local maxPower = self:GetPowerMax( );
             isDefault = ( power == maxPower );
         end
     end
@@ -444,6 +422,18 @@ function StatusBars2_CreatePowerBar( group, index, removeWhenHidden, key, unit, 
 
     bar.powerType = powerType;
     bar.defaultColor = defaultColor
+
+    bar.GetPowerType = function( self )
+        return self.powerType or UnitPowerType( self.unit )
+    end
+
+    bar.GetPower = function( self, returnFractionalCharges )
+        return UnitPower( self.unit, self:GetPowerType( ), returnFractionalCharges )
+    end
+
+    bar.GetPowerMax = function( self, returnFractionalCharges )
+        return UnitPowerMax( self.unit, self:GetPowerType( ), returnFractionalCharges )
+    end
 
     -- Set the event handlers
     bar.OnEvent = StatusBars2_PowerBar_OnEvent;

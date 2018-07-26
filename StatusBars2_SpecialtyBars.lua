@@ -228,6 +228,62 @@ end
 
 -------------------------------------------------------------------------------
 --
+--  Name:           StatusBars2_StaggerBar_GetColor
+--
+--  Description:    Get the appropriate color for the stagger bar
+--
+-------------------------------------------------------------------------------
+--
+local function StatusBars2_StaggerBar_GetColor( self )
+
+	local percent = self:GetPower( ) / self:GetPowerMax( );
+	local color = PowerBarColor[self.powerToken];
+
+	if (percent >= STAGGER_RED_TRANSITION) then
+		color = color[STAGGER_RED_INDEX];
+	elseif (percent >= STAGGER_YELLOW_TRANSITION) then
+		color = color[STAGGER_YELLOW_INDEX];
+	else
+		color = color[STAGGER_GREEN_INDEX];
+	end
+
+    return color.r, color.g, color.b
+end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_CreateStaggerBar
+--
+--  Description:    Create a stagger bar
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_CreateStaggerBar( group, index, removeWhenHidden )
+
+    -- Create the bar
+    local bar = StatusBars2_CreatePowerBar( group, index, removeWhenHidden, "stagger", "player");
+    bar.powerToken = BREWMASTER_POWER_BAR_NAME;
+    bar.GetColor = StatusBars2_StaggerBar_GetColor;
+    bar.displayName = BREWMASTER_POWER_BAR_NAME
+
+    bar.GetPower = function( self, returnFractionalCharges )
+        return UnitStagger(self.unit)
+    end
+
+    bar.GetPowerMax = function( self, returnFractionalCharges )
+        return UnitHealthMax(self.unit)
+    end
+
+    bar.IsDefault = function( self )
+        return ( self:GetPower( ) == 0 )
+    end
+
+    return bar;
+
+end
+
+-------------------------------------------------------------------------------
+--
 --  Name:           StatusBars2_CreateArcaneChargesBar
 --
 --  Description:    Create an arcane charges bar

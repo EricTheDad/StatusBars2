@@ -1,5 +1,49 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\..\FrameXML\UI.xsd">
 
+	<CheckButton name="StatusBars2_SmallCheckButtonTemplate" virtual="true" inherits="OptionsSmallCheckButtonTemplate">
+		<Scripts>
+			<OnClick>
+				if ( self:GetChecked() ) then
+					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+				else
+					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+				end
+			</OnClick>
+			<OnEnter>
+				if ( self.tooltipText ) then
+					GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_RIGHT");
+					GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true);
+				end
+				if ( self.tooltipRequirement ) then
+					GameTooltip:AddLine(self.tooltipRequirement, 1.0, 1.0, 1.0, true);
+					GameTooltip:Show();
+				end
+			</OnEnter>
+        </Scripts>
+	</CheckButton>
+
+	<CheckButton name="StatusBars2_CheckButtonTemplate" virtual="true" inherits="OptionsCheckButtonTemplate">
+		<Scripts>
+			<OnClick>
+				if ( self:GetChecked() ) then
+					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+				else
+					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+				end
+			</OnClick>
+			<OnEnter>
+				if ( self.tooltipText ) then
+					GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_RIGHT");
+					GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true);
+				end
+				if ( self.tooltipRequirement ) then
+					GameTooltip:AddLine(self.tooltipRequirement, 1.0, 1.0, 1.0, true);
+					GameTooltip:Show();
+				end
+			</OnEnter>
+        </Scripts>
+	</CheckButton>
+
     <Frame name="StatusBars2_BorderedFrameTemplate" virtual="true" >
 		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
 			<BackgroundInsets>
@@ -161,7 +205,7 @@
         <Size x="200" y="17"/>
     </Slider>
 
-    <Button name="StatusBar2_AuraListEntryButtonTemplate" virtual="true" >
+    <Button name="StatusBars2_AuraListEntryButtonTemplate" virtual="true" >
         <ButtonText name="$parentText">
             <Size x="140" y="13"/>
             <Anchors>
@@ -398,7 +442,7 @@
             </OnLoad>
         </Scripts>
         <Frames>
-            <CheckButton name="$parent_FadeButton" parentKey="fadeButton" inherits="OptionsCheckButtonTemplate" >
+            <CheckButton name="$parent_FadeButton" parentKey="fadeButton" inherits="StatusBars2_CheckButtonTemplate" >
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeto="$parent" >
                         <Offset x="10" y="-15" />
@@ -410,7 +454,7 @@
                     </OnLoad>
                 </Scripts>
             </CheckButton>
-            <CheckButton name="$parent_LockedButton" parentKey="lockedButton" inherits="OptionsCheckButtonTemplate" >
+            <CheckButton name="$parent_LockedButton" parentKey="lockedButton" inherits="StatusBars2_CheckButtonTemplate" >
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeto="$parent_FadeButton" >
                         <Offset x="0" y="-24" />
@@ -433,7 +477,7 @@
                     </OnLeave>
                 </Scripts>
             </CheckButton>
-            <CheckButton name="$parent_ShowHelpButton" parentKey="showHelpButton" inherits="OptionsCheckButtonTemplate" >
+            <CheckButton name="$parent_ShowHelpButton" parentKey="showHelpButton" inherits="StatusBars2_CheckButtonTemplate" >
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeto="$parent_LockedButton" >
                         <Offset x="0" y="-24" />
@@ -509,7 +553,7 @@
         </Frames>
     </Frame>
 
-    <Button name="StatusBar2_UpButton" virtual="true" >
+    <Button name="StatusBars2_UpButton" virtual="true" >
         <Size>
             <AbsDimension x="48" y="48"/>
         </Size>
@@ -547,7 +591,7 @@
         </HighlightTexture>
     </Button>
 
-    <Button name="StatusBar2_DownButton" virtual="true" >
+    <Button name="StatusBars2_DownButton" virtual="true" >
         <Size>
             <AbsDimension x="48" y="48"/>
         </Size>
@@ -585,7 +629,7 @@
         </HighlightTexture>
     </Button>
 
-    <Button name="StatusBar2_AutoLayoutListEntryButtonTemplate" virtual="true" >
+    <Button name="StatusBars2_AutoLayoutListEntryButtonTemplate" virtual="true" >
         <ButtonText name="$parentText">
             <Anchors>
                 <Anchor point="TOPLEFT" relativeTo="$parent" >
@@ -651,7 +695,7 @@
                     <OnLoad>
                         HybridScrollFrame_OnLoad(self);
                         self.update = StatusBars2_GroupOptions_AutoLayoutListUpdate;
-                        HybridScrollFrame_CreateButtons(self, "StatusBar2_AutoLayoutListEntryButtonTemplate");
+                        HybridScrollFrame_CreateButtons(self, "StatusBars2_AutoLayoutListEntryButtonTemplate");
                     </OnLoad>
                     <OnShow>
                         StatusBars2_GroupOptions_AutoLayoutListUpdate( self );    
@@ -659,7 +703,7 @@
                 </Scripts>
                 <Size x="120" y="120" />
             </ScrollFrame>
-            <Button name="$parent_MoveUpButton" parentKey="moveUpButton" inherits="StatusBar2_UpButton">
+            <Button name="$parent_MoveUpButton" parentKey="moveUpButton" inherits="StatusBars2_UpButton">
                 <Anchors>
                     <Anchor point="BOTTOMRIGHT" relativeTo="$parent_AutoLayoutList" relativePoint="LEFT">
                         <Offset>
@@ -677,7 +721,7 @@
                     </OnClick>
                 </Scripts>
             </Button>
-            <Button name="$parent_MoveDownButton" parentKey="moveDownButton" inherits="StatusBar2_DownButton">
+            <Button name="$parent_MoveDownButton" parentKey="moveDownButton" inherits="StatusBars2_DownButton">
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_AutoLayoutList" relativePoint="LEFT">
                         <Offset>
@@ -767,7 +811,7 @@
     <!-- Continuous Bar configuration frame template -->
     <Frame name="StatusBars2_ContinuousBarConfigTemplate" inherits="StatusBars2_BarConfigTemplate" virtual="true" >
         <Frames>
-            <CheckButton name="$parent_FlashButton" parentKey="flashButton" inherits="OptionsSmallCheckButtonTemplate" >
+            <CheckButton name="$parent_FlashButton" parentKey="flashButton" inherits="StatusBars2_SmallCheckButtonTemplate" >
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeto="$parent_EnabledLabel" relativePoint="BOTTOMLEFT">
                         <Offset x="0" y="-15" />
@@ -849,7 +893,7 @@
     <!-- Druid mana bar options frame template -->
     <Frame name="StatusBars2_DruidManaBarConfigTemplate" inherits="StatusBars2_ContinuousBarConfigTemplate" virtual="true" >
         <Frames>
-            <CheckButton name="$parent_ShowInAllForms" parentKey="showInAllFormsButton" inherits="OptionsSmallCheckButtonTemplate" >
+            <CheckButton name="$parent_ShowInAllForms" parentKey="showInAllFormsButton" inherits="StatusBars2_SmallCheckButtonTemplate" >
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeto="$parent_PercentTextLabel" relativePoint="BOTTOMLEFT" >
                         <Offset x="0" y="-10" />
@@ -867,7 +911,7 @@
     <!-- Target power bar options frame template -->
     <Frame name="StatusBars2_TargetPowerBarConfigTemplate" inherits="StatusBars2_ContinuousBarConfigTemplate" virtual="true" >
         <Frames>
-            <CheckButton name="$parent_ShowSpellButton" parentKey="showSpellButton" inherits="OptionsSmallCheckButtonTemplate" >
+            <CheckButton name="$parent_ShowSpellButton" parentKey="showSpellButton" inherits="StatusBars2_SmallCheckButtonTemplate" >
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeto="$parent_PercentTextLabel" relativePoint="BOTTOMLEFT" >
                         <Offset x="0" y="-10" />
@@ -884,7 +928,7 @@
 
     <Frame name="StatusBars2_AuraBarConfigTemplate" inherits="StatusBars2_BarConfigTemplate" virtual="true" >
         <Frames>
-            <CheckButton name="$parent_ShowBuffsButton" parentKey="showBuffsButton" inherits="OptionsCheckButtonTemplate" >
+            <CheckButton name="$parent_ShowBuffsButton" parentKey="showBuffsButton" inherits="StatusBars2_CheckButtonTemplate" >
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeto="$parent_EnabledLabel" relativePoint="BOTTOMLEFT" >
                         <Offset x="0" y="-5" />
@@ -896,7 +940,7 @@
                     </OnLoad>
                 </Scripts>
             </CheckButton>
-            <CheckButton name="$parent_ShowDebuffsButton" parentKey="showDebuffsButton" inherits="OptionsCheckButtonTemplate" >
+            <CheckButton name="$parent_ShowDebuffsButton" parentKey="showDebuffsButton" inherits="StatusBars2_CheckButtonTemplate" >
                 <Anchors>
                     <Anchor point="TOP" relativeto="$parent_ShowBuffsButton" relativePoint="BOTTOM">
                         <Offset x="0" y="0" />
@@ -908,7 +952,7 @@
                     </OnLoad>
                 </Scripts>
             </CheckButton>
-            <CheckButton name="$parent_OnlyShowSelfAurasButton" parentKey="onlyShowSelfAurasButton" inherits="OptionsCheckButtonTemplate" >
+            <CheckButton name="$parent_OnlyShowSelfAurasButton" parentKey="onlyShowSelfAurasButton" inherits="StatusBars2_CheckButtonTemplate" >
                 <Anchors>
                     <Anchor point="TOP" relativeto="$parent_ShowDebuffsButton" relativePoint="BOTTOM" >
                         <Offset x="0" y="0" />
@@ -920,7 +964,7 @@
                     </OnLoad>
                 </Scripts>
             </CheckButton>
-            <CheckButton name="$parent_OnlyShowTimedAurasButton" parentKey="onlyShowTimedAurasButton" inherits="OptionsCheckButtonTemplate" >
+            <CheckButton name="$parent_OnlyShowTimedAurasButton" parentKey="onlyShowTimedAurasButton" inherits="StatusBars2_CheckButtonTemplate" >
                 <Anchors>
                     <Anchor point="TOP" relativeto="$parent_OnlyShowSelfAurasButton" relativePoint="BOTTOM" >
                         <Offset x="0" y="0" />
@@ -932,7 +976,7 @@
                     </OnLoad>
                 </Scripts>
             </CheckButton>
-            <CheckButton name="$parent_EnableTooltips" parentKey="enableTooltipsButton" inherits="OptionsCheckButtonTemplate" >
+            <CheckButton name="$parent_EnableTooltips" parentKey="enableTooltipsButton" inherits="StatusBars2_CheckButtonTemplate" >
                 <Anchors>
                     <Anchor point="TOP" relativeto="$parent_OnlyShowTimedAurasButton" relativePoint="BOTTOM">
                         <Offset x="0" y="0" />
@@ -1052,7 +1096,7 @@
                     <OnLoad>
                         HybridScrollFrame_OnLoad(self);
                         self.update = StatusBars2_BarOptions_AuraListUpdate;
-                        HybridScrollFrame_CreateButtons(self, "StatusBar2_AuraListEntryButtonTemplate");
+                        HybridScrollFrame_CreateButtons(self, "StatusBars2_AuraListEntryButtonTemplate");
                     </OnLoad>
                     <OnShow>
                         StatusBars2_BarOptions_AuraListUpdate( self );    
@@ -1060,7 +1104,7 @@
                 </Scripts>
                 <Size x="180" y="200" />
             </ScrollFrame>
-            <CheckButton name="$parent_OnlyShowListedAurasButton" parentKey="onlyShowListedAurasButton" inherits="OptionsCheckButtonTemplate" >
+            <CheckButton name="$parent_OnlyShowListedAurasButton" parentKey="onlyShowListedAurasButton" inherits="StatusBars2_CheckButtonTemplate" >
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeto="$parent_AuraFilterList" relativePoint="TOPLEFT" >
                         <Offset x="-5" y="5" />
@@ -1096,7 +1140,7 @@
     <!-- Aura Stack bar config frame template -->
     <Frame name="StatusBars2_AuraStackBarConfigTemplate" inherits="StatusBars2_BarConfigTemplate" virtual="true" >
         <Frames>
-            <CheckButton name="$parent_CustomColorButton" parentKey="customColorButton" inherits="OptionsCheckButtonTemplate" >
+            <CheckButton name="$parent_CustomColorButton" parentKey="customColorButton" inherits="StatusBars2_CheckButtonTemplate" >
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeto="$parent_EnabledLabel" relativePoint="BOTTOMLEFT" >
                         <Offset x="0" y="-15" />

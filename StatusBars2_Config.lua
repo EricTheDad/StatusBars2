@@ -1545,7 +1545,7 @@ function StatusBars2Config_BarSelectScrollBar_Update()
     num_buttons_needed = num_buttons_needed < list_length and num_buttons_needed or list_length;
 
     for i = num_buttons + 1, num_buttons_needed do
-        button_frame = CreateFrame("Button", "ScrollButton"..i, StatusBars2_Config_BarSelectScrollFrame, StatusBar2_BarListEntryButtonTemplate);
+        button_frame = CreateFrame("Button", "ScrollButton"..i, StatusBars2_Config_BarSelectScrollFrame, StatusBars2_BarListEntryButtonTemplate);
         table.insert( ScrollBarButtons, button_frame );
     end
 
