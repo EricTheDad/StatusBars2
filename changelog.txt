@@ -1,4 +1,7 @@
-﻿3.08.04
+﻿3.08.05
+Fixed Holy Power bar to only show up on Ret Pallys
+
+3.08.04
 Added stagger bar for brewmasters, fixed lua error when clicking check boxes
 
 3.08.03

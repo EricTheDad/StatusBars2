@@ -363,6 +363,7 @@ function StatusBars2_UpdateBars( )
     -- Get the current class and power type
     local localizedClass, englishClass = UnitClass( "player" );
     local powerType = UnitPowerType( "player" );
+    local playerLevel = UnitLevel("player")
 
     for i, bar in ipairs( bars ) do
 
@@ -402,10 +403,10 @@ function StatusBars2_UpdateBars( )
         elseif( bar.key == "rune" ) then
             StatusBars2_EnableBar( bar );
         -- Special Warlock Bars
-        elseif( bar.key == "shard" and UnitLevel("player") >= SHARDBAR_SHOW_LEVEL) then
+        elseif( bar.key == "shard" and playerLevel >= SHARDBAR_SHOW_LEVEL) then
             StatusBars2_EnableBar( bar );
         -- Special Paladin Bars
-        elseif( bar.key == "holyPower" ) then
+        elseif( bar.key == "holyPower" and GetSpecialization() == SPEC_PALADIN_RETRIBUTION and playerLevel < PALADINPOWERBAR_SHOW_LEVEL ) then
             StatusBars2_EnableBar( bar );
         -- Special Priest Bars
         elseif( bar.key == "priestMana" and GetSpecialization() == SPEC_PRIEST_SHADOW ) then
@@ -417,13 +418,6 @@ function StatusBars2_UpdateBars( )
             StatusBars2_EnableBar( bar );
         -- Special Warrior Bars
         elseif( bar.key == "sunder" and IsSpellKnown( bar.spellID ) ) then
-            StatusBars2_EnableBar( bar );
-        -- Special Mage Bars
-        elseif( bar.key == "arcaneCharge" and IsSpellKnown( bar.spellID ) ) then
-            StatusBars2_EnableBar( bar );
-        elseif( bar.key == "fingersOfFrost" and GetSpecialization() == SPEC_MAGE_FROST and GetUnitLevel( bar.unit ) == 24 ) then
-            StatusBars2_EnableBar( bar );
-        elseif( bar.key == "masteryIcicles" and GetSpecialization() == SPEC_MAGE_FROST and GetUnitLevel( bar.unit ) == 80 ) then
             StatusBars2_EnableBar( bar );
         -- Special Shaman Bars
         elseif( bar.key == "maelstromWeapon" and IsSpellKnown( bar.spellID ) ) then
