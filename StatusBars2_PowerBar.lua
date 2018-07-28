@@ -14,6 +14,7 @@ local kAuraStack = addonTable.barTypes.kAuraStack;
 local kRune = addonTable.barTypes.kRune;
 local kDruidMana = addonTable.barTypes.kDruidMana;
 local kUnitPower = addonTable.barTypes.kUnitPower;
+local kAlternateMana = addonTable.barTypes.kAlternateMana;
 
 
 -- PowerTypes
@@ -383,7 +384,10 @@ local function StatusBars2_PowerBar_IsDefault( self )
         local power = self:GetPower( );
 
         -- Determine if power is at it's default state
-        if( powerType == SPELL_POWER_RAGE or powerType == SPELL_POWER_RUNIC_POWER or powerType == SPELL_POWER_INSANITY) then
+        if( powerType == SPELL_POWER_RAGE 
+        or powerType == SPELL_POWER_RUNIC_POWER 
+        or powerType == SPELL_POWER_INSANITY 
+        or powerType == SPELL_POWER_MAELSTROM ) then
             isDefault = ( power == 0 );
         else
             local maxPower = self:GetPowerMax( );

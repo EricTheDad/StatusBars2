@@ -14,6 +14,7 @@ local kAuraStack = addonTable.barTypes.kAuraStack;
 local kRune = addonTable.barTypes.kRune;
 local kDruidMana = addonTable.barTypes.kDruidMana;
 local kUnitPower = addonTable.barTypes.kUnitPower;
+local kAlternateMana = addonTable.barTypes.kAlternateMana;
 
 local FontInfo = addonTable.fontInfo;
 

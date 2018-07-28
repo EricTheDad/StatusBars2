@@ -1,4 +1,7 @@
-﻿3.08.05
+﻿3.08.06
+Fixed Shaman maelstrom bar, re-enabled arcane charges bar after accidentally breaking it (oops).  Cleaning up obsolete code.
+
+3.08.05
 Fixed Holy Power bar to only show up on Ret Pallys
 
 3.08.04

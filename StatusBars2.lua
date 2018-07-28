@@ -23,7 +23,7 @@ addonTable.barTypes =
     kRune = 5,
     kDruidMana = 6,
     kUnitPower = 7,
-    kPriestMana = 8,
+    kAlternateMana = 8,
 };
 
 -- Text display options
@@ -73,6 +73,7 @@ local kAuraStack = addonTable.barTypes.kAuraStack;
 local kRune = addonTable.barTypes.kRune;
 local kDruidMana = addonTable.barTypes.kDruidMana;
 local kUnitPower = addonTable.barTypes.kUnitPower;
+local kAlternateMana = addonTable.barTypes.kAlternateMana;
 
 -- Group ids
 local kPlayerGroup              = addonTable.groupIDs.kPlayerGroup;
@@ -104,32 +105,6 @@ local kFadeOutTime = 1.0;
 
 -- Flash duration
 local kFlashDuration = 0.5;
-
--- Spell IDs Blizzard doesn't define
-local HUNTER_FOCUS_FIRE = 82692;
-local WARRIOR_SUNDER_ARMOR = 7386;
-local MAGE_ARCANE_CHARGE = 114664;
-local SHAMAN_MAELSTROM_WEAPON = 51530;
-local ROGUE_ANTICIPATION = 114015;
-local HUNTER_BLACK_ARROW = 3674;
-
--- Buff IDs Blizzard doesn't define
-local BUFF_FRENZY = 19615;
-local BUFF_ANTICIPATION = 115189;
-local BUFF_FINGERS_OF_FROST = 112965;
-local BUFF_MASTERY_ICICLES = 76613;
-local BUFF_TIDAL_WAVE = 51564;
-local BUFF_LOCK_AND_LOAD = 168980;
-local BUFF_MAELSTROM_WEAPON = 53817;
-local BUFF_ARCANE_MISSILES = 79683;
-
--- Debuff IDs Blizzard doesn't define
-local DEBUFF_WEAKENED_ARMOR = 113746;
-
--- Specialization IDs
-local SPEC_HUNTER_MARKSMAN = 2;
-local SPEC_MAGE_FROST = 3;
-local SPEC_SHAMAN_RESTORATION = 3;
 
 -- Slash commands
 SLASH_STATUSBARS21, SLASH_STATUSBARS22 = '/statusbars2', '/sb2';
@@ -330,14 +305,11 @@ function StatusBars2_CreateBars( )
     elseif( englishClass == "PALADIN" ) then
         StatusBars2_CreateHolyPowerBar( kPlayerGroup, 4);
     elseif( englishClass == "PRIEST" ) then
-        StatusBars2_CreatePowerBar( kPlayerGroup, 4, false, "priestMana", "player", kPriestMana, Enum.PowerType.Mana, PowerBarColor["MANA"] );
-    elseif( englishClass == "HUNTER" ) then
-        StatusBars2_CreateAuraStackBar( kPlayerGroup, 4, false, "frenzy", "player", HUNTER_FOCUS_FIRE, "buff", 5, BUFF_FRENZY, { r = 1, g = 0.6, b = 0 } );
-        StatusBars2_CreateAuraStackBar( kPlayerGroup, 5, false, "lockAndLoad", "player", HUNTER_BLACK_ARROW, "buff", 5, BUFF_LOCK_AND_LOAD );
+        StatusBars2_CreatePowerBar( kPlayerGroup, 4, false, "priestMana", "player", kAlternateMana, Enum.PowerType.Mana, PowerBarColor["MANA"] );
     elseif( englishClass == "MAGE" ) then
-		StatusBars2_CreateArcaneChargesBar( kPlayerGroup, 4 )
+        StatusBars2_CreateArcaneChargesBar( kPlayerGroup, 4 )
     elseif( englishClass == "SHAMAN" ) then
-        StatusBars2_CreateAuraStackBar( kPlayerGroup, 4, false, "maelstromWeapon", "player", SHAMAN_MAELSTROM_WEAPON, "buff", 5, BUFF_MAELSTROM_WEAPON, { r = 0, g = 0.5, b = 1 } );
+        StatusBars2_CreatePowerBar( kPlayerGroup, 4, false, "shamanMana", "player", kAlternateMana, Enum.PowerType.Mana, PowerBarColor["MANA"] );
     elseif( englishClass == "MONK" ) then
         StatusBars2_CreateChiBar( kPlayerGroup, 4 );
         StatusBars2_CreateStaggerBar( kPlayerGroup, 5 )
@@ -364,6 +336,7 @@ function StatusBars2_UpdateBars( )
     local localizedClass, englishClass = UnitClass( "player" );
     local powerType = UnitPowerType( "player" );
     local playerLevel = UnitLevel("player")
+    local playerSpec = GetSpecialization( )
 
     for i, bar in ipairs( bars ) do
 
@@ -406,10 +379,10 @@ function StatusBars2_UpdateBars( )
         elseif( bar.key == "shard" and playerLevel >= SHARDBAR_SHOW_LEVEL) then
             StatusBars2_EnableBar( bar );
         -- Special Paladin Bars
-        elseif( bar.key == "holyPower" and GetSpecialization() == SPEC_PALADIN_RETRIBUTION and playerLevel < PALADINPOWERBAR_SHOW_LEVEL ) then
+        elseif( bar.key == "holyPower" and playerSpec == SPEC_PALADIN_RETRIBUTION and playerLevel < PALADINPOWERBAR_SHOW_LEVEL ) then
             StatusBars2_EnableBar( bar );
         -- Special Priest Bars
-        elseif( bar.key == "priestMana" and GetSpecialization() == SPEC_PRIEST_SHADOW ) then
+        elseif( bar.key == "priestMana" and playerSpec == SPEC_PRIEST_SHADOW ) then
             StatusBars2_EnableBar( bar );
         -- Special Hunter Bars
         elseif( bar.key == "frenzy" and IsSpellKnown( bar.spellID ) ) then
@@ -419,13 +392,16 @@ function StatusBars2_UpdateBars( )
         -- Special Warrior Bars
         elseif( bar.key == "sunder" and IsSpellKnown( bar.spellID ) ) then
             StatusBars2_EnableBar( bar );
+         -- Special Mage Bars
+         elseif( bar.key == "arcaneCharge" and IsSpellKnown( bar.spellID ) ) then
+             StatusBars2_EnableBar( bar );
         -- Special Shaman Bars
-        elseif( bar.key == "maelstromWeapon" and IsSpellKnown( bar.spellID ) ) then
+        elseif( bar.key == "shamanMana" and playerSpec ~= SPEC_SHAMAN_RESTORATION ) then
             StatusBars2_EnableBar( bar );
         -- Special Monk Bars
-        elseif( bar.key == "chi" and GetSpecialization() == SPEC_MONK_WINDWALKER ) then
+        elseif( bar.key == "chi" and playerSpec == SPEC_MONK_WINDWALKER ) then
             StatusBars2_EnableBar( bar );
-        elseif ( bar.key == "stagger" and GetSpecialization() == SPEC_MONK_BREWMASTER ) then
+        elseif ( bar.key == "stagger" and playerSpec == SPEC_MONK_BREWMASTER ) then
             StatusBars2_EnableBar( bar );
         end
 
