@@ -75,52 +75,52 @@ end
 --
 local function StatusBars2_PowerBar_StartCasting( self )
 
-        -- Get spell info
-        local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible = UnitCastingInfo( self.unit );
+    -- Get spell info
+    local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible = UnitCastingInfo( self.unit );
 
-        -- If that failed try getting channeling info
-        channeling = false;
-        if( name == nil ) then
-            name, text, texture, startTime, endTime, isTradeSkill, notInterruptible = UnitChannelInfo( self.unit );
-            channeling = true;
+    -- If that failed try getting channeling info
+    channeling = false;
+    if( name == nil ) then
+        name, text, texture, startTime, endTime, isTradeSkill, notInterruptible = UnitChannelInfo( self.unit );
+        channeling = true;
+    end
+
+    -- If the unit is casting a spell update the power bar
+    if( name ~= nil ) then
+
+        -- Get the current and max values
+        if( not channeling ) then
+            self.value = GetTime( ) - ( startTime / 1000 );
+            self.maxValue = ( endTime - startTime ) / 1000;
+            self.castID = castID;
+        else
+            self.value = ( ( endTime / 1000 ) - GetTime( ) );
+            self.maxValue = ( endTime - startTime ) / 1000;
         end
 
-        -- If the unit is casting a spell update the power bar
-        if( name ~= nil ) then
+        -- Set the bar min, max and current values
+        self.status:SetMinMaxValues( 0, self.maxValue );
+        self.status:SetValue( self.value );
 
-            -- Get the current and max values
-            if( not channeling ) then
-                self.value = GetTime( ) - ( startTime / 1000 );
-                self.maxValue = ( endTime - startTime ) / 1000;
-                self.castID = castID;
-            else
-                self.value = ( ( endTime / 1000 ) - GetTime( ) );
-                self.maxValue = ( endTime - startTime ) / 1000;
-            end
+        -- Set the text
+        self.text:SetText( name );
 
-            -- Set the bar min, max and current values
-            self.status:SetMinMaxValues( 0, self.maxValue );
-            self.status:SetValue( self.value );
+        -- Show the bar spark
+        self.spark:Show( );
 
-            -- Set the text
-            self.text:SetText( name );
-
-            -- Show the bar spark
-            self.spark:Show( );
-
-            -- Set the bar color
-            if( notInterruptible ) then
-                self.status:SetStatusBarColor( 1.0, 0.0, 0.0 );
-            elseif( channeling ) then
-                self.status:SetStatusBarColor( 1.0, 0.7, 0.0 );
-            else
-                self.status:SetStatusBarColor( 0.0, 1.0, 0.0 );
-            end
-
-            -- Enter channeling mode
-            self.casting = not channeling;
-            self.channeling = channeling;
+        -- Set the bar color
+        if( notInterruptible ) then
+            self.status:SetStatusBarColor( 1.0, 0.0, 0.0 );
+        elseif( channeling ) then
+            self.status:SetStatusBarColor( 1.0, 0.7, 0.0 );
+        else
+            self.status:SetStatusBarColor( 0.0, 1.0, 0.0 );
         end
+
+        -- Enter channeling mode
+        self.casting = not channeling;
+        self.channeling = channeling;
+    end
 
 end
 
@@ -332,6 +332,19 @@ local function StatusBars2_PowerBar_OnEnable( self )
             self.status:SetStatusBarColor( addonTable.kDefaultPowerBarColor );
         end
     else
+        local powerType = self:GetPowerType( )
+
+        if( powerType == SPELL_POWER_RAGE
+        or powerType == SPELL_POWER_RUNIC_POWER
+        or powerType == SPELL_POWER_INSANITY
+        or powerType == SPELL_POWER_MAELSTROM
+        or powerType == SPELL_POWER_FURY
+        or powerType == SPELL_POWER_PAIN ) then
+            self.defaultPower = 0;
+        else
+            self.defaultPower = nil
+        end
+
         -- Set the color
         StatusBars2_SetPowerBarColor( self );
 
@@ -376,23 +389,12 @@ local function StatusBars2_PowerBar_IsDefault( self )
 
     -- Otherwise check the power level
     else
-
-        -- Get the power type
-        local powerType = self:GetPowerType( );
-
         -- Get the current power
         local power = self:GetPower( );
 
         -- Determine if power is at it's default state
-        if( powerType == SPELL_POWER_RAGE 
-        or powerType == SPELL_POWER_RUNIC_POWER 
-        or powerType == SPELL_POWER_INSANITY 
-        or powerType == SPELL_POWER_MAELSTROM ) then
-            isDefault = ( power == 0 );
-        else
-            local maxPower = self:GetPowerMax( );
-            isDefault = ( power == maxPower );
-        end
+        -- Compare against the default power value if it exists, otherwise the max power
+        isDefault = ( power == ( self.defaultPower or self:GetPowerMax( )));
     end
 
     return isDefault;

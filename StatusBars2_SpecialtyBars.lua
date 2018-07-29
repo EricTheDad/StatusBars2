@@ -394,6 +394,7 @@ end
 -------------------------------------------------------------------------------
 --
 function StatusBars2_CreateShardBar( group, index, removeWhenHidden )
+-- TODO: use WarlockPowerBar_UnitPower
 
     -- Create the bar
     local bar = StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, "shard", SOUL_SHARDS, PowerBarColor["SOUL_SHARDS"], Enum.PowerType.SoulShards, "UNIT_POWER_FREQUENT", "SOUL_SHARDS" );

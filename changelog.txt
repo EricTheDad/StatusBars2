@@ -1,4 +1,7 @@
-﻿3.08.06
+﻿3.08.07
+Fixed Demon Hunter power bars
+
+3.08.06
 Fixed Shaman maelstrom bar, re-enabled arcane charges bar after accidentally breaking it (oops).  Cleaning up obsolete code.
 
 3.08.05

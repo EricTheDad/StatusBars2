@@ -61,7 +61,7 @@ local function StatusBars2_SetBarDefaultSettings( bar, barSettings )
             barSettings.flash = true;
         elseif( ( bar.unit == "player" or bar.unit == "pet" ) and bar.type == kPower ) then
             local localizedClass, englishClass = UnitClass( "player" );
-            barSettings.flash = ( bar.unit == "player" and englishClass ~= "ROGUE" and englishClass ~= "WARRIOR" and englishClass ~= "DEATHKNIGHT" and englishClass ~= "MONK" and englishClass ~= "DRUID" ) or ( bar.unit == "pet" and englishClass == "WARLOCK" );
+            barSettings.flash = ( bar.unit == "player" and englishClass ~= "ROGUE" and englishClass ~= "WARRIOR" and englishClass ~= "DEATHKNIGHT" and englishClass ~= "MONK" and englishClass ~= "DRUID" and englishClass ~= "DEMONHUNTER" ) or ( bar.unit == "pet" and englishClass == "WARLOCK" );
         elseif( bar.type == kDruidMana ) then
             barSettings.flash = true;
         else

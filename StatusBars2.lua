@@ -335,7 +335,7 @@ function StatusBars2_UpdateBars( )
     -- Get the current class and power type
     local localizedClass, englishClass = UnitClass( "player" );
     local powerType = UnitPowerType( "player" );
-    local playerLevel = UnitLevel("player")
+    local playerLevel = UnitLevel( "player" )
     local playerSpec = GetSpecialization( )
 
     for i, bar in ipairs( bars ) do
@@ -403,7 +403,7 @@ function StatusBars2_UpdateBars( )
             StatusBars2_EnableBar( bar );
         elseif ( bar.key == "stagger" and playerSpec == SPEC_MONK_BREWMASTER ) then
             StatusBars2_EnableBar( bar );
-        end
+       end
 
     end
 
