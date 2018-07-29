@@ -1,4 +1,7 @@
-﻿3.08.07
+﻿3.08.08
+Fixed holy power bar (another oops)
+
+3.08.07
 Fixed Demon Hunter power bars
 
 3.08.06

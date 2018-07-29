@@ -370,8 +370,6 @@ function StatusBars2_UpdateBars( )
         -- Special Rogue Bars
         elseif( bar.key == "combo" and powerType == Enum.PowerType.Energy ) then
             StatusBars2_EnableBar( bar );
-        elseif( bar.key == "anticipation" and IsSpellKnown( bar.spellID ) ) then
-            StatusBars2_EnableBar( bar );
         -- Special Death Knight Bars
         elseif( bar.key == "rune" ) then
             StatusBars2_EnableBar( bar );
@@ -379,18 +377,10 @@ function StatusBars2_UpdateBars( )
         elseif( bar.key == "shard" and playerLevel >= SHARDBAR_SHOW_LEVEL) then
             StatusBars2_EnableBar( bar );
         -- Special Paladin Bars
-        elseif( bar.key == "holyPower" and playerSpec == SPEC_PALADIN_RETRIBUTION and playerLevel < PALADINPOWERBAR_SHOW_LEVEL ) then
+        elseif( bar.key == "holyPower" and playerSpec == SPEC_PALADIN_RETRIBUTION and playerLevel >= PALADINPOWERBAR_SHOW_LEVEL ) then
             StatusBars2_EnableBar( bar );
         -- Special Priest Bars
         elseif( bar.key == "priestMana" and playerSpec == SPEC_PRIEST_SHADOW ) then
-            StatusBars2_EnableBar( bar );
-        -- Special Hunter Bars
-        elseif( bar.key == "frenzy" and IsSpellKnown( bar.spellID ) ) then
-            StatusBars2_EnableBar( bar );
-        elseif( bar.key == "lockAndLoad" and IsSpellKnown( bar.spellID ) ) then
-            StatusBars2_EnableBar( bar );
-        -- Special Warrior Bars
-        elseif( bar.key == "sunder" and IsSpellKnown( bar.spellID ) ) then
             StatusBars2_EnableBar( bar );
          -- Special Mage Bars
          elseif( bar.key == "arcaneCharge" and IsSpellKnown( bar.spellID ) ) then
