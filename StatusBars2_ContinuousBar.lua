@@ -185,9 +185,6 @@ function StatusBars2_CreateContinuousBar( group, index, removeWhenHidden, key, u
     bar.OnEnable = bar.ContinuousBar_OnEnable;
     bar.BarIsVisible = bar.ContinuousBar_BarIsVisible;
 
-    -- Set the background color
-    bar.status:SetBackdropColor( 0, 0, 0, 0.85 );
-
     -- Set the status bar color
     bar.status:SetStatusBarColor( r, g, b );
 

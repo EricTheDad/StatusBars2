@@ -44,21 +44,13 @@
         </Scripts>
 	</CheckButton>
 
-    <Frame name="StatusBars2_BorderedFrameTemplate" virtual="true" >
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="11" top="12" bottom="10"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
-    </Frame>
-
-    <Frame name="StatusBars2_DialogFrameTemplete" inherits="StatusBars2_BorderedFrameTemplate" virtual="true">
+    <Frame name="StatusBars2_DialogFrameTemplete" inherits="BackdropTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_TEXT_PANEL_0_16" type="global"/>
+			<KeyValue key="backdropColor" value="TOOLTIP_DEFAULT_BACKGROUND_COLOR" type="global"/>
+			<KeyValue key="backdropColorAlpha" value="0.85" type="number"/>
+			<KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="$parentHeader" urgency="5" file="Interface\DialogFrame\UI-DialogBox-Header">
@@ -84,6 +76,11 @@
 				</FontString>
 			</Layer>
 		</Layers>
+		<Scripts>
+			<OnLoad>
+				self:OnBackdropLoaded()
+			</OnLoad>
+		</Scripts>
     </Frame>
 
     <Frame name="StatusBars2_ConfigTabFrameTemplate" virtual="true">
@@ -437,10 +434,6 @@
 
     <!-- Global addon settings -->
     <Frame name="StatusBars2_GlobalOptionsConfigTemplate" inherits="StatusBars2_LayoutConfigTemplate" virtual="true" >
-        <Scripts>
-            <OnLoad>
-            </OnLoad>
-        </Scripts>
         <Frames>
             <CheckButton name="$parent_FadeButton" parentKey="fadeButton" inherits="StatusBars2_CheckButtonTemplate" >
                 <Anchors>
@@ -1215,6 +1208,12 @@
 
     <!-- StatusBars2 Configuration Frame -->
 	<Frame name="StatusBars2_Config_Template" toplevel="true" inherits="StatusBars2_DialogFrameTemplete" parent="UIParent" hidden="true" enableMouse="true" frameStrata="DIALOG" virtual="true">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_TEXT_PANEL_0_16" type="global"/>
+			<KeyValue key="backdropColor" value="FRIENDS_GRAY_COLOR" type="global"/>
+			<KeyValue key="backdropColorAlpha" value="0.5" type="number"/>
+			<KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global"/>
+		</KeyValues>
 		<Size>
 			<AbsDimension x="550" y="320"/>
 		</Size>
@@ -1413,6 +1412,7 @@
                 PanelTemplates_SetNumTabs(self, 4);
                 PanelTemplates_SetTab(self, 1);
                 StatusBars2Config_Configure_Bar_Options( self );
+				self:OnBackdropLoaded()
             </OnLoad>
             <OnShow>
                 PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);

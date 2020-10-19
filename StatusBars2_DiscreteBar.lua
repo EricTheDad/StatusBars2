@@ -152,7 +152,7 @@ function StatusBars2_AdjustDiscreteBarBoxes( bar, boxCount )
             -- Set the status bar to draw behind the edge frame so it doesn't overlap.
             -- This should be possible in XML, but the documentation is too sketchy for me to figure it out.
             status:SetFrameLevel( box:GetFrameLevel( ) - 1 );
-            status:SetBackdropColor( 0, 0, 0, 0.85 );
+            -- TODO: status:SetBackdropColor( 0, 0, 0, 0.85 );
 
             box:SetPoint( "TOPLEFT", bar, "TOPLEFT", boxLeft , 0 );
             boxLeft = boxLeft + boxWidth - overlap;

@@ -15,22 +15,21 @@
     </Texture>
 
     <!-- Continuous bar template -->
-    <Frame name="StatusBars2_ContinuousBarTemplate" movable="true" virtual="true" >
-
+    <Frame name="StatusBars2_ContinuousBarTemplate" inherits="TooltipBackdropTemplate" movable="true" virtual="true" >
         <Size x="170" y="20" />
-
-        <Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-            <EdgeSize>
-                <AbsValue val="16" />
-            </EdgeSize>
-            <TileSize>
-                <AbsValue val="16" />
-            </TileSize>
-        </Backdrop>
-
+		<KeyValues>
+			<KeyValue key="backdropColorAlpha" value="0.0" type="number"/>
+		</KeyValues>
         <Frames>
+			<Frame setAllPoints="true" frameStrata="BACKGROUND" inherits="TooltipBackdropTemplate">
+			<KeyValues>
+				<KeyValue key="backdropBorderColorAlpha" value="0.0" type="number"/>
+			</KeyValues>
+			</Frame>
             <Frame setAllPoints="true" >
                 <Layers>
+					<Layer level="BACKGROUND">
+					</Layer>
                     <Layer level="OVERLAY">
                         <FontString name="$parent_Text" inherits="GameFontNormalSmall" >
                             <Anchors>
@@ -64,11 +63,6 @@
                 <Size>
                   <AbsDimension x="162" y="13" />
                 </Size>
-                <Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" tile="true">
-                    <TileSize>
-                        <AbsValue val="16" />
-                    </TileSize>
-                </Backdrop>
                 <BarTexture file="Interface\TargetingFrame\UI-StatusBar" />
                 <Anchors>
                     <Anchor point="CENTER" relativeto="$Parent">
@@ -82,10 +76,8 @@
     </Frame>
 
     <!-- Discrete box template for boxes that are added to a discrete bar -->
-    <Frame name="StatusBars2_DiscreteBoxTemplate" movable="true" virtual="true" >
-
+    <Frame name="StatusBars2_DiscreteBoxTemplate" inherits="TooltipBackdropTemplate" movable="true" virtual="true" >
         <Size x="170" y="20" />
-
         <Anchors>
             <Anchor point="TOPLEFT" relativeto="$Parent" >
                 <Offset x="0" y="0" />
@@ -96,11 +88,6 @@
                 <Size>
                   <AbsDimension x="163" y="13" />
                 </Size>
-                <Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" tile="true">
-                    <TileSize>
-                        <AbsValue val="16" />
-                    </TileSize>
-                </Backdrop>
                 <BarTexture file="Interface\TargetingFrame\UI-StatusBar" />
                 <Anchors>
                     <Anchor point="CENTER" relativeto="$Parent">
@@ -114,10 +101,8 @@
     </Frame>
 
     <!-- Discrete bar template. Boxes are added to it programatically -->
-    <Frame name="StatusBars2_DiscreteBarTemplate" movable="true" virtual="true" >
-
+    <Frame name="StatusBars2_DiscreteBarTemplate" inherits="TooltipBackdropTemplate" movable="true" virtual="true" >
         <Size x="170" y="20" />
-
     </Frame>
 
     <!-- Rune bar template. -->
@@ -165,7 +150,7 @@
 	</Frame>
 
     <!-- Aura bar template -->
-    <Frame name="StatusBars2_AuraBarTemplate" movable="true" virtual="true" >
+    <Frame name="StatusBars2_AuraBarTemplate" inherits="TooltipBackdropTemplate" movable="true" virtual="true" >
         <Size x="170" y="20" />
     </Frame>
 

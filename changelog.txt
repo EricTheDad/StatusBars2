@@ -1,4 +1,11 @@
-﻿3.08.08
+﻿9.00.03.08.09
+Changed versioning to prepend with the verion of WoW the addon is compatible with
+Fixed bar backdrops to use Wow's new system
+Known bugs: Config dialog is a big janky
+Combo box backdrops are transparent
+So far only tested on Death Knight, Rogue and Mage
+
+3.08.08
 Fixed holy power bar (another oops)
 
 3.08.07

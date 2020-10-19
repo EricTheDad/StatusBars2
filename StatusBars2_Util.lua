@@ -70,21 +70,10 @@ end
 --
 function StatusBars2_Frame_ShowBackdrop( self )
 
-    -- Set an edge so we can see the aura self
-    local backdropInfo = {
-        bgFile = "Interface/Tooltips/UI-Tooltip-Background",
-        edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
-        edgeSize = 16,
-        insets = {
-            left = 5,
-            right = 5,
-            top = 5,
-            bottom = 5
-        }
-    };
-
-    self:SetBackdrop( backdropInfo );
-    self:SetBackdropColor( 0, 0, 0, 0.85 );
+	if( self.SetBackdrop ) then
+		self:SetBackdrop( TOOLTIP_BACKDROP_STYLE_DEFAULT );
+		self:SetBackdropColor( 0, 0, 0, 0.85 );
+	end
 
     -- Create a font string if we don't have one
     if( self.text == nil ) then
@@ -106,7 +95,9 @@ end
 function StatusBars2_Frame_HideBackdrop( self )
 
     -- Get rid of the edge if it was added in config mode
-    self:SetBackdrop( nil );
+	if( self.SetBackdrop ) then
+		self:SetBackdrop( nil );
+	end
 
     -- Hide the text if it was displayed from config mode
     if ( self.text ) then
