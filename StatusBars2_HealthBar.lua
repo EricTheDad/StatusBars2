@@ -1,5 +1,4 @@
 -- Rewritten by GopherYerguns from the original Status Bars by Wesslen. Mist of Pandaria updates by ???? on Wow Interface (integrated with permission) and EricTheDad
-
 local addonName, addonTable = ... --Pulls back the Addon-Local Variables and stores them locally
 
 
@@ -27,32 +26,32 @@ local FontInfo = addonTable.fontInfo;
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateHealthBar( group, index, removeWhenHidden, key, unit )
-
+function StatusBars2_CreateHealthBar(group, index, removeWhenHidden, key, unit)
+    
     local barType = kHealth;
-    local displayName = StatusBars2_ConstructDisplayName( unit, barType );
-
+    local displayName = StatusBars2_ConstructDisplayName(unit, barType);
+    
     -- Create the bar
-    local bar = StatusBars2_CreateContinuousBar( group, index, removeWhenHidden, key, unit, displayName, barType, 1, 0, 0 );
-
+    local bar = StatusBars2_CreateContinuousBar(group, index, removeWhenHidden, key, unit, displayName, barType, 1, 0, 0);
+    
     -- Set the event handlers
     bar.OnEvent = StatusBars2_HealthBar_OnEvent;
     bar.OnEnable = StatusBars2_HealthBar_OnEnable;
     bar.IsDefault = StatusBars2_HealthBar_IsDefault;
-
+    
     -- Events to register for on enable
     bar.eventsToRegister["UNIT_HEALTH"] = true;
     bar.eventsToRegister["UNIT_MAXHEALTH"] = true;
     bar.eventsToRegister["PLAYER_REGEN_DISABLED"] = true;
     bar.eventsToRegister["PLAYER_REGEN_ENABLED"] = true;
-    if( bar.unit == "target" ) then
+    if (bar.unit == "target") then
         bar.eventsToRegister["PLAYER_TARGET_CHANGED"] = true;
-    elseif( bar.unit == "focus" ) then
+    elseif (bar.unit == "focus") then
         bar.eventsToRegister["PLAYER_FOCUS_CHANGED"] = true;
-    elseif( bar.unit == "pet" ) then
+    elseif (bar.unit == "pet") then
         bar.eventsToRegister["UNIT_PET"] = true;
     end
-
+    
     return bar;
 
 end
@@ -65,19 +64,19 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_HealthBar_OnEvent( self, event, ... )
-
+function StatusBars2_HealthBar_OnEvent(self, event, ...)
+    
     -- Entering combat
-    if( event == "PLAYER_REGEN_DISABLED" ) then
+    if (event == "PLAYER_REGEN_DISABLED") then
         self.inCombat = true;
-
+    
     -- Exiting combat
-    elseif( event == "PLAYER_REGEN_ENABLED" ) then
+    elseif (event == "PLAYER_REGEN_ENABLED") then
         self.inCombat = false;
     end
-
+    
     -- Update
-   StatusBars2_UpdateHealthBar( self );
+    StatusBars2_UpdateHealthBar(self);
 
 end
 
@@ -89,17 +88,17 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_HealthBar_OnEnable( self )
-
-    if( StatusBars2.configMode ) then
-        self.status:SetStatusBarColor( 0, 1, 0 );
+function StatusBars2_HealthBar_OnEnable(self)
+    
+    if (StatusBars2.configMode) then
+        self.status:SetStatusBarColor(0, 1, 0);
     else
         -- Update
-        StatusBars2_UpdateHealthBar( self );
+        StatusBars2_UpdateHealthBar(self);
     end
-
+    
     -- Call the base method
-    self:ContinuousBar_OnEnable( );
+    self:ContinuousBar_OnEnable();
 
 end
 
@@ -111,30 +110,30 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_UpdateHealthBar( self )
-
+function StatusBars2_UpdateHealthBar(self)
+    
     -- Get the current and max health
-    local health = UnitHealth( self.unit );
-    local maxHealth = UnitHealthMax( self.unit );
-
+    local health = UnitHealth(self.unit);
+    local maxHealth = UnitHealthMax(self.unit);
+    
     -- Update the bar
-    self:ContinuousBar_Update( health, maxHealth );
-
+    self:ContinuousBar_Update(health, maxHealth);
+    
     -- If the bar is still visible update its color
-    if( self.visible ) then
-
+    if (self.visible) then
+        
         -- Determine the percentage of health remaining
         local percent = health / maxHealth;
-
+        
         -- Set the bar color based on the percentage of remaining health
-        if( percent >= 0.75 ) then
-            self.status:SetStatusBarColor( 0, 1, 0 );
-        elseif( percent >= 0.50 ) then
-            self.status:SetStatusBarColor( 1, 1, 0 );
-        elseif( percent >= 0.25 ) then
-            self.status:SetStatusBarColor( 1, 0.5, 0 );
+        if (percent >= 0.75) then
+            self.status:SetStatusBarColor(0, 1, 0);
+        elseif (percent >= 0.50) then
+            self.status:SetStatusBarColor(1, 1, 0);
+        elseif (percent >= 0.25) then
+            self.status:SetStatusBarColor(1, 0.5, 0);
         else
-            self.status:SetStatusBarColor( 1, 0, 0 );
+            self.status:SetStatusBarColor(1, 0, 0);
         end
     end
 
@@ -148,13 +147,12 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_HealthBar_IsDefault( self )
-
+function StatusBars2_HealthBar_IsDefault(self)
+    
     -- Get the current and max health
-    local health = UnitHealth( self.unit );
-    local maxHealth = UnitHealthMax( self.unit );
-
+    local health = UnitHealth(self.unit);
+    local maxHealth = UnitHealthMax(self.unit);
+    
     return health == maxHealth;
 
 end
-

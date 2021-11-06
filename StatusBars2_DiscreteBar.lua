@@ -1,5 +1,4 @@
 -- Rewritten by GopherYerguns from the original Status Bars by Wesslen. Mist of Pandaria updates by ???? on Wow Interface (integrated with permission) and EricTheDad
-
 local addonName, addonTable = ... --Pulls back the Addon-Local Variables and stores them locally
 
 
@@ -24,27 +23,27 @@ local kAlternateMana = addonTable.barTypes.kAlternateMana;
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateDiscreteBar( group, index, removeWhenHidden, key, unit, displayName, barType, boxCount, defaultColor )
-
+function StatusBars2_CreateDiscreteBar(group, index, removeWhenHidden, key, unit, displayName, barType, boxCount, defaultColor)
+    
     -- Create the bar
-    local bar = StatusBars2_CreateBar( group, index, removeWhenHidden, key, "StatusBars2_DiscreteBarTemplate", unit, displayName, barType, defaultColor );
-
+    local bar = StatusBars2_CreateBar(group, index, removeWhenHidden, key, "StatusBars2_DiscreteBarTemplate", unit, displayName, barType, defaultColor);
+    
     -- Set the default configuration template
     bar.optionsPanelKey = "auraStackBarConfigTabPage";
-
+    
     -- Base methods for subclasses to call
     bar.DiscreteBar_OnEnable = StatusBars2_DiscreteBar_OnEnable;
-
+    
     -- Override default methods as needed
     bar.OnEnable = StatusBars2_DiscreteBar_OnEnable;
-
+    
     -- Bar starts off with no boxes created.
     bar.boxCount = 0;
-
+    
     -- Now create the number of boxes initially requested.  We may create more or hide
     -- some in the future, depending on spec/glyph/talent changes.
-    StatusBars2_SetDiscreteBarBoxCount( bar, boxCount );
-
+    StatusBars2_SetDiscreteBarBoxCount(bar, boxCount);
+    
     return bar;
 
 end;
@@ -57,11 +56,11 @@ end;
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_SetDiscreteBarBoxCount( bar, boxCount )
-
-    if ( bar.boxCount ~= boxCount ) then
-        StatusBars2_CreateDiscreteBarBoxes( bar, boxCount );
-        StatusBars2_AdjustDiscreteBarBoxes( bar, boxCount );
+function StatusBars2_SetDiscreteBarBoxCount(bar, boxCount)
+    
+    if (bar.boxCount ~= boxCount) then
+        StatusBars2_CreateDiscreteBarBoxes(bar, boxCount);
+        StatusBars2_AdjustDiscreteBarBoxes(bar, boxCount);
     end
 end;
 
@@ -73,25 +72,25 @@ end;
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateDiscreteBarBoxes( bar, desiredBoxCount )
-
-    assert( desiredBoxCount < 20, "Way too many discrete boxes" );
+function StatusBars2_CreateDiscreteBarBoxes(bar, desiredBoxCount)
     
-    local boxes = { bar:GetChildren( ) };
+    assert(desiredBoxCount < 20, "Way too many discrete boxes");
+    
+    local boxes = {bar:GetChildren()};
     local boxesAvailableCount = #boxes;
-
-    if ( boxesAvailableCount < desiredBoxCount ) then
-
-        local name = bar:GetName( );
-
+    
+    if (boxesAvailableCount < desiredBoxCount) then
+        
+        local name = bar:GetName();
+        
         -- Initialize the boxes
         local i;
         for i = boxesAvailableCount + 1, desiredBoxCount do
             local boxName = name .. '_Box' .. i;
             local statusName = name .. '_Box' .. i .. '_Status';
-            local box = CreateFrame( "Frame", boxName, bar, "StatusBars2_DiscreteBoxTemplate" );
-            local status = box:GetChildren( );
-            status:SetValue( 0 );
+            local box = CreateFrame("Frame", boxName, bar, "StatusBars2_DiscreteBoxTemplate");
+            local status = box:GetChildren();
+            status:SetValue(0);
         end
     end
 
@@ -105,8 +104,8 @@ end;
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_AdjustDiscreteBarBoxes( bar, boxCount )
-
+function StatusBars2_AdjustDiscreteBarBoxes(bar, boxCount)
+    
     bar.boxCount = boxCount;
     
     -- The boxes look too far apart if you put them side by side because the frame
@@ -114,51 +113,50 @@ function StatusBars2_AdjustDiscreteBarBoxes( bar, boxCount )
     -- a more aesthetically pleasing spacing
     local overlap = 3;
     local statusWidthDiff = 8;
-    local combinedBoxWidth = bar:GetWidth( ) + ( boxCount - 1 ) * overlap;
+    local combinedBoxWidth = bar:GetWidth() + (boxCount - 1) * overlap;
     local boxWidth = combinedBoxWidth / boxCount;
     local boxLeft = 0;
     
-    local backdropInfo = { edgeFile = "Interface/Tooltips/UI-Tooltip-Border", edgeSize = 16 };
+    local backdropInfo = {edgeFile = "Interface/Tooltips/UI-Tooltip-Border", edgeSize = 16};
     
     -- If the box size gets below 32, the edge elements within a box start to overlap and it looks crappy.
     -- So if that happens, scale the edge size down just enough that the elements don't overlap.
-    if ( boxWidth < 32 ) then
-
+    if (boxWidth < 32) then
+        
         -- With the edge smaller, we also want less overlap
         overlap = overlap * boxWidth / 32;
         statusWidthDiff = statusWidthDiff * boxWidth / 32;
-
+        
         -- Recalculate box size to go with the new overlap.
-        combinedBoxWidth = bar:GetWidth( ) + ( boxCount - 1 ) * overlap;
+        combinedBoxWidth = bar:GetWidth() + (boxCount - 1) * overlap;
         boxWidth = combinedBoxWidth / boxCount;
-
+        
         -- Now we're ready to calculate the new edge size
         backdropInfo.edgeSize = 16 * boxWidth / 32;
-
+    
     end
-
-    local boxes = { bar:GetChildren( ) };
-
+    
+    local boxes = {bar:GetChildren()};
+    
     -- Initialize the boxes
     for i, box in ipairs(boxes) do
-
-        box:SetBackdrop( backdropInfo );
-
-        if ( i <= bar.boxCount ) then
-            local status = box:GetChildren( );
-            box:SetWidth( boxWidth );
-            status:SetWidth( boxWidth - statusWidthDiff );
-
+        
+        box:SetBackdrop(backdropInfo);
+        
+        if (i <= bar.boxCount) then
+            local status = box:GetChildren();
+            box:SetWidth(boxWidth);
+            status:SetWidth(boxWidth - statusWidthDiff);
+            
             -- Set the status bar to draw behind the edge frame so it doesn't overlap.
             -- This should be possible in XML, but the documentation is too sketchy for me to figure it out.
-            status:SetFrameLevel( box:GetFrameLevel( ) - 1 );
+            status:SetFrameLevel(box:GetFrameLevel() - 1);
             -- TODO: status:SetBackdropColor( 0, 0, 0, 0.85 );
-
-            box:SetPoint( "TOPLEFT", bar, "TOPLEFT", boxLeft , 0 );
+            box:SetPoint("TOPLEFT", bar, "TOPLEFT", boxLeft, 0);
             boxLeft = boxLeft + boxWidth - overlap;
-            box:Show( );
+            box:Show();
         else
-            box:Hide( );
+            box:Hide();
         end
     end
 
@@ -172,14 +170,14 @@ end;
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_UpdateDiscreteBarBoxColors( bar )
-
-    local boxes = { bar:GetChildren( ) };
-
+function StatusBars2_UpdateDiscreteBarBoxColors(bar)
+    
+    local boxes = {bar:GetChildren()};
+    
     -- Initialize the boxes
     for i, box in ipairs(boxes) do
-        local status = box:GetChildren( );
-        status:SetStatusBarColor( bar:GetColor( ) );
+        local status = box:GetChildren();
+        status:SetStatusBarColor(bar:GetColor());
     end
 
 end
@@ -192,20 +190,20 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_UpdateDiscreteBar( bar, current )
-
+function StatusBars2_UpdateDiscreteBar(bar, current)
+    
     -- Update the boxes
-    boxes = { bar:GetChildren( ) };
+    boxes = {bar:GetChildren()};
     
     -- Initialize the boxes
     for i, box in ipairs(boxes) do
-    
-        local status = box:GetChildren( );
-       
+        
+        local status = box:GetChildren();
+        
         if i <= current then
-            status:SetValue( 1 );
+            status:SetValue(1);
         else
-            status:SetValue( 0 );
+            status:SetValue(0);
         end
     end
 
@@ -219,38 +217,38 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_DiscreteBar_OnEnable( self )
-
-    if( StatusBars2.configMode ) then
-
+function StatusBars2_DiscreteBar_OnEnable(self)
+    
+    if (StatusBars2.configMode) then
+        
         -- Show a backdrop so we can see the bar
-        StatusBars2_Frame_ShowBackdrop( self );
-
-        local r, g, b = self:GetColor( );
-        self:SetBackdropColor( r, g, b, 1.0 );
-
+        StatusBars2_Frame_ShowBackdrop(self);
+        
+        local r, g, b = self:GetColor();
+        self:SetBackdropColor(r, g, b, 1.0);
+        
         -- Hide all the boxes
-        for i, box in ipairs( { self:GetChildren( ) } ) do
-            box:Hide( );
+        for i, box in ipairs({self:GetChildren()}) do
+            box:Hide();
         end
-
+    
     else
-
+        
         -- Hide the backdrop in case we showed it for config mode
-        StatusBars2_Frame_HideBackdrop( self );
-
+        StatusBars2_Frame_HideBackdrop(self);
+        
         -- Show all boxes that should be active in case they were hidden by config mode
-        for i, box in ipairs( { self:GetChildren( ) } ) do
-            if( i <= self.boxCount ) then
-                box:Show( );
+        for i, box in ipairs({self:GetChildren()}) do
+            if (i <= self.boxCount) then
+                box:Show();
             end
         end
-
-        StatusBars2_UpdateDiscreteBarBoxColors( self );
-
+        
+        StatusBars2_UpdateDiscreteBarBoxColors(self);
+    
     end
-
+    
     -- Call the base method
-    self:BaseBar_OnEnable( );
+    self:BaseBar_OnEnable();
 
 end

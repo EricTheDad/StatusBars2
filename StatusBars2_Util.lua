@@ -1,5 +1,4 @@
 -- Rewritten by GopherYerguns from the original Status Bars by Wesslen. Mist of Pandaria updates by ???? on Wow Interface (integrated with permission) and EricTheDad
-
 local addonName, addonTable = ... --Pulls back the Addon-Local Variables and stores them locally
 
 local groups = addonTable.groups;
@@ -21,7 +20,7 @@ function StatusBars2_ShallowCopy(original)
         end
         return copy
     end
-    -- intentionally returning nil if original was nil
+-- intentionally returning nil if original was nil
 end
 
 -------------------------------------------------------------------------------
@@ -44,7 +43,7 @@ function StatusBars2_DeepCopy(original)
         end
         return copy
     end
-    -- intentionally returning nil if original was nil
+-- intentionally returning nil if original was nil
 end
 
 -------------------------------------------------------------------------------
@@ -55,30 +54,30 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_Round( x, places )
-    local mult = 10 ^  ( places or 0 )
-    return x and (floor( x * mult + 0.5 ) / mult) or x;
+function StatusBars2_Round(x, places)
+    local mult = 10 ^ (places or 0)
+    return x and (floor(x * mult + 0.5) / mult) or x;
 end
 
 -------------------------------------------------------------------------------
 --
 --  Name:           StatusBars2_Frame_ShowBackdrop
 --
---  Description:    
+--  Description:
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_Frame_ShowBackdrop( self )
-
-	if( self.SetBackdrop ) then
-		self:SetBackdrop( TOOLTIP_BACKDROP_STYLE_DEFAULT );
-		self:SetBackdropColor( 0, 0, 0, 0.85 );
-	end
-
+function StatusBars2_Frame_ShowBackdrop(self)
+    
+    if (self.SetBackdrop) then
+        self:SetBackdrop(TOOLTIP_BACKDROP_STYLE_DEFAULT);
+        self:SetBackdropColor(0, 0, 0, 0.85);
+    end
+    
     -- Create a font string if we don't have one
-    if( self.text == nil ) then
-        self.text = self:CreateFontString( );
-        self.text:SetPoint("CENTER",0,0);
+    if (self.text == nil) then
+        self.text = self:CreateFontString();
+        self.text:SetPoint("CENTER", 0, 0);
     end
 
 end
@@ -88,20 +87,20 @@ end
 --
 --  Name:           StatusBars2_Frame_HideBackdrop
 --
---  Description:    
+--  Description:
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_Frame_HideBackdrop( self )
-
+function StatusBars2_Frame_HideBackdrop(self)
+    
     -- Get rid of the edge if it was added in config mode
-	if( self.SetBackdrop ) then
-		self:SetBackdrop( nil );
-	end
-
+    if (self.SetBackdrop) then
+        self:SetBackdrop(nil);
+    end
+    
     -- Hide the text if it was displayed from config mode
-    if ( self.text ) then
-        self.text:Hide( );
+    if (self.text) then
+        self.text:Hide();
     end
 
 end
@@ -110,14 +109,13 @@ end
 --
 --  Name:           StatusBars2_SetupFontString
 --
---  Description:    
+--  Description:
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_SetupFontString( fontString, string_id )
-
-    fontString:SetText( StatusBars2_GetLocalizedText( string_id ));
-    fontString:SetHeight( fontString:GetStringHeight( ) );
+function StatusBars2_SetupFontString(fontString, string_id)
+    
+    fontString:SetText(StatusBars2_GetLocalizedText(string_id));
+    fontString:SetHeight(fontString:GetStringHeight());
 
 end
-

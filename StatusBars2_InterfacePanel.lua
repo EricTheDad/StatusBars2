@@ -1,5 +1,4 @@
 -- Rewritten by GopherYerguns from the original Status Bars by Wesslen. Mist of Pandaria updates by ???? on Wow Interface (integrated with permission) and EricTheDad
-
 local addonName, addonTable = ... --Pulls back the Addon-Local Variables and stores them locally
 
 
@@ -25,13 +24,13 @@ local bars = addonTable.bars;
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_Options_OnLoad( self )
-
+function StatusBars2_Options_OnLoad(self)
+    
     -- Setup the top level category
     self.name = "StatusBars2";
     self.okay = StatusBars2_Options_OnOK;
     self.cancel = StatusBars2_Options_OnCancel;
-    InterfaceOptions_AddCategory( self );
+    InterfaceOptions_AddCategory(self);
 
 end
 
@@ -43,7 +42,7 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_Options_OnOK( )
+function StatusBars2_Options_OnOK()
 
 end
 
@@ -55,7 +54,7 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_Options_OnCancel( )
+function StatusBars2_Options_OnCancel()
 
 end
 
@@ -67,15 +66,15 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_Options_ToggleMoveBars_OnClick( self )
-
+function StatusBars2_Options_ToggleMoveBars_OnClick(self)
+    
     -- Close the interface options panel
     HideUIPanel(InterfaceOptionsFrame);
-    -- Close the game frame menu in case the player opened the interface options 
+    -- Close the game frame menu in case the player opened the interface options
     -- panel from there, in which case it will re-open
     HideUIPanel(GameMenuFrame);
-
+    
     -- Enable config mode
-    StatusBars2Config_SetConfigMode( true );
+    StatusBars2Config_SetConfigMode(true);
 
 end

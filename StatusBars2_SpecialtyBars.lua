@@ -1,5 +1,4 @@
 -- Rewritten by GopherYerguns from the original Status Bars by Wesslen. Mist of Pandaria updates by ???? on Wow Interface (integrated with permission) and EricTheDad
-
 local addonName, addonTable = ... --Pulls back the Addon-Local Variables and stores them locally
 
 
@@ -24,16 +23,16 @@ local kAlternateMana = addonTable.barTypes.kAlternateMana;
 --
 -------------------------------------------------------------------------------
 --
-local function StatusBars2_SpecialtyBar_OnEvent( self, event, ... )
-
+local function StatusBars2_SpecialtyBar_OnEvent(self, event, ...)
+    
     -- Do the actual event handling
-    self:HandleEvent( event, ... );
-
+    self:HandleEvent(event, ...);
+    
     -- Update visibility
-    if( self:BarIsVisible( ) ) then
-        StatusBars2_ShowBar( self );
+    if (self:BarIsVisible()) then
+        StatusBars2_ShowBar(self);
     else
-        StatusBars2_HideBar( self );
+        StatusBars2_HideBar(self);
     end
 
 end
@@ -46,19 +45,19 @@ end
 --
 -------------------------------------------------------------------------------
 --
-local function StatusBars2_SpecialtyBar_OnEnable( self )
-
-    if( not StatusBars2.configMode ) then
+local function StatusBars2_SpecialtyBar_OnEnable(self)
+    
+    if (not StatusBars2.configMode) then
         -- Set the number of boxes we should be seeing
-        self:SetupBoxes( self:GetMaxCharges( ) );
-
+        self:SetupBoxes(self:GetMaxCharges());
+        
         -- Update
-        self:Update( self:GetCharges( ) );
-
+        self:Update(self:GetCharges());
+    
     end
-
+    
     -- Call the base method
-    self:DiscreteBar_OnEnable( );
+    self:DiscreteBar_OnEnable();
 
 end
 
@@ -70,9 +69,9 @@ end
 --
 -------------------------------------------------------------------------------
 --
-local function StatusBars2_SpecialtyBar_IsDefault( self )
-
-    return self:GetCharges( ) == self.defaultCharges;
+local function StatusBars2_SpecialtyBar_IsDefault(self)
+    
+    return self:GetCharges() == self.defaultCharges;
 
 end
 
@@ -84,10 +83,10 @@ end
 --
 -------------------------------------------------------------------------------
 --
-local function StatusBars2_GetUnitPowerCharges( self )
-
+local function StatusBars2_GetUnitPowerCharges(self)
+    
     -- undocumented 3rd parameter "true" in Unitpower delivers partial charges (e.g. for destruction warlocks)
-    return UnitPower( self.unit, self.powerType, self.showPartialCharges )
+    return UnitPower(self.unit, self.powerType, self.showPartialCharges)
 
 end
 
@@ -99,9 +98,9 @@ end
 --
 -------------------------------------------------------------------------------
 --
-local function StatusBars2_GetMaxUnitPowerCharges( self )
-
-    return UnitPowerMax( self.unit, self.powerType )
+local function StatusBars2_GetMaxUnitPowerCharges(self)
+    
+    return UnitPowerMax(self.unit, self.powerType)
 
 end
 
@@ -113,22 +112,22 @@ end
 --
 -------------------------------------------------------------------------------
 --
-local function StatusBars2_UnitPower_HandleEvent( self, event, ... )
-
+local function StatusBars2_UnitPower_HandleEvent(self, event, ...)
+    
     -- Number of charges changed
-    if( event == self.powerEvent ) then
+    if (event == self.powerEvent) then
         local unit, powerToken = ...;
-
-        if( unit == self.unit and powerToken == self.powerToken ) then
-            self:Update( self:GetCharges( ) );
+        
+        if (unit == self.unit and powerToken == self.powerToken) then
+            self:Update(self:GetCharges());
         end
-
+    
     -- Entering combat
-    elseif( event == "PLAYER_REGEN_DISABLED" ) then
+    elseif (event == "PLAYER_REGEN_DISABLED") then
         self.inCombat = true;
-
+    
     -- Leaving combat
-    elseif( event == "PLAYER_REGEN_ENABLED" ) then
+    elseif (event == "PLAYER_REGEN_ENABLED") then
         self.inCombat = false;
     end
 
@@ -142,11 +141,11 @@ end
 --
 -------------------------------------------------------------------------------
 --
-local function StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, key, displayName, defaultColor, powerType, powerEvent, powerToken )
-
+local function StatusBars2_CreateUnitPowerBar(group, index, removeWhenHidden, key, displayName, defaultColor, powerType, powerEvent, powerToken)
+    
     -- Create the bar
-    local bar = StatusBars2_CreateDiscreteBar( group, index, removeWhenHidden, key, "player", displayName, kUnitPower, 0, defaultColor );
-
+    local bar = StatusBars2_CreateDiscreteBar(group, index, removeWhenHidden, key, "player", displayName, kUnitPower, 0, defaultColor);
+    
     -- Set the event handlers
     bar.OnEvent = StatusBars2_SpecialtyBar_OnEvent;
     bar.OnEnable = StatusBars2_SpecialtyBar_OnEnable;
@@ -154,12 +153,12 @@ local function StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, k
     bar.HandleEvent = StatusBars2_UnitPower_HandleEvent;
     bar.SetupBoxes = StatusBars2_SetDiscreteBarBoxCount;
     bar.IsDefault = StatusBars2_SpecialtyBar_IsDefault;
-	bar.defaultCharges = 0;
-
+    bar.defaultCharges = 0;
+    
     -- Base methods for subclasses to call
     bar.SpecialtyBar_OnEnable = StatusBars2_SpecialtyBar_OnEnable;
-
-    -- Save the unit power type 
+    
+    -- Save the unit power type
     bar.powerType = powerType;
     bar.powerToken = powerToken;
     
@@ -169,12 +168,12 @@ local function StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, k
     
     bar.GetCharges = StatusBars2_GetUnitPowerCharges;
     bar.GetMaxCharges = StatusBars2_GetMaxUnitPowerCharges;
-
+    
     -- Events to register for on enable
     bar.eventsToRegister["PLAYER_REGEN_ENABLED"] = true;
     bar.eventsToRegister["PLAYER_REGEN_DISABLED"] = true;
     bar.eventsToRegister[powerEvent] = true;
-
+    
     return bar;
 
 end
@@ -187,10 +186,10 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateComboBar( group, index, removeWhenHidden )
-
+function StatusBars2_CreateComboBar(group, index, removeWhenHidden)
+    
     -- Create the bar
-    local bar = StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, "combo", COMBO_POINTS, { r = 1, g = 0, b = 0 }, Enum.PowerType.ComboPoints, "UNIT_POWER_UPDATE", "COMBO_POINTS" );
+    local bar = StatusBars2_CreateUnitPowerBar(group, index, removeWhenHidden, "combo", COMBO_POINTS, {r = 1, g = 0, b = 0}, Enum.PowerType.ComboPoints, "UNIT_POWER_UPDATE", "COMBO_POINTS");
     return bar;
 
 end
@@ -203,10 +202,10 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateHolyPowerBar( group, index, removeWhenHidden )
-
+function StatusBars2_CreateHolyPowerBar(group, index, removeWhenHidden)
+    
     -- Create the bar
-    local bar = StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, "holyPower", HOLY_POWER, PowerBarColor["HOLY_POWER"], Enum.PowerType.HolyPower, "UNIT_POWER_UPDATE", "HOLY_POWER" );
+    local bar = StatusBars2_CreateUnitPowerBar(group, index, removeWhenHidden, "holyPower", HOLY_POWER, PowerBarColor["HOLY_POWER"], Enum.PowerType.HolyPower, "UNIT_POWER_UPDATE", "HOLY_POWER");
     return bar;
 
 end
@@ -219,10 +218,10 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateChiBar( group, index, removeWhenHidden )
-
+function StatusBars2_CreateChiBar(group, index, removeWhenHidden)
+    
     -- Create the bar
-    local bar = StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, "chi", CHI_POWER, PowerBarColor["CHI"], Enum.PowerType.Chi, "UNIT_POWER_FREQUENT", "CHI" );
+    local bar = StatusBars2_CreateUnitPowerBar(group, index, removeWhenHidden, "chi", CHI_POWER, PowerBarColor["CHI"], Enum.PowerType.Chi, "UNIT_POWER_FREQUENT", "CHI");
     return bar;
 
 end
@@ -235,19 +234,19 @@ end
 --
 -------------------------------------------------------------------------------
 --
-local function StatusBars2_StaggerBar_GetColor( self )
-
-	local percent = self:GetPower( ) / self:GetPowerMax( );
-	local color = PowerBarColor[self.powerToken];
-
-	if (percent >= STAGGER_RED_TRANSITION) then
-		color = color[STAGGER_RED_INDEX];
-	elseif (percent >= STAGGER_YELLOW_TRANSITION) then
-		color = color[STAGGER_YELLOW_INDEX];
-	else
-		color = color[STAGGER_GREEN_INDEX];
-	end
-
+local function StatusBars2_StaggerBar_GetColor(self)
+    
+    local percent = self:GetPower() / self:GetPowerMax();
+    local color = PowerBarColor[self.powerToken];
+    
+    if (percent >= STAGGER_RED_TRANSITION) then
+        color = color[STAGGER_RED_INDEX];
+    elseif (percent >= STAGGER_YELLOW_TRANSITION) then
+        color = color[STAGGER_YELLOW_INDEX];
+    else
+        color = color[STAGGER_GREEN_INDEX];
+    end
+    
     return color.r, color.g, color.b
 end
 
@@ -259,26 +258,26 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateStaggerBar( group, index, removeWhenHidden )
-
+function StatusBars2_CreateStaggerBar(group, index, removeWhenHidden)
+    
     -- Create the bar
-    local bar = StatusBars2_CreatePowerBar( group, index, removeWhenHidden, "stagger", "player");
+    local bar = StatusBars2_CreatePowerBar(group, index, removeWhenHidden, "stagger", "player");
     bar.powerToken = BREWMASTER_POWER_BAR_NAME;
     bar.GetColor = StatusBars2_StaggerBar_GetColor;
     bar.displayName = BREWMASTER_POWER_BAR_NAME
-
-    bar.GetPower = function( self, returnFractionalCharges )
+    
+    bar.GetPower = function(self, returnFractionalCharges)
         return UnitStagger(self.unit)
     end
-
-    bar.GetPowerMax = function( self, returnFractionalCharges )
+    
+    bar.GetPowerMax = function(self, returnFractionalCharges)
         return UnitHealthMax(self.unit)
     end
-
-    bar.IsDefault = function( self )
-        return ( self:GetPower( ) == 0 )
+    
+    bar.IsDefault = function(self)
+        return (self:GetPower() == 0)
     end
-
+    
     return bar;
 
 end
@@ -291,12 +290,12 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateArcaneChargesBar( group, index, removeWhenHidden )
-
-	local MAGE_ARCANE_BLAST = 30451;
-
+function StatusBars2_CreateArcaneChargesBar(group, index, removeWhenHidden)
+    
+    local MAGE_ARCANE_BLAST = 30451;
+    
     -- Create the bar
-    local bar = StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, "arcaneCharge", "Arcane Charges", PowerBarColor["ARCANE_CHARGES"], Enum.PowerType.ArcaneCharges, "UNIT_POWER_UPDATE", "ARCANE_CHARGES" );
+    local bar = StatusBars2_CreateUnitPowerBar(group, index, removeWhenHidden, "arcaneCharge", "Arcane Charges", PowerBarColor["ARCANE_CHARGES"], Enum.PowerType.ArcaneCharges, "UNIT_POWER_UPDATE", "ARCANE_CHARGES");
     bar.spellID = MAGE_ARCANE_BLAST;
     return bar;
 
@@ -310,20 +309,20 @@ end
 --
 -------------------------------------------------------------------------------
 --
-local function StatusBars2_SetEmbersBoxCount( self, boxCount )
-
+local function StatusBars2_SetEmbersBoxCount(self, boxCount)
+    
     -- Call the base class
-    StatusBars2_SetDiscreteBarBoxCount( self, boxCount );
+    StatusBars2_SetDiscreteBarBoxCount(self, boxCount);
     
     -- Modify the boxes to display ember particles
-    boxes = { self:GetChildren( ) };
+    boxes = {self:GetChildren()};
     
     -- MAX_POWER_PER_EMBER defined in Blizzard constants
     for i, box in ipairs(boxes) do
+        
+        local status = box:GetChildren();
+        status:SetMinMaxValues(0, MAX_POWER_PER_EMBER);
     
-       local status = box:GetChildren( );
-       status:SetMinMaxValues( 0, MAX_POWER_PER_EMBER );
-
     end
 
 end
@@ -336,24 +335,24 @@ end
 --
 -------------------------------------------------------------------------------
 --
-local function StatusBars2_UpdateEmbersBar( self, current )
-
+local function StatusBars2_UpdateEmbersBar(self, current)
+    
     local current = current;
-	
+    
     -- Update the boxes
-    boxes = { self:GetChildren( ) };
+    boxes = {self:GetChildren()};
     
     -- Initialize the boxes
     for i, box in ipairs(boxes) do
-    
-       local status = box:GetChildren( );
-       local _, maxValue = status:GetMinMaxValues( );
-       
+        
+        local status = box:GetChildren();
+        local _, maxValue = status:GetMinMaxValues();
+        
         if current < maxValue then
-            status:SetValue( current );
+            status:SetValue(current);
             current = 0;
         else
-            status:SetValue( maxValue );
+            status:SetValue(maxValue);
             current = current - maxValue;
         end
     end
@@ -367,22 +366,22 @@ end
 --
 -------------------------------------------------------------------------------
 --
-local function StatusBars2_ShardBar_OnEnable( self )
+local function StatusBars2_ShardBar_OnEnable(self)
+    
+    if GetSpecialization() == SPEC_WARLOCK_DESTRUCTION then
+        self.defaultCharges = 3 * MAX_POWER_PER_EMBER
+        self.showPartialCharges = true
+        self.SetupBoxes = StatusBars2_SetEmbersBoxCount;
+        self.Update = StatusBars2_UpdateEmbersBar;
+    else
+        self.defaultCharges = 3
+        self.showPartialCharges = false
+        self.SetupBoxes = StatusBars2_SetDiscreteBarBoxCount;
+        self.Update = StatusBars2_UpdateDiscreteBar;
+    end
+    
+    StatusBars2_SpecialtyBar_OnEnable(self);
 
-	if GetSpecialization() == SPEC_WARLOCK_DESTRUCTION then
-		self.defaultCharges = 3 * MAX_POWER_PER_EMBER
-		self.showPartialCharges = true
-		self.SetupBoxes = StatusBars2_SetEmbersBoxCount;
-		self.Update = StatusBars2_UpdateEmbersBar;
-	else
-		self.defaultCharges = 3
-		self.showPartialCharges = false
-		self.SetupBoxes = StatusBars2_SetDiscreteBarBoxCount;
-		self.Update = StatusBars2_UpdateDiscreteBar;
-	end
-
-	StatusBars2_SpecialtyBar_OnEnable( self );
-	
 end
 
 -------------------------------------------------------------------------------
@@ -393,15 +392,13 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateShardBar( group, index, removeWhenHidden )
--- TODO: use WarlockPowerBar_UnitPower
-
+function StatusBars2_CreateShardBar(group, index, removeWhenHidden)
+    -- TODO: use WarlockPowerBar_UnitPower
     -- Create the bar
-    local bar = StatusBars2_CreateUnitPowerBar( group, index, removeWhenHidden, "shard", SOUL_SHARDS, PowerBarColor["SOUL_SHARDS"], Enum.PowerType.SoulShards, "UNIT_POWER_FREQUENT", "SOUL_SHARDS" );
-
+    local bar = StatusBars2_CreateUnitPowerBar(group, index, removeWhenHidden, "shard", SOUL_SHARDS, PowerBarColor["SOUL_SHARDS"], Enum.PowerType.SoulShards, "UNIT_POWER_FREQUENT", "SOUL_SHARDS");
+    
     -- Override event handlers and values for this specific type of bar
     bar.OnEnable = StatusBars2_ShardBar_OnEnable;
-
+    
     return bar;
 end
-

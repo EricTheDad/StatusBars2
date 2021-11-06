@@ -1,5 +1,4 @@
 -- Rewritten by GopherYerguns from the original Status Bars by Wesslen. Mist of Pandaria updates by ???? on Wow Interface (integrated with permission) and EricTheDad
-
 local addonName, addonTable = ... --Pulls back the Addon-Local Variables and stores them locally
 
 
@@ -22,17 +21,17 @@ local kAlternateMana = addonTable.barTypes.kAlternateMana;
 --
 -------------------------------------------------------------------------------
 --
-local function StatusBars2_GetAuraStack( unit, aura, auraType )
-
-	print("GetAuraStack", unit, aura, auraType)
+local function StatusBars2_GetAuraStack(unit, aura, auraType)
+    
+    print("GetAuraStack", unit, aura, auraType)
     -- Get the aura
     local name, texture, count;
-    if( auraType == "buff" ) then
-        name, texture, count = UnitBuff( unit, aura );
+    if (auraType == "buff") then
+        name, texture, count = UnitBuff(unit, aura);
     else
-        name, texture, count = UnitDebuff( unit, aura );
+        name, texture, count = UnitDebuff(unit, aura);
     end
-
+    
     return count or 0;
 
 end
@@ -45,39 +44,38 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_CreateAuraStackBar( group, index, removeWhenHidden, key, unit, spellID, auraType, count, auraID, defaultColor )
-
+function StatusBars2_CreateAuraStackBar(group, index, removeWhenHidden, key, unit, spellID, auraType, count, auraID, defaultColor)
+    
     -- The player has a spell that is the pre-condition for the aura stack
     -- We can match on the same name as the spell, but if we know it, the auraID is more efficient and reliable
-    local auraName = GetSpellInfo( auraID or spellID );
-     
+    local auraName = GetSpellInfo(auraID or spellID);
+    
     -- For the interface, we'll display the name of the aura if we have it, otherwise the name of the triggering spell
-    local displayName = GetSpellInfo( auraID or spellID );
+    local displayName = GetSpellInfo(auraID or spellID);
     
     -- Create the bar
-    local bar = StatusBars2_CreateDiscreteBar( group, index, removeWhenHidden, key, unit, displayName, kAuraStack, count, defaultColor );
-
+    local bar = StatusBars2_CreateDiscreteBar(group, index, removeWhenHidden, key, unit, displayName, kAuraStack, count, defaultColor);
+    
     -- Save the aura name and unit
     bar.spellID = spellID;
     bar.auraID = auraID;
     bar.aura = auraName;
     bar.auraType = auraType;
-
+    
     -- Set the event handlers
     bar.OnEvent = StatusBars2_AuraStackBar_OnEvent;
     bar.IsDefault = StatusBars2_AuraStackBar_IsDefault;
-
+    
     -- Default the bar to never visible
     bar.defaultEnabled = "Never";
-
+    
     -- Events to register for on enable
     bar.eventsToRegister["PLAYER_TARGET_CHANGED"] = true;
     bar.eventsToRegister["PLAYER_REGEN_ENABLED"] = true;
     bar.eventsToRegister["PLAYER_REGEN_DISABLED"] = true;
-
+    
     bar.eventsToRegister["UNIT_AURA"] = true;
-    --bar.eventsToRegister["COMBAT_LOG_EVENT_UNFILTERED"] = true;
-
+--bar.eventsToRegister["COMBAT_LOG_EVENT_UNFILTERED"] = true;
 end
 
 -------------------------------------------------------------------------------
@@ -88,86 +86,86 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_AuraStackBar_OnEvent( self, event, ... )
-
+function StatusBars2_AuraStackBar_OnEvent(self, event, ...)
+    
     -- Target changed
-    if( event == "PLAYER_TARGET_CHANGED" and self.unit == "target" ) then
-        StatusBars2_UpdateDiscreteBar( self, StatusBars2_GetAuraStack( self.unit, self.aura, self.auraType ) );
-
+    if (event == "PLAYER_TARGET_CHANGED" and self.unit == "target") then
+        StatusBars2_UpdateDiscreteBar(self, StatusBars2_GetAuraStack(self.unit, self.aura, self.auraType));
+    
     -- Entering combat
-    elseif( event == "PLAYER_REGEN_DISABLED" ) then
+    elseif (event == "PLAYER_REGEN_DISABLED") then
         self.inCombat = true;
-
+    
     -- Leaving combat
-    elseif( event == "PLAYER_REGEN_ENABLED" ) then
+    elseif (event == "PLAYER_REGEN_ENABLED") then
         self.inCombat = false;
-
-    elseif( event == "UNIT_AURA" ) then
+    
+    elseif (event == "UNIT_AURA") then
         local arg1 = ...;
-        if( arg1 == self.unit ) then
-            StatusBars2_UpdateDiscreteBar( self, StatusBars2_GetAuraStack( self.unit, self.aura, self.auraType ) );
+        if (arg1 == self.unit) then
+            StatusBars2_UpdateDiscreteBar(self, StatusBars2_GetAuraStack(self.unit, self.aura, self.auraType));
         end
-
+    
     -- Combat log event
-    elseif( event == "COMBAT_LOG_EVENT_UNFILTERED" ) then
-
+    elseif (event == "COMBAT_LOG_EVENT_UNFILTERED") then
+        
         -- Get the event type and flags
-        local eventType = select( 2, ... );
-        local destName = select( 9, ... );
-        local flags = select( 10, ... );
-
+        local eventType = select(2, ...);
+        local destName = select(9, ...);
+        local flags = select(10, ...);
+        
         -- Only care about events for the unit we are tracking
-        if( ( self.unit == "target" and bit.band( flags, COMBATLOG_OBJECT_TARGET ) == COMBATLOG_OBJECT_TARGET ) or ( self.unit == "player" and destName == UnitName( "player" ) ) ) then
-
+        if ((self.unit == "target" and bit.band(flags, COMBATLOG_OBJECT_TARGET) == COMBATLOG_OBJECT_TARGET) or (self.unit == "player" and destName == UnitName("player"))) then
+            
             -- Look for spell aura events
-            if( eventType == "SPELL_AURA_APPLIED" or eventType == "SPELL_AURA_REMOVED" or eventType == "SPELL_AURA_APPLIED_DOSE" or eventType == "SPELL_AURA_REMOVED_DOSE" ) then
-
+            if (eventType == "SPELL_AURA_APPLIED" or eventType == "SPELL_AURA_REMOVED" or eventType == "SPELL_AURA_APPLIED_DOSE" or eventType == "SPELL_AURA_REMOVED_DOSE") then
+                
                 -- Look for the aura
-                local spellID = select( 12, ... );
-                local spellName = select( 13, ... );
+                local spellID = select(12, ...);
+                local spellName = select(13, ...);
                 local found = false;
-
+                
                 -- If we have the auraID, check that as it's faster and more reliable
-                if( self.auraID ) then
-                    if( self.auraID == spellID ) then 
-                        found = true; 
+                if (self.auraID) then
+                    if (self.auraID == spellID) then
+                        found = true;
                     end
                 -- Otherwise, see if the name matches
-                elseif( string.find( spellName, self.aura, 1, true )) then 
-                    found = true; 
+                elseif (string.find(spellName, self.aura, 1, true)) then
+                    found = true;
                 end
                 
-                if( found ) then
-
+                if (found) then
+                    
                     -- Applied
-                    if( eventType == "SPELL_AURA_APPLIED" ) then
-                        local _,_,amount = UnitAura( self.unit, spellName );
-
+                    if (eventType == "SPELL_AURA_APPLIED") then
+                        local _, _, amount = UnitAura(self.unit, spellName);
+                        
                         if not amount then
-                            _,_,amount = UnitDebuff( self.unit, spellName );
+                            _, _, amount = UnitDebuff(self.unit, spellName);
                         end
-
-                        StatusBars2_UpdateDiscreteBar( self, amount );
-
+                        
+                        StatusBars2_UpdateDiscreteBar(self, amount);
+                    
                     -- Removed
-                    elseif( eventType == "SPELL_AURA_REMOVED" ) then
-                        StatusBars2_UpdateDiscreteBar( self, 0 );
-
+                    elseif (eventType == "SPELL_AURA_REMOVED") then
+                        StatusBars2_UpdateDiscreteBar(self, 0);
+                    
                     -- Dose changed
                     else
-                        local amount = select( 16, ... );
-                        StatusBars2_UpdateDiscreteBar( self, amount );
+                        local amount = select(16, ...);
+                        StatusBars2_UpdateDiscreteBar(self, amount);
                     end
                 end
             end
         end
     end
-
+    
     -- Update visibility
-    if( self:BarIsVisible( ) ) then
-        StatusBars2_ShowBar( self );
+    if (self:BarIsVisible()) then
+        StatusBars2_ShowBar(self);
     else
-        StatusBars2_HideBar( self );
+        StatusBars2_HideBar(self);
     end
 
 end
@@ -180,8 +178,8 @@ end
 --
 -------------------------------------------------------------------------------
 --
-function StatusBars2_AuraStackBar_IsDefault( self )
-
-    return StatusBars2_GetAuraStack( self.unit, self.aura, self.auraType ) == 0;
+function StatusBars2_AuraStackBar_IsDefault(self)
+    
+    return StatusBars2_GetAuraStack(self.unit, self.aura, self.auraType) == 0;
 
 end
