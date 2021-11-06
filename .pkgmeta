@@ -2,5 +2,7 @@ package-as: StatusBars2
 
 ignore:
     - .pkgmeta
+    - .vscode
+    - .gitignore
 
 manual-changelog: changelog.txt
