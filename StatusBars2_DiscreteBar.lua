@@ -87,9 +87,8 @@ function StatusBars2_CreateDiscreteBarBoxes(bar, desiredBoxCount)
         local i;
         for i = boxesAvailableCount + 1, desiredBoxCount do
             local boxName = name .. '_Box' .. i;
-            local statusName = name .. '_Box' .. i .. '_Status';
-            local box = CreateFrame("Frame", boxName, bar, "StatusBars2_DiscreteBoxTemplate");
-            local status = box:GetChildren();
+            local box = CreateFrame( "Frame", boxName, bar, "StatusBars2_DiscreteBoxTemplate" );
+            local status = box.statusBar
             status:SetValue(0);
         end
     end
@@ -193,7 +192,7 @@ end
 function StatusBars2_UpdateDiscreteBar(bar, current)
     
     -- Update the boxes
-    boxes = {bar:GetChildren()};
+    local boxes = {bar:GetChildren()};
     
     -- Initialize the boxes
     for i, box in ipairs(boxes) do

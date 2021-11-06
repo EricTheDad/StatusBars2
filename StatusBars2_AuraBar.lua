@@ -172,7 +172,7 @@ end
 --
 function StatusBars2_AuraBar_GetHeight(self)
     
-    button = self.buttons[0];
+    local button = self.buttons[0];
     
     if (button) then
         return button:GetHeight();

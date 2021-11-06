@@ -84,7 +84,7 @@
             </Anchor>
         </Anchors>
         <Frames>
-            <StatusBar name="$parent_Status" drawLayer="LOW" minValue="0" maxValue="1" >
+            <StatusBar name="$parent_Status" parentKey="statusBar" drawLayer="LOW" minValue="0" maxValue="1" >
                 <Size>
                   <AbsDimension x="163" y="13" />
                 </Size>
