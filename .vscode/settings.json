@@ -55,5 +55,8 @@
         "MAX_POWER_PER_EMBER",
         "SPEC_WARLOCK_DESTRUCTION",
         "SOUL_SHARDS"
-    ]
+    ],
+    "files.insertFinalNewline": true,
+    "files.trimFinalNewlines": true,
+    "files.trimTrailingWhitespace": true
 }

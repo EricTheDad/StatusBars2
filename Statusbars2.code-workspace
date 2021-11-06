@@ -7,5 +7,9 @@
 			"path": "..\\wow-ui-source"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"search.searchEditor.reusePriorSearchConfiguration": true,
+		"search.seedOnFocus": true,
+		"editor.formatOnSave": true
+	}
 }

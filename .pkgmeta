@@ -4,5 +4,6 @@ ignore:
     - .pkgmeta
     - .vscode
     - .gitignore
+    - *.code-workspace
 
 manual-changelog: changelog.txt
