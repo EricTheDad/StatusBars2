@@ -1149,7 +1149,7 @@
                     </OnClick>
                 </Scripts>
             </CheckButton>
-            <Frame name="$parent_ColorSwatch" parentKey="colorSwatch">
+            <Frame name="$parent_ColorSwatch" parentKey="colorSwatch" inherits="BackdropTemplate">
                 <Anchors>
                     <Anchor point="LEFT" relativeto="$parent_CustomColorButton" relativePoint="RIGHT" >
                         <Offset x="100" y="0" />
