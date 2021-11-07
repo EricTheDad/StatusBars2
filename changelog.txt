@@ -1,7 +1,13 @@
-﻿9.00.03.08.09
+﻿9.1.5-03.08.10
+Fixed backdrops AGAIN for 9.1.5.
+Properly coded discrete bars now that won't get messed up if Blizzard adds things to the frame templates again.
+Color select for discrete bars not longer crashes, even though it doesn't display
+Updated TOC
+
+9.00.03.08.09
 Changed versioning to prepend with the verion of WoW the addon is compatible with
 Fixed bar backdrops to use Wow's new system
-Known bugs: Config dialog is a big janky
+Known bugs: Config dialog is a big janky mess
 Combo box backdrops are transparent
 So far only tested on Death Knight, Rogue and Mage
 
@@ -128,7 +134,7 @@ Changed default color for arcane missiles bar
 Various minor fixes.  More efficient updates for Aurastack bars.  Removed sunder bar for warriors, as that is no longer a thing.  Added arcane missles bar for arcane mages.
 
 3.00.01b
-Changed non-functional "Defaults" button to a "Revert" button that reloads your pre-config-mode settings and keeps you in config mode. 
+Changed non-functional "Defaults" button to a "Revert" button that reloads your pre-config-mode settings and keeps you in config mode.
 
 3.00.00b
 Huge new configuration interface.  Added slash commands /statusbars2 and /sb2.  Optional parameter "config" opens the new configuration panel directly instead of having to go through the Blizzard Options Panel first.
@@ -178,8 +184,8 @@ Updated TOC for 5.3
 
 2.06.00
 =======
-Added a filter for buffs / debuffs.  If this option is selected, the exact name of the buff or debuff that you want displayed needs to be typed into the list 
-on the configuration page for the appropriate aura bar, so if a rogue wants to see his slice and dice buff, he would type that in to the list for the player auras, 
+Added a filter for buffs / debuffs.  If this option is selected, the exact name of the buff or debuff that you want displayed needs to be typed into the list
+on the configuration page for the appropriate aura bar, so if a rogue wants to see his slice and dice buff, he would type that in to the list for the player auras,
 and if he wanted to see his rupture debuff on the target, he would type that into the list for the target auras.
 
 I'm filtering on the localized name of the aura, so you need to type in the aura name in the language that your WoW client is using and it should work fine.  I haven't
@@ -208,7 +214,7 @@ Fix for Warlock Shard Bar not appearing.  Lesson of the day: "Do not assume a Bl
 2.04
 ====
 All classes and specs tested and working.
-Creating only the bars your character class could actually potentially use, so you don't have config pages for 
+Creating only the bars your character class could actually potentially use, so you don't have config pages for
 bars that never even could be used by your class.
 Tweaked some of the bar colors to be what I feel is more representative of the power they are displaying.
 Config page headings are now created using pre-defined Blizzard strings (meaning they are localized?)
@@ -256,7 +262,7 @@ Cleaned up the look of discrete bars with 6+ boxes by making the edge a little t
 
 2.00.05b
 ========
-Constructing discrete bars directly now rather than from a template.  This allows me to change the number of boxes for embers, holy power etc. 
+Constructing discrete bars directly now rather than from a template.  This allows me to change the number of boxes for embers, holy power etc.
 if something changes that changes the number of boxes in the bar, e.g. the player changes spec or glyphs
 
 2.00.04b
@@ -265,7 +271,7 @@ I was wrong about the Frenzy, changed it back and it works now.
 
 2.00.03b
 ========
-Integrated Frenzy and Renewing Mist in from WOW Interface version.  
+Integrated Frenzy and Renewing Mist in from WOW Interface version.
 Fixed some things that look wrong with Frenzy, but untested, as I have no hunter.  I'll have to try it out on PTR.
 
 2.00.02b
@@ -280,7 +286,7 @@ Fixed and re-enabled sunder armor bar.
 
 2.00b
 =====
-Imported functionality changes made to the project by 堂吉先生 on WoW Interterface (with author's permission) while retaining the original look and configurability.  
+Imported functionality changes made to the project by 堂吉先生 on WoW Interterface (with author's permission) while retaining the original look and configurability.
 Fixed issue where bars become stuck to the mouse cursor if they fade out while moving them.
 
 1.21
@@ -345,7 +351,7 @@ Reorganized the options UI. There is now a global options page and individual ba
 Global options are:
   Scale - Combined with the individual bar scale to get a final scaling factor for each bar
   Fade bars in and out
-  
+
 Bar configuration options are:
   All bars:
     Enable mode. One of:
@@ -354,16 +360,16 @@ Bar configuration options are:
       Always - Bar is always visible
       Never - Bar is never visible
     Scale - Combined with the global scale to get the final bar scale
-    
+
   Health and Power bars:
     Flash when below threshold
-    
+
   Druid Mana bar:
     Show in all forms
-    
+
   Target Power bar:
     Show the spell being cast by the target
-    
+
   Aura bars:
     Show Buffs
     Show Debuffs
