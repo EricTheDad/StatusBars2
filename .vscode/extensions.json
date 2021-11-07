@@ -1,6 +1,9 @@
 {
     "recommendations": [
         "septh.wow-bundle",
-        "ketho.wow-api"
+        "ketho.wow-api",
+        "sumneko.lua",
+        "elvador.wow-spell-tooltips",
+        "stanzilla.vscode-wow-toc"
     ]
 }

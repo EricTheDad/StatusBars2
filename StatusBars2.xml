@@ -1,4 +1,5 @@
-<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\..\FrameXML\UI.xsd">
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\..\FrameXML\UI.xsd">
 
     <!-- Flash overlay template -->
     <Texture name="StatusBars2_BarFlashOverlay" virtual="true" file="Interface\AddOns\StatusBars2\Flash" alphaMode="ADD" hidden="true">
@@ -15,23 +16,23 @@
     </Texture>
 
     <!-- Continuous bar template -->
-    <Frame name="StatusBars2_ContinuousBarTemplate" inherits="TooltipBackdropTemplate" movable="true" virtual="true" >
+    <Frame name="StatusBars2_ContinuousBarTemplate" inherits="TooltipBackdropTemplate" movable="true" virtual="true">
         <Size x="170" y="20" />
-		<KeyValues>
-			<KeyValue key="backdropColorAlpha" value="0.0" type="number"/>
-		</KeyValues>
+        <KeyValues>
+            <KeyValue key="backdropColorAlpha" value="0.0" type="number"/>
+        </KeyValues>
         <Frames>
-			<Frame setAllPoints="true" frameStrata="BACKGROUND" inherits="TooltipBackdropTemplate">
-			<KeyValues>
-				<KeyValue key="backdropBorderColorAlpha" value="0.0" type="number"/>
-			</KeyValues>
-			</Frame>
-            <Frame setAllPoints="true" >
+            <Frame setAllPoints="true" frameStrata="BACKGROUND" inherits="TooltipBackdropTemplate">
+                <KeyValues>
+                    <KeyValue key="backdropBorderColorAlpha" value="0.0" type="number"/>
+                </KeyValues>
+            </Frame>
+            <Frame setAllPoints="true">
                 <Layers>
-					<Layer level="BACKGROUND">
-					</Layer>
+                    <Layer level="BACKGROUND">
+                    </Layer>
                     <Layer level="OVERLAY">
-                        <FontString name="$parent_Text" inherits="GameFontNormalSmall" >
+                        <FontString name="$parent_Text" inherits="GameFontNormalSmall">
                             <Anchors>
                                 <Anchor point="CENTER" relativeto="$Parent">
                                 </Anchor>
@@ -40,12 +41,12 @@
                                 <AbsDimension x="170" y="10" />
                             </Size>
                         </FontString>
-                        <FontString name="$parent_PercentText" inherits="GameFontNormalSmall" >
+                        <FontString name="$parent_PercentText" inherits="GameFontNormalSmall">
                             <Size>
                                 <AbsDimension x="170" y="10" />
                             </Size>
                         </FontString>
-                        <Texture name="$parent_Spark" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD" hidden="true" >
+                        <Texture name="$parent_Spark" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD" hidden="true">
                             <Size>
                                 <AbsDimension x="32" y="32"/>
                             </Size>
@@ -59,9 +60,9 @@
                     </Layer>
                 </Layers>
             </Frame>
-            <StatusBar name="$parent_Status" parentKey="statusBar" >
+            <StatusBar name="$parent_Status" parentKey="fillBar">
                 <Size>
-                  <AbsDimension x="162" y="13" />
+                    <AbsDimension x="162" y="13" />
                 </Size>
                 <BarTexture file="Interface\TargetingFrame\UI-StatusBar" />
                 <Anchors>
@@ -76,17 +77,17 @@
     </Frame>
 
     <!-- Discrete box template for boxes that are added to a discrete bar -->
-    <Frame name="StatusBars2_DiscreteBoxTemplate" inherits="TooltipBackdropTemplate" movable="true" virtual="true" >
+    <Frame name="StatusBars2_DiscreteBoxTemplate" inherits="TooltipBackdropTemplate" parentArray="boxes" movable="true" virtual="true">
         <Size x="170" y="20" />
         <Anchors>
-            <Anchor point="TOPLEFT" relativeto="$Parent" >
+            <Anchor point="TOPLEFT" relativeto="$Parent">
                 <Offset x="0" y="0" />
             </Anchor>
         </Anchors>
         <Frames>
-            <StatusBar name="$parent_Status" parentKey="statusBar" drawLayer="LOW" minValue="0" maxValue="1" >
+            <StatusBar name="$parent_Status" parentKey="fillBar" drawLayer="LOW" minValue="0" maxValue="1">
                 <Size>
-                  <AbsDimension x="163" y="13" />
+                    <AbsDimension x="163" y="13" />
                 </Size>
                 <BarTexture file="Interface\TargetingFrame\UI-StatusBar" />
                 <Anchors>
@@ -101,66 +102,66 @@
     </Frame>
 
     <!-- Discrete bar template. Boxes are added to it programatically -->
-    <Frame name="StatusBars2_DiscreteBarTemplate" inherits="TooltipBackdropTemplate" movable="true" virtual="true" >
+    <Frame name="StatusBars2_DiscreteBarTemplate" inherits="TooltipBackdropTemplate" movable="true" virtual="true">
         <Size x="170" y="20" />
     </Frame>
 
     <!-- Rune bar template. -->
-		<Frame name="StatusBars2_RuneFrameTemplate" mixin="RuneFrameMixin" virtual="true" movable="true" >
+    <Frame name="StatusBars2_RuneFrameTemplate" mixin="RuneFrameMixin" virtual="true" movable="true">
         <Size x="170" y="28" />
-		<Anchors>
-		  <Anchor point="TOP" relativePoint="BOTTOM">
-			<Offset>
-			  <AbsDimension x="54" y="34"/>
-			</Offset>
-		  </Anchor>
-		</Anchors>
-		<Frames>
-			<Button parentKey="Rune1" parentArray="Runes" inherits="RuneButtonIndividualTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativePoint="LEFT" x="-6" y="0" />
-				</Anchors>
-			</Button>
-			<Button parentKey="Rune2" parentArray="Runes" inherits="RuneButtonIndividualTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Rune1" relativePoint="RIGHT" x="-3" y="0" />
-				</Anchors>
-			</Button>
-			<Button parentKey="Rune3" parentArray="Runes" inherits="RuneButtonIndividualTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Rune2" relativePoint="RIGHT" x="-3" y="0" />
-				</Anchors>
-			</Button>
-			<Button parentKey="Rune4" parentArray="Runes" inherits="RuneButtonIndividualTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Rune3" relativePoint="RIGHT" x="-3" y="0" />
-				</Anchors>
-			</Button>
-			<Button parentKey="Rune5" parentArray="Runes" inherits="RuneButtonIndividualTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Rune4" relativePoint="RIGHT" x="-3" y="0" />
-				</Anchors>
-			</Button>
-			<Button parentKey="Rune6" parentArray="Runes" inherits="RuneButtonIndividualTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Rune5" relativePoint="RIGHT" x="-3" y="0" />
-				</Anchors>
-			</Button>
-		</Frames>
-	</Frame>
+        <Anchors>
+            <Anchor point="TOP" relativePoint="BOTTOM">
+                <Offset>
+                    <AbsDimension x="54" y="34"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+        <Frames>
+            <Button parentKey="Rune1" parentArray="Runes" inherits="RuneButtonIndividualTemplate">
+                <Anchors>
+                    <Anchor point="LEFT" relativePoint="LEFT" x="-6" y="0" />
+                </Anchors>
+            </Button>
+            <Button parentKey="Rune2" parentArray="Runes" inherits="RuneButtonIndividualTemplate">
+                <Anchors>
+                    <Anchor point="LEFT" relativeKey="$parent.Rune1" relativePoint="RIGHT" x="-3" y="0" />
+                </Anchors>
+            </Button>
+            <Button parentKey="Rune3" parentArray="Runes" inherits="RuneButtonIndividualTemplate">
+                <Anchors>
+                    <Anchor point="LEFT" relativeKey="$parent.Rune2" relativePoint="RIGHT" x="-3" y="0" />
+                </Anchors>
+            </Button>
+            <Button parentKey="Rune4" parentArray="Runes" inherits="RuneButtonIndividualTemplate">
+                <Anchors>
+                    <Anchor point="LEFT" relativeKey="$parent.Rune3" relativePoint="RIGHT" x="-3" y="0" />
+                </Anchors>
+            </Button>
+            <Button parentKey="Rune5" parentArray="Runes" inherits="RuneButtonIndividualTemplate">
+                <Anchors>
+                    <Anchor point="LEFT" relativeKey="$parent.Rune4" relativePoint="RIGHT" x="-3" y="0" />
+                </Anchors>
+            </Button>
+            <Button parentKey="Rune6" parentArray="Runes" inherits="RuneButtonIndividualTemplate">
+                <Anchors>
+                    <Anchor point="LEFT" relativeKey="$parent.Rune5" relativePoint="RIGHT" x="-3" y="0" />
+                </Anchors>
+            </Button>
+        </Frames>
+    </Frame>
 
     <!-- Aura bar template -->
-    <Frame name="StatusBars2_AuraBarTemplate" inherits="TooltipBackdropTemplate" movable="true" virtual="true" >
+    <Frame name="StatusBars2_AuraBarTemplate" inherits="TooltipBackdropTemplate" movable="true" virtual="true">
         <Size x="170" y="20" />
     </Frame>
 
     <!-- Eclipse bar template -->
-	<Frame name="StatusBars2_EclipseBarTemplate" frameStrata="LOW" toplevel="true" hidden="true" movable="true" virtual="true">
+    <Frame name="StatusBars2_EclipseBarTemplate" frameStrata="LOW" toplevel="true" hidden="true" movable="true" virtual="true">
         <Animations>
             <AnimationGroup parentKey="sunActivate">
-                <Alpha target="$parentSunBar"        change="1" duration="0.6" order="1"/>
-                <Alpha target="$parentGlow"          change="1" duration="0.6" order="1"/>
-                <Alpha target="$parentDarkMoon"  change="1" duration="0.6" order="1"/>
+                <Alpha target="$parentSunBar" change="1" duration="0.6" order="1"/>
+                <Alpha target="$parentGlow" change="1" duration="0.6" order="1"/>
+                <Alpha target="$parentDarkMoon" change="1" duration="0.6" order="1"/>
                 <Scripts>
                     <OnPlay>
                         self:GetParent().moonBar:SetAlpha(0);
@@ -175,9 +176,9 @@
                 </Scripts>
             </AnimationGroup>
             <AnimationGroup parentKey="sunDeactivate">
-                <Alpha target="$parentSunBar"        change="-1" duration="0.6" order="1"/>
-                <Alpha target="$parentGlow"          change="-1" duration="0.6" order="1"/>
-                <Alpha target="$parentDarkMoon"  change="-1" duration="0.6" order="1"/>
+                <Alpha target="$parentSunBar" change="-1" duration="0.6" order="1"/>
+                <Alpha target="$parentGlow" change="-1" duration="0.6" order="1"/>
+                <Alpha target="$parentDarkMoon" change="-1" duration="0.6" order="1"/>
                 <Scripts>
                     <OnPlay>
                         self:GetParent().glow.pulse:Stop();
@@ -190,9 +191,9 @@
                 </Scripts>
             </AnimationGroup>
             <AnimationGroup parentKey="moonActivate">
-                <Alpha target="$parentMoonBar"   change="1" duration="0.6" order="1"/>
-                <Alpha target="$parentGlow"      change="1" duration="0.6" order="1"/>
-                <Alpha target="$parentDarkSun"   change="1" duration="0.6" order="1"/>
+                <Alpha target="$parentMoonBar" change="1" duration="0.6" order="1"/>
+                <Alpha target="$parentGlow" change="1" duration="0.6" order="1"/>
+                <Alpha target="$parentDarkSun" change="1" duration="0.6" order="1"/>
                 <Scripts>
                     <OnPlay>
                         self:GetParent().sunBar:SetAlpha(0);
@@ -207,9 +208,9 @@
                 </Scripts>
             </AnimationGroup>
             <AnimationGroup parentKey="moonDeactivate">
-                <Alpha target="$parentMoonBar"   change="-1" duration="0.6" order="1"/>
-                <Alpha target="$parentGlow"      change="-1" duration="0.6" order="1"/>
-                <Alpha target="$parentDarkSun"   change="-1" duration="0.6" order="1"/>
+                <Alpha target="$parentMoonBar" change="-1" duration="0.6" order="1"/>
+                <Alpha target="$parentGlow" change="-1" duration="0.6" order="1"/>
+                <Alpha target="$parentDarkSun" change="-1" duration="0.6" order="1"/>
                 <Scripts>
                     <OnPlay>
                         self:GetParent().glow.pulse:Stop();
@@ -224,11 +225,11 @@
         </Animations>
         <Size x="140" y="38"/>
         <Anchors>
-          <Anchor point="TOP" relativeTo="PlayerFrame" relativePoint="BOTTOM">
-            <Offset>
-              <AbsDimension x="48" y="40"/>
-            </Offset>
-          </Anchor>
+            <Anchor point="TOP" relativeTo="PlayerFrame" relativePoint="BOTTOM">
+                <Offset>
+                    <AbsDimension x="48" y="40"/>
+                </Offset>
+            </Anchor>
         </Anchors>
         <HitRectInsets>
             <AbsInset left="4" right="4" top="6" bottom="6"/>
@@ -244,7 +245,7 @@
             <Layer level="BACKGROUND">
                 <Texture parentKey="Sun" name="$parentSun" atlas="DruidEclipse-BaseSun" useAtlasSize="true">
                     <Anchors>
-                        <Anchor point="CENTER" relativeTo="$parentBar"  relativePoint="RIGHT" x="-17" y="1"/>
+                        <Anchor point="CENTER" relativeTo="$parentBar" relativePoint="RIGHT" x="-17" y="1"/>
                     </Anchors>
                 </Texture>
                 <Texture parentKey="Moon" name="$parentMoon" atlas="DruidEclipse-BaseMoon" useAtlasSize="true">
@@ -308,27 +309,27 @@
                 </FontString>
             </Layer>
         </Layers>
-		<Scripts>
-			<OnShow function="StatusBars2_EclipseBar_OnShow"/>
-		</Scripts>
-	</Frame>
+        <Scripts>
+            <OnShow function="StatusBars2_EclipseBar_OnShow"/>
+        </Scripts>
+    </Frame>
 
-    <Frame name="StatusBars2_GroupFrameTemplate" movable="true" hidden="false" frameStrata="LOW" virtual = "true" >
+    <Frame name="StatusBars2_GroupFrameTemplate" movable="true" hidden="false" frameStrata="LOW" virtual = "true">
         <Size x="170" y="50" />
     </Frame>
 
     <!-- Main frame -->
-    <Frame name="StatusBars2" parent="UIParent" inherits="StatusBars2_GroupFrameTemplate" >
+    <Frame name="StatusBars2" parent="UIParent" inherits="StatusBars2_GroupFrameTemplate">
 
         <Size x="170" y="200" />
 
         <Anchors>
-            <Anchor point="CENTER" relativeto="$Parent" >
+            <Anchor point="CENTER" relativeto="$Parent">
                 <Offset x="85" y="-282" />
             </Anchor>
         </Anchors>
 
-		<Scripts>
+        <Scripts>
             <OnLoad>
                 StatusBars2_OnLoad( self );
             </OnLoad>
@@ -336,14 +337,14 @@
     </Frame>
 
     <!-- Bar button template -->
-    <Button name="StatusBars2_BarOptionsButtonTemplate" virtual="true" >
+    <Button name="StatusBars2_BarOptionsButtonTemplate" virtual="true">
 
         <Size x="140" y="20" />
 
         <ButtonText name="$parentText">
             <Size x="140" y="13"/>
             <Anchors>
-                <Anchor point="LEFT" relativeTo="$parent" >
+                <Anchor point="LEFT" relativeTo="$parent">
                     <Offset>
                         <AbsDimension x="10" y="1"/>
                     </Offset>
@@ -355,7 +356,7 @@
         <HighlightFont style="GameFontHighlightLeft"/>
         <DisabledFont style="GameFontDisableLeft"/>
 
-        <HighlightTexture file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD" >
+        <HighlightTexture file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD">
         </HighlightTexture>
 
         <Scripts>
@@ -366,7 +367,7 @@
     </Button>
 
     <!-- Options frame -->
-    <Frame name="StatusBars2_Options" >
+    <Frame name="StatusBars2_Options">
         <Scripts>
             <OnLoad>
                 StatusBars2_Options_OnLoad( self );
@@ -374,41 +375,32 @@
         </Scripts>
         <Layers>
             <Layer level="BACKGROUND">
-                <FontString 
-                    name="$parent_Title" 
-                    inherits="GameFontNormalLarge" 
-                    text="StatusBars2" >
+                <FontString name="$parent_Title" inherits="GameFontNormalLarge" text="StatusBars2">
                     <Size x="200" y="50"/>
                     <Anchors>
-                        <Anchor point="TOP" relativeTo="$parent" >
+                        <Anchor point="TOP" relativeTo="$parent">
                             <Offset>
                                 <AbsDimension x="0" y="-20"/>
                             </Offset>
                         </Anchor>
                     </Anchors>
                 </FontString>
-                <FontString 
-                    name="$parent_Credits1"
-                    parentKey="creditsText1"
-                    inherits="GameFontNormalLeft" >
+                <FontString name="$parent_Credits1" parentKey="creditsText1" inherits="GameFontNormalLeft">
                     <Size x="500" y="20"/>
                     <Anchors>
-                        <Anchor point="TOP" relativeTo="$parent_Title" relativePoint="BOTTOM" >
+                        <Anchor point="TOP" relativeTo="$parent_Title" relativePoint="BOTTOM">
                             <Offset>
                                 <AbsDimension x="0" y="-20"/>
                             </Offset>
                         </Anchor>
-                        <Anchor point="LEFT" relativeTo="$parent" >
+                        <Anchor point="LEFT" relativeTo="$parent">
                             <Offset>
                                 <AbsDimension x="20" y="0"/>
                             </Offset>
                         </Anchor>
                     </Anchors>
                 </FontString>
-                <FontString 
-                    name="$parent_Credits2" 
-                    parentKey="creditsText2"
-                    inherits="GameFontNormalLeft" >
+                <FontString name="$parent_Credits2" parentKey="creditsText2" inherits="GameFontNormalLeft">
                     <Size x="500" y="20"/>
                     <Anchors>
                         <Anchor point="TOPLEFT" relativeTo="$parent_Credits1" relativePoint="BOTTOMLEFT">
@@ -418,91 +410,70 @@
                         </Anchor>
                     </Anchors>
                 </FontString>
-                <FontString 
-                    name="$parent_Credits3" 
-                    parentKey="creditsText3"
-                    inherits="GameFontNormalLeft" >
+                <FontString name="$parent_Credits3" parentKey="creditsText3" inherits="GameFontNormalLeft">
                     <Size x="500" y="20"/>
                     <Anchors>
-                        <Anchor point="TOPLEFT" relativeTo="$parent_Credits2" relativePoint="BOTTOMLEFT" >
+                        <Anchor point="TOPLEFT" relativeTo="$parent_Credits2" relativePoint="BOTTOMLEFT">
                             <Offset>
                                 <AbsDimension x="0" y="-5"/>
                             </Offset>
                         </Anchor>
                     </Anchors>
                 </FontString>
-                <FontString 
-                    name="$parent_Credits4"
-                    parentKey="creditsText4"
-                    inherits="GameFontNormalLeft" >
+                <FontString name="$parent_Credits4" parentKey="creditsText4" inherits="GameFontNormalLeft">
                     <Size x="500" y="20"/>
                     <Anchors>
-                        <Anchor point="TOPLEFT" relativeTo="$parent_Credits3" relativePoint="BOTTOMLEFT" >
+                        <Anchor point="TOPLEFT" relativeTo="$parent_Credits3" relativePoint="BOTTOMLEFT">
                             <Offset>
                                 <AbsDimension x="0" y="-5"/>
                             </Offset>
                         </Anchor>
                     </Anchors>
                 </FontString>
-                <FontString 
-                    name="$parent_Credits5"
-                    parentKey="creditsText5"
-                    inherits="GameFontNormalLeft" >
+                <FontString name="$parent_Credits5" parentKey="creditsText5" inherits="GameFontNormalLeft">
                     <Size x="500" y="20"/>
                     <Anchors>
-                        <Anchor point="TOPLEFT" relativeTo="$parent_Credits4" relativePoint="BOTTOMLEFT" >
+                        <Anchor point="TOPLEFT" relativeTo="$parent_Credits4" relativePoint="BOTTOMLEFT">
                             <Offset>
                                 <AbsDimension x="0" y="-5"/>
                             </Offset>
                         </Anchor>
                     </Anchors>
                 </FontString>
-                <FontString 
-                    name="$parent_Credits6"
-                    parentKey="creditsText6"
-                    inherits="GameFontNormalLeft" >
+                <FontString name="$parent_Credits6" parentKey="creditsText6" inherits="GameFontNormalLeft">
                     <Size x="500" y="130"/>
                     <Anchors>
-                        <Anchor point="TOPLEFT" relativeTo="$parent_Credits5" relativePoint="BOTTOMLEFT" >
+                        <Anchor point="TOPLEFT" relativeTo="$parent_Credits5" relativePoint="BOTTOMLEFT">
                             <Offset>
                                 <AbsDimension x="10" y="-5"/>
                             </Offset>
                         </Anchor>
                     </Anchors>
                 </FontString>
-                <FontString 
-                    name="$parent_translators_needed" 
-                    parentKey="translatorsNeededText"
-                    inherits="GameFontNormalLeft" >
+                <FontString name="$parent_translators_needed" parentKey="translatorsNeededText" inherits="GameFontNormalLeft">
                     <Size x="500" y="30"/>
                     <Anchors>
-                        <Anchor point="TOPLEFT" relativeTo="$parent_Credits6" relativePoint="BOTTOMLEFT" >
+                        <Anchor point="TOPLEFT" relativeTo="$parent_Credits6" relativePoint="BOTTOMLEFT">
                             <Offset>
                                 <AbsDimension x="-10" y="-20"/>
                             </Offset>
                         </Anchor>
                     </Anchors>
                 </FontString>
-                <FontString 
-                    name="$parent_slash_command_help1" 
-                    parentKey="helpText1"
-                    inherits="GameFontNormalSmallLeft" >
+                <FontString name="$parent_slash_command_help1" parentKey="helpText1" inherits="GameFontNormalSmallLeft">
                     <Size x="500" y="15"/>
                     <Anchors>
-                        <Anchor point="TOPLEFT" relativeTo="$parent_translators_needed" relativePoint="BOTTOMLEFT" >
+                        <Anchor point="TOPLEFT" relativeTo="$parent_translators_needed" relativePoint="BOTTOMLEFT">
                             <Offset>
                                 <AbsDimension x="0" y="-45"/>
                             </Offset>
                         </Anchor>
                     </Anchors>
                 </FontString>
-                <FontString 
-                    name="$parent_slash_command_help2" 
-                    parentKey="helpText2"
-                    inherits="GameFontNormalSmallLeft" >
+                <FontString name="$parent_slash_command_help2" parentKey="helpText2" inherits="GameFontNormalSmallLeft">
                     <Size x="500" y="48"/>
                     <Anchors>
-                        <Anchor point="TOPLEFT" relativeTo="$parent_slash_command_help1" relativePoint="BOTTOMLEFT" >
+                        <Anchor point="TOPLEFT" relativeTo="$parent_slash_command_help1" relativePoint="BOTTOMLEFT">
                             <Offset>
                                 <AbsDimension x="0" y="-5"/>
                             </Offset>
@@ -512,19 +483,19 @@
             </Layer>
         </Layers>
         <Frames>
-			<Button name="$parent_ConfigureBarsButton" inherits="OptionsButtonTemplate" text="Configure Statusbars2">
-				<Size x="200" y="32"/>
-				<Anchors>
-					<Anchor point="BOTTOM" relativeto="$parent" >
-						<Offset x="0" y="50" />
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick>
+            <Button name="$parent_ConfigureBarsButton" inherits="OptionsButtonTemplate" text="Configure Statusbars2">
+                <Size x="200" y="32"/>
+                <Anchors>
+                    <Anchor point="BOTTOM" relativeto="$parent">
+                        <Offset x="0" y="50" />
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
 						StatusBars2_Options_ToggleMoveBars_OnClick( self );
-					</OnClick>
-				</Scripts>
-			</Button>
+                    </OnClick>
+                </Scripts>
+            </Button>
         </Frames>
         <Scripts>
             <OnShow>

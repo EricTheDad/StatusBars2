@@ -2,14 +2,10 @@
 	"folders": [
 		{
 			"path": "."
-		},
-		{
-			"path": "..\\wow-ui-source"
 		}
 	],
 	"settings": {
 		"search.searchEditor.reusePriorSearchConfiguration": true,
-		"search.seedOnFocus": true,
-		"editor.formatOnSave": true
+		"search.seedOnFocus": true
 	}
 }
