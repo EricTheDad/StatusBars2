@@ -1,10 +1,6 @@
 package-as: StatusBars2
 
 ignore:
-    - .pkgmeta
-    - .vscode
-    - .gitignore
-    - *.code-workspace
-    - *.vs
+    - Statusbars2.code-workspace
 
 manual-changelog: changelog.txt

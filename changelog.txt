@@ -1,4 +1,7 @@
-﻿9.1.5-03.08.11
+﻿9.1.5-03.08.12
+Fixed .pkgmeta file
+
+9.1.5-03.08.11
 Fixed config dialog backdrops.
 Known issues:  Custom colors for aura stack bars are broken.  Custom filtering of buffs/debuffs is broken
 
