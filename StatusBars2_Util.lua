@@ -71,7 +71,7 @@ function StatusBars2_Frame_ShowBackdrop(self)
     
     if (self.SetBackdrop) then
         self:SetBackdrop();
-        --self:SetBackdropColor(0, 0, 0, 0.85);
+        self:SetBackdropColor(0, 0, 0, 0.85);
     end
     
     -- Create a font string if we don't have one

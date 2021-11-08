@@ -1,4 +1,7 @@
-﻿9.1.5-03.08.10
+﻿9.1.5-03.08.11
+Fixed config dialog backdrops
+
+9.1.5-03.08.10
 Fixed backdrops AGAIN for 9.1.5.
 Properly coded discrete bars now that won't get messed up if Blizzard adds things to the frame templates again.
 Color select for discrete bars not longer crashes, even though it doesn't display

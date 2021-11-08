@@ -1,5 +1,4 @@
-<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\..\FrameXML\UI.xsd">
-
+<Ui xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.blizzard.com/wow/ui/">
     <!-- Flash overlay template -->
     <Texture name="StatusBars2_BarFlashOverlay" virtual="true" file="Interface\AddOns\StatusBars2\Flash" alphaMode="ADD" hidden="true">
         <Size>
@@ -163,13 +162,13 @@
                     <OnPlay>
                         self:GetParent().moonBar:SetAlpha(0);
                         self:GetParent().darkSun:SetAlpha(0);
-</OnPlay>
+                    </OnPlay>
                     <OnFinished>
                         self:GetParent().sunBar:SetAlpha(1);
                         self:GetParent().glow:SetAlpha(1);
                         self:GetParent().darkMoon:SetAlpha(1);
                         self:GetParent().glow.pulse:Play();
-</OnFinished>
+                    </OnFinished>
                 </Scripts>
             </AnimationGroup>
             <AnimationGroup parentKey="sunDeactivate">
@@ -179,12 +178,12 @@
                 <Scripts>
                     <OnPlay>
                         self:GetParent().glow.pulse:Stop();
-</OnPlay>
+                    </OnPlay>
                     <OnFinished>
                         self:GetParent().sunBar:SetAlpha(0);
                         self:GetParent().glow:SetAlpha(0);
                         self:GetParent().darkMoon:SetAlpha(0);
-</OnFinished>
+                    </OnFinished>
                 </Scripts>
             </AnimationGroup>
             <AnimationGroup parentKey="moonActivate">
@@ -195,13 +194,13 @@
                     <OnPlay>
                         self:GetParent().sunBar:SetAlpha(0);
                         self:GetParent().darkMoon:SetAlpha(0);
-</OnPlay>
+                    </OnPlay>
                     <OnFinished>
                         self:GetParent().moonBar:SetAlpha(1);
                         self:GetParent().glow:SetAlpha(1);
                         self:GetParent().darkSun:SetAlpha(1);
                         self:GetParent().glow.pulse:Play();
-</OnFinished>
+                    </OnFinished>
                 </Scripts>
             </AnimationGroup>
             <AnimationGroup parentKey="moonDeactivate">
@@ -211,12 +210,12 @@
                 <Scripts>
                     <OnPlay>
                         self:GetParent().glow.pulse:Stop();
-</OnPlay>
+                    </OnPlay>
                     <OnFinished>
                         self:GetParent().moonBar:SetAlpha(0);
                         self:GetParent().glow:SetAlpha(0);
                         self:GetParent().darkSun:SetAlpha(0);
-</OnFinished>
+                    </OnFinished>
                 </Scripts>
             </AnimationGroup>
         </Animations>
@@ -329,7 +328,7 @@
         <Scripts>
             <OnLoad>
                 StatusBars2_OnLoad( self );
-</OnLoad>
+            </OnLoad>
         </Scripts>
     </Frame>
 
@@ -358,7 +357,7 @@
         <Scripts>
             <OnClick>
                 StatusBars2_BarOptionsButton_OnClick( self );
-</OnClick>
+            </OnClick>
         </Scripts>
     </Button>
 
@@ -367,7 +366,7 @@
         <Scripts>
             <OnLoad>
                 StatusBars2_Options_OnLoad( self );
-</OnLoad>
+            </OnLoad>
         </Scripts>
         <Layers>
             <Layer level="BACKGROUND">
@@ -488,8 +487,8 @@
                 </Anchors>
                 <Scripts>
                     <OnClick>
-						StatusBars2_Options_ToggleMoveBars_OnClick( self );
-</OnClick>
+                        StatusBars2_Options_ToggleMoveBars_OnClick( self );
+                    </OnClick>
                 </Scripts>
             </Button>
         </Frames>
@@ -504,7 +503,7 @@
                 StatusBars2_SetupFontString( self.translatorsNeededText, "STRING_ID_INTERFACEPANEL_TRANSLATORS_NEEDED" );
                 StatusBars2_SetupFontString( self.helpText1, "STRING_ID_INTERFACEPANEL_HELP_TEXT_1" );
                 StatusBars2_SetupFontString( self.helpText2, "STRING_ID_INTERFACEPANEL_HELP_TEXT_2" );
-</OnShow>
+            </OnShow>
         </Scripts>
     </Frame>
 

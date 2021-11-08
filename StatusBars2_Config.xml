@@ -1,4 +1,4 @@
-<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\..\FrameXML\UI.xsd">
+<Ui xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.blizzard.com/wow/ui/">
 
     <CheckButton name="StatusBars2_SmallCheckButtonTemplate" virtual="true" inherits="OptionsSmallCheckButtonTemplate">
         <Scripts>
@@ -8,7 +8,7 @@
 				else
 					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 				end
-</OnClick>
+            </OnClick>
             <OnEnter>
 				if ( self.tooltipText ) then
 					GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_RIGHT");
@@ -18,7 +18,7 @@
 					GameTooltip:AddLine(self.tooltipRequirement, 1.0, 1.0, 1.0, true);
 					GameTooltip:Show();
 				end
-</OnEnter>
+            </OnEnter>
         </Scripts>
     </CheckButton>
 
@@ -30,7 +30,7 @@
 				else
 					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 				end
-</OnClick>
+            </OnClick>
             <OnEnter>
 				if ( self.tooltipText ) then
 					GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_RIGHT");
@@ -40,15 +40,15 @@
 					GameTooltip:AddLine(self.tooltipRequirement, 1.0, 1.0, 1.0, true);
 					GameTooltip:Show();
 				end
-</OnEnter>
+            </OnEnter>
         </Scripts>
     </CheckButton>
 
     <Frame name="StatusBars2_DialogFrameTemplete" inherits="BackdropTemplate" virtual="true">
         <KeyValues>
-            <KeyValue key="backdropInfo" value="BACKDROP_TEXT_PANEL_0_16" type="global" />
-            <KeyValue key="backdropColor" value="TOOLTIP_DEFAULT_BACKGROUND_COLOR" type="global" />
-            <KeyValue key="backdropColorAlpha" value="0.85" type="number" />
+            <KeyValue key="backdropInfo" value="BACKDROP_DARK_DIALOG_32_32" type="global" />
+            <KeyValue key="backdropColor" value="FRIENDS_GRAY_COLOR" type="global" />
+            <KeyValue key="backdropColorAlpha" value="0.6" type="number" />
             <KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global" />
         </KeyValues>
         <Layers>
@@ -76,14 +76,9 @@
                 </FontString>
             </Layer>
         </Layers>
-        <Scripts>
-            <OnLoad>
-				self:OnBackdropLoaded()
-</OnLoad>
-        </Scripts>
     </Frame>
 
-    <Frame name="StatusBars2_ConfigTabFrameTemplate" virtual="true">
+    <Frame name="StatusBars2_ConfigTabFrameTemplate" inherits="BackdropTemplate" virtual="true">
         <Anchors>
             <Anchor point="TOPLEFT">
                 <Offset>
@@ -140,7 +135,7 @@
                 if OnValueChangedScript then
                     OnValueChangedScript( slider, slider:GetValue( ) );
                 end
-</OnEditFocusLost>
+            </OnEditFocusLost>
             <OnEnterPressed>
                 local slider = self:GetParent( );
                 local value = tonumber(self:GetText( ));
@@ -159,7 +154,7 @@
         <Scripts>
             <OnValueChanged>
                 self.editBox:SetText( string.format("%.02f", value) );
-</OnValueChanged>
+            </OnValueChanged>
         </Scripts>
     </Slider>
 
@@ -200,7 +195,7 @@
         <Size x="200" y="17" />
     </Slider>
 
-    <Button name="StatusBars2_AuraListEntryButtonTemplate" virtual="true">
+    <Button name="StatusBars2_AuraListEntryButtonTemplate" inherits="BackdropTemplate" virtual="true">
         <ButtonText name="$parentText">
             <Size x="140" y="13" />
             <Anchors>
@@ -219,18 +214,18 @@
             <OnClick>
                 PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
                 StatusBars2_BarOptions_ListEntryButton_OnClick( self );
-</OnClick>
+            </OnClick>
             <OnEnter>
                 if ( self:GetText( ) ) then
                     GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_RIGHT", 0, -self:GetHeight( ));
                     GameTooltip:SetText(self:GetText( ), nil, nil, nil, nil, 1);
                 end
-</OnEnter>
+            </OnEnter>
             <OnLeave>
                 if( GameTooltip:IsOwned(self) ) then
                     GameTooltip:Hide( );
                 end
-</OnLeave>
+            </OnLeave>
         </Scripts>
         <Size x="150" y="20" />
     </Button>
@@ -381,13 +376,14 @@
                         getglobal( self:GetName( ) .. "Low" ):SetText( string.format("%.0f", min) );
                         getglobal( self:GetName( ) .. "High" ):SetText( string.format("%.0f", max) );
                         self:SetObeyStepOnDrag( true );
-</OnLoad>
+                        self:OnBackdropLoaded()
+                    </OnLoad>
                     <OnValueChanged>
                         self.editBox:SetText( string.format("%.02f", value) );
                         if self.applyToFrame and self.applyToFrame.scale ~= value then
                             StatusBars2_Config.doUpdate = true;
                         end
-</OnValueChanged>
+                    </OnValueChanged>
                 </Scripts>
             </Slider>
             <Slider name="$parent_AlphaSlider" parentKey="alphaSlider" inherits="StatusBars2_HorizontalEditBoxSliderTemplate" minValue="0.2" maxValue="1.0" valueStep="0.05">
@@ -416,7 +412,8 @@
                         getglobal( self:GetName( ) .. "Low" ):SetText( string.format("%.0f%%", min * 100) );
                         getglobal( self:GetName( ) .. "High" ):SetText( string.format("%.0f%%", max * 100) );
                         self:SetObeyStepOnDrag( true );
-</OnLoad>
+                        self:OnBackdropLoaded()
+                    </OnLoad>
                     <OnValueChanged>
                         self.editBox:SetText( string.format("%3d", value * 100) );
 
@@ -424,7 +421,7 @@
                             self.applyToFrame.alpha = value;
                             self.applyToFrame:SetAlpha( value );
                         end
-</OnValueChanged>
+                    </OnValueChanged>
                 </Scripts>
             </Slider>
         </Frames>
@@ -442,7 +439,7 @@
                 <Scripts>
                     <OnLoad>
                         getglobal( self:GetName( ) .. "Text" ):SetText( StatusBars2_GetLocalizedText( "Fade bars in and out" ));
-</OnLoad>
+                    </OnLoad>
                 </Scripts>
             </CheckButton>
             <CheckButton name="$parent_LockedButton" parentKey="lockedButton" inherits="StatusBars2_CheckButtonTemplate">
@@ -454,18 +451,18 @@
                 <Scripts>
                     <OnLoad>
                         getglobal( self:GetName( ) .. "Text" ):SetText( StatusBars2_GetLocalizedText( "Lock bars during play" ));
-</OnLoad>
+                    </OnLoad>
                     <OnEnter>
                         if( StatusBars2_Config.showHelpButton:GetChecked( ) ) then
                             GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_BOTTOMRIGHT", 0, 0);
                             GameTooltip:SetText( StatusBars2_GetLocalizedText( "STRING_ID_CONFIG_LOCK_BARS_DURING_PLAY_HELP_TEXT" ));
                         end
-</OnEnter>
+                    </OnEnter>
                     <OnLeave>
                         if( GameTooltip:IsOwned(self) ) then
                             GameTooltip:Hide( );
                         end
-</OnLeave>
+                    </OnLeave>
                 </Scripts>
             </CheckButton>
             <CheckButton name="$parent_ShowHelpButton" parentKey="showHelpButton" inherits="StatusBars2_CheckButtonTemplate">
@@ -478,7 +475,7 @@
                     <OnLoad>
                         getglobal( self:GetName( ) .. "Text" ):SetText( StatusBars2_GetLocalizedText( "Enable help tooltips" ));
                         StatusBars2_Config.showHelpButton = self;
-</OnLoad>
+                    </OnLoad>
                 </Scripts>
             </CheckButton>
             <Frame name="$parent_TextDisplayOptionsMenu" parentKey="textDisplayOptionsMenu" inherits="StatusBars2_LabeledDropDownMenu">
@@ -494,7 +491,7 @@
                         UIDropDownMenu_SetWidth(self, self:GetWidth());
                         UIDropDownMenu_SetButtonWidth(self, "TEXT");
                         self.label:SetText( StatusBars2_GetLocalizedText( "Text Display Options" ));
-</OnLoad>
+                    </OnLoad>
                 </Scripts>
             </Frame>
             <Frame name="$parent_TextSizeMenu" parentKey="fontMenu" inherits="StatusBars2_LabeledDropDownMenu">
@@ -510,7 +507,7 @@
                         UIDropDownMenu_SetWidth(self, self:GetWidth());
                         UIDropDownMenu_SetButtonWidth(self, "TEXT");
                         self.label:SetText( StatusBars2_GetLocalizedText( "Text Size" ));
-</OnLoad>
+                    </OnLoad>
                 </Scripts>
             </Frame>
             <Button name="$parent_ResetGroupPositionButton" inherits="OptionsButtonTemplate" text="Reset All Group Positions">
@@ -524,7 +521,7 @@
                     <OnClick>
                         PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
                         StatusBars2_Options_ResetGroupPositionButton_OnClick( self );
-</OnClick>
+                    </OnClick>
                 </Scripts>
             </Button>
             <Button name="$parent_ResetBarPositionButton" inherits="OptionsButtonTemplate" text="Snap All Bars To Groups">
@@ -538,7 +535,7 @@
                     <OnClick>
                         PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
                         StatusBars2_Options_ResetBarPositionButton_OnClick( self );
-</OnClick>
+                    </OnClick>
                 </Scripts>
             </Button>
         </Frames>
@@ -643,7 +640,7 @@
             <OnClick>
                 PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
                 StatusBars2_BarOptions_AutoLayoutListEntryButton_OnClick( self, button, down );
-</OnClick>
+            </OnClick>
         </Scripts>
         <Size x="120" y="20" />
     </Button>
@@ -687,10 +684,10 @@
                         HybridScrollFrame_OnLoad(self);
                         self.update = StatusBars2_GroupOptions_AutoLayoutListUpdate;
                         HybridScrollFrame_CreateButtons(self, "StatusBars2_AutoLayoutListEntryButtonTemplate");
-</OnLoad>
+                    </OnLoad>
                     <OnShow>
                         StatusBars2_GroupOptions_AutoLayoutListUpdate( self );
-</OnShow>
+                    </OnShow>
                 </Scripts>
                 <Size x="120" y="120" />
             </ScrollFrame>
@@ -705,11 +702,11 @@
                 <Scripts>
                     <OnLoad>
                         self:Disable();
-</OnLoad>
+                    </OnLoad>
                     <OnClick>
                         PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
                         StatusBars2_GroupOptions_AutoLayoutUp_OnClick( self );
-</OnClick>
+                    </OnClick>
                 </Scripts>
             </Button>
             <Button name="$parent_MoveDownButton" parentKey="moveDownButton" inherits="StatusBars2_DownButton">
@@ -723,11 +720,11 @@
                 <Scripts>
                     <OnLoad>
                         self:Disable();
-</OnLoad>
+                    </OnLoad>
                     <OnClick>
                         PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
                         StatusBars2_GroupOptions_AutoLayoutDown_OnClick( self );
-</OnClick>
+                    </OnClick>
                 </Scripts>
             </Button>
         </Frames>
@@ -776,7 +773,7 @@
                         UIDropDownMenu_Initialize( self, StatusBars2_LayoutTypeMenu_Initialize );
                         UIDropDownMenu_SetWidth( self, self:GetWidth( ) );
                         UIDropDownMenu_SetButtonWidth( self, "TEXT" );
-</OnLoad>
+                    </OnLoad>
                 </Scripts>
             </Frame>
             <Frame name="$parent_EnabledMenu" parentKey="enabledMenu" inherits="UIDropDownMenuTemplate">
@@ -791,7 +788,7 @@
                         UIDropDownMenu_Initialize( self, StatusBars2_BarEnabledMenu_Initialize );
                         UIDropDownMenu_SetWidth(self, self:GetWidth());
                         UIDropDownMenu_SetButtonWidth(self, "TEXT");
-</OnLoad>
+                    </OnLoad>
                 </Scripts>
             </Frame>
         </Frames>
@@ -809,7 +806,7 @@
                 <Scripts>
                     <OnLoad>
                         getglobal( self:GetName( ) .. "Text" ):SetText( StatusBars2_GetLocalizedText( "Flash when below" ));
-</OnLoad>
+                    </OnLoad>
                 </Scripts>
             </CheckButton>
             <Slider name="$parent_FlashThresholdSlider" parentKey="flashThresholdSlider" inherits="OptionsSliderTemplate" minValue="0" maxValue="1.0" valueStep="0.01">
@@ -839,10 +836,11 @@
                         getglobal( self:GetName( ) .. "High" ):SetText( "100%" );
                         getglobal( self:GetName( ) .. "Low" ):Hide();
                         getglobal( self:GetName( ) .. "High" ):Hide();
-</OnLoad>
+                        self:OnBackdropLoaded()
+                    </OnLoad>
                     <OnValueChanged>
                         getglobal( self:GetName( ) .. "ValueLabel" ):SetText( StatusBars2_Round( value, 2 ) * 100 .. "%" );
-</OnValueChanged>
+                    </OnValueChanged>
                 </Scripts>
             </Slider>
         </Frames>
@@ -873,7 +871,7 @@
                         UIDropDownMenu_Initialize( self, StatusBars2_PercentTextMenu_Initialize );
                         UIDropDownMenu_SetWidth(self, self:GetWidth());
                         UIDropDownMenu_SetButtonWidth(self, "TEXT");
-</OnLoad>
+                    </OnLoad>
                 </Scripts>
             </Frame>
         </Frames>
@@ -891,7 +889,7 @@
                 <Scripts>
                     <OnLoad>
                         getglobal( self:GetName( ) .. "Text" ):SetText( StatusBars2_GetLocalizedText( "Show in all forms" ));
-</OnLoad>
+                    </OnLoad>
                 </Scripts>
             </CheckButton>
         </Frames>
@@ -909,7 +907,7 @@
                 <Scripts>
                     <OnLoad>
                         getglobal( self:GetName( ) .. "Text" ):SetText( StatusBars2_GetLocalizedText( "Show target spell" ));
-</OnLoad>
+                    </OnLoad>
                 </Scripts>
             </CheckButton>
         </Frames>
@@ -926,7 +924,7 @@
                 <Scripts>
                     <OnLoad>
                         getglobal( self:GetName( ) .. "Text" ):SetText( StatusBars2_GetLocalizedText( "Show Buffs" ));
-</OnLoad>
+                    </OnLoad>
                 </Scripts>
             </CheckButton>
             <CheckButton name="$parent_ShowDebuffsButton" parentKey="showDebuffsButton" inherits="StatusBars2_CheckButtonTemplate">
@@ -938,7 +936,7 @@
                 <Scripts>
                     <OnLoad>
                         getglobal( self:GetName( ) .. "Text" ):SetText( StatusBars2_GetLocalizedText( "Show Debuffs" ));
-</OnLoad>
+                    </OnLoad>
                 </Scripts>
             </CheckButton>
             <CheckButton name="$parent_OnlyShowSelfAurasButton" parentKey="onlyShowSelfAurasButton" inherits="StatusBars2_CheckButtonTemplate">
@@ -950,7 +948,7 @@
                 <Scripts>
                     <OnLoad>
                         getglobal( self:GetName( ) .. "Text" ):SetText( StatusBars2_GetLocalizedText( "Only show my auras" ));
-</OnLoad>
+                    </OnLoad>
                 </Scripts>
             </CheckButton>
             <CheckButton name="$parent_OnlyShowTimedAurasButton" parentKey="onlyShowTimedAurasButton" inherits="StatusBars2_CheckButtonTemplate">
@@ -962,7 +960,7 @@
                 <Scripts>
                     <OnLoad>
                         getglobal( self:GetName( ) .. "Text" ):SetText( StatusBars2_GetLocalizedText( "Only show auras with a duration" ));
-</OnLoad>
+                    </OnLoad>
                 </Scripts>
             </CheckButton>
             <CheckButton name="$parent_EnableTooltips" parentKey="enableTooltipsButton" inherits="StatusBars2_CheckButtonTemplate">
@@ -974,7 +972,7 @@
                 <Scripts>
                     <OnLoad>
                         getglobal( self:GetName( ) .. "Text" ):SetText( StatusBars2_GetLocalizedText( "Enable Aura Tooltips" ));
-</OnLoad>
+                    </OnLoad>
                 </Scripts>
             </CheckButton>
             <Button name="$parent_AddAuraListEntryButton" parentKey="addEntryButton" inherits="OptionsButtonTemplate" text="Add Entry">
@@ -988,7 +986,7 @@
                     <OnClick>
                         PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
                         StatusBars2_BarOptions_AddAuraFilterEntry( self:GetParent( ).auraNameInput );
-</OnClick>
+                    </OnClick>
                 </Scripts>
             </Button>
             <Button name="$parent_ClearAuraListButton" parentKey="clearListButton" inherits="OptionsButtonTemplate" text="Clear">
@@ -1002,7 +1000,7 @@
                     <OnClick>
                         PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
                         StatusBars2_BarOptions_ClearAuraFilterList_OnClick( self );
-</OnClick>
+                    </OnClick>
                 </Scripts>
             </Button>
             <Button name="$parent_DeleteAuraListEntryButton" parentKey="deleteEntryButton" inherits="OptionsButtonTemplate" text="Delete Entry">
@@ -1016,7 +1014,7 @@
                     <OnClick>
                         PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
                         StatusBars2_BarOptions_DeleteAuraFilterListEntry_OnClick( self );
-</OnClick>
+                    </OnClick>
                 </Scripts>
             </Button>
             <EditBox name="$parent_AuraNameInput" parentKey="auraNameInput" autoFocus="false" inherits="InputBoxTemplate">
@@ -1039,12 +1037,12 @@
                             GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_TOPLEFT", 0, 0);
                             GameTooltip:SetText( StatusBars2_GetLocalizedText( "STRING_ID_CONFIG_AURA_FILTER_ENTRY_HELP_TEXT" ));
                         end
-</OnEnter>
+                    </OnEnter>
                     <OnLeave>
                         if( GameTooltip:IsOwned(self) ) then
                             GameTooltip:Hide( );
                         end
-</OnLeave>
+                    </OnLeave>
                     <OnTextChanged>
                         local addButton = self:GetParent( ).addEntryButton;
 
@@ -1053,13 +1051,13 @@
                         else
                             addButton:Enable( );
                         end
-</OnTextChanged>
+                    </OnTextChanged>
                     <OnEditFocusLost>
                         self:SetText( "" );
-</OnEditFocusLost>
+                    </OnEditFocusLost>
                     <OnEnterPressed>
                         StatusBars2_BarOptions_AddAuraFilterEntry(self);
-</OnEnterPressed>
+                    </OnEnterPressed>
                 </Scripts>
                 <Size x="180" y="32" />
             </EditBox>
@@ -1086,10 +1084,10 @@
                         HybridScrollFrame_OnLoad(self);
                         self.update = StatusBars2_BarOptions_AuraListUpdate;
                         HybridScrollFrame_CreateButtons(self, "StatusBars2_AuraListEntryButtonTemplate");
-</OnLoad>
+                    </OnLoad>
                     <OnShow>
                         StatusBars2_BarOptions_AuraListUpdate( self );
-</OnShow>
+                    </OnShow>
                 </Scripts>
                 <Size x="180" y="200" />
             </ScrollFrame>
@@ -1105,22 +1103,22 @@
                         getglobal( self:GetName( ) .. "Text" ):ClearAllPoints( );
                         getglobal( self:GetName( ) .. "Text" ):SetPoint("RIGHT", self, "LEFT");
                         getglobal( self:GetName( ) .. "Text" ):SetJustifyH("RIGHT");
-</OnLoad>
+                    </OnLoad>
                     <OnClick>
                         PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
                         StatusBars2_BarOptions_Enable_Aura_List( self:GetParent( ), self:GetChecked( ) );
-</OnClick>
+                    </OnClick>
                     <OnEnter>
                         if( StatusBars2_Config.showHelpButton:GetChecked( ) ) then
                             GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_TOPLEFT", 0, 0);
                             GameTooltip:SetText( StatusBars2_GetLocalizedText( "STRING_ID_CONFIG_AURA_FILTER_LIST_HELP_TEXT" ));
                         end
-</OnEnter>
+                    </OnEnter>
                     <OnLeave>
                         if( GameTooltip:IsOwned(self) ) then
                             GameTooltip:Hide( );
                         end
-</OnLeave>
+                    </OnLeave>
                 </Scripts>
             </CheckButton>
         </Frames>
@@ -1138,11 +1136,11 @@
                 <Scripts>
                     <OnLoad>
                         getglobal( self:GetName( ) .. "Text" ):SetText( StatusBars2_GetLocalizedText( "Color" ));
-</OnLoad>
+                    </OnLoad>
                     <OnClick>
                         PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
                         StatusBars2_BarOptions_Enable_ColorSelectButton( self:GetParent( ), self:GetChecked( ) );
-</OnClick>
+                    </OnClick>
                 </Scripts>
             </CheckButton>
             <Frame name="$parent_ColorSwatch" parentKey="colorSwatch" inherits="BackdropTemplate">
@@ -1151,14 +1149,12 @@
                         <Offset x="100" y="0" />
                     </Anchor>
                 </Anchors>
-                <Backdrop bgFile="Interface\ChatFrame\ChatFrameColorSwatch" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="false">
-                    <EdgeSize>
-                        <AbsValue val="16" />
-                    </EdgeSize>
-                    <TileSize>
-                        <AbsValue val="16" />
-                    </TileSize>
-                </Backdrop>
+                <KeyValues>
+                    <KeyValue key="backdropInfo" value="BACKDROP_TUTORIAL_16_16" type="global" />
+                    <KeyValue key="backdropColor" value="FRIENDS_GRAY_COLOR" type="global" />
+                    <KeyValue key="backdropColorAlpha" value="1" type="number" />
+                    <KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global" />
+                </KeyValues>
                 <Size x="25" y="25" />
             </Frame>
             <Button name="$parent_PickColorButton" parentKey="pickColorButton" inherits="OptionsButtonTemplate" text="Set Color">
@@ -1172,7 +1168,7 @@
                     <OnClick>
                         PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
                         StatusBars2_Options_SetBarColorButton_OnClick( self:GetParent( ) );
-</OnClick>
+                    </OnClick>
                 </Scripts>
             </Button>
         </Frames>
@@ -1183,7 +1179,7 @@
             <OnClick>
                 PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
                 StatusBars2Config_TabButton_OnClick(self);
-</OnClick>
+            </OnClick>
         </Scripts>
     </Button>
 
@@ -1194,22 +1190,16 @@
                 UIDropDownMenu_Initialize( self, StatusBars2_BarEnabledMenu_Initialize, "MENU" );
                 UIDropDownMenu_SetWidth(self, self:GetWidth());
                 UIDropDownMenu_SetButtonWidth(self, "TEXT");
-</OnLoad>
+            </OnLoad>
             <OnShow>
                 StatusBars2Config_RightClickMenu_OnShow( self );
-</OnShow>
+            </OnShow>
         </Scripts>
     </Frame>
 
 
     <!-- StatusBars2 Configuration Frame -->
-    <Frame name="StatusBars2_Config_Template" toplevel="true" inherits="StatusBars2_DialogFrameTemplete" parent="UIParent" hidden="true" enableMouse="true" frameStrata="DIALOG" virtual="true">
-        <KeyValues>
-            <KeyValue key="backdropInfo" value="BACKDROP_TEXT_PANEL_0_16" type="global" />
-            <KeyValue key="backdropColor" value="FRIENDS_GRAY_COLOR" type="global" />
-            <KeyValue key="backdropColorAlpha" value="0.5" type="number" />
-            <KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global" />
-        </KeyValues>
+    <Frame name="StatusBars2_Config_Template" toplevel="true" inherits="StatusBars2_DialogFrameTemplete" parent="UIParent" hidden="true" enableMouse="true" movable="true" frameStrata="DIALOG" virtual="true">
         <Size>
             <AbsDimension x="550" y="320" />
         </Size>
@@ -1250,7 +1240,7 @@
                     <OnClick>
                         PlaySound(SOUNDKIT.ACHIEVEMENT_MENU_OPEN);
                         StatusBars2Config_RevertButton_OnClick( self );
-</OnClick>
+                    </OnClick>
                 </Scripts>
             </Button>
             <Button name="$parentCancelButton" parentKey="cancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
@@ -1296,15 +1286,13 @@
                         UIDropDownMenu_Initialize( self, StatusBars2Config_BarSelect_Initialize );
                         UIDropDownMenu_SetWidth(self, self:GetWidth());
                         UIDropDownMenu_SetButtonWidth(self, "TEXT");
-</OnLoad>
+                    </OnLoad>
                 </Scripts>
             </Frame>
-            <Frame name="$parentGlobalConfigTabPage" parentKey="globalConfigTabPage" inherits="StatusBars2_GlobalOptionsConfigTemplate" hidden="false"></Frame>
-            <Frame name="$parentGroupLayoutTabPage" parentKey="groupConfigTabPage" inherits="StatusBars2_GroupOptionsConfigTemplate" hidden="false"></Frame>
-            <Frame name="$parentBarLayoutTabPage" parentKey="barLayoutTabPage" inherits="StatusBars2_BarLayoutConfigTemplate" hidden="false"></Frame>
-            <Frame name="$parent_BarConfigTabPage" parentKey="barConfigTabPage" inherits="StatusBars2_BarConfigTemplate" hidden="true">
-                <Frames></Frames>
-            </Frame>
+            <Frame name="$parentGlobalConfigTabPage" parentKey="globalConfigTabPage" inherits="StatusBars2_GlobalOptionsConfigTemplate" hidden="false" />
+            <Frame name="$parentGroupLayoutTabPage" parentKey="groupConfigTabPage" inherits="StatusBars2_GroupOptionsConfigTemplate" hidden="false" />
+            <Frame name="$parentBarLayoutTabPage" parentKey="barLayoutTabPage" inherits="StatusBars2_BarLayoutConfigTemplate" hidden="false" />
+            <Frame name="$parent_BarConfigTabPage" parentKey="barConfigTabPage" inherits="StatusBars2_BarConfigTemplate" hidden="true" />
             <Frame name="$parent_ContinuousBarConfigTabPage" parentKey="continuousBarConfigTabPage" inherits="StatusBars2_ContinuousBarConfigTemplate" hidden="true">
                 <Frames></Frames>
             </Frame>
@@ -1317,7 +1305,7 @@
             <Frame name="$parent_AuraBarConfigTabPage" parentKey="auraBarConfigTabPage" inherits="StatusBars2_AuraBarConfigTemplate" hidden="true">
                 <Frames></Frames>
             </Frame>
-            <Frame name="$parent_AuraStatckConfigTabPage" parentKey="auraStackBarConfigTabPage" inherits="StatusBars2_AuraStackBarConfigTemplate" hidden="true">
+            <Frame name="$parent_AuraStackConfigTabPage" parentKey="auraStackBarConfigTabPage" inherits="StatusBars2_AuraStackBarConfigTemplate" hidden="true">
                 <Frames></Frames>
             </Frame>
             <Frame name="$parent_ProfilesConfigTabPage" parentKey="profilesConfigTabPage" inherits="StatusBars2_ConfigTabFrameTemplate" hidden="true">
@@ -1345,14 +1333,14 @@
                                 UIDropDownMenu_Initialize( self, StatusBars2_CopyFromProfileMenu_Initialize );
                                 UIDropDownMenu_SetWidth(self, self:GetWidth());
                                 UIDropDownMenu_SetButtonWidth(self, "TEXT");
-</OnLoad>
+                            </OnLoad>
                         </Scripts>
                     </Frame>
                 </Frames>
                 <Scripts>
                     <OnLoad>
                         StatusBars2_SetupFontString( self.copySettingsText, "STRING_ID_CONFIG_COPY_SETTINGS_TEXT" );
-</OnLoad>
+                    </OnLoad>
                 </Scripts>
             </Frame>
             <Button name="$parentTab1" inherits="StatusBars2_ConfigTabButtonTemplate" id="1" text="Global Options">
@@ -1393,21 +1381,31 @@
             </Button>
         </Frames>
         <Scripts>
+            <OnDragStart>
+                self:StartMoving()
+            </OnDragStart>
+            <OnDragStop>
+                self:StopMovingOrSizing()
+                self:SetUserPlaced(false)
+            </OnDragStop>
             <OnLoad>
                 tinsert(UISpecialFrames, self:GetName());
                 PanelTemplates_SetNumTabs(self, 4);
                 PanelTemplates_SetTab(self, 1);
                 StatusBars2Config_Configure_Bar_Options( self );
+ 	            self:RegisterForDrag("LeftButton");
 				self:OnBackdropLoaded()
-</OnLoad>
+            </OnLoad>
             <OnShow>
                 PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
                 StatusBars2Confg_OnShow( self )
-</OnShow>
+            </OnShow>
             <OnHide>
                 PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
                 StatusBars2Config_OnHide( self );
-</OnHide>
+                self:StopMovingOrSizing()
+                self:SetUserPlaced(false)
+            </OnHide>
             <OnUpdate>
                 StatusBars2.hideHelp = self.showHelpButton:GetChecked( );
 
@@ -1415,7 +1413,7 @@
                     self.doUpdate = false;
                     StatusBars2Config_OnUpdate( self );
                 end
-</OnUpdate>
+            </OnUpdate>
         </Scripts>
     </Frame>
 

@@ -54,7 +54,9 @@
         "BREWMASTER_POWER_BAR_NAME",
         "MAX_POWER_PER_EMBER",
         "SPEC_WARLOCK_DESTRUCTION",
-        "SOUL_SHARDS"
+        "SOUL_SHARDS",
+        "StatusBars2Config_RightClickMenu",
+        "StatusBars2_playerPowerBar"
     ],
     "files.insertFinalNewline": true,
     "files.trimFinalNewlines": true,
