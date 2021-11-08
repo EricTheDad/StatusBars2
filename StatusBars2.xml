@@ -1,5 +1,4 @@
-<Ui xmlns="http://www.blizzard.com/wow/ui/"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\..\FrameXML\UI.xsd">
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\..\FrameXML\UI.xsd">
 
     <!-- Flash overlay template -->
     <Texture name="StatusBars2_BarFlashOverlay" virtual="true" file="Interface\AddOns\StatusBars2\Flash" alphaMode="ADD" hidden="true">
@@ -19,23 +18,21 @@
     <Frame name="StatusBars2_ContinuousBarTemplate" inherits="TooltipBackdropTemplate" movable="true" virtual="true">
         <Size x="170" y="20" />
         <KeyValues>
-            <KeyValue key="backdropColorAlpha" value="0.0" type="number"/>
+            <KeyValue key="backdropColorAlpha" value="0.0" type="number" />
         </KeyValues>
         <Frames>
             <Frame setAllPoints="true" frameStrata="BACKGROUND" inherits="TooltipBackdropTemplate">
                 <KeyValues>
-                    <KeyValue key="backdropBorderColorAlpha" value="0.0" type="number"/>
+                    <KeyValue key="backdropBorderColorAlpha" value="0.0" type="number" />
                 </KeyValues>
             </Frame>
             <Frame setAllPoints="true">
                 <Layers>
-                    <Layer level="BACKGROUND">
-                    </Layer>
+                    <Layer level="BACKGROUND"></Layer>
                     <Layer level="OVERLAY">
                         <FontString name="$parent_Text" inherits="GameFontNormalSmall">
                             <Anchors>
-                                <Anchor point="CENTER" relativeto="$Parent">
-                                </Anchor>
+                                <Anchor point="CENTER" relativeto="$Parent"></Anchor>
                             </Anchors>
                             <Size>
                                 <AbsDimension x="170" y="10" />
@@ -48,10 +45,10 @@
                         </FontString>
                         <Texture name="$parent_Spark" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD" hidden="true">
                             <Size>
-                                <AbsDimension x="32" y="32"/>
+                                <AbsDimension x="32" y="32" />
                             </Size>
                             <Anchors>
-                                <Anchor point="CENTER"/>
+                                <Anchor point="CENTER" />
                             </Anchors>
                         </Texture>
                     </Layer>
@@ -112,7 +109,7 @@
         <Anchors>
             <Anchor point="TOP" relativePoint="BOTTOM">
                 <Offset>
-                    <AbsDimension x="54" y="34"/>
+                    <AbsDimension x="54" y="34" />
                 </Offset>
             </Anchor>
         </Anchors>
@@ -159,162 +156,162 @@
     <Frame name="StatusBars2_EclipseBarTemplate" frameStrata="LOW" toplevel="true" hidden="true" movable="true" virtual="true">
         <Animations>
             <AnimationGroup parentKey="sunActivate">
-                <Alpha target="$parentSunBar" change="1" duration="0.6" order="1"/>
-                <Alpha target="$parentGlow" change="1" duration="0.6" order="1"/>
-                <Alpha target="$parentDarkMoon" change="1" duration="0.6" order="1"/>
+                <Alpha target="$parentSunBar" change="1" duration="0.6" order="1" />
+                <Alpha target="$parentGlow" change="1" duration="0.6" order="1" />
+                <Alpha target="$parentDarkMoon" change="1" duration="0.6" order="1" />
                 <Scripts>
                     <OnPlay>
                         self:GetParent().moonBar:SetAlpha(0);
                         self:GetParent().darkSun:SetAlpha(0);
-                    </OnPlay>
+</OnPlay>
                     <OnFinished>
                         self:GetParent().sunBar:SetAlpha(1);
                         self:GetParent().glow:SetAlpha(1);
                         self:GetParent().darkMoon:SetAlpha(1);
                         self:GetParent().glow.pulse:Play();
-                    </OnFinished>
+</OnFinished>
                 </Scripts>
             </AnimationGroup>
             <AnimationGroup parentKey="sunDeactivate">
-                <Alpha target="$parentSunBar" change="-1" duration="0.6" order="1"/>
-                <Alpha target="$parentGlow" change="-1" duration="0.6" order="1"/>
-                <Alpha target="$parentDarkMoon" change="-1" duration="0.6" order="1"/>
+                <Alpha target="$parentSunBar" change="-1" duration="0.6" order="1" />
+                <Alpha target="$parentGlow" change="-1" duration="0.6" order="1" />
+                <Alpha target="$parentDarkMoon" change="-1" duration="0.6" order="1" />
                 <Scripts>
                     <OnPlay>
                         self:GetParent().glow.pulse:Stop();
-                    </OnPlay>
+</OnPlay>
                     <OnFinished>
                         self:GetParent().sunBar:SetAlpha(0);
                         self:GetParent().glow:SetAlpha(0);
                         self:GetParent().darkMoon:SetAlpha(0);
-                    </OnFinished>
+</OnFinished>
                 </Scripts>
             </AnimationGroup>
             <AnimationGroup parentKey="moonActivate">
-                <Alpha target="$parentMoonBar" change="1" duration="0.6" order="1"/>
-                <Alpha target="$parentGlow" change="1" duration="0.6" order="1"/>
-                <Alpha target="$parentDarkSun" change="1" duration="0.6" order="1"/>
+                <Alpha target="$parentMoonBar" change="1" duration="0.6" order="1" />
+                <Alpha target="$parentGlow" change="1" duration="0.6" order="1" />
+                <Alpha target="$parentDarkSun" change="1" duration="0.6" order="1" />
                 <Scripts>
                     <OnPlay>
                         self:GetParent().sunBar:SetAlpha(0);
                         self:GetParent().darkMoon:SetAlpha(0);
-                    </OnPlay>
+</OnPlay>
                     <OnFinished>
                         self:GetParent().moonBar:SetAlpha(1);
                         self:GetParent().glow:SetAlpha(1);
                         self:GetParent().darkSun:SetAlpha(1);
                         self:GetParent().glow.pulse:Play();
-                    </OnFinished>
+</OnFinished>
                 </Scripts>
             </AnimationGroup>
             <AnimationGroup parentKey="moonDeactivate">
-                <Alpha target="$parentMoonBar" change="-1" duration="0.6" order="1"/>
-                <Alpha target="$parentGlow" change="-1" duration="0.6" order="1"/>
-                <Alpha target="$parentDarkSun" change="-1" duration="0.6" order="1"/>
+                <Alpha target="$parentMoonBar" change="-1" duration="0.6" order="1" />
+                <Alpha target="$parentGlow" change="-1" duration="0.6" order="1" />
+                <Alpha target="$parentDarkSun" change="-1" duration="0.6" order="1" />
                 <Scripts>
                     <OnPlay>
                         self:GetParent().glow.pulse:Stop();
-                    </OnPlay>
+</OnPlay>
                     <OnFinished>
                         self:GetParent().moonBar:SetAlpha(0);
                         self:GetParent().glow:SetAlpha(0);
                         self:GetParent().darkSun:SetAlpha(0);
-                    </OnFinished>
+</OnFinished>
                 </Scripts>
             </AnimationGroup>
         </Animations>
-        <Size x="140" y="38"/>
+        <Size x="140" y="38" />
         <Anchors>
             <Anchor point="TOP" relativeTo="PlayerFrame" relativePoint="BOTTOM">
                 <Offset>
-                    <AbsDimension x="48" y="40"/>
+                    <AbsDimension x="48" y="40" />
                 </Offset>
             </Anchor>
         </Anchors>
         <HitRectInsets>
-            <AbsInset left="4" right="4" top="6" bottom="6"/>
+            <AbsInset left="4" right="4" top="6" bottom="6" />
         </HitRectInsets>
         <Layers>
             <Layer level="ARTWORK">
                 <Texture name="$parentBar" atlas="DruidEclipse-BaseBar" useAtlasSize="true">
                     <Anchors>
-                        <Anchor point="CENTER"/>
+                        <Anchor point="CENTER" />
                     </Anchors>
                 </Texture>
             </Layer>
             <Layer level="BACKGROUND">
                 <Texture parentKey="Sun" name="$parentSun" atlas="DruidEclipse-BaseSun" useAtlasSize="true">
                     <Anchors>
-                        <Anchor point="CENTER" relativeTo="$parentBar" relativePoint="RIGHT" x="-17" y="1"/>
+                        <Anchor point="CENTER" relativeTo="$parentBar" relativePoint="RIGHT" x="-17" y="1" />
                     </Anchors>
                 </Texture>
                 <Texture parentKey="Moon" name="$parentMoon" atlas="DruidEclipse-BaseMoon" useAtlasSize="true">
                     <Anchors>
-                        <Anchor point="CENTER" relativeTo="$parentBar" relativePoint="LEFT" x="17" y="1"/>
+                        <Anchor point="CENTER" relativeTo="$parentBar" relativePoint="LEFT" x="17" y="1" />
                     </Anchors>
                 </Texture>
             </Layer>
             <Layer level="BACKGROUND" textureSubLevel="1">
                 <Texture parentKey="DarkSun" name="$parentDarkSun" atlas="DruidEclipse-LunarSun" useAtlasSize="true">
                     <Anchors>
-                        <Anchor point="CENTER" relativeTo="$parentSun"/>
+                        <Anchor point="CENTER" relativeTo="$parentSun" />
                     </Anchors>
                 </Texture>
                 <Texture parentKey="DarkMoon" name="$parentDarkMoon" atlas="DruidEclipse-SolarMoon" useAtlasSize="true">
                     <Anchors>
-                        <Anchor point="CENTER" relativeTo="$parentMoon"/>
+                        <Anchor point="CENTER" relativeTo="$parentMoon" />
                     </Anchors>
                 </Texture>
             </Layer>
             <Layer level="ARTWORK" textureSubLevel="1">
                 <Texture parentKey="SunBar" name="$parentSunBar" atlas="DruidEclipse-SolarBar" useAtlasSize="true">
                     <Anchors>
-                        <Anchor point="CENTER" x="15"/>
+                        <Anchor point="CENTER" x="15" />
                     </Anchors>
                 </Texture>
                 <Texture parentKey="MoonBar" name="$parentMoonBar" atlas="DruidEclipse-LunarBar" useAtlasSize="true">
                     <Anchors>
-                        <Anchor point="CENTER" x="-15"/>
+                        <Anchor point="CENTER" x="-15" />
                     </Anchors>
                 </Texture>
             </Layer>
             <Layer level="OVERLAY" textureSubLevel="-1">
                 <Texture parentKey="MoonCover" name="$parentMoonCover" atlas="DruidEclipse-SolarCover" useAtlasSize="true" hidden="true">
                     <Anchors>
-                        <Anchor point="LEFT" x="20" y="1"/>
+                        <Anchor point="LEFT" x="20" y="1" />
                     </Anchors>
                 </Texture>
                 <Texture parentKey="SunCover" name="$parentSunCover" atlas="DruidEclipse-LunarCover" useAtlasSize="true" hidden="true">
                     <Anchors>
-                        <Anchor point="RIGHT" x="-30"/>
+                        <Anchor point="RIGHT" x="-30" />
                     </Anchors>
                 </Texture>
             </Layer>
             <Layer level="OVERLAY">
                 <Texture parentKey="Marker" name="$parentMarker" atlas="DruidEclipse-Arrow" useAtlasSize="true" alphaMode="ADD">
                     <Anchors>
-                        <Anchor point="CENTER" y="2"/>
+                        <Anchor point="CENTER" y="2" />
                     </Anchors>
                 </Texture>
                 <Texture parentKey="Glow" name="$parentGlow" atlas="DruidEclipse-SolarSun">
-                    <Size x="43" y="45"/>
+                    <Size x="43" y="45" />
                     <Anchors>
-                        <Anchor point="CENTER"/>
+                        <Anchor point="CENTER" />
                     </Anchors>
                 </Texture>
                 <FontString name="$parentPowertext" inherits="TextStatusBarText" justifyH="CENTER" parentKey="PowerText" hidden="true">
                     <Anchors>
-                        <Anchor point="CENTER" x="0" y="0"/>
+                        <Anchor point="CENTER" x="0" y="0" />
                     </Anchors>
                 </FontString>
             </Layer>
         </Layers>
         <Scripts>
-            <OnShow function="StatusBars2_EclipseBar_OnShow"/>
+            <OnShow function="StatusBars2_EclipseBar_OnShow" />
         </Scripts>
     </Frame>
 
-    <Frame name="StatusBars2_GroupFrameTemplate" movable="true" hidden="false" frameStrata="LOW" virtual = "true">
+    <Frame name="StatusBars2_GroupFrameTemplate" movable="true" hidden="false" frameStrata="LOW" virtual="true">
         <Size x="170" y="50" />
     </Frame>
 
@@ -332,7 +329,7 @@
         <Scripts>
             <OnLoad>
                 StatusBars2_OnLoad( self );
-            </OnLoad>
+</OnLoad>
         </Scripts>
     </Frame>
 
@@ -342,27 +339,26 @@
         <Size x="140" y="20" />
 
         <ButtonText name="$parentText">
-            <Size x="140" y="13"/>
+            <Size x="140" y="13" />
             <Anchors>
                 <Anchor point="LEFT" relativeTo="$parent">
                     <Offset>
-                        <AbsDimension x="10" y="1"/>
+                        <AbsDimension x="10" y="1" />
                     </Offset>
                 </Anchor>
             </Anchors>
         </ButtonText>
 
-        <NormalFont style="GameFontNormalLeft"/>
-        <HighlightFont style="GameFontHighlightLeft"/>
-        <DisabledFont style="GameFontDisableLeft"/>
+        <NormalFont style="GameFontNormalLeft" />
+        <HighlightFont style="GameFontHighlightLeft" />
+        <DisabledFont style="GameFontDisableLeft" />
 
-        <HighlightTexture file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD">
-        </HighlightTexture>
+        <HighlightTexture file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD"></HighlightTexture>
 
         <Scripts>
             <OnClick>
                 StatusBars2_BarOptionsButton_OnClick( self );
-            </OnClick>
+</OnClick>
         </Scripts>
     </Button>
 
@@ -371,111 +367,111 @@
         <Scripts>
             <OnLoad>
                 StatusBars2_Options_OnLoad( self );
-            </OnLoad>
+</OnLoad>
         </Scripts>
         <Layers>
             <Layer level="BACKGROUND">
                 <FontString name="$parent_Title" inherits="GameFontNormalLarge" text="StatusBars2">
-                    <Size x="200" y="50"/>
+                    <Size x="200" y="50" />
                     <Anchors>
                         <Anchor point="TOP" relativeTo="$parent">
                             <Offset>
-                                <AbsDimension x="0" y="-20"/>
+                                <AbsDimension x="0" y="-20" />
                             </Offset>
                         </Anchor>
                     </Anchors>
                 </FontString>
                 <FontString name="$parent_Credits1" parentKey="creditsText1" inherits="GameFontNormalLeft">
-                    <Size x="500" y="20"/>
+                    <Size x="500" y="20" />
                     <Anchors>
                         <Anchor point="TOP" relativeTo="$parent_Title" relativePoint="BOTTOM">
                             <Offset>
-                                <AbsDimension x="0" y="-20"/>
+                                <AbsDimension x="0" y="-20" />
                             </Offset>
                         </Anchor>
                         <Anchor point="LEFT" relativeTo="$parent">
                             <Offset>
-                                <AbsDimension x="20" y="0"/>
+                                <AbsDimension x="20" y="0" />
                             </Offset>
                         </Anchor>
                     </Anchors>
                 </FontString>
                 <FontString name="$parent_Credits2" parentKey="creditsText2" inherits="GameFontNormalLeft">
-                    <Size x="500" y="20"/>
+                    <Size x="500" y="20" />
                     <Anchors>
                         <Anchor point="TOPLEFT" relativeTo="$parent_Credits1" relativePoint="BOTTOMLEFT">
                             <Offset>
-                                <AbsDimension x="0" y="-5"/>
+                                <AbsDimension x="0" y="-5" />
                             </Offset>
                         </Anchor>
                     </Anchors>
                 </FontString>
                 <FontString name="$parent_Credits3" parentKey="creditsText3" inherits="GameFontNormalLeft">
-                    <Size x="500" y="20"/>
+                    <Size x="500" y="20" />
                     <Anchors>
                         <Anchor point="TOPLEFT" relativeTo="$parent_Credits2" relativePoint="BOTTOMLEFT">
                             <Offset>
-                                <AbsDimension x="0" y="-5"/>
+                                <AbsDimension x="0" y="-5" />
                             </Offset>
                         </Anchor>
                     </Anchors>
                 </FontString>
                 <FontString name="$parent_Credits4" parentKey="creditsText4" inherits="GameFontNormalLeft">
-                    <Size x="500" y="20"/>
+                    <Size x="500" y="20" />
                     <Anchors>
                         <Anchor point="TOPLEFT" relativeTo="$parent_Credits3" relativePoint="BOTTOMLEFT">
                             <Offset>
-                                <AbsDimension x="0" y="-5"/>
+                                <AbsDimension x="0" y="-5" />
                             </Offset>
                         </Anchor>
                     </Anchors>
                 </FontString>
                 <FontString name="$parent_Credits5" parentKey="creditsText5" inherits="GameFontNormalLeft">
-                    <Size x="500" y="20"/>
+                    <Size x="500" y="20" />
                     <Anchors>
                         <Anchor point="TOPLEFT" relativeTo="$parent_Credits4" relativePoint="BOTTOMLEFT">
                             <Offset>
-                                <AbsDimension x="0" y="-5"/>
+                                <AbsDimension x="0" y="-5" />
                             </Offset>
                         </Anchor>
                     </Anchors>
                 </FontString>
                 <FontString name="$parent_Credits6" parentKey="creditsText6" inherits="GameFontNormalLeft">
-                    <Size x="500" y="130"/>
+                    <Size x="500" y="130" />
                     <Anchors>
                         <Anchor point="TOPLEFT" relativeTo="$parent_Credits5" relativePoint="BOTTOMLEFT">
                             <Offset>
-                                <AbsDimension x="10" y="-5"/>
+                                <AbsDimension x="10" y="-5" />
                             </Offset>
                         </Anchor>
                     </Anchors>
                 </FontString>
                 <FontString name="$parent_translators_needed" parentKey="translatorsNeededText" inherits="GameFontNormalLeft">
-                    <Size x="500" y="30"/>
+                    <Size x="500" y="30" />
                     <Anchors>
                         <Anchor point="TOPLEFT" relativeTo="$parent_Credits6" relativePoint="BOTTOMLEFT">
                             <Offset>
-                                <AbsDimension x="-10" y="-20"/>
+                                <AbsDimension x="-10" y="-20" />
                             </Offset>
                         </Anchor>
                     </Anchors>
                 </FontString>
                 <FontString name="$parent_slash_command_help1" parentKey="helpText1" inherits="GameFontNormalSmallLeft">
-                    <Size x="500" y="15"/>
+                    <Size x="500" y="15" />
                     <Anchors>
                         <Anchor point="TOPLEFT" relativeTo="$parent_translators_needed" relativePoint="BOTTOMLEFT">
                             <Offset>
-                                <AbsDimension x="0" y="-45"/>
+                                <AbsDimension x="0" y="-45" />
                             </Offset>
                         </Anchor>
                     </Anchors>
                 </FontString>
                 <FontString name="$parent_slash_command_help2" parentKey="helpText2" inherits="GameFontNormalSmallLeft">
-                    <Size x="500" y="48"/>
+                    <Size x="500" y="48" />
                     <Anchors>
                         <Anchor point="TOPLEFT" relativeTo="$parent_slash_command_help1" relativePoint="BOTTOMLEFT">
                             <Offset>
-                                <AbsDimension x="0" y="-5"/>
+                                <AbsDimension x="0" y="-5" />
                             </Offset>
                         </Anchor>
                     </Anchors>
@@ -484,7 +480,7 @@
         </Layers>
         <Frames>
             <Button name="$parent_ConfigureBarsButton" inherits="OptionsButtonTemplate" text="Configure Statusbars2">
-                <Size x="200" y="32"/>
+                <Size x="200" y="32" />
                 <Anchors>
                     <Anchor point="BOTTOM" relativeto="$parent">
                         <Offset x="0" y="50" />
@@ -493,7 +489,7 @@
                 <Scripts>
                     <OnClick>
 						StatusBars2_Options_ToggleMoveBars_OnClick( self );
-                    </OnClick>
+</OnClick>
                 </Scripts>
             </Button>
         </Frames>
@@ -508,7 +504,7 @@
                 StatusBars2_SetupFontString( self.translatorsNeededText, "STRING_ID_INTERFACEPANEL_TRANSLATORS_NEEDED" );
                 StatusBars2_SetupFontString( self.helpText1, "STRING_ID_INTERFACEPANEL_HELP_TEXT_1" );
                 StatusBars2_SetupFontString( self.helpText2, "STRING_ID_INTERFACEPANEL_HELP_TEXT_2" );
-            </OnShow>
+</OnShow>
         </Scripts>
     </Frame>
 
