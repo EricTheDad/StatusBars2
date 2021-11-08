@@ -1,5 +1,6 @@
 ﻿9.1.5-03.08.11
-Fixed config dialog backdrops
+Fixed config dialog backdrops.
+Known issues:  Custom colors for aura stack bars are broken.  Custom filtering of buffs/debuffs is broken
 
 9.1.5-03.08.10
 Fixed backdrops AGAIN for 9.1.5.
