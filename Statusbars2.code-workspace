@@ -6,6 +6,12 @@
 	],
 	"settings": {
 		"search.searchEditor.reusePriorSearchConfiguration": true,
-		"search.seedOnFocus": true
+		"search.seedOnFocus": true,
+		"diffEditor.codeLens": true,
+		"editor.formatOnSave": true,
+		"Lua.color.mode": "SemanticEnhanced",
+		"Lua.workspace.library": [
+			"E:\\Users\\Eric\\Projects\\World of Warcraft Addon Dev\\wow-ui-source"
+		]
 	}
 }
