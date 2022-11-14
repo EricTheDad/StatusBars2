@@ -1,4 +1,7 @@
-﻿9.1.5-03.08.12
+﻿10.0.0-03.09.00
+Basic fixes for Dragonflight. Probably still some bugs
+
+9.1.5-03.08.12
 Fixed .pkgmeta file
 
 9.1.5-03.08.11

@@ -328,7 +328,8 @@ local function StatusBars2_PowerBar_OnEnable(self)
         if (self.unit == "player" or self.unit == "pet") then
             StatusBars2_SetPowerBarColor(self);
         else
-            self.status:SetStatusBarColor(addonTable.kDefaultPowerBarColor);
+            local c = addonTable.kDefaultPowerBarColor;
+            self.status:SetStatusBarColor(c.r, c.g, c.b);
         end
     else
         local powerType = self:GetPowerType()

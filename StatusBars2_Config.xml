@@ -1,6 +1,9 @@
-<Ui xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.blizzard.com/wow/ui/">
+<Ui xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://www.blizzard.com/wow/ui/">
 
-    <CheckButton name="StatusBars2_SmallCheckButtonTemplate" virtual="true" inherits="OptionsSmallCheckButtonTemplate">
+    <CheckButton name="StatusBars2_SmallCheckButtonTemplate" virtual="true" inherits="UICheckButtonTemplate">
+        <Size x="20" y="20"/>
         <Scripts>
             <OnClick>
 				if ( self:GetChecked() ) then
@@ -22,7 +25,8 @@
         </Scripts>
     </CheckButton>
 
-    <CheckButton name="StatusBars2_CheckButtonTemplate" virtual="true" inherits="OptionsCheckButtonTemplate">
+    <CheckButton name="StatusBars2_CheckButtonTemplate" virtual="true" inherits="UICheckButtonTemplate">
+        <Size x="24" y="24"/>
         <Scripts>
             <OnClick>
 				if ( self:GetChecked() ) then
@@ -44,32 +48,14 @@
         </Scripts>
     </CheckButton>
 
-    <Frame name="StatusBars2_DialogFrameTemplete" inherits="BackdropTemplate" virtual="true">
-        <KeyValues>
-            <KeyValue key="backdropInfo" value="BACKDROP_DARK_DIALOG_32_32" type="global" />
-            <KeyValue key="backdropColor" value="FRIENDS_GRAY_COLOR" type="global" />
-            <KeyValue key="backdropColorAlpha" value="0.6" type="number" />
-            <KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global" />
-        </KeyValues>
+    <Frame name="StatusBars2_DialogFrameTemplete" inherits="SimplePanelTemplate" virtual="true">
         <Layers>
             <Layer level="ARTWORK">
-                <Texture name="$parentHeader" urgency="5" file="Interface\DialogFrame\UI-DialogBox-Header">
-                    <Size>
-                        <AbsDimension x="300" y="68" />
-                    </Size>
-                    <Anchors>
-                        <Anchor point="TOP">
-                            <Offset>
-                                <AbsDimension x="0" y="12" />
-                            </Offset>
-                        </Anchor>
-                    </Anchors>
-                </Texture>
                 <FontString name="$parentHeaderText" inherits="GameFontNormal" text="StatusBars2 Config">
                     <Anchors>
-                        <Anchor point="TOP" relativeTo="$parentHeader">
+                        <Anchor point="TOP" relativeTo="$parent">
                             <Offset>
-                                <AbsDimension x="0" y="-14" />
+                                <AbsDimension x="0" y="-12" />
                             </Offset>
                         </Anchor>
                     </Anchors>
@@ -376,7 +362,6 @@
                         getglobal( self:GetName( ) .. "Low" ):SetText( string.format("%.0f", min) );
                         getglobal( self:GetName( ) .. "High" ):SetText( string.format("%.0f", max) );
                         self:SetObeyStepOnDrag( true );
-                        self:OnBackdropLoaded()
                     </OnLoad>
                     <OnValueChanged>
                         self.editBox:SetText( string.format("%.02f", value) );
@@ -412,7 +397,6 @@
                         getglobal( self:GetName( ) .. "Low" ):SetText( string.format("%.0f%%", min * 100) );
                         getglobal( self:GetName( ) .. "High" ):SetText( string.format("%.0f%%", max * 100) );
                         self:SetObeyStepOnDrag( true );
-                        self:OnBackdropLoaded()
                     </OnLoad>
                     <OnValueChanged>
                         self.editBox:SetText( string.format("%3d", value * 100) );
@@ -510,7 +494,7 @@
                     </OnLoad>
                 </Scripts>
             </Frame>
-            <Button name="$parent_ResetGroupPositionButton" inherits="OptionsButtonTemplate" text="Reset All Group Positions">
+            <Button name="$parent_ResetGroupPositionButton" inherits="MagicButtonTemplate" text="Reset All Group Positions">
                 <Size x="190" y="21" />
                 <Anchors>
                     <Anchor point="BOTTOMRIGHT">
@@ -524,7 +508,7 @@
                     </OnClick>
                 </Scripts>
             </Button>
-            <Button name="$parent_ResetBarPositionButton" inherits="OptionsButtonTemplate" text="Snap All Bars To Groups">
+            <Button name="$parent_ResetBarPositionButton" inherits="MagicButtonTemplate" text="Snap All Bars To Groups">
                 <Size x="190" y="21" />
                 <Anchors>
                     <Anchor point="BOTTOM" relativeto="$parent_ResetGroupPositionButton" relativePoint="TOP">
@@ -836,7 +820,6 @@
                         getglobal( self:GetName( ) .. "High" ):SetText( "100%" );
                         getglobal( self:GetName( ) .. "Low" ):Hide();
                         getglobal( self:GetName( ) .. "High" ):Hide();
-                        self:OnBackdropLoaded()
                     </OnLoad>
                     <OnValueChanged>
                         getglobal( self:GetName( ) .. "ValueLabel" ):SetText( StatusBars2_Round( value, 2 ) * 100 .. "%" );
@@ -975,7 +958,7 @@
                     </OnLoad>
                 </Scripts>
             </CheckButton>
-            <Button name="$parent_AddAuraListEntryButton" parentKey="addEntryButton" inherits="OptionsButtonTemplate" text="Add Entry">
+            <Button name="$parent_AddAuraListEntryButton" parentKey="addEntryButton" inherits="MagicButtonTemplate" text="Add Entry">
                 <Size x="180" y="21" />
                 <Anchors>
                     <Anchor point="TOPRIGHT">
@@ -989,7 +972,7 @@
                     </OnClick>
                 </Scripts>
             </Button>
-            <Button name="$parent_ClearAuraListButton" parentKey="clearListButton" inherits="OptionsButtonTemplate" text="Clear">
+            <Button name="$parent_ClearAuraListButton" parentKey="clearListButton" inherits="MagicButtonTemplate" text="Clear">
                 <Size x="72" y="21" />
                 <Anchors>
                     <Anchor point="BOTTOMRIGHT">
@@ -1003,7 +986,7 @@
                     </OnClick>
                 </Scripts>
             </Button>
-            <Button name="$parent_DeleteAuraListEntryButton" parentKey="deleteEntryButton" inherits="OptionsButtonTemplate" text="Delete Entry">
+            <Button name="$parent_DeleteAuraListEntryButton" parentKey="deleteEntryButton" inherits="MagicButtonTemplate" text="Delete Entry">
                 <Size x="104" y="21" />
                 <Anchors>
                     <Anchor point="RIGHT" relativeto="$parent_ClearAuraListButton" relativepoint="LEFT">
@@ -1157,7 +1140,7 @@
                 </KeyValues>
                 <Size x="25" y="25" />
             </Frame>
-            <Button name="$parent_PickColorButton" parentKey="pickColorButton" inherits="OptionsButtonTemplate" text="Set Color">
+            <Button name="$parent_PickColorButton" parentKey="pickColorButton" inherits="MagicButtonTemplate" text="Set Color">
                 <Size x="90" y="21" />
                 <Anchors>
                     <Anchor point="LEFT" relativeto="$parent_ColorSwatch" relativePoint="RIGHT">
@@ -1174,7 +1157,7 @@
         </Frames>
     </Frame>
 
-    <Button name="StatusBars2_ConfigTabButtonTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
+    <Button name="StatusBars2_ConfigTabButtonTemplate" inherits="CharacterFrameTabTemplate" virtual="true">
         <Scripts>
             <OnClick>
                 PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
@@ -1203,12 +1186,6 @@
         <Size>
             <AbsDimension x="550" y="320" />
         </Size>
-        <TitleRegion>
-            <Size x="300" y="68" />
-            <Anchors>
-                <Anchor point="TOP" />
-            </Anchors>
-        </TitleRegion>
         <Anchors>
             <Anchor point="TOP">
                 <Offset>
@@ -1231,7 +1208,7 @@
                 <Anchors>
                     <Anchor point="BOTTOMLEFT">
                         <Offset>
-                            <AbsDimension x="16" y="16" />
+                            <AbsDimension x="4" y="4" />
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -1250,7 +1227,7 @@
                 <Anchors>
                     <Anchor point="BOTTOMRIGHT">
                         <Offset>
-                            <AbsDimension x="-16" y="16" />
+                            <AbsDimension x="-4" y="4" />
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -1273,7 +1250,7 @@
                 <Size x="130" y="16" />
                 <Anchors>
                     <Anchor point="BOTTOM">
-                        <Offset x="0" y="8" />
+                        <Offset x="0" y="-4" />
                     </Anchor>
                     <Anchor point="RIGHT" relativeTo="$parentOkayButton" relativePoint="LEFT">
                         <Offset x="10" y="0" />
@@ -1347,7 +1324,7 @@
                 <Anchors>
                     <Anchor point="CENTER" relativePoint="BOTTOMLEFT">
                         <Offset>
-                            <AbsDimension x="60" y="-8" />
+                            <AbsDimension x="60" y="-16" />
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -1394,7 +1371,6 @@
                 PanelTemplates_SetTab(self, 1);
                 StatusBars2Config_Configure_Bar_Options( self );
  	            self:RegisterForDrag("LeftButton");
-				self:OnBackdropLoaded()
             </OnLoad>
             <OnShow>
                 PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
@@ -1416,103 +1392,4 @@
             </OnUpdate>
         </Scripts>
     </Frame>
-
-    <!--<ScrollFrame name="$parent_BarSelectScrollFrame" parentKey="barSelectScrollFrame" inherits="FauxScrollFrameTemplate">
-                <Anchors>
-                    <Anchor point="TOPLEFT">
-                        <Offset>
-                            <AbsDimension x="20" y="-20"/>
-                        </Offset>
-                    </Anchor>
-                    <Anchor point="BOTTOMLEFT">
-                        <Offset>
-                            <AbsDimension x="20" y="45"/>
-                        </Offset>
-                    </Anchor>
-                </Anchors>
-                <Layers>
-                    <Layer level="BACKGROUND">
-                        <Texture name="$parentTopLeft" file="Interface\Common\Common-Input-Border-TL">
-                            <Size>
-                                <AbsDimension x="8" y="8"/>
-                            </Size>
-                            <Anchors>
-                                <Anchor point="TOPLEFT">
-                                    <Offset x="-5" y="5"/>
-                                </Anchor>
-                            </Anchors>
-                        </Texture>
-                        <Texture name="$parentTopRight" file="Interface\Common\Common-Input-Border-TR">
-                            <Size>
-                                <AbsDimension x="8" y="8"/>
-                            </Size>
-                            <Anchors>
-                                <Anchor point="TOPRIGHT">
-                                    <Offset x="0" y="5"/>
-                                </Anchor>
-                            </Anchors>
-                        </Texture>
-                        <Texture name="$parentTop" file="Interface\Common\Common-Input-Border-T">
-                            <Anchors>
-                                <Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="TOPRIGHT"/>
-                                <Anchor point="BOTTOMRIGHT" relativeTo="$parentTopRight" relativePoint="BOTTOMLEFT"/>
-                            </Anchors>
-                        </Texture>
-                        <Texture name="$parentBottomLeft" file="Interface\Common\Common-Input-Border-BL">
-                            <Size>
-                                <AbsDimension x="8" y="8"/>
-                            </Size>
-                            <Anchors>
-                                <Anchor point="BOTTOMLEFT">
-                                    <Offset x="-5" y="-5"/>
-                                </Anchor>
-                            </Anchors>
-                        </Texture>
-                        <Texture name="$parentBottomRight" file="Interface\Common\Common-Input-Border-BR">
-                            <Size>
-                                <AbsDimension x="8" y="8"/>
-                            </Size>
-                            <Anchors>
-                                <Anchor point="BOTTOMRIGHT">
-                                    <Offset x="0" y="-5"/>
-                                </Anchor>
-                            </Anchors>
-                        </Texture>
-                        <Texture name="$parentBottom" file="Interface\Common\Common-Input-Border-B">
-                            <Anchors>
-                                <Anchor point="TOPLEFT" relativeTo="$parentBottomLeft" relativePoint="TOPRIGHT"/>
-                                <Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="BOTTOMLEFT"/>
-                            </Anchors>
-                        </Texture>
-                        <Texture name="$parentLeft" file="Interface\Common\Common-Input-Border-L">
-                            <Anchors>
-                                <Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="BOTTOMLEFT"/>
-                                <Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomLeft" relativePoint="TOPRIGHT"/>
-                            </Anchors>
-                        </Texture>
-                        <Texture name="$parentRight" file="Interface\Common\Common-Input-Border-R">
-                            <Anchors>
-                                <Anchor point="TOPLEFT" relativeTo="$parentTopRight" relativePoint="BOTTOMLEFT"/>
-                                <Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="TOPRIGHT"/>
-                            </Anchors>
-                        </Texture>
-                        <Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border-M">
-                            <Anchors>
-                                <Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT"/>
-                                <Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT"/>
-                            </Anchors>
-                        </Texture>
-                    </Layer>
-                </Layers>
-                <Scripts>
-                    <OnVerticalScroll>
-                        FauxScrollFrame_OnVerticalScroll(self, offset, 16, StatusBars2Config_BarSelectScrollBar_Update);
-                    </OnVerticalScroll>
-                    <OnShow>
-                        StatusBars2Config_BarSelectScrollBar_Update()
-                    </OnShow>
-                </Scripts>
-                <Size x="100" y="250"/>
-            </ScrollFrame>  -->
-
-</Ui>
+ </Ui>

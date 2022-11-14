@@ -119,3 +119,30 @@ function StatusBars2_SetupFontString(fontString, string_id)
     fontString:SetHeight(fontString:GetStringHeight());
 
 end
+
+function dump(o, max_depth)
+   if not max_depth then
+    max_depth = 5;
+    end
+
+   if max_depth > 0 and type(o) == 'table' then
+      local s = '{ '
+      for k,v in pairs(o) do
+         if type(k) ~= 'number' then k = '"'..k..'"' end
+         s = s .. '['..k..'] = ' .. dump(v, max_depth - 1) .. ','
+      end
+      return s .. '} '
+   else
+      return tostring(o)
+   end
+end
+
+function print_dump(o)
+   if type(o) == 'table' then
+      for k,v in pairs(o) do
+        print (k, " - ", v)
+      end
+   else
+      return tostring(o)
+   end
+end
