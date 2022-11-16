@@ -370,7 +370,7 @@ function StatusBars2_UpdateBars()
         elseif (bar.key == "rune") then
             StatusBars2_EnableBar(bar);
         -- Special Warlock Bars
-        elseif (bar.key == "shard" and playerLevel >= SHARDBAR_SHOW_LEVEL) then
+        elseif (bar.key == "shard" and playerLevel >= WarlockPowerFrame.requiredShownLevel) then
             StatusBars2_EnableBar(bar);
         -- Special Paladin Bars
         elseif (bar.key == "holyPower" and playerSpec == SPEC_PALADIN_RETRIBUTION and playerLevel >= PALADINPOWERBAR_SHOW_LEVEL) then
