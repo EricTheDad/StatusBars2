@@ -136,7 +136,7 @@ function StatusBars2_AdjustDiscreteBarBoxes(bar, boxCount)
     
     -- Initialize the boxes
     for i, box in ipairs(boxes) do
-       box:SetBackdrop(backdropInfo);
+--       box:SetBackdrop(backdropInfo);
 
         if (i <= bar.boxCount) then
             local fillBar = box.fillBar
