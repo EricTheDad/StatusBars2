@@ -34,9 +34,3 @@ Tabs along the bottom of the config dialog allow you to move and configure all b
 More options available, experiment to find out! Tooltips help explain
 
 "Accept" to save your changes or "Cancel" to discard them. "Revert" discards your changes without closing the config panel.
-
-Current known issues (Nov 8, 2021):
-    - Custom colors for bars that support them don't work.
-    - Custom filtering for buffs/debuffs doesn't work.
-    - Scaling in anything other that Auto-layout can lead to some very weird bar behaviors.
-    - Most config tooltips don't work.

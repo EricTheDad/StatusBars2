@@ -315,12 +315,11 @@ local function StatusBars2_SetEmbersBoxCount(self, boxCount)
     StatusBars2_SetDiscreteBarBoxCount(self, boxCount);
     
     -- Modify the boxes to display ember particles
-    local boxes = {self:GetChildren()};
-    
+    local boxes = self.boxes;
+
     -- MAX_POWER_PER_EMBER defined in Blizzard constants
     for i, box in ipairs(boxes) do
-        
-        local status = box:GetChildren();
+        local status = box.fillBar;
         status:SetMinMaxValues(0, MAX_POWER_PER_EMBER);
     
     end
@@ -340,12 +339,12 @@ local function StatusBars2_UpdateEmbersBar(self, current)
     local current = current;
     
     -- Update the boxes
-    local boxes = {self:GetChildren()};
+    local boxes = self.boxes;
     
     -- Initialize the boxes
     for i, box in ipairs(boxes) do
         
-        local status = box:GetChildren();
+        local status = box.fillBar;
         local _, maxValue = status:GetMinMaxValues();
         
         if current < maxValue then

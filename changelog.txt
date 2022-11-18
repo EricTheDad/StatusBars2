@@ -1,4 +1,7 @@
-﻿10.00.02-03.09.01
+﻿10.00.02-03.09.02
+Fixed error on load for Destruction Warlock.
+
+10.00.02-03.09.01
 Fixed error on load for Warlock. Fixed Discrete bars backdrop error.
 
 10.0.0-03.09.00
