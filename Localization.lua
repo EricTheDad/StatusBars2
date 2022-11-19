@@ -253,7 +253,93 @@ end
 
 ------------------------------------------------------
 if (GetLocale() == "koKR") then
-    
+    L["Abbreviated"] = "천 단위 축약"
+    L["Add Entry"] = "항목 추가"
+    L["Always"] = "항상표시"
+    L["Auto"] = "자동"
+    L["Auto-layout order"] = "막대 레이아웃 순서 지정"
+    L["Automatic"] = "자동화"
+    --[[Translation missing --]]
+    L["Available"] = "Available"
+    L["Bar Options"] = "막대 설정"
+    L["Bar Select"] = "막대 선택"
+    L["Clear"] = "모두 삭제"
+    L["Color"] = "색상"
+    L["Combat"] = "전투시"
+    L["Delete Entry"] = "항목 삭제"
+    L["Enable Aura Tooltips"] = "오라 툴팁 활성화"
+    L["Enable help tooltips"] = "도움말 툴팁 활성화"
+    L["Enabled"] = "활성화"
+    L["Fade bars in and out"] = "막대 서서히 사라짐, 서서히 나타남"
+    L["Flash when below"] = "막대 깜박임"
+    L["Global Options"] = "전역 설정"
+    L["Group Options"] = "그룹 설정"
+    L["Hidden"] = "숨김"
+    L["Huge"] = "아주 크게"
+    L["Large"] = "크게"
+    L["Layout Options"] = "레이아웃 옵션"
+    L["Left"] = "왼쪽"
+    L["Lock bars during play"] = "플레이 중 막대 위치 변경 잠금"
+    L["Locked To Background"] = "백그라운드 고정"
+    L["Locked To Group"] = "그룹 고정"
+    L["Medium"] = "보통"
+    L["Never"] = "표시안함"
+    L["Only show auras listed"] = "표시할 오라 리스트"
+    L["Only show auras with a duration"] = "지속 시간이 있는 오라만 보이기"
+    L["Only show my auras"] = "내가 시전한 오라만 보이기"
+    L["Opacity"] = "불투명도"
+    L["Percent Text"] = "비율 표시 위치"
+    L["Reset All Group Positions"] = "모든 그룹 위치 초기화"
+    L["Right"] = "오른쪽"
+    L["Scale"] = "스케일"
+    L["Set Color"] = "색상 설정"
+    L["Show Buffs"] = "모든 버프 보이기"
+    L["Show Debuffs"] = "모든 디버프 보이기"
+    --[[Translation missing --]]
+    L["Show in all forms"] = "Show in all forms"
+    L["Show target spell"] = "대상 주문 표시"
+    L["Small"] = "작게"
+    --[[Translation missing --]]
+    L["Snap All Bars To Groups"] = "Snap All Bars To Groups"
+    L["StatusBars2 Config"] = "StatusBars2 설정"
+    --[[Translation missing --]]
+    L["STRING_ID_CONFIG_AURA_FILTER_ENTRY_HELP_TEXT"] = [=[Type the name of the buff/debuff you want to add to the list here and click the "Add Entry" button.
+    You must type the name exactly as it appears in the tooltip.  Capitalization is important!]=]
+    --[[Translation missing --]]
+    L["STRING_ID_CONFIG_AURA_FILTER_LIST_HELP_TEXT"] = [=[Hides all buffs/debuffs except for the ones you add to the list below.
+    However, the options you checked still affect which auras are displayed.
+    For example, if you type in the name of a buff but don't have the
+    "Show Buffs" checkbox checked, the buff still won't be displayed.]=]
+    L["STRING_ID_CONFIG_COPY_SETTINGS_TEXT"] = "현재 사용중인 프로필에 선택한 프로필의 설정을 복사합니다."
+    L["STRING_ID_CONFIG_LOCK_BARS_DURING_PLAY_HELP_TEXT"] = [=[구성 패널이 열려있는 동안 자동으로 막대의 잠금 해제됩니다.
+    플레이 중 막대의 이동을 원하지 않는다면 이것을 선택하지 마십시오.]=]
+    L["STRING_ID_INTERFACEPANEL_CREDITS_TEXT_1"] = "Original Addon by Wesslen"
+    L["STRING_ID_INTERFACEPANEL_CREDITS_TEXT_2"] = "Version 2 rewrite by GopherYerguns"
+    L["STRING_ID_INTERFACEPANEL_CREDITS_TEXT_3"] = "Mists of Pandaria updates by 堂吉先生 and EricTheDad"
+    L["STRING_ID_INTERFACEPANEL_CREDITS_TEXT_4"] = "Warlords of Draenor update and ongoing maintenance by EricTheDad"
+    L["STRING_ID_INTERFACEPANEL_CREDITS_TEXT_5"] = "번역에 도움을 주신분:"
+    L["STRING_ID_INTERFACEPANEL_CREDITS_TEXT_6"] = [=[deDE: EricTheDad
+    frFR: available
+    itIT: available
+    esES: available
+    esMX: available
+    ptBR: available
+    ruRU: available
+    zhCN: available
+    koKR: 자료구조론-데스윙, nowdswdsw
+    zhTW: available]=]
+    L["STRING_ID_INTERFACEPANEL_HELP_TEXT_1"] = "채팅창에 \"/statusbars2\" 또는 \"/sb2\" 입력하여 이 화면을 표시하십시오."
+    L["STRING_ID_INTERFACEPANEL_HELP_TEXT_2"] = "채팅창에 \"/statusbars2 config\" 또는 \"/sb2 config\" 입력하거나 아래 버튼을 눌러 구성 모드를 활성화 하십시오."
+    L["STRING_ID_INTERFACEPANEL_TRANSLATORS_NEEDED"] = [=[번역이 필요합니다! 
+    http://wow.curseforge.com/addons/statusbars2/localization 으로 이동하십시오.
+    만약 도움을 받으시려면 EricTheDad 에게 메시지를 보내주세요!]=]
+    L["STRING_ID_MOVE_BAR_HELP_TEXT"] = [=["Alt"를 누르면 개별 막대가 이동됩니다.
+    "Ctrl"을 누르면 지정 그룹이 이동됩니다.
+    "Ctrl" + "Alt"를 누르면 전체 그룹이 이동됩니다.]=]
+    L["Text Display Options"] = "텍스트 표시 옵션"
+    L["Text Size"] = "글자 크기"
+    L["Thousand Separators Only"] = "천 단위 구분 기호 표현"
+    L["Unformatted"] = "형식없음"
     end
 
 ------------------------------------------------------
