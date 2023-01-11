@@ -401,3 +401,19 @@ function StatusBars2_CreateShardBar(group, index, removeWhenHidden)
     
     return bar;
 end
+
+-------------------------------------------------------------------------------
+--
+--  Name:           StatusBars2_CreateEssenceBar
+--
+--  Description:    Create a Drakthyr Essence bar
+--
+-------------------------------------------------------------------------------
+--
+function StatusBars2_CreateEssenceBar(group, index, removeWhenHidden)
+    
+    -- Create the bar
+    local bar = StatusBars2_CreateUnitPowerBar(group, index, removeWhenHidden, "essence", POWER_TYPE_ESSENCE, {r = 0.78, g = 1, b = 1}, Enum.PowerType.Essence, "UNIT_POWER_UPDATE", "ESSENCE");
+    return bar;
+
+end

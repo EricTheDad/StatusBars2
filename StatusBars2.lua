@@ -308,7 +308,9 @@ function StatusBars2_CreateBars()
         StatusBars2_CreatePowerBar(kPlayerGroup, 4, false, "shamanMana", "player", kAlternateMana, Enum.PowerType.Mana, PowerBarColor["MANA"]);
     elseif (englishClass == "MONK") then
         StatusBars2_CreateChiBar(kPlayerGroup, 4);
-        StatusBars2_CreateStaggerBar(kPlayerGroup, 5)
+        StatusBars2_CreateStaggerBar(kPlayerGroup, 5);
+    elseif (englishClass == "EVOKER") then
+        StatusBars2_CreateEssenceBar(kPlayerGroup, 4)
     end
 
 end
@@ -388,6 +390,8 @@ function StatusBars2_UpdateBars()
         elseif (bar.key == "chi" and playerSpec == SPEC_MONK_WINDWALKER) then
             StatusBars2_EnableBar(bar);
         elseif (bar.key == "stagger" and playerSpec == SPEC_MONK_BREWMASTER) then
+            StatusBars2_EnableBar(bar);
+        elseif (bar.key == "essence") then
             StatusBars2_EnableBar(bar);
         end
     
