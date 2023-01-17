@@ -1,4 +1,7 @@
-﻿10.00.02-03.10.00
+﻿10.00.02-03.10.01
+Enable Holy Power bar for all paladin specs
+
+10.00.02-03.10.00
 Initial pass at Drakthyr Essence bar
 
 10.00.02-03.09.02
