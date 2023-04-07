@@ -1,4 +1,7 @@
-﻿10.00.02-03.10.01
+﻿10.00.07-03.10.01
+TOC update
+
+10.00.02-03.10.01
 Enable Holy Power bar for all paladin specs
 
 10.00.02-03.10.00
