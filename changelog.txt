@@ -1,4 +1,8 @@
-﻿10.00.07-03.10.01
+﻿10.01.00-03.10.02
+Fixed the "normal" state of the Drakthyr Essence Bar to be full rather than empty. When the bar is in "auto" display mode, it will now properly fade from view when it is full.
+TOC update.
+
+10.00.07-03.10.01
 TOC update
 
 10.00.02-03.10.01

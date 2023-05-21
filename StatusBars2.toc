@@ -1,5 +1,5 @@
-## Interface: 100007
-## Version: 10.00.07-03.10.01
+## Interface: 100100
+## Version: 10.01.00-03.10.02
 ## Title: StatusBars2
 ## Author: GopherYerguns, Wesslen, 堂吉先生, EricTheDad
 ## Notes: Movable status bars for health, power and a variety of class-ability-specific displays. /sb2 to configure
